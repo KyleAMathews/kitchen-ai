@@ -1,5 +1,5 @@
 import { SSTConfig } from "sst";
-import { API } from "./stacks/MyStack";
+import { SpiceJarPhotos } from "./stacks/spice-photos-stack";
 
 export default {
   config(_input) {
@@ -9,6 +9,6 @@ export default {
     };
   },
   stacks(app) {
-    app.stack(API);
+    app.stack(SpiceJarPhotos);
   }
 } satisfies SSTConfig;
