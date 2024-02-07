@@ -13,6 +13,7 @@ const S3 = new S3Client({})
 
 import { S3Handler } from "aws-lambda"
 import OpenAI from "openai"
+import { randomUUID } from "crypto"
 
 const openai = new OpenAI({ apiKey: Config.OPENAI_KEY })
 
@@ -50,7 +51,7 @@ export const main: S3Handler = async (event) => {
 
     // Update the record
     const updateQuery1 = `
-      UPDATE spice_jar_photos_upload set uploaded_at = $1, photo_url = $2 WHERE id = $3;`
+      UPDATE ingredients_photo_uploads set uploaded_at = $1, photo_url = $2 WHERE id = $3;`
     const values1 = [new Date(), publicUrl, uuid]
 
     // Execute the query
@@ -67,25 +68,19 @@ export const main: S3Handler = async (event) => {
           `name of spice. Return the canonical name for the spice, not
               necessarily what is written on the label e.g. so "Nutmeg Ground"
             should just be "Nutmeg". Whether the spice is ground or not is
-            captured elsewhere.`
+            captured elsewhere. Do capture other adjectives (other than ground) e.g. color. Always put adjectives first e.g. "yellow mustard" not e.g. "mustard, yellow"`
         ),
-        full: z
+        fill_level: z
           .number()
           .min(0)
           .max(100)
           .describe(
             `how full roughly is the jar of spices? From 0-100% (as an integer)`
           ),
-        color: z.string().optional().describe(`only include the color if the
-                                              spice comes in multiple colors
-                                            which are different from each other
-                                            e.g. mustard comes in yellow and
-                                            brown and taste different so the
-                                            color matters. The color name should use USA spelling and be lowercase`),
-        isGround: z
+        is_ground: z
           .boolean()
           .describe(
-            `is the spice ground (or in small flakes) or still whole (larger pieces counts)?`
+            `is the spice ground (or crushed into small flakes) or still whole (larger pieces counts)?`
           ),
       })
     )
@@ -176,13 +171,48 @@ export const main: S3Handler = async (event) => {
     const endTime = performance.now()
     const durationInSeconds = (endTime - startTime) / 1000
     const updateQuery2 = `
-      UPDATE spice_jar_photos_upload SET ai_processing_duration_sec = $1, extracted_data = $2 WHERE id = $3`
-    const values2 = [durationInSeconds, JSON.stringify(parsed), uuid]
+      UPDATE ingredients_photo_uploads SET ai_processing_duration_sec = $1 WHERE id = $2`
+    const values2 = [durationInSeconds, uuid]
 
     // Execute the prepared query (insert or update)
     await client.query(updateQuery2, values2).catch((e) => {
       console.log(`insert failed`, e)
     })
+
+    function generateDateMonthsAgo(monthsAgo) {
+      const currentDate = new Date() // Get the current date
+      currentDate.setMonth(currentDate.getMonth() - monthsAgo) // Subtract the specified number of months
+
+      const year = currentDate.getFullYear() // Get the year
+      let month = currentDate.getMonth() + 1 // Get the month (add 1 because getMonth() returns 0-11)
+
+      // Ensure month is in 'MM' format
+      month = month < 10 ? `0${month}` : month
+
+      return `${year}/${month}` // Return the formatted date string
+    }
+
+    // Add each new ingredient
+    await Promise.all(
+      parsed.map((ingredient) => {
+        const ingredientInsertQuery = {
+          name: `ingredient-insert-query`,
+          text: `INSERT INTO ingredients (id, name, is_reviewed, fill_level, fill_date, is_ground, ingredients_photo_uploads_id)
+          VALUES ($1, $2, $3, $4, $5, $6, $7);`,
+          values: [
+            randomUUID(),
+            ingredient.name,
+            false,
+            ingredient.fill_level,
+            generateDateMonthsAgo(18),
+            ingredient.is_ground,
+            uuid,
+          ],
+        }
+
+        return client.query(ingredientInsertQuery)
+      })
+    )
   } catch (err) {
     console.log(`Error generating pre-signed URL`, err)
     throw err

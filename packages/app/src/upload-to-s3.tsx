@@ -26,14 +26,14 @@ function FileUploadToS3() {
       if (url) {
         const uuid = new URL(url).pathname.split(`---`)[1]
         const start = new Date()
-        db.spice_jar_photos_upload.create({
+        db.ingredients_photo_uploads.create({
           data: {
             id: uuid,
             created_at: start,
           },
         })
         await uploadFileToS3(file, url)
-        db.spice_jar_photos_upload.update({
+        db.ingredients_photo_uploads.update({
           data: {
             upload_duration_sec:
               (new Date().getTime() - start.getTime()) / 1000,

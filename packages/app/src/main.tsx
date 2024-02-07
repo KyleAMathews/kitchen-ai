@@ -18,6 +18,8 @@ import { authToken, dummyUserId } from "./auth"
 
 import Root from "./routes/root"
 import Index from "./routes/index"
+import Review from "./routes/review"
+import AddIngredients from "./routes/add-ingredients"
 
 const router = createBrowserRouter([
   {
@@ -35,15 +37,84 @@ const router = createBrowserRouter([
             key,
             shapes: ({ db }) => [
               {
-                shape: db.spice_jar_photos_upload.sync(),
+                shape: db.ingredients_photo_uploads.sync({
+                  include: { ingredients: true },
+                }),
                 isReady: async () =>
                   !!(await db.rawQuery({
-                    sql: `select id from spice_jar_photos_upload limit 1`,
+                    sql: `select id from ingredients_photo_uploads limit 1`,
                   })),
               },
             ],
             queries: ({ db }) =>
               Index.queries({
+                db,
+              }),
+          })
+
+          return null
+        },
+      },
+      {
+        path: `/upload-photos`,
+        element: <AddIngredients />,
+        loader: async (props) => {
+          const url = new URL(props.request.url)
+          const key = url.pathname + url.search
+          await electricSqlLoader<Electric>({
+            key,
+            shapes: ({ db }) => [
+              {
+                shape: db.ingredients_photo_uploads.sync({
+                  include: { ingredients: true },
+                }),
+                isReady: async () =>
+                  !!(await db.rawQuery({
+                    sql: `select id from ingredients_photo_uploads limit 1`,
+                  })),
+              },
+              {
+                shape: db.ingredients.sync({
+                  include: { ingredients_photo_uploads: true },
+                }),
+                isReady: async () => {
+                  const result = await db.rawQuery({
+                    sql: `select id from ingredients`,
+                  })
+
+                  console.log({ result, boolean: !!result })
+                  return !!result
+                },
+              },
+            ],
+            queries: ({ db }) =>
+              AddIngredients.queries({
+                db,
+              }),
+          })
+
+          return null
+        },
+      },
+      {
+        path: `/review`,
+        element: <Review />,
+        loader: async (props) => {
+          const url = new URL(props.request.url)
+          const key = url.pathname + url.search
+          await electricSqlLoader<Electric>({
+            key,
+            shapes: ({ db }) => [
+              {
+                shape: db.ingredients_photo_uploads.sync(),
+                isReady: async () =>
+                  !!(await db.rawQuery({
+                    sql: `select id from ingredients_photo_uploads limit 1`,
+                  })),
+              },
+            ],
+            queries: ({ db }) =>
+              Review.queries({
                 db,
               }),
           })

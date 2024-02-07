@@ -14,10 +14,15 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
 
 
 /**
- * Model Spice_jar_photos_upload
+ * Model Ingredients
  * 
  */
-export type Spice_jar_photos_upload = $Result.DefaultSelection<Prisma.$Spice_jar_photos_uploadPayload>
+export type Ingredients = $Result.DefaultSelection<Prisma.$IngredientsPayload>
+/**
+ * Model Ingredients_photo_uploads
+ * 
+ */
+export type Ingredients_photo_uploads = $Result.DefaultSelection<Prisma.$Ingredients_photo_uploadsPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -26,8 +31,8 @@ export type Spice_jar_photos_upload = $Result.DefaultSelection<Prisma.$Spice_jar
  * @example
  * ```
  * const prisma = new PrismaClient()
- * // Fetch zero or more Spice_jar_photos_uploads
- * const spice_jar_photos_uploads = await prisma.spice_jar_photos_upload.findMany()
+ * // Fetch zero or more Ingredients
+ * const ingredients = await prisma.ingredients.findMany()
  * ```
  *
  * 
@@ -47,8 +52,8 @@ export class PrismaClient<
    * @example
    * ```
    * const prisma = new PrismaClient()
-   * // Fetch zero or more Spice_jar_photos_uploads
-   * const spice_jar_photos_uploads = await prisma.spice_jar_photos_upload.findMany()
+   * // Fetch zero or more Ingredients
+   * const ingredients = await prisma.ingredients.findMany()
    * ```
    *
    * 
@@ -142,14 +147,24 @@ export class PrismaClient<
   $extends: $Extensions.ExtendsHook<'extends', Prisma.TypeMapCb, ExtArgs>
 
       /**
-   * `prisma.spice_jar_photos_upload`: Exposes CRUD operations for the **Spice_jar_photos_upload** model.
+   * `prisma.ingredients`: Exposes CRUD operations for the **Ingredients** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more Spice_jar_photos_uploads
-    * const spice_jar_photos_uploads = await prisma.spice_jar_photos_upload.findMany()
+    * // Fetch zero or more Ingredients
+    * const ingredients = await prisma.ingredients.findMany()
     * ```
     */
-  get spice_jar_photos_upload(): Prisma.Spice_jar_photos_uploadDelegate<ExtArgs>;
+  get ingredients(): Prisma.IngredientsDelegate<ExtArgs>;
+
+  /**
+   * `prisma.ingredients_photo_uploads`: Exposes CRUD operations for the **Ingredients_photo_uploads** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Ingredients_photo_uploads
+    * const ingredients_photo_uploads = await prisma.ingredients_photo_uploads.findMany()
+    * ```
+    */
+  get ingredients_photo_uploads(): Prisma.Ingredients_photo_uploadsDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -620,7 +635,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
   export const ModelName: {
-    Spice_jar_photos_upload: 'Spice_jar_photos_upload'
+    Ingredients: 'Ingredients',
+    Ingredients_photo_uploads: 'Ingredients_photo_uploads'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -637,73 +653,139 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type TypeMap<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     meta: {
-      modelProps: 'spice_jar_photos_upload'
+      modelProps: 'ingredients' | 'ingredients_photo_uploads'
       txIsolationLevel: Prisma.TransactionIsolationLevel
     },
     model: {
-      Spice_jar_photos_upload: {
-        payload: Prisma.$Spice_jar_photos_uploadPayload<ExtArgs>
-        fields: Prisma.Spice_jar_photos_uploadFieldRefs
+      Ingredients: {
+        payload: Prisma.$IngredientsPayload<ExtArgs>
+        fields: Prisma.IngredientsFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.Spice_jar_photos_uploadFindUniqueArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Spice_jar_photos_uploadPayload> | null
+            args: Prisma.IngredientsFindUniqueArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.Spice_jar_photos_uploadFindUniqueOrThrowArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Spice_jar_photos_uploadPayload>
+            args: Prisma.IngredientsFindUniqueOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload>
           }
           findFirst: {
-            args: Prisma.Spice_jar_photos_uploadFindFirstArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Spice_jar_photos_uploadPayload> | null
+            args: Prisma.IngredientsFindFirstArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.Spice_jar_photos_uploadFindFirstOrThrowArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Spice_jar_photos_uploadPayload>
+            args: Prisma.IngredientsFindFirstOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload>
           }
           findMany: {
-            args: Prisma.Spice_jar_photos_uploadFindManyArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Spice_jar_photos_uploadPayload>[]
+            args: Prisma.IngredientsFindManyArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload>[]
           }
           create: {
-            args: Prisma.Spice_jar_photos_uploadCreateArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Spice_jar_photos_uploadPayload>
+            args: Prisma.IngredientsCreateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload>
           }
           createMany: {
-            args: Prisma.Spice_jar_photos_uploadCreateManyArgs<ExtArgs>,
+            args: Prisma.IngredientsCreateManyArgs<ExtArgs>,
             result: Prisma.BatchPayload
           }
           delete: {
-            args: Prisma.Spice_jar_photos_uploadDeleteArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Spice_jar_photos_uploadPayload>
+            args: Prisma.IngredientsDeleteArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload>
           }
           update: {
-            args: Prisma.Spice_jar_photos_uploadUpdateArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Spice_jar_photos_uploadPayload>
+            args: Prisma.IngredientsUpdateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload>
           }
           deleteMany: {
-            args: Prisma.Spice_jar_photos_uploadDeleteManyArgs<ExtArgs>,
+            args: Prisma.IngredientsDeleteManyArgs<ExtArgs>,
             result: Prisma.BatchPayload
           }
           updateMany: {
-            args: Prisma.Spice_jar_photos_uploadUpdateManyArgs<ExtArgs>,
+            args: Prisma.IngredientsUpdateManyArgs<ExtArgs>,
             result: Prisma.BatchPayload
           }
           upsert: {
-            args: Prisma.Spice_jar_photos_uploadUpsertArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Spice_jar_photos_uploadPayload>
+            args: Prisma.IngredientsUpsertArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload>
           }
           aggregate: {
-            args: Prisma.Spice_jar_photos_uploadAggregateArgs<ExtArgs>,
-            result: $Utils.Optional<AggregateSpice_jar_photos_upload>
+            args: Prisma.IngredientsAggregateArgs<ExtArgs>,
+            result: $Utils.Optional<AggregateIngredients>
           }
           groupBy: {
-            args: Prisma.Spice_jar_photos_uploadGroupByArgs<ExtArgs>,
-            result: $Utils.Optional<Spice_jar_photos_uploadGroupByOutputType>[]
+            args: Prisma.IngredientsGroupByArgs<ExtArgs>,
+            result: $Utils.Optional<IngredientsGroupByOutputType>[]
           }
           count: {
-            args: Prisma.Spice_jar_photos_uploadCountArgs<ExtArgs>,
-            result: $Utils.Optional<Spice_jar_photos_uploadCountAggregateOutputType> | number
+            args: Prisma.IngredientsCountArgs<ExtArgs>,
+            result: $Utils.Optional<IngredientsCountAggregateOutputType> | number
+          }
+        }
+      }
+      Ingredients_photo_uploads: {
+        payload: Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>
+        fields: Prisma.Ingredients_photo_uploadsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.Ingredients_photo_uploadsFindUniqueArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.Ingredients_photo_uploadsFindUniqueOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload>
+          }
+          findFirst: {
+            args: Prisma.Ingredients_photo_uploadsFindFirstArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.Ingredients_photo_uploadsFindFirstOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload>
+          }
+          findMany: {
+            args: Prisma.Ingredients_photo_uploadsFindManyArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload>[]
+          }
+          create: {
+            args: Prisma.Ingredients_photo_uploadsCreateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload>
+          }
+          createMany: {
+            args: Prisma.Ingredients_photo_uploadsCreateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          delete: {
+            args: Prisma.Ingredients_photo_uploadsDeleteArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload>
+          }
+          update: {
+            args: Prisma.Ingredients_photo_uploadsUpdateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload>
+          }
+          deleteMany: {
+            args: Prisma.Ingredients_photo_uploadsDeleteManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          updateMany: {
+            args: Prisma.Ingredients_photo_uploadsUpdateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          upsert: {
+            args: Prisma.Ingredients_photo_uploadsUpsertArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload>
+          }
+          aggregate: {
+            args: Prisma.Ingredients_photo_uploadsAggregateArgs<ExtArgs>,
+            result: $Utils.Optional<AggregateIngredients_photo_uploads>
+          }
+          groupBy: {
+            args: Prisma.Ingredients_photo_uploadsGroupByArgs<ExtArgs>,
+            result: $Utils.Optional<Ingredients_photo_uploadsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.Ingredients_photo_uploadsCountArgs<ExtArgs>,
+            result: $Utils.Optional<Ingredients_photo_uploadsCountAggregateOutputType> | number
           }
         }
       }
@@ -855,412 +937,452 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    */
 
 
+  /**
+   * Count Type Ingredients_photo_uploadsCountOutputType
+   */
+
+  export type Ingredients_photo_uploadsCountOutputType = {
+    ingredients: number
+  }
+
+  export type Ingredients_photo_uploadsCountOutputTypeSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    ingredients?: boolean | Ingredients_photo_uploadsCountOutputTypeCountIngredientsArgs
+  }
+
+  // Custom InputTypes
+
+  /**
+   * Ingredients_photo_uploadsCountOutputType without action
+   */
+  export type Ingredients_photo_uploadsCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredients_photo_uploadsCountOutputType
+     */
+    select?: Ingredients_photo_uploadsCountOutputTypeSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * Ingredients_photo_uploadsCountOutputType without action
+   */
+  export type Ingredients_photo_uploadsCountOutputTypeCountIngredientsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    where?: IngredientsWhereInput
+  }
+
+
 
   /**
    * Models
    */
 
   /**
-   * Model Spice_jar_photos_upload
+   * Model Ingredients
    */
 
-  export type AggregateSpice_jar_photos_upload = {
-    _count: Spice_jar_photos_uploadCountAggregateOutputType | null
-    _avg: Spice_jar_photos_uploadAvgAggregateOutputType | null
-    _sum: Spice_jar_photos_uploadSumAggregateOutputType | null
-    _min: Spice_jar_photos_uploadMinAggregateOutputType | null
-    _max: Spice_jar_photos_uploadMaxAggregateOutputType | null
+  export type AggregateIngredients = {
+    _count: IngredientsCountAggregateOutputType | null
+    _avg: IngredientsAvgAggregateOutputType | null
+    _sum: IngredientsSumAggregateOutputType | null
+    _min: IngredientsMinAggregateOutputType | null
+    _max: IngredientsMaxAggregateOutputType | null
   }
 
-  export type Spice_jar_photos_uploadAvgAggregateOutputType = {
-    upload_duration_sec: number | null
-    ai_processing_duration_sec: number | null
+  export type IngredientsAvgAggregateOutputType = {
+    fill_level: number | null
   }
 
-  export type Spice_jar_photos_uploadSumAggregateOutputType = {
-    upload_duration_sec: number | null
-    ai_processing_duration_sec: number | null
+  export type IngredientsSumAggregateOutputType = {
+    fill_level: number | null
   }
 
-  export type Spice_jar_photos_uploadMinAggregateOutputType = {
+  export type IngredientsMinAggregateOutputType = {
     id: string | null
-    created_at: Date | null
-    uploaded_at: Date | null
-    upload_duration_sec: number | null
-    ai_processing_duration_sec: number | null
-    photo_url: string | null
+    name: string | null
+    is_reviewed: boolean | null
+    fill_level: number | null
+    fill_date: string | null
+    is_ground: boolean | null
+    ingredients_photo_uploads_id: string | null
   }
 
-  export type Spice_jar_photos_uploadMaxAggregateOutputType = {
+  export type IngredientsMaxAggregateOutputType = {
     id: string | null
-    created_at: Date | null
-    uploaded_at: Date | null
-    upload_duration_sec: number | null
-    ai_processing_duration_sec: number | null
-    photo_url: string | null
+    name: string | null
+    is_reviewed: boolean | null
+    fill_level: number | null
+    fill_date: string | null
+    is_ground: boolean | null
+    ingredients_photo_uploads_id: string | null
   }
 
-  export type Spice_jar_photos_uploadCountAggregateOutputType = {
+  export type IngredientsCountAggregateOutputType = {
     id: number
-    created_at: number
-    uploaded_at: number
-    upload_duration_sec: number
-    ai_processing_duration_sec: number
-    photo_url: number
-    extracted_data: number
+    name: number
+    is_reviewed: number
+    fill_level: number
+    fill_date: number
+    is_ground: number
+    ingredients_photo_uploads_id: number
     _all: number
   }
 
 
-  export type Spice_jar_photos_uploadAvgAggregateInputType = {
-    upload_duration_sec?: true
-    ai_processing_duration_sec?: true
+  export type IngredientsAvgAggregateInputType = {
+    fill_level?: true
   }
 
-  export type Spice_jar_photos_uploadSumAggregateInputType = {
-    upload_duration_sec?: true
-    ai_processing_duration_sec?: true
+  export type IngredientsSumAggregateInputType = {
+    fill_level?: true
   }
 
-  export type Spice_jar_photos_uploadMinAggregateInputType = {
+  export type IngredientsMinAggregateInputType = {
     id?: true
-    created_at?: true
-    uploaded_at?: true
-    upload_duration_sec?: true
-    ai_processing_duration_sec?: true
-    photo_url?: true
+    name?: true
+    is_reviewed?: true
+    fill_level?: true
+    fill_date?: true
+    is_ground?: true
+    ingredients_photo_uploads_id?: true
   }
 
-  export type Spice_jar_photos_uploadMaxAggregateInputType = {
+  export type IngredientsMaxAggregateInputType = {
     id?: true
-    created_at?: true
-    uploaded_at?: true
-    upload_duration_sec?: true
-    ai_processing_duration_sec?: true
-    photo_url?: true
+    name?: true
+    is_reviewed?: true
+    fill_level?: true
+    fill_date?: true
+    is_ground?: true
+    ingredients_photo_uploads_id?: true
   }
 
-  export type Spice_jar_photos_uploadCountAggregateInputType = {
+  export type IngredientsCountAggregateInputType = {
     id?: true
-    created_at?: true
-    uploaded_at?: true
-    upload_duration_sec?: true
-    ai_processing_duration_sec?: true
-    photo_url?: true
-    extracted_data?: true
+    name?: true
+    is_reviewed?: true
+    fill_level?: true
+    fill_date?: true
+    is_ground?: true
+    ingredients_photo_uploads_id?: true
     _all?: true
   }
 
-  export type Spice_jar_photos_uploadAggregateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsAggregateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     /**
-     * Filter which Spice_jar_photos_upload to aggregate.
+     * Filter which Ingredients to aggregate.
      */
-    where?: Spice_jar_photos_uploadWhereInput
+    where?: IngredientsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Spice_jar_photos_uploads to fetch.
+     * Determine the order of Ingredients to fetch.
      */
-    orderBy?: Spice_jar_photos_uploadOrderByWithRelationInput | Spice_jar_photos_uploadOrderByWithRelationInput[]
+    orderBy?: IngredientsOrderByWithRelationInput | IngredientsOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: Spice_jar_photos_uploadWhereUniqueInput
+    cursor?: IngredientsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Spice_jar_photos_uploads from the position of the cursor.
+     * Take `±n` Ingredients from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Spice_jar_photos_uploads.
+     * Skip the first `n` Ingredients.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned Spice_jar_photos_uploads
+     * Count returned Ingredients
     **/
-    _count?: true | Spice_jar_photos_uploadCountAggregateInputType
+    _count?: true | IngredientsCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
-    _avg?: Spice_jar_photos_uploadAvgAggregateInputType
+    _avg?: IngredientsAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to sum
     **/
-    _sum?: Spice_jar_photos_uploadSumAggregateInputType
+    _sum?: IngredientsSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: Spice_jar_photos_uploadMinAggregateInputType
+    _min?: IngredientsMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: Spice_jar_photos_uploadMaxAggregateInputType
+    _max?: IngredientsMaxAggregateInputType
   }
 
-  export type GetSpice_jar_photos_uploadAggregateType<T extends Spice_jar_photos_uploadAggregateArgs> = {
-        [P in keyof T & keyof AggregateSpice_jar_photos_upload]: P extends '_count' | 'count'
+  export type GetIngredientsAggregateType<T extends IngredientsAggregateArgs> = {
+        [P in keyof T & keyof AggregateIngredients]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateSpice_jar_photos_upload[P]>
-      : GetScalarType<T[P], AggregateSpice_jar_photos_upload[P]>
+        : GetScalarType<T[P], AggregateIngredients[P]>
+      : GetScalarType<T[P], AggregateIngredients[P]>
   }
 
 
 
 
-  export type Spice_jar_photos_uploadGroupByArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    where?: Spice_jar_photos_uploadWhereInput
-    orderBy?: Spice_jar_photos_uploadOrderByWithAggregationInput | Spice_jar_photos_uploadOrderByWithAggregationInput[]
-    by: Spice_jar_photos_uploadScalarFieldEnum[] | Spice_jar_photos_uploadScalarFieldEnum
-    having?: Spice_jar_photos_uploadScalarWhereWithAggregatesInput
+  export type IngredientsGroupByArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    where?: IngredientsWhereInput
+    orderBy?: IngredientsOrderByWithAggregationInput | IngredientsOrderByWithAggregationInput[]
+    by: IngredientsScalarFieldEnum[] | IngredientsScalarFieldEnum
+    having?: IngredientsScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: Spice_jar_photos_uploadCountAggregateInputType | true
-    _avg?: Spice_jar_photos_uploadAvgAggregateInputType
-    _sum?: Spice_jar_photos_uploadSumAggregateInputType
-    _min?: Spice_jar_photos_uploadMinAggregateInputType
-    _max?: Spice_jar_photos_uploadMaxAggregateInputType
+    _count?: IngredientsCountAggregateInputType | true
+    _avg?: IngredientsAvgAggregateInputType
+    _sum?: IngredientsSumAggregateInputType
+    _min?: IngredientsMinAggregateInputType
+    _max?: IngredientsMaxAggregateInputType
   }
 
-  export type Spice_jar_photos_uploadGroupByOutputType = {
+  export type IngredientsGroupByOutputType = {
     id: string
-    created_at: Date
-    uploaded_at: Date | null
-    upload_duration_sec: number | null
-    ai_processing_duration_sec: number | null
-    photo_url: string | null
-    extracted_data: JsonValue | null
-    _count: Spice_jar_photos_uploadCountAggregateOutputType | null
-    _avg: Spice_jar_photos_uploadAvgAggregateOutputType | null
-    _sum: Spice_jar_photos_uploadSumAggregateOutputType | null
-    _min: Spice_jar_photos_uploadMinAggregateOutputType | null
-    _max: Spice_jar_photos_uploadMaxAggregateOutputType | null
+    name: string
+    is_reviewed: boolean
+    fill_level: number
+    fill_date: string
+    is_ground: boolean | null
+    ingredients_photo_uploads_id: string | null
+    _count: IngredientsCountAggregateOutputType | null
+    _avg: IngredientsAvgAggregateOutputType | null
+    _sum: IngredientsSumAggregateOutputType | null
+    _min: IngredientsMinAggregateOutputType | null
+    _max: IngredientsMaxAggregateOutputType | null
   }
 
-  type GetSpice_jar_photos_uploadGroupByPayload<T extends Spice_jar_photos_uploadGroupByArgs> = Prisma.PrismaPromise<
+  type GetIngredientsGroupByPayload<T extends IngredientsGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<Spice_jar_photos_uploadGroupByOutputType, T['by']> &
+      PickEnumerable<IngredientsGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof Spice_jar_photos_uploadGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof IngredientsGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], Spice_jar_photos_uploadGroupByOutputType[P]>
-            : GetScalarType<T[P], Spice_jar_photos_uploadGroupByOutputType[P]>
+              : GetScalarType<T[P], IngredientsGroupByOutputType[P]>
+            : GetScalarType<T[P], IngredientsGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type Spice_jar_photos_uploadSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type IngredientsSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    created_at?: boolean
-    uploaded_at?: boolean
-    upload_duration_sec?: boolean
-    ai_processing_duration_sec?: boolean
-    photo_url?: boolean
-    extracted_data?: boolean
-  }, ExtArgs["result"]["spice_jar_photos_upload"]>
+    name?: boolean
+    is_reviewed?: boolean
+    fill_level?: boolean
+    fill_date?: boolean
+    is_ground?: boolean
+    ingredients_photo_uploads_id?: boolean
+    ingredients_photo_uploads?: boolean | Ingredients$ingredients_photo_uploadsArgs<ExtArgs>
+  }, ExtArgs["result"]["ingredients"]>
 
-  export type Spice_jar_photos_uploadSelectScalar = {
+  export type IngredientsSelectScalar = {
     id?: boolean
-    created_at?: boolean
-    uploaded_at?: boolean
-    upload_duration_sec?: boolean
-    ai_processing_duration_sec?: boolean
-    photo_url?: boolean
-    extracted_data?: boolean
+    name?: boolean
+    is_reviewed?: boolean
+    fill_level?: boolean
+    fill_date?: boolean
+    is_ground?: boolean
+    ingredients_photo_uploads_id?: boolean
+  }
+
+  export type IngredientsInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    ingredients_photo_uploads?: boolean | Ingredients$ingredients_photo_uploadsArgs<ExtArgs>
   }
 
 
-  export type $Spice_jar_photos_uploadPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    name: "Spice_jar_photos_upload"
-    objects: {}
+  export type $IngredientsPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    name: "Ingredients"
+    objects: {
+      ingredients_photo_uploads: Prisma.$Ingredients_photo_uploadsPayload<ExtArgs> | null
+    }
     scalars: $Extensions.GetResult<{
       /**
        * @zod.string.uuid()
        */
       id: string
-      created_at: Date
-      uploaded_at: Date | null
+      name: string
+      is_reviewed: boolean
       /**
-       * @zod.custom.use(z.number().or(z.nan()))
+       * @zod.number.int().gte(-2147483648).lte(2147483647)
        */
-      upload_duration_sec: number | null
+      fill_level: number
+      fill_date: string
+      is_ground: boolean | null
       /**
-       * @zod.custom.use(z.number().or(z.nan()))
+       * @zod.string.uuid()
        */
-      ai_processing_duration_sec: number | null
-      photo_url: string | null
-      extracted_data: Prisma.JsonValue | null
-    }, ExtArgs["result"]["spice_jar_photos_upload"]>
+      ingredients_photo_uploads_id: string | null
+    }, ExtArgs["result"]["ingredients"]>
     composites: {}
   }
 
 
-  type Spice_jar_photos_uploadGetPayload<S extends boolean | null | undefined | Spice_jar_photos_uploadDefaultArgs> = $Result.GetResult<Prisma.$Spice_jar_photos_uploadPayload, S>
+  type IngredientsGetPayload<S extends boolean | null | undefined | IngredientsDefaultArgs> = $Result.GetResult<Prisma.$IngredientsPayload, S>
 
-  type Spice_jar_photos_uploadCountArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = 
-    Omit<Spice_jar_photos_uploadFindManyArgs, 'select' | 'include'> & {
-      select?: Spice_jar_photos_uploadCountAggregateInputType | true
+  type IngredientsCountArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = 
+    Omit<IngredientsFindManyArgs, 'select' | 'include'> & {
+      select?: IngredientsCountAggregateInputType | true
     }
 
-  export interface Spice_jar_photos_uploadDelegate<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Spice_jar_photos_upload'], meta: { name: 'Spice_jar_photos_upload' } }
+  export interface IngredientsDelegate<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Ingredients'], meta: { name: 'Ingredients' } }
     /**
-     * Find zero or one Spice_jar_photos_upload that matches the filter.
-     * @param {Spice_jar_photos_uploadFindUniqueArgs} args - Arguments to find a Spice_jar_photos_upload
+     * Find zero or one Ingredients that matches the filter.
+     * @param {IngredientsFindUniqueArgs} args - Arguments to find a Ingredients
      * @example
-     * // Get one Spice_jar_photos_upload
-     * const spice_jar_photos_upload = await prisma.spice_jar_photos_upload.findUnique({
+     * // Get one Ingredients
+     * const ingredients = await prisma.ingredients.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findUnique<T extends Spice_jar_photos_uploadFindUniqueArgs<ExtArgs>>(
-      args: SelectSubset<T, Spice_jar_photos_uploadFindUniqueArgs<ExtArgs>>
-    ): Prisma__Spice_jar_photos_uploadClient<$Result.GetResult<Prisma.$Spice_jar_photos_uploadPayload<ExtArgs>, T, 'findUnique'> | null, null, ExtArgs>
+    findUnique<T extends IngredientsFindUniqueArgs<ExtArgs>>(
+      args: SelectSubset<T, IngredientsFindUniqueArgs<ExtArgs>>
+    ): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'findUnique'> | null, null, ExtArgs>
 
     /**
-     * Find one Spice_jar_photos_upload that matches the filter or throw an error  with `error.code='P2025'` 
+     * Find one Ingredients that matches the filter or throw an error  with `error.code='P2025'` 
      *     if no matches were found.
-     * @param {Spice_jar_photos_uploadFindUniqueOrThrowArgs} args - Arguments to find a Spice_jar_photos_upload
+     * @param {IngredientsFindUniqueOrThrowArgs} args - Arguments to find a Ingredients
      * @example
-     * // Get one Spice_jar_photos_upload
-     * const spice_jar_photos_upload = await prisma.spice_jar_photos_upload.findUniqueOrThrow({
+     * // Get one Ingredients
+     * const ingredients = await prisma.ingredients.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findUniqueOrThrow<T extends Spice_jar_photos_uploadFindUniqueOrThrowArgs<ExtArgs>>(
-      args?: SelectSubset<T, Spice_jar_photos_uploadFindUniqueOrThrowArgs<ExtArgs>>
-    ): Prisma__Spice_jar_photos_uploadClient<$Result.GetResult<Prisma.$Spice_jar_photos_uploadPayload<ExtArgs>, T, 'findUniqueOrThrow'>, never, ExtArgs>
+    findUniqueOrThrow<T extends IngredientsFindUniqueOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, IngredientsFindUniqueOrThrowArgs<ExtArgs>>
+    ): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'findUniqueOrThrow'>, never, ExtArgs>
 
     /**
-     * Find the first Spice_jar_photos_upload that matches the filter.
+     * Find the first Ingredients that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {Spice_jar_photos_uploadFindFirstArgs} args - Arguments to find a Spice_jar_photos_upload
+     * @param {IngredientsFindFirstArgs} args - Arguments to find a Ingredients
      * @example
-     * // Get one Spice_jar_photos_upload
-     * const spice_jar_photos_upload = await prisma.spice_jar_photos_upload.findFirst({
+     * // Get one Ingredients
+     * const ingredients = await prisma.ingredients.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findFirst<T extends Spice_jar_photos_uploadFindFirstArgs<ExtArgs>>(
-      args?: SelectSubset<T, Spice_jar_photos_uploadFindFirstArgs<ExtArgs>>
-    ): Prisma__Spice_jar_photos_uploadClient<$Result.GetResult<Prisma.$Spice_jar_photos_uploadPayload<ExtArgs>, T, 'findFirst'> | null, null, ExtArgs>
+    findFirst<T extends IngredientsFindFirstArgs<ExtArgs>>(
+      args?: SelectSubset<T, IngredientsFindFirstArgs<ExtArgs>>
+    ): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'findFirst'> | null, null, ExtArgs>
 
     /**
-     * Find the first Spice_jar_photos_upload that matches the filter or
+     * Find the first Ingredients that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {Spice_jar_photos_uploadFindFirstOrThrowArgs} args - Arguments to find a Spice_jar_photos_upload
+     * @param {IngredientsFindFirstOrThrowArgs} args - Arguments to find a Ingredients
      * @example
-     * // Get one Spice_jar_photos_upload
-     * const spice_jar_photos_upload = await prisma.spice_jar_photos_upload.findFirstOrThrow({
+     * // Get one Ingredients
+     * const ingredients = await prisma.ingredients.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findFirstOrThrow<T extends Spice_jar_photos_uploadFindFirstOrThrowArgs<ExtArgs>>(
-      args?: SelectSubset<T, Spice_jar_photos_uploadFindFirstOrThrowArgs<ExtArgs>>
-    ): Prisma__Spice_jar_photos_uploadClient<$Result.GetResult<Prisma.$Spice_jar_photos_uploadPayload<ExtArgs>, T, 'findFirstOrThrow'>, never, ExtArgs>
+    findFirstOrThrow<T extends IngredientsFindFirstOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, IngredientsFindFirstOrThrowArgs<ExtArgs>>
+    ): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'findFirstOrThrow'>, never, ExtArgs>
 
     /**
-     * Find zero or more Spice_jar_photos_uploads that matches the filter.
+     * Find zero or more Ingredients that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {Spice_jar_photos_uploadFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @param {IngredientsFindManyArgs=} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all Spice_jar_photos_uploads
-     * const spice_jar_photos_uploads = await prisma.spice_jar_photos_upload.findMany()
+     * // Get all Ingredients
+     * const ingredients = await prisma.ingredients.findMany()
      * 
-     * // Get first 10 Spice_jar_photos_uploads
-     * const spice_jar_photos_uploads = await prisma.spice_jar_photos_upload.findMany({ take: 10 })
+     * // Get first 10 Ingredients
+     * const ingredients = await prisma.ingredients.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const spice_jar_photos_uploadWithIdOnly = await prisma.spice_jar_photos_upload.findMany({ select: { id: true } })
+     * const ingredientsWithIdOnly = await prisma.ingredients.findMany({ select: { id: true } })
      * 
     **/
-    findMany<T extends Spice_jar_photos_uploadFindManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, Spice_jar_photos_uploadFindManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Spice_jar_photos_uploadPayload<ExtArgs>, T, 'findMany'>>
+    findMany<T extends IngredientsFindManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, IngredientsFindManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'findMany'>>
 
     /**
-     * Create a Spice_jar_photos_upload.
-     * @param {Spice_jar_photos_uploadCreateArgs} args - Arguments to create a Spice_jar_photos_upload.
+     * Create a Ingredients.
+     * @param {IngredientsCreateArgs} args - Arguments to create a Ingredients.
      * @example
-     * // Create one Spice_jar_photos_upload
-     * const Spice_jar_photos_upload = await prisma.spice_jar_photos_upload.create({
+     * // Create one Ingredients
+     * const Ingredients = await prisma.ingredients.create({
      *   data: {
-     *     // ... data to create a Spice_jar_photos_upload
+     *     // ... data to create a Ingredients
      *   }
      * })
      * 
     **/
-    create<T extends Spice_jar_photos_uploadCreateArgs<ExtArgs>>(
-      args: SelectSubset<T, Spice_jar_photos_uploadCreateArgs<ExtArgs>>
-    ): Prisma__Spice_jar_photos_uploadClient<$Result.GetResult<Prisma.$Spice_jar_photos_uploadPayload<ExtArgs>, T, 'create'>, never, ExtArgs>
+    create<T extends IngredientsCreateArgs<ExtArgs>>(
+      args: SelectSubset<T, IngredientsCreateArgs<ExtArgs>>
+    ): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'create'>, never, ExtArgs>
 
     /**
-     * Create many Spice_jar_photos_uploads.
-     *     @param {Spice_jar_photos_uploadCreateManyArgs} args - Arguments to create many Spice_jar_photos_uploads.
+     * Create many Ingredients.
+     *     @param {IngredientsCreateManyArgs} args - Arguments to create many Ingredients.
      *     @example
-     *     // Create many Spice_jar_photos_uploads
-     *     const spice_jar_photos_upload = await prisma.spice_jar_photos_upload.createMany({
+     *     // Create many Ingredients
+     *     const ingredients = await prisma.ingredients.createMany({
      *       data: {
      *         // ... provide data here
      *       }
      *     })
      *     
     **/
-    createMany<T extends Spice_jar_photos_uploadCreateManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, Spice_jar_photos_uploadCreateManyArgs<ExtArgs>>
+    createMany<T extends IngredientsCreateManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, IngredientsCreateManyArgs<ExtArgs>>
     ): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Delete a Spice_jar_photos_upload.
-     * @param {Spice_jar_photos_uploadDeleteArgs} args - Arguments to delete one Spice_jar_photos_upload.
+     * Delete a Ingredients.
+     * @param {IngredientsDeleteArgs} args - Arguments to delete one Ingredients.
      * @example
-     * // Delete one Spice_jar_photos_upload
-     * const Spice_jar_photos_upload = await prisma.spice_jar_photos_upload.delete({
+     * // Delete one Ingredients
+     * const Ingredients = await prisma.ingredients.delete({
      *   where: {
-     *     // ... filter to delete one Spice_jar_photos_upload
+     *     // ... filter to delete one Ingredients
      *   }
      * })
      * 
     **/
-    delete<T extends Spice_jar_photos_uploadDeleteArgs<ExtArgs>>(
-      args: SelectSubset<T, Spice_jar_photos_uploadDeleteArgs<ExtArgs>>
-    ): Prisma__Spice_jar_photos_uploadClient<$Result.GetResult<Prisma.$Spice_jar_photos_uploadPayload<ExtArgs>, T, 'delete'>, never, ExtArgs>
+    delete<T extends IngredientsDeleteArgs<ExtArgs>>(
+      args: SelectSubset<T, IngredientsDeleteArgs<ExtArgs>>
+    ): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'delete'>, never, ExtArgs>
 
     /**
-     * Update one Spice_jar_photos_upload.
-     * @param {Spice_jar_photos_uploadUpdateArgs} args - Arguments to update one Spice_jar_photos_upload.
+     * Update one Ingredients.
+     * @param {IngredientsUpdateArgs} args - Arguments to update one Ingredients.
      * @example
-     * // Update one Spice_jar_photos_upload
-     * const spice_jar_photos_upload = await prisma.spice_jar_photos_upload.update({
+     * // Update one Ingredients
+     * const ingredients = await prisma.ingredients.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -1270,34 +1392,34 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    update<T extends Spice_jar_photos_uploadUpdateArgs<ExtArgs>>(
-      args: SelectSubset<T, Spice_jar_photos_uploadUpdateArgs<ExtArgs>>
-    ): Prisma__Spice_jar_photos_uploadClient<$Result.GetResult<Prisma.$Spice_jar_photos_uploadPayload<ExtArgs>, T, 'update'>, never, ExtArgs>
+    update<T extends IngredientsUpdateArgs<ExtArgs>>(
+      args: SelectSubset<T, IngredientsUpdateArgs<ExtArgs>>
+    ): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'update'>, never, ExtArgs>
 
     /**
-     * Delete zero or more Spice_jar_photos_uploads.
-     * @param {Spice_jar_photos_uploadDeleteManyArgs} args - Arguments to filter Spice_jar_photos_uploads to delete.
+     * Delete zero or more Ingredients.
+     * @param {IngredientsDeleteManyArgs} args - Arguments to filter Ingredients to delete.
      * @example
-     * // Delete a few Spice_jar_photos_uploads
-     * const { count } = await prisma.spice_jar_photos_upload.deleteMany({
+     * // Delete a few Ingredients
+     * const { count } = await prisma.ingredients.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
     **/
-    deleteMany<T extends Spice_jar_photos_uploadDeleteManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, Spice_jar_photos_uploadDeleteManyArgs<ExtArgs>>
+    deleteMany<T extends IngredientsDeleteManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, IngredientsDeleteManyArgs<ExtArgs>>
     ): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more Spice_jar_photos_uploads.
+     * Update zero or more Ingredients.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {Spice_jar_photos_uploadUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {IngredientsUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many Spice_jar_photos_uploads
-     * const spice_jar_photos_upload = await prisma.spice_jar_photos_upload.updateMany({
+     * // Update many Ingredients
+     * const ingredients = await prisma.ingredients.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -1307,59 +1429,59 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    updateMany<T extends Spice_jar_photos_uploadUpdateManyArgs<ExtArgs>>(
-      args: SelectSubset<T, Spice_jar_photos_uploadUpdateManyArgs<ExtArgs>>
+    updateMany<T extends IngredientsUpdateManyArgs<ExtArgs>>(
+      args: SelectSubset<T, IngredientsUpdateManyArgs<ExtArgs>>
     ): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create or update one Spice_jar_photos_upload.
-     * @param {Spice_jar_photos_uploadUpsertArgs} args - Arguments to update or create a Spice_jar_photos_upload.
+     * Create or update one Ingredients.
+     * @param {IngredientsUpsertArgs} args - Arguments to update or create a Ingredients.
      * @example
-     * // Update or create a Spice_jar_photos_upload
-     * const spice_jar_photos_upload = await prisma.spice_jar_photos_upload.upsert({
+     * // Update or create a Ingredients
+     * const ingredients = await prisma.ingredients.upsert({
      *   create: {
-     *     // ... data to create a Spice_jar_photos_upload
+     *     // ... data to create a Ingredients
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the Spice_jar_photos_upload we want to update
+     *     // ... the filter for the Ingredients we want to update
      *   }
      * })
     **/
-    upsert<T extends Spice_jar_photos_uploadUpsertArgs<ExtArgs>>(
-      args: SelectSubset<T, Spice_jar_photos_uploadUpsertArgs<ExtArgs>>
-    ): Prisma__Spice_jar_photos_uploadClient<$Result.GetResult<Prisma.$Spice_jar_photos_uploadPayload<ExtArgs>, T, 'upsert'>, never, ExtArgs>
+    upsert<T extends IngredientsUpsertArgs<ExtArgs>>(
+      args: SelectSubset<T, IngredientsUpsertArgs<ExtArgs>>
+    ): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'upsert'>, never, ExtArgs>
 
     /**
-     * Count the number of Spice_jar_photos_uploads.
+     * Count the number of Ingredients.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {Spice_jar_photos_uploadCountArgs} args - Arguments to filter Spice_jar_photos_uploads to count.
+     * @param {IngredientsCountArgs} args - Arguments to filter Ingredients to count.
      * @example
-     * // Count the number of Spice_jar_photos_uploads
-     * const count = await prisma.spice_jar_photos_upload.count({
+     * // Count the number of Ingredients
+     * const count = await prisma.ingredients.count({
      *   where: {
-     *     // ... the filter for the Spice_jar_photos_uploads we want to count
+     *     // ... the filter for the Ingredients we want to count
      *   }
      * })
     **/
-    count<T extends Spice_jar_photos_uploadCountArgs>(
-      args?: Subset<T, Spice_jar_photos_uploadCountArgs>,
+    count<T extends IngredientsCountArgs>(
+      args?: Subset<T, IngredientsCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], Spice_jar_photos_uploadCountAggregateOutputType>
+          : GetScalarType<T['select'], IngredientsCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a Spice_jar_photos_upload.
+     * Allows you to perform aggregations operations on a Ingredients.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {Spice_jar_photos_uploadAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {IngredientsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -1379,13 +1501,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   take: 10,
      * })
     **/
-    aggregate<T extends Spice_jar_photos_uploadAggregateArgs>(args: Subset<T, Spice_jar_photos_uploadAggregateArgs>): Prisma.PrismaPromise<GetSpice_jar_photos_uploadAggregateType<T>>
+    aggregate<T extends IngredientsAggregateArgs>(args: Subset<T, IngredientsAggregateArgs>): Prisma.PrismaPromise<GetIngredientsAggregateType<T>>
 
     /**
-     * Group by Spice_jar_photos_upload.
+     * Group by Ingredients.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {Spice_jar_photos_uploadGroupByArgs} args - Group by arguments.
+     * @param {IngredientsGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -1400,14 +1522,14 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * 
     **/
     groupBy<
-      T extends Spice_jar_photos_uploadGroupByArgs,
+      T extends IngredientsGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: Spice_jar_photos_uploadGroupByArgs['orderBy'] }
-        : { orderBy?: Spice_jar_photos_uploadGroupByArgs['orderBy'] },
+        ? { orderBy: IngredientsGroupByArgs['orderBy'] }
+        : { orderBy?: IngredientsGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -1456,22 +1578,23 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, Spice_jar_photos_uploadGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSpice_jar_photos_uploadGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, IngredientsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetIngredientsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the Spice_jar_photos_upload model
+   * Fields of the Ingredients model
    */
-  readonly fields: Spice_jar_photos_uploadFieldRefs;
+  readonly fields: IngredientsFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for Spice_jar_photos_upload.
+   * The delegate class that acts as a "Promise-like" for Ingredients.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__Spice_jar_photos_uploadClient<T, Null = never, ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__IngredientsClient<T, Null = never, ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
 
+    ingredients_photo_uploads<T extends Ingredients$ingredients_photo_uploadsArgs<ExtArgs> = {}>(args?: Subset<T, Ingredients$ingredients_photo_uploadsArgs<ExtArgs>>): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'findUniqueOrThrow'> | null, null, ExtArgs>;
 
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1498,299 +1621,1354 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
   /**
-   * Fields of the Spice_jar_photos_upload model
+   * Fields of the Ingredients model
    */ 
-  interface Spice_jar_photos_uploadFieldRefs {
-    readonly id: FieldRef<"Spice_jar_photos_upload", 'String'>
-    readonly created_at: FieldRef<"Spice_jar_photos_upload", 'DateTime'>
-    readonly uploaded_at: FieldRef<"Spice_jar_photos_upload", 'DateTime'>
-    readonly upload_duration_sec: FieldRef<"Spice_jar_photos_upload", 'Float'>
-    readonly ai_processing_duration_sec: FieldRef<"Spice_jar_photos_upload", 'Float'>
-    readonly photo_url: FieldRef<"Spice_jar_photos_upload", 'String'>
-    readonly extracted_data: FieldRef<"Spice_jar_photos_upload", 'Json'>
+  interface IngredientsFieldRefs {
+    readonly id: FieldRef<"Ingredients", 'String'>
+    readonly name: FieldRef<"Ingredients", 'String'>
+    readonly is_reviewed: FieldRef<"Ingredients", 'Boolean'>
+    readonly fill_level: FieldRef<"Ingredients", 'Int'>
+    readonly fill_date: FieldRef<"Ingredients", 'String'>
+    readonly is_ground: FieldRef<"Ingredients", 'Boolean'>
+    readonly ingredients_photo_uploads_id: FieldRef<"Ingredients", 'String'>
   }
     
 
   // Custom InputTypes
 
   /**
-   * Spice_jar_photos_upload findUnique
+   * Ingredients findUnique
    */
-  export type Spice_jar_photos_uploadFindUniqueArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsFindUniqueArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Spice_jar_photos_upload
+     * Select specific fields to fetch from the Ingredients
      */
-    select?: Spice_jar_photos_uploadSelect<ExtArgs> | null
+    select?: IngredientsSelect<ExtArgs> | null
     /**
-     * Filter, which Spice_jar_photos_upload to fetch.
+     * Choose, which related nodes to fetch as well.
      */
-    where: Spice_jar_photos_uploadWhereUniqueInput
+    include?: IngredientsInclude<ExtArgs> | null
+    /**
+     * Filter, which Ingredients to fetch.
+     */
+    where: IngredientsWhereUniqueInput
   }
 
 
   /**
-   * Spice_jar_photos_upload findUniqueOrThrow
+   * Ingredients findUniqueOrThrow
    */
-  export type Spice_jar_photos_uploadFindUniqueOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Spice_jar_photos_upload
+     * Select specific fields to fetch from the Ingredients
      */
-    select?: Spice_jar_photos_uploadSelect<ExtArgs> | null
+    select?: IngredientsSelect<ExtArgs> | null
     /**
-     * Filter, which Spice_jar_photos_upload to fetch.
+     * Choose, which related nodes to fetch as well.
      */
-    where: Spice_jar_photos_uploadWhereUniqueInput
+    include?: IngredientsInclude<ExtArgs> | null
+    /**
+     * Filter, which Ingredients to fetch.
+     */
+    where: IngredientsWhereUniqueInput
   }
 
 
   /**
-   * Spice_jar_photos_upload findFirst
+   * Ingredients findFirst
    */
-  export type Spice_jar_photos_uploadFindFirstArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsFindFirstArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Spice_jar_photos_upload
+     * Select specific fields to fetch from the Ingredients
      */
-    select?: Spice_jar_photos_uploadSelect<ExtArgs> | null
+    select?: IngredientsSelect<ExtArgs> | null
     /**
-     * Filter, which Spice_jar_photos_upload to fetch.
+     * Choose, which related nodes to fetch as well.
      */
-    where?: Spice_jar_photos_uploadWhereInput
+    include?: IngredientsInclude<ExtArgs> | null
+    /**
+     * Filter, which Ingredients to fetch.
+     */
+    where?: IngredientsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Spice_jar_photos_uploads to fetch.
+     * Determine the order of Ingredients to fetch.
      */
-    orderBy?: Spice_jar_photos_uploadOrderByWithRelationInput | Spice_jar_photos_uploadOrderByWithRelationInput[]
+    orderBy?: IngredientsOrderByWithRelationInput | IngredientsOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for Spice_jar_photos_uploads.
+     * Sets the position for searching for Ingredients.
      */
-    cursor?: Spice_jar_photos_uploadWhereUniqueInput
+    cursor?: IngredientsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Spice_jar_photos_uploads from the position of the cursor.
+     * Take `±n` Ingredients from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Spice_jar_photos_uploads.
+     * Skip the first `n` Ingredients.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of Spice_jar_photos_uploads.
+     * Filter by unique combinations of Ingredients.
      */
-    distinct?: Spice_jar_photos_uploadScalarFieldEnum | Spice_jar_photos_uploadScalarFieldEnum[]
+    distinct?: IngredientsScalarFieldEnum | IngredientsScalarFieldEnum[]
   }
 
 
   /**
-   * Spice_jar_photos_upload findFirstOrThrow
+   * Ingredients findFirstOrThrow
    */
-  export type Spice_jar_photos_uploadFindFirstOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsFindFirstOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Spice_jar_photos_upload
+     * Select specific fields to fetch from the Ingredients
      */
-    select?: Spice_jar_photos_uploadSelect<ExtArgs> | null
+    select?: IngredientsSelect<ExtArgs> | null
     /**
-     * Filter, which Spice_jar_photos_upload to fetch.
+     * Choose, which related nodes to fetch as well.
      */
-    where?: Spice_jar_photos_uploadWhereInput
+    include?: IngredientsInclude<ExtArgs> | null
+    /**
+     * Filter, which Ingredients to fetch.
+     */
+    where?: IngredientsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Spice_jar_photos_uploads to fetch.
+     * Determine the order of Ingredients to fetch.
      */
-    orderBy?: Spice_jar_photos_uploadOrderByWithRelationInput | Spice_jar_photos_uploadOrderByWithRelationInput[]
+    orderBy?: IngredientsOrderByWithRelationInput | IngredientsOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for Spice_jar_photos_uploads.
+     * Sets the position for searching for Ingredients.
      */
-    cursor?: Spice_jar_photos_uploadWhereUniqueInput
+    cursor?: IngredientsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Spice_jar_photos_uploads from the position of the cursor.
+     * Take `±n` Ingredients from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Spice_jar_photos_uploads.
+     * Skip the first `n` Ingredients.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of Spice_jar_photos_uploads.
+     * Filter by unique combinations of Ingredients.
      */
-    distinct?: Spice_jar_photos_uploadScalarFieldEnum | Spice_jar_photos_uploadScalarFieldEnum[]
+    distinct?: IngredientsScalarFieldEnum | IngredientsScalarFieldEnum[]
   }
 
 
   /**
-   * Spice_jar_photos_upload findMany
+   * Ingredients findMany
    */
-  export type Spice_jar_photos_uploadFindManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsFindManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Spice_jar_photos_upload
+     * Select specific fields to fetch from the Ingredients
      */
-    select?: Spice_jar_photos_uploadSelect<ExtArgs> | null
+    select?: IngredientsSelect<ExtArgs> | null
     /**
-     * Filter, which Spice_jar_photos_uploads to fetch.
+     * Choose, which related nodes to fetch as well.
      */
-    where?: Spice_jar_photos_uploadWhereInput
+    include?: IngredientsInclude<ExtArgs> | null
+    /**
+     * Filter, which Ingredients to fetch.
+     */
+    where?: IngredientsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Spice_jar_photos_uploads to fetch.
+     * Determine the order of Ingredients to fetch.
      */
-    orderBy?: Spice_jar_photos_uploadOrderByWithRelationInput | Spice_jar_photos_uploadOrderByWithRelationInput[]
+    orderBy?: IngredientsOrderByWithRelationInput | IngredientsOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing Spice_jar_photos_uploads.
+     * Sets the position for listing Ingredients.
      */
-    cursor?: Spice_jar_photos_uploadWhereUniqueInput
+    cursor?: IngredientsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Spice_jar_photos_uploads from the position of the cursor.
+     * Take `±n` Ingredients from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Spice_jar_photos_uploads.
+     * Skip the first `n` Ingredients.
      */
     skip?: number
-    distinct?: Spice_jar_photos_uploadScalarFieldEnum | Spice_jar_photos_uploadScalarFieldEnum[]
+    distinct?: IngredientsScalarFieldEnum | IngredientsScalarFieldEnum[]
   }
 
 
   /**
-   * Spice_jar_photos_upload create
+   * Ingredients create
    */
-  export type Spice_jar_photos_uploadCreateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsCreateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Spice_jar_photos_upload
+     * Select specific fields to fetch from the Ingredients
      */
-    select?: Spice_jar_photos_uploadSelect<ExtArgs> | null
+    select?: IngredientsSelect<ExtArgs> | null
     /**
-     * The data needed to create a Spice_jar_photos_upload.
+     * Choose, which related nodes to fetch as well.
      */
-    data: XOR<Spice_jar_photos_uploadCreateInput, Spice_jar_photos_uploadUncheckedCreateInput>
+    include?: IngredientsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Ingredients.
+     */
+    data: XOR<IngredientsCreateInput, IngredientsUncheckedCreateInput>
   }
 
 
   /**
-   * Spice_jar_photos_upload createMany
+   * Ingredients createMany
    */
-  export type Spice_jar_photos_uploadCreateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsCreateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many Spice_jar_photos_uploads.
+     * The data used to create many Ingredients.
      */
-    data: Spice_jar_photos_uploadCreateManyInput | Spice_jar_photos_uploadCreateManyInput[]
+    data: IngredientsCreateManyInput | IngredientsCreateManyInput[]
     skipDuplicates?: boolean
   }
 
 
   /**
-   * Spice_jar_photos_upload update
+   * Ingredients update
    */
-  export type Spice_jar_photos_uploadUpdateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsUpdateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Spice_jar_photos_upload
+     * Select specific fields to fetch from the Ingredients
      */
-    select?: Spice_jar_photos_uploadSelect<ExtArgs> | null
+    select?: IngredientsSelect<ExtArgs> | null
     /**
-     * The data needed to update a Spice_jar_photos_upload.
+     * Choose, which related nodes to fetch as well.
      */
-    data: XOR<Spice_jar_photos_uploadUpdateInput, Spice_jar_photos_uploadUncheckedUpdateInput>
+    include?: IngredientsInclude<ExtArgs> | null
     /**
-     * Choose, which Spice_jar_photos_upload to update.
+     * The data needed to update a Ingredients.
      */
-    where: Spice_jar_photos_uploadWhereUniqueInput
+    data: XOR<IngredientsUpdateInput, IngredientsUncheckedUpdateInput>
+    /**
+     * Choose, which Ingredients to update.
+     */
+    where: IngredientsWhereUniqueInput
   }
 
 
   /**
-   * Spice_jar_photos_upload updateMany
+   * Ingredients updateMany
    */
-  export type Spice_jar_photos_uploadUpdateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsUpdateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update Spice_jar_photos_uploads.
+     * The data used to update Ingredients.
      */
-    data: XOR<Spice_jar_photos_uploadUpdateManyMutationInput, Spice_jar_photos_uploadUncheckedUpdateManyInput>
+    data: XOR<IngredientsUpdateManyMutationInput, IngredientsUncheckedUpdateManyInput>
     /**
-     * Filter which Spice_jar_photos_uploads to update
+     * Filter which Ingredients to update
      */
-    where?: Spice_jar_photos_uploadWhereInput
+    where?: IngredientsWhereInput
   }
 
 
   /**
-   * Spice_jar_photos_upload upsert
+   * Ingredients upsert
    */
-  export type Spice_jar_photos_uploadUpsertArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsUpsertArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Spice_jar_photos_upload
+     * Select specific fields to fetch from the Ingredients
      */
-    select?: Spice_jar_photos_uploadSelect<ExtArgs> | null
+    select?: IngredientsSelect<ExtArgs> | null
     /**
-     * The filter to search for the Spice_jar_photos_upload to update in case it exists.
+     * Choose, which related nodes to fetch as well.
      */
-    where: Spice_jar_photos_uploadWhereUniqueInput
+    include?: IngredientsInclude<ExtArgs> | null
     /**
-     * In case the Spice_jar_photos_upload found by the `where` argument doesn't exist, create a new Spice_jar_photos_upload with this data.
+     * The filter to search for the Ingredients to update in case it exists.
      */
-    create: XOR<Spice_jar_photos_uploadCreateInput, Spice_jar_photos_uploadUncheckedCreateInput>
+    where: IngredientsWhereUniqueInput
     /**
-     * In case the Spice_jar_photos_upload was found with the provided `where` argument, update it with this data.
+     * In case the Ingredients found by the `where` argument doesn't exist, create a new Ingredients with this data.
      */
-    update: XOR<Spice_jar_photos_uploadUpdateInput, Spice_jar_photos_uploadUncheckedUpdateInput>
+    create: XOR<IngredientsCreateInput, IngredientsUncheckedCreateInput>
+    /**
+     * In case the Ingredients was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<IngredientsUpdateInput, IngredientsUncheckedUpdateInput>
   }
 
 
   /**
-   * Spice_jar_photos_upload delete
+   * Ingredients delete
    */
-  export type Spice_jar_photos_uploadDeleteArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsDeleteArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Spice_jar_photos_upload
+     * Select specific fields to fetch from the Ingredients
      */
-    select?: Spice_jar_photos_uploadSelect<ExtArgs> | null
+    select?: IngredientsSelect<ExtArgs> | null
     /**
-     * Filter which Spice_jar_photos_upload to delete.
+     * Choose, which related nodes to fetch as well.
      */
-    where: Spice_jar_photos_uploadWhereUniqueInput
+    include?: IngredientsInclude<ExtArgs> | null
+    /**
+     * Filter which Ingredients to delete.
+     */
+    where: IngredientsWhereUniqueInput
   }
 
 
   /**
-   * Spice_jar_photos_upload deleteMany
+   * Ingredients deleteMany
    */
-  export type Spice_jar_photos_uploadDeleteManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsDeleteManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     /**
-     * Filter which Spice_jar_photos_uploads to delete
+     * Filter which Ingredients to delete
      */
-    where?: Spice_jar_photos_uploadWhereInput
+    where?: IngredientsWhereInput
   }
 
 
   /**
-   * Spice_jar_photos_upload without action
+   * Ingredients.ingredients_photo_uploads
    */
-  export type Spice_jar_photos_uploadDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients$ingredients_photo_uploadsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Spice_jar_photos_upload
+     * Select specific fields to fetch from the Ingredients_photo_uploads
      */
-    select?: Spice_jar_photos_uploadSelect<ExtArgs> | null
+    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+    where?: Ingredients_photo_uploadsWhereInput
+  }
+
+
+  /**
+   * Ingredients without action
+   */
+  export type IngredientsDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredients
+     */
+    select?: IngredientsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: IngredientsInclude<ExtArgs> | null
+  }
+
+
+
+  /**
+   * Model Ingredients_photo_uploads
+   */
+
+  export type AggregateIngredients_photo_uploads = {
+    _count: Ingredients_photo_uploadsCountAggregateOutputType | null
+    _avg: Ingredients_photo_uploadsAvgAggregateOutputType | null
+    _sum: Ingredients_photo_uploadsSumAggregateOutputType | null
+    _min: Ingredients_photo_uploadsMinAggregateOutputType | null
+    _max: Ingredients_photo_uploadsMaxAggregateOutputType | null
+  }
+
+  export type Ingredients_photo_uploadsAvgAggregateOutputType = {
+    upload_duration_sec: number | null
+    ai_processing_duration_sec: number | null
+  }
+
+  export type Ingredients_photo_uploadsSumAggregateOutputType = {
+    upload_duration_sec: number | null
+    ai_processing_duration_sec: number | null
+  }
+
+  export type Ingredients_photo_uploadsMinAggregateOutputType = {
+    id: string | null
+    created_at: Date | null
+    uploaded_at: Date | null
+    upload_duration_sec: number | null
+    ai_processing_duration_sec: number | null
+    photo_url: string | null
+  }
+
+  export type Ingredients_photo_uploadsMaxAggregateOutputType = {
+    id: string | null
+    created_at: Date | null
+    uploaded_at: Date | null
+    upload_duration_sec: number | null
+    ai_processing_duration_sec: number | null
+    photo_url: string | null
+  }
+
+  export type Ingredients_photo_uploadsCountAggregateOutputType = {
+    id: number
+    created_at: number
+    uploaded_at: number
+    upload_duration_sec: number
+    ai_processing_duration_sec: number
+    photo_url: number
+    _all: number
+  }
+
+
+  export type Ingredients_photo_uploadsAvgAggregateInputType = {
+    upload_duration_sec?: true
+    ai_processing_duration_sec?: true
+  }
+
+  export type Ingredients_photo_uploadsSumAggregateInputType = {
+    upload_duration_sec?: true
+    ai_processing_duration_sec?: true
+  }
+
+  export type Ingredients_photo_uploadsMinAggregateInputType = {
+    id?: true
+    created_at?: true
+    uploaded_at?: true
+    upload_duration_sec?: true
+    ai_processing_duration_sec?: true
+    photo_url?: true
+  }
+
+  export type Ingredients_photo_uploadsMaxAggregateInputType = {
+    id?: true
+    created_at?: true
+    uploaded_at?: true
+    upload_duration_sec?: true
+    ai_processing_duration_sec?: true
+    photo_url?: true
+  }
+
+  export type Ingredients_photo_uploadsCountAggregateInputType = {
+    id?: true
+    created_at?: true
+    uploaded_at?: true
+    upload_duration_sec?: true
+    ai_processing_duration_sec?: true
+    photo_url?: true
+    _all?: true
+  }
+
+  export type Ingredients_photo_uploadsAggregateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Ingredients_photo_uploads to aggregate.
+     */
+    where?: Ingredients_photo_uploadsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Ingredients_photo_uploads to fetch.
+     */
+    orderBy?: Ingredients_photo_uploadsOrderByWithRelationInput | Ingredients_photo_uploadsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: Ingredients_photo_uploadsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Ingredients_photo_uploads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Ingredients_photo_uploads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Ingredients_photo_uploads
+    **/
+    _count?: true | Ingredients_photo_uploadsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Ingredients_photo_uploadsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Ingredients_photo_uploadsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Ingredients_photo_uploadsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Ingredients_photo_uploadsMaxAggregateInputType
+  }
+
+  export type GetIngredients_photo_uploadsAggregateType<T extends Ingredients_photo_uploadsAggregateArgs> = {
+        [P in keyof T & keyof AggregateIngredients_photo_uploads]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateIngredients_photo_uploads[P]>
+      : GetScalarType<T[P], AggregateIngredients_photo_uploads[P]>
+  }
+
+
+
+
+  export type Ingredients_photo_uploadsGroupByArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    where?: Ingredients_photo_uploadsWhereInput
+    orderBy?: Ingredients_photo_uploadsOrderByWithAggregationInput | Ingredients_photo_uploadsOrderByWithAggregationInput[]
+    by: Ingredients_photo_uploadsScalarFieldEnum[] | Ingredients_photo_uploadsScalarFieldEnum
+    having?: Ingredients_photo_uploadsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Ingredients_photo_uploadsCountAggregateInputType | true
+    _avg?: Ingredients_photo_uploadsAvgAggregateInputType
+    _sum?: Ingredients_photo_uploadsSumAggregateInputType
+    _min?: Ingredients_photo_uploadsMinAggregateInputType
+    _max?: Ingredients_photo_uploadsMaxAggregateInputType
+  }
+
+  export type Ingredients_photo_uploadsGroupByOutputType = {
+    id: string
+    created_at: Date
+    uploaded_at: Date | null
+    upload_duration_sec: number | null
+    ai_processing_duration_sec: number | null
+    photo_url: string | null
+    _count: Ingredients_photo_uploadsCountAggregateOutputType | null
+    _avg: Ingredients_photo_uploadsAvgAggregateOutputType | null
+    _sum: Ingredients_photo_uploadsSumAggregateOutputType | null
+    _min: Ingredients_photo_uploadsMinAggregateOutputType | null
+    _max: Ingredients_photo_uploadsMaxAggregateOutputType | null
+  }
+
+  type GetIngredients_photo_uploadsGroupByPayload<T extends Ingredients_photo_uploadsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Ingredients_photo_uploadsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Ingredients_photo_uploadsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Ingredients_photo_uploadsGroupByOutputType[P]>
+            : GetScalarType<T[P], Ingredients_photo_uploadsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type Ingredients_photo_uploadsSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    created_at?: boolean
+    uploaded_at?: boolean
+    upload_duration_sec?: boolean
+    ai_processing_duration_sec?: boolean
+    photo_url?: boolean
+    ingredients?: boolean | Ingredients_photo_uploads$ingredientsArgs<ExtArgs>
+    _count?: boolean | Ingredients_photo_uploadsCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["ingredients_photo_uploads"]>
+
+  export type Ingredients_photo_uploadsSelectScalar = {
+    id?: boolean
+    created_at?: boolean
+    uploaded_at?: boolean
+    upload_duration_sec?: boolean
+    ai_processing_duration_sec?: boolean
+    photo_url?: boolean
+  }
+
+  export type Ingredients_photo_uploadsInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    ingredients?: boolean | Ingredients_photo_uploads$ingredientsArgs<ExtArgs>
+    _count?: boolean | Ingredients_photo_uploadsCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+
+  export type $Ingredients_photo_uploadsPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    name: "Ingredients_photo_uploads"
+    objects: {
+      ingredients: Prisma.$IngredientsPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetResult<{
+      /**
+       * @zod.string.uuid()
+       */
+      id: string
+      created_at: Date
+      uploaded_at: Date | null
+      /**
+       * @zod.custom.use(z.number().or(z.nan()))
+       */
+      upload_duration_sec: number | null
+      /**
+       * @zod.custom.use(z.number().or(z.nan()))
+       */
+      ai_processing_duration_sec: number | null
+      photo_url: string | null
+    }, ExtArgs["result"]["ingredients_photo_uploads"]>
+    composites: {}
+  }
+
+
+  type Ingredients_photo_uploadsGetPayload<S extends boolean | null | undefined | Ingredients_photo_uploadsDefaultArgs> = $Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload, S>
+
+  type Ingredients_photo_uploadsCountArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = 
+    Omit<Ingredients_photo_uploadsFindManyArgs, 'select' | 'include'> & {
+      select?: Ingredients_photo_uploadsCountAggregateInputType | true
+    }
+
+  export interface Ingredients_photo_uploadsDelegate<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Ingredients_photo_uploads'], meta: { name: 'Ingredients_photo_uploads' } }
+    /**
+     * Find zero or one Ingredients_photo_uploads that matches the filter.
+     * @param {Ingredients_photo_uploadsFindUniqueArgs} args - Arguments to find a Ingredients_photo_uploads
+     * @example
+     * // Get one Ingredients_photo_uploads
+     * const ingredients_photo_uploads = await prisma.ingredients_photo_uploads.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends Ingredients_photo_uploadsFindUniqueArgs<ExtArgs>>(
+      args: SelectSubset<T, Ingredients_photo_uploadsFindUniqueArgs<ExtArgs>>
+    ): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'findUnique'> | null, null, ExtArgs>
+
+    /**
+     * Find one Ingredients_photo_uploads that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {Ingredients_photo_uploadsFindUniqueOrThrowArgs} args - Arguments to find a Ingredients_photo_uploads
+     * @example
+     * // Get one Ingredients_photo_uploads
+     * const ingredients_photo_uploads = await prisma.ingredients_photo_uploads.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends Ingredients_photo_uploadsFindUniqueOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, Ingredients_photo_uploadsFindUniqueOrThrowArgs<ExtArgs>>
+    ): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'findUniqueOrThrow'>, never, ExtArgs>
+
+    /**
+     * Find the first Ingredients_photo_uploads that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Ingredients_photo_uploadsFindFirstArgs} args - Arguments to find a Ingredients_photo_uploads
+     * @example
+     * // Get one Ingredients_photo_uploads
+     * const ingredients_photo_uploads = await prisma.ingredients_photo_uploads.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends Ingredients_photo_uploadsFindFirstArgs<ExtArgs>>(
+      args?: SelectSubset<T, Ingredients_photo_uploadsFindFirstArgs<ExtArgs>>
+    ): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'findFirst'> | null, null, ExtArgs>
+
+    /**
+     * Find the first Ingredients_photo_uploads that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Ingredients_photo_uploadsFindFirstOrThrowArgs} args - Arguments to find a Ingredients_photo_uploads
+     * @example
+     * // Get one Ingredients_photo_uploads
+     * const ingredients_photo_uploads = await prisma.ingredients_photo_uploads.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends Ingredients_photo_uploadsFindFirstOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, Ingredients_photo_uploadsFindFirstOrThrowArgs<ExtArgs>>
+    ): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'findFirstOrThrow'>, never, ExtArgs>
+
+    /**
+     * Find zero or more Ingredients_photo_uploads that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Ingredients_photo_uploadsFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Ingredients_photo_uploads
+     * const ingredients_photo_uploads = await prisma.ingredients_photo_uploads.findMany()
+     * 
+     * // Get first 10 Ingredients_photo_uploads
+     * const ingredients_photo_uploads = await prisma.ingredients_photo_uploads.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const ingredients_photo_uploadsWithIdOnly = await prisma.ingredients_photo_uploads.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends Ingredients_photo_uploadsFindManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, Ingredients_photo_uploadsFindManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'findMany'>>
+
+    /**
+     * Create a Ingredients_photo_uploads.
+     * @param {Ingredients_photo_uploadsCreateArgs} args - Arguments to create a Ingredients_photo_uploads.
+     * @example
+     * // Create one Ingredients_photo_uploads
+     * const Ingredients_photo_uploads = await prisma.ingredients_photo_uploads.create({
+     *   data: {
+     *     // ... data to create a Ingredients_photo_uploads
+     *   }
+     * })
+     * 
+    **/
+    create<T extends Ingredients_photo_uploadsCreateArgs<ExtArgs>>(
+      args: SelectSubset<T, Ingredients_photo_uploadsCreateArgs<ExtArgs>>
+    ): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'create'>, never, ExtArgs>
+
+    /**
+     * Create many Ingredients_photo_uploads.
+     *     @param {Ingredients_photo_uploadsCreateManyArgs} args - Arguments to create many Ingredients_photo_uploads.
+     *     @example
+     *     // Create many Ingredients_photo_uploads
+     *     const ingredients_photo_uploads = await prisma.ingredients_photo_uploads.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends Ingredients_photo_uploadsCreateManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, Ingredients_photo_uploadsCreateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Ingredients_photo_uploads.
+     * @param {Ingredients_photo_uploadsDeleteArgs} args - Arguments to delete one Ingredients_photo_uploads.
+     * @example
+     * // Delete one Ingredients_photo_uploads
+     * const Ingredients_photo_uploads = await prisma.ingredients_photo_uploads.delete({
+     *   where: {
+     *     // ... filter to delete one Ingredients_photo_uploads
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends Ingredients_photo_uploadsDeleteArgs<ExtArgs>>(
+      args: SelectSubset<T, Ingredients_photo_uploadsDeleteArgs<ExtArgs>>
+    ): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'delete'>, never, ExtArgs>
+
+    /**
+     * Update one Ingredients_photo_uploads.
+     * @param {Ingredients_photo_uploadsUpdateArgs} args - Arguments to update one Ingredients_photo_uploads.
+     * @example
+     * // Update one Ingredients_photo_uploads
+     * const ingredients_photo_uploads = await prisma.ingredients_photo_uploads.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends Ingredients_photo_uploadsUpdateArgs<ExtArgs>>(
+      args: SelectSubset<T, Ingredients_photo_uploadsUpdateArgs<ExtArgs>>
+    ): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'update'>, never, ExtArgs>
+
+    /**
+     * Delete zero or more Ingredients_photo_uploads.
+     * @param {Ingredients_photo_uploadsDeleteManyArgs} args - Arguments to filter Ingredients_photo_uploads to delete.
+     * @example
+     * // Delete a few Ingredients_photo_uploads
+     * const { count } = await prisma.ingredients_photo_uploads.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends Ingredients_photo_uploadsDeleteManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, Ingredients_photo_uploadsDeleteManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Ingredients_photo_uploads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Ingredients_photo_uploadsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Ingredients_photo_uploads
+     * const ingredients_photo_uploads = await prisma.ingredients_photo_uploads.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends Ingredients_photo_uploadsUpdateManyArgs<ExtArgs>>(
+      args: SelectSubset<T, Ingredients_photo_uploadsUpdateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Ingredients_photo_uploads.
+     * @param {Ingredients_photo_uploadsUpsertArgs} args - Arguments to update or create a Ingredients_photo_uploads.
+     * @example
+     * // Update or create a Ingredients_photo_uploads
+     * const ingredients_photo_uploads = await prisma.ingredients_photo_uploads.upsert({
+     *   create: {
+     *     // ... data to create a Ingredients_photo_uploads
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Ingredients_photo_uploads we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends Ingredients_photo_uploadsUpsertArgs<ExtArgs>>(
+      args: SelectSubset<T, Ingredients_photo_uploadsUpsertArgs<ExtArgs>>
+    ): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'upsert'>, never, ExtArgs>
+
+    /**
+     * Count the number of Ingredients_photo_uploads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Ingredients_photo_uploadsCountArgs} args - Arguments to filter Ingredients_photo_uploads to count.
+     * @example
+     * // Count the number of Ingredients_photo_uploads
+     * const count = await prisma.ingredients_photo_uploads.count({
+     *   where: {
+     *     // ... the filter for the Ingredients_photo_uploads we want to count
+     *   }
+     * })
+    **/
+    count<T extends Ingredients_photo_uploadsCountArgs>(
+      args?: Subset<T, Ingredients_photo_uploadsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Ingredients_photo_uploadsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Ingredients_photo_uploads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Ingredients_photo_uploadsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Ingredients_photo_uploadsAggregateArgs>(args: Subset<T, Ingredients_photo_uploadsAggregateArgs>): Prisma.PrismaPromise<GetIngredients_photo_uploadsAggregateType<T>>
+
+    /**
+     * Group by Ingredients_photo_uploads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Ingredients_photo_uploadsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends Ingredients_photo_uploadsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: Ingredients_photo_uploadsGroupByArgs['orderBy'] }
+        : { orderBy?: Ingredients_photo_uploadsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, Ingredients_photo_uploadsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetIngredients_photo_uploadsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Ingredients_photo_uploads model
+   */
+  readonly fields: Ingredients_photo_uploadsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Ingredients_photo_uploads.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__Ingredients_photo_uploadsClient<T, Null = never, ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+
+    ingredients<T extends Ingredients_photo_uploads$ingredientsArgs<ExtArgs> = {}>(args?: Subset<T, Ingredients_photo_uploads$ingredientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'findMany'> | Null>;
+
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+  }
+
+
+
+  /**
+   * Fields of the Ingredients_photo_uploads model
+   */ 
+  interface Ingredients_photo_uploadsFieldRefs {
+    readonly id: FieldRef<"Ingredients_photo_uploads", 'String'>
+    readonly created_at: FieldRef<"Ingredients_photo_uploads", 'DateTime'>
+    readonly uploaded_at: FieldRef<"Ingredients_photo_uploads", 'DateTime'>
+    readonly upload_duration_sec: FieldRef<"Ingredients_photo_uploads", 'Float'>
+    readonly ai_processing_duration_sec: FieldRef<"Ingredients_photo_uploads", 'Float'>
+    readonly photo_url: FieldRef<"Ingredients_photo_uploads", 'String'>
+  }
+    
+
+  // Custom InputTypes
+
+  /**
+   * Ingredients_photo_uploads findUnique
+   */
+  export type Ingredients_photo_uploadsFindUniqueArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredients_photo_uploads
+     */
+    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+    /**
+     * Filter, which Ingredients_photo_uploads to fetch.
+     */
+    where: Ingredients_photo_uploadsWhereUniqueInput
+  }
+
+
+  /**
+   * Ingredients_photo_uploads findUniqueOrThrow
+   */
+  export type Ingredients_photo_uploadsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredients_photo_uploads
+     */
+    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+    /**
+     * Filter, which Ingredients_photo_uploads to fetch.
+     */
+    where: Ingredients_photo_uploadsWhereUniqueInput
+  }
+
+
+  /**
+   * Ingredients_photo_uploads findFirst
+   */
+  export type Ingredients_photo_uploadsFindFirstArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredients_photo_uploads
+     */
+    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+    /**
+     * Filter, which Ingredients_photo_uploads to fetch.
+     */
+    where?: Ingredients_photo_uploadsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Ingredients_photo_uploads to fetch.
+     */
+    orderBy?: Ingredients_photo_uploadsOrderByWithRelationInput | Ingredients_photo_uploadsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Ingredients_photo_uploads.
+     */
+    cursor?: Ingredients_photo_uploadsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Ingredients_photo_uploads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Ingredients_photo_uploads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Ingredients_photo_uploads.
+     */
+    distinct?: Ingredients_photo_uploadsScalarFieldEnum | Ingredients_photo_uploadsScalarFieldEnum[]
+  }
+
+
+  /**
+   * Ingredients_photo_uploads findFirstOrThrow
+   */
+  export type Ingredients_photo_uploadsFindFirstOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredients_photo_uploads
+     */
+    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+    /**
+     * Filter, which Ingredients_photo_uploads to fetch.
+     */
+    where?: Ingredients_photo_uploadsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Ingredients_photo_uploads to fetch.
+     */
+    orderBy?: Ingredients_photo_uploadsOrderByWithRelationInput | Ingredients_photo_uploadsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Ingredients_photo_uploads.
+     */
+    cursor?: Ingredients_photo_uploadsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Ingredients_photo_uploads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Ingredients_photo_uploads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Ingredients_photo_uploads.
+     */
+    distinct?: Ingredients_photo_uploadsScalarFieldEnum | Ingredients_photo_uploadsScalarFieldEnum[]
+  }
+
+
+  /**
+   * Ingredients_photo_uploads findMany
+   */
+  export type Ingredients_photo_uploadsFindManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredients_photo_uploads
+     */
+    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+    /**
+     * Filter, which Ingredients_photo_uploads to fetch.
+     */
+    where?: Ingredients_photo_uploadsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Ingredients_photo_uploads to fetch.
+     */
+    orderBy?: Ingredients_photo_uploadsOrderByWithRelationInput | Ingredients_photo_uploadsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Ingredients_photo_uploads.
+     */
+    cursor?: Ingredients_photo_uploadsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Ingredients_photo_uploads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Ingredients_photo_uploads.
+     */
+    skip?: number
+    distinct?: Ingredients_photo_uploadsScalarFieldEnum | Ingredients_photo_uploadsScalarFieldEnum[]
+  }
+
+
+  /**
+   * Ingredients_photo_uploads create
+   */
+  export type Ingredients_photo_uploadsCreateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredients_photo_uploads
+     */
+    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Ingredients_photo_uploads.
+     */
+    data: XOR<Ingredients_photo_uploadsCreateInput, Ingredients_photo_uploadsUncheckedCreateInput>
+  }
+
+
+  /**
+   * Ingredients_photo_uploads createMany
+   */
+  export type Ingredients_photo_uploadsCreateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Ingredients_photo_uploads.
+     */
+    data: Ingredients_photo_uploadsCreateManyInput | Ingredients_photo_uploadsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * Ingredients_photo_uploads update
+   */
+  export type Ingredients_photo_uploadsUpdateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredients_photo_uploads
+     */
+    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Ingredients_photo_uploads.
+     */
+    data: XOR<Ingredients_photo_uploadsUpdateInput, Ingredients_photo_uploadsUncheckedUpdateInput>
+    /**
+     * Choose, which Ingredients_photo_uploads to update.
+     */
+    where: Ingredients_photo_uploadsWhereUniqueInput
+  }
+
+
+  /**
+   * Ingredients_photo_uploads updateMany
+   */
+  export type Ingredients_photo_uploadsUpdateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Ingredients_photo_uploads.
+     */
+    data: XOR<Ingredients_photo_uploadsUpdateManyMutationInput, Ingredients_photo_uploadsUncheckedUpdateManyInput>
+    /**
+     * Filter which Ingredients_photo_uploads to update
+     */
+    where?: Ingredients_photo_uploadsWhereInput
+  }
+
+
+  /**
+   * Ingredients_photo_uploads upsert
+   */
+  export type Ingredients_photo_uploadsUpsertArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredients_photo_uploads
+     */
+    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Ingredients_photo_uploads to update in case it exists.
+     */
+    where: Ingredients_photo_uploadsWhereUniqueInput
+    /**
+     * In case the Ingredients_photo_uploads found by the `where` argument doesn't exist, create a new Ingredients_photo_uploads with this data.
+     */
+    create: XOR<Ingredients_photo_uploadsCreateInput, Ingredients_photo_uploadsUncheckedCreateInput>
+    /**
+     * In case the Ingredients_photo_uploads was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<Ingredients_photo_uploadsUpdateInput, Ingredients_photo_uploadsUncheckedUpdateInput>
+  }
+
+
+  /**
+   * Ingredients_photo_uploads delete
+   */
+  export type Ingredients_photo_uploadsDeleteArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredients_photo_uploads
+     */
+    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+    /**
+     * Filter which Ingredients_photo_uploads to delete.
+     */
+    where: Ingredients_photo_uploadsWhereUniqueInput
+  }
+
+
+  /**
+   * Ingredients_photo_uploads deleteMany
+   */
+  export type Ingredients_photo_uploadsDeleteManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Ingredients_photo_uploads to delete
+     */
+    where?: Ingredients_photo_uploadsWhereInput
+  }
+
+
+  /**
+   * Ingredients_photo_uploads.ingredients
+   */
+  export type Ingredients_photo_uploads$ingredientsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredients
+     */
+    select?: IngredientsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: IngredientsInclude<ExtArgs> | null
+    where?: IngredientsWhereInput
+    orderBy?: IngredientsOrderByWithRelationInput | IngredientsOrderByWithRelationInput[]
+    cursor?: IngredientsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: IngredientsScalarFieldEnum | IngredientsScalarFieldEnum[]
+  }
+
+
+  /**
+   * Ingredients_photo_uploads without action
+   */
+  export type Ingredients_photo_uploadsDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredients_photo_uploads
+     */
+    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
   }
 
 
@@ -1809,17 +2987,29 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
-  export const Spice_jar_photos_uploadScalarFieldEnum: {
+  export const IngredientsScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    is_reviewed: 'is_reviewed',
+    fill_level: 'fill_level',
+    fill_date: 'fill_date',
+    is_ground: 'is_ground',
+    ingredients_photo_uploads_id: 'ingredients_photo_uploads_id'
+  };
+
+  export type IngredientsScalarFieldEnum = (typeof IngredientsScalarFieldEnum)[keyof typeof IngredientsScalarFieldEnum]
+
+
+  export const Ingredients_photo_uploadsScalarFieldEnum: {
     id: 'id',
     created_at: 'created_at',
     uploaded_at: 'uploaded_at',
     upload_duration_sec: 'upload_duration_sec',
     ai_processing_duration_sec: 'ai_processing_duration_sec',
-    photo_url: 'photo_url',
-    extracted_data: 'extracted_data'
+    photo_url: 'photo_url'
   };
 
-  export type Spice_jar_photos_uploadScalarFieldEnum = (typeof Spice_jar_photos_uploadScalarFieldEnum)[keyof typeof Spice_jar_photos_uploadScalarFieldEnum]
+  export type Ingredients_photo_uploadsScalarFieldEnum = (typeof Ingredients_photo_uploadsScalarFieldEnum)[keyof typeof Ingredients_photo_uploadsScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -1830,29 +3020,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-  export const NullableJsonNullValueInput: {
-    DbNull: typeof DbNull,
-    JsonNull: typeof JsonNull
-  };
-
-  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
-
-
   export const QueryMode: {
     default: 'default',
     insensitive: 'insensitive'
   };
 
   export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
-
-
-  export const JsonNullValueFilter: {
-    DbNull: typeof DbNull,
-    JsonNull: typeof JsonNull,
-    AnyNull: typeof AnyNull
-  };
-
-  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   export const NullsOrder: {
@@ -1883,6 +3056,27 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
   /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -1908,164 +3102,274 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
-
-
-  /**
-   * Reference to a field of type 'Json'
-   */
-  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
   /**
    * Deep Input Types
    */
 
 
-  export type Spice_jar_photos_uploadWhereInput = {
-    AND?: Spice_jar_photos_uploadWhereInput | Spice_jar_photos_uploadWhereInput[]
-    OR?: Spice_jar_photos_uploadWhereInput[]
-    NOT?: Spice_jar_photos_uploadWhereInput | Spice_jar_photos_uploadWhereInput[]
-    id?: UuidFilter<"Spice_jar_photos_upload"> | string
-    created_at?: DateTimeFilter<"Spice_jar_photos_upload"> | Date | string
-    uploaded_at?: DateTimeNullableFilter<"Spice_jar_photos_upload"> | Date | string | null
-    upload_duration_sec?: FloatNullableFilter<"Spice_jar_photos_upload"> | number | null
-    ai_processing_duration_sec?: FloatNullableFilter<"Spice_jar_photos_upload"> | number | null
-    photo_url?: StringNullableFilter<"Spice_jar_photos_upload"> | string | null
-    extracted_data?: JsonNullableFilter<"Spice_jar_photos_upload">
+  export type IngredientsWhereInput = {
+    AND?: IngredientsWhereInput | IngredientsWhereInput[]
+    OR?: IngredientsWhereInput[]
+    NOT?: IngredientsWhereInput | IngredientsWhereInput[]
+    id?: UuidFilter<"Ingredients"> | string
+    name?: StringFilter<"Ingredients"> | string
+    is_reviewed?: BoolFilter<"Ingredients"> | boolean
+    fill_level?: IntFilter<"Ingredients"> | number
+    fill_date?: StringFilter<"Ingredients"> | string
+    is_ground?: BoolNullableFilter<"Ingredients"> | boolean | null
+    ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
+    ingredients_photo_uploads?: XOR<Ingredients_photo_uploadsNullableRelationFilter, Ingredients_photo_uploadsWhereInput> | null
   }
 
-  export type Spice_jar_photos_uploadOrderByWithRelationInput = {
+  export type IngredientsOrderByWithRelationInput = {
     id?: SortOrder
-    created_at?: SortOrder
-    uploaded_at?: SortOrderInput | SortOrder
-    upload_duration_sec?: SortOrderInput | SortOrder
-    ai_processing_duration_sec?: SortOrderInput | SortOrder
-    photo_url?: SortOrderInput | SortOrder
-    extracted_data?: SortOrderInput | SortOrder
+    name?: SortOrder
+    is_reviewed?: SortOrder
+    fill_level?: SortOrder
+    fill_date?: SortOrder
+    is_ground?: SortOrderInput | SortOrder
+    ingredients_photo_uploads_id?: SortOrderInput | SortOrder
+    ingredients_photo_uploads?: Ingredients_photo_uploadsOrderByWithRelationInput
   }
 
-  export type Spice_jar_photos_uploadWhereUniqueInput = Prisma.AtLeast<{
+  export type IngredientsWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    AND?: Spice_jar_photos_uploadWhereInput | Spice_jar_photos_uploadWhereInput[]
-    OR?: Spice_jar_photos_uploadWhereInput[]
-    NOT?: Spice_jar_photos_uploadWhereInput | Spice_jar_photos_uploadWhereInput[]
-    created_at?: DateTimeFilter<"Spice_jar_photos_upload"> | Date | string
-    uploaded_at?: DateTimeNullableFilter<"Spice_jar_photos_upload"> | Date | string | null
-    upload_duration_sec?: FloatNullableFilter<"Spice_jar_photos_upload"> | number | null
-    ai_processing_duration_sec?: FloatNullableFilter<"Spice_jar_photos_upload"> | number | null
-    photo_url?: StringNullableFilter<"Spice_jar_photos_upload"> | string | null
-    extracted_data?: JsonNullableFilter<"Spice_jar_photos_upload">
+    AND?: IngredientsWhereInput | IngredientsWhereInput[]
+    OR?: IngredientsWhereInput[]
+    NOT?: IngredientsWhereInput | IngredientsWhereInput[]
+    name?: StringFilter<"Ingredients"> | string
+    is_reviewed?: BoolFilter<"Ingredients"> | boolean
+    fill_level?: IntFilter<"Ingredients"> | number
+    fill_date?: StringFilter<"Ingredients"> | string
+    is_ground?: BoolNullableFilter<"Ingredients"> | boolean | null
+    ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
+    ingredients_photo_uploads?: XOR<Ingredients_photo_uploadsNullableRelationFilter, Ingredients_photo_uploadsWhereInput> | null
   }, "id">
 
-  export type Spice_jar_photos_uploadOrderByWithAggregationInput = {
+  export type IngredientsOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    is_reviewed?: SortOrder
+    fill_level?: SortOrder
+    fill_date?: SortOrder
+    is_ground?: SortOrderInput | SortOrder
+    ingredients_photo_uploads_id?: SortOrderInput | SortOrder
+    _count?: IngredientsCountOrderByAggregateInput
+    _avg?: IngredientsAvgOrderByAggregateInput
+    _max?: IngredientsMaxOrderByAggregateInput
+    _min?: IngredientsMinOrderByAggregateInput
+    _sum?: IngredientsSumOrderByAggregateInput
+  }
+
+  export type IngredientsScalarWhereWithAggregatesInput = {
+    AND?: IngredientsScalarWhereWithAggregatesInput | IngredientsScalarWhereWithAggregatesInput[]
+    OR?: IngredientsScalarWhereWithAggregatesInput[]
+    NOT?: IngredientsScalarWhereWithAggregatesInput | IngredientsScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"Ingredients"> | string
+    name?: StringWithAggregatesFilter<"Ingredients"> | string
+    is_reviewed?: BoolWithAggregatesFilter<"Ingredients"> | boolean
+    fill_level?: IntWithAggregatesFilter<"Ingredients"> | number
+    fill_date?: StringWithAggregatesFilter<"Ingredients"> | string
+    is_ground?: BoolNullableWithAggregatesFilter<"Ingredients"> | boolean | null
+    ingredients_photo_uploads_id?: UuidNullableWithAggregatesFilter<"Ingredients"> | string | null
+  }
+
+  export type Ingredients_photo_uploadsWhereInput = {
+    AND?: Ingredients_photo_uploadsWhereInput | Ingredients_photo_uploadsWhereInput[]
+    OR?: Ingredients_photo_uploadsWhereInput[]
+    NOT?: Ingredients_photo_uploadsWhereInput | Ingredients_photo_uploadsWhereInput[]
+    id?: UuidFilter<"Ingredients_photo_uploads"> | string
+    created_at?: DateTimeFilter<"Ingredients_photo_uploads"> | Date | string
+    uploaded_at?: DateTimeNullableFilter<"Ingredients_photo_uploads"> | Date | string | null
+    upload_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
+    ai_processing_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
+    photo_url?: StringNullableFilter<"Ingredients_photo_uploads"> | string | null
+    ingredients?: IngredientsListRelationFilter
+  }
+
+  export type Ingredients_photo_uploadsOrderByWithRelationInput = {
     id?: SortOrder
     created_at?: SortOrder
     uploaded_at?: SortOrderInput | SortOrder
     upload_duration_sec?: SortOrderInput | SortOrder
     ai_processing_duration_sec?: SortOrderInput | SortOrder
     photo_url?: SortOrderInput | SortOrder
-    extracted_data?: SortOrderInput | SortOrder
-    _count?: Spice_jar_photos_uploadCountOrderByAggregateInput
-    _avg?: Spice_jar_photos_uploadAvgOrderByAggregateInput
-    _max?: Spice_jar_photos_uploadMaxOrderByAggregateInput
-    _min?: Spice_jar_photos_uploadMinOrderByAggregateInput
-    _sum?: Spice_jar_photos_uploadSumOrderByAggregateInput
+    ingredients?: IngredientsOrderByRelationAggregateInput
   }
 
-  export type Spice_jar_photos_uploadScalarWhereWithAggregatesInput = {
-    AND?: Spice_jar_photos_uploadScalarWhereWithAggregatesInput | Spice_jar_photos_uploadScalarWhereWithAggregatesInput[]
-    OR?: Spice_jar_photos_uploadScalarWhereWithAggregatesInput[]
-    NOT?: Spice_jar_photos_uploadScalarWhereWithAggregatesInput | Spice_jar_photos_uploadScalarWhereWithAggregatesInput[]
-    id?: UuidWithAggregatesFilter<"Spice_jar_photos_upload"> | string
-    created_at?: DateTimeWithAggregatesFilter<"Spice_jar_photos_upload"> | Date | string
-    uploaded_at?: DateTimeNullableWithAggregatesFilter<"Spice_jar_photos_upload"> | Date | string | null
-    upload_duration_sec?: FloatNullableWithAggregatesFilter<"Spice_jar_photos_upload"> | number | null
-    ai_processing_duration_sec?: FloatNullableWithAggregatesFilter<"Spice_jar_photos_upload"> | number | null
-    photo_url?: StringNullableWithAggregatesFilter<"Spice_jar_photos_upload"> | string | null
-    extracted_data?: JsonNullableWithAggregatesFilter<"Spice_jar_photos_upload">
+  export type Ingredients_photo_uploadsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: Ingredients_photo_uploadsWhereInput | Ingredients_photo_uploadsWhereInput[]
+    OR?: Ingredients_photo_uploadsWhereInput[]
+    NOT?: Ingredients_photo_uploadsWhereInput | Ingredients_photo_uploadsWhereInput[]
+    created_at?: DateTimeFilter<"Ingredients_photo_uploads"> | Date | string
+    uploaded_at?: DateTimeNullableFilter<"Ingredients_photo_uploads"> | Date | string | null
+    upload_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
+    ai_processing_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
+    photo_url?: StringNullableFilter<"Ingredients_photo_uploads"> | string | null
+    ingredients?: IngredientsListRelationFilter
+  }, "id">
+
+  export type Ingredients_photo_uploadsOrderByWithAggregationInput = {
+    id?: SortOrder
+    created_at?: SortOrder
+    uploaded_at?: SortOrderInput | SortOrder
+    upload_duration_sec?: SortOrderInput | SortOrder
+    ai_processing_duration_sec?: SortOrderInput | SortOrder
+    photo_url?: SortOrderInput | SortOrder
+    _count?: Ingredients_photo_uploadsCountOrderByAggregateInput
+    _avg?: Ingredients_photo_uploadsAvgOrderByAggregateInput
+    _max?: Ingredients_photo_uploadsMaxOrderByAggregateInput
+    _min?: Ingredients_photo_uploadsMinOrderByAggregateInput
+    _sum?: Ingredients_photo_uploadsSumOrderByAggregateInput
   }
 
-  export type Spice_jar_photos_uploadCreateInput = {
+  export type Ingredients_photo_uploadsScalarWhereWithAggregatesInput = {
+    AND?: Ingredients_photo_uploadsScalarWhereWithAggregatesInput | Ingredients_photo_uploadsScalarWhereWithAggregatesInput[]
+    OR?: Ingredients_photo_uploadsScalarWhereWithAggregatesInput[]
+    NOT?: Ingredients_photo_uploadsScalarWhereWithAggregatesInput | Ingredients_photo_uploadsScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"Ingredients_photo_uploads"> | string
+    created_at?: DateTimeWithAggregatesFilter<"Ingredients_photo_uploads"> | Date | string
+    uploaded_at?: DateTimeNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | Date | string | null
+    upload_duration_sec?: FloatNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | number | null
+    ai_processing_duration_sec?: FloatNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | number | null
+    photo_url?: StringNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | string | null
+  }
+
+  export type IngredientsCreateInput = {
+    id: string
+    name: string
+    is_reviewed: boolean
+    fill_level: number
+    fill_date: string
+    is_ground?: boolean | null
+    ingredients_photo_uploads?: Ingredients_photo_uploadsCreateNestedOneWithoutIngredientsInput
+  }
+
+  export type IngredientsUncheckedCreateInput = {
+    id: string
+    name: string
+    is_reviewed: boolean
+    fill_level: number
+    fill_date: string
+    is_ground?: boolean | null
+    ingredients_photo_uploads_id?: string | null
+  }
+
+  export type IngredientsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    is_reviewed?: BoolFieldUpdateOperationsInput | boolean
+    fill_level?: IntFieldUpdateOperationsInput | number
+    fill_date?: StringFieldUpdateOperationsInput | string
+    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    ingredients_photo_uploads?: Ingredients_photo_uploadsUpdateOneWithoutIngredientsNestedInput
+  }
+
+  export type IngredientsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    is_reviewed?: BoolFieldUpdateOperationsInput | boolean
+    fill_level?: IntFieldUpdateOperationsInput | number
+    fill_date?: StringFieldUpdateOperationsInput | string
+    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    ingredients_photo_uploads_id?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type IngredientsCreateManyInput = {
+    id: string
+    name: string
+    is_reviewed: boolean
+    fill_level: number
+    fill_date: string
+    is_ground?: boolean | null
+    ingredients_photo_uploads_id?: string | null
+  }
+
+  export type IngredientsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    is_reviewed?: BoolFieldUpdateOperationsInput | boolean
+    fill_level?: IntFieldUpdateOperationsInput | number
+    fill_date?: StringFieldUpdateOperationsInput | string
+    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+  }
+
+  export type IngredientsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    is_reviewed?: BoolFieldUpdateOperationsInput | boolean
+    fill_level?: IntFieldUpdateOperationsInput | number
+    fill_date?: StringFieldUpdateOperationsInput | string
+    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    ingredients_photo_uploads_id?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type Ingredients_photo_uploadsCreateInput = {
     id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
-    extracted_data?: NullableJsonNullValueInput | InputJsonValue
+    ingredients?: IngredientsCreateNestedManyWithoutIngredients_photo_uploadsInput
   }
 
-  export type Spice_jar_photos_uploadUncheckedCreateInput = {
+  export type Ingredients_photo_uploadsUncheckedCreateInput = {
     id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
-    extracted_data?: NullableJsonNullValueInput | InputJsonValue
+    ingredients?: IngredientsUncheckedCreateNestedManyWithoutIngredients_photo_uploadsInput
   }
 
-  export type Spice_jar_photos_uploadUpdateInput = {
+  export type Ingredients_photo_uploadsUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
-    extracted_data?: NullableJsonNullValueInput | InputJsonValue
+    ingredients?: IngredientsUpdateManyWithoutIngredients_photo_uploadsNestedInput
   }
 
-  export type Spice_jar_photos_uploadUncheckedUpdateInput = {
+  export type Ingredients_photo_uploadsUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
-    extracted_data?: NullableJsonNullValueInput | InputJsonValue
+    ingredients?: IngredientsUncheckedUpdateManyWithoutIngredients_photo_uploadsNestedInput
   }
 
-  export type Spice_jar_photos_uploadCreateManyInput = {
+  export type Ingredients_photo_uploadsCreateManyInput = {
     id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
-    extracted_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
-  export type Spice_jar_photos_uploadUpdateManyMutationInput = {
+  export type Ingredients_photo_uploadsUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
-    extracted_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
-  export type Spice_jar_photos_uploadUncheckedUpdateManyInput = {
+  export type Ingredients_photo_uploadsUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
-    extracted_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type UuidFilter<$PrismaModel = never> = {
@@ -2078,6 +3382,182 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     gte?: string | StringFieldRefInput<$PrismaModel>
     mode?: QueryMode
     not?: NestedUuidFilter<$PrismaModel> | string
+  }
+
+  export type StringFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringFilter<$PrismaModel> | string
+  }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type BoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
+  export type UuidNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type Ingredients_photo_uploadsNullableRelationFilter = {
+    is?: Ingredients_photo_uploadsWhereInput | null
+    isNot?: Ingredients_photo_uploadsWhereInput | null
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
+  export type IngredientsCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    is_reviewed?: SortOrder
+    fill_level?: SortOrder
+    fill_date?: SortOrder
+    is_ground?: SortOrder
+    ingredients_photo_uploads_id?: SortOrder
+  }
+
+  export type IngredientsAvgOrderByAggregateInput = {
+    fill_level?: SortOrder
+  }
+
+  export type IngredientsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    is_reviewed?: SortOrder
+    fill_level?: SortOrder
+    fill_date?: SortOrder
+    is_ground?: SortOrder
+    ingredients_photo_uploads_id?: SortOrder
+  }
+
+  export type IngredientsMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    is_reviewed?: SortOrder
+    fill_level?: SortOrder
+    fill_date?: SortOrder
+    is_ground?: SortOrder
+    ingredients_photo_uploads_id?: SortOrder
+  }
+
+  export type IngredientsSumOrderByAggregateInput = {
+    fill_level?: SortOrder
+  }
+
+  export type UuidWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type StringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
+  }
+
+  export type UuidNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type DateTimeFilter<$PrismaModel = never> = {
@@ -2127,50 +3607,18 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     mode?: QueryMode
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
-  export type JsonNullableFilter<$PrismaModel = never> = 
-    | PatchUndefined<
-        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
 
-  export type JsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  export type IngredientsListRelationFilter = {
+    every?: IngredientsWhereInput
+    some?: IngredientsWhereInput
+    none?: IngredientsWhereInput
   }
 
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
+  export type IngredientsOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
-  export type Spice_jar_photos_uploadCountOrderByAggregateInput = {
-    id?: SortOrder
-    created_at?: SortOrder
-    uploaded_at?: SortOrder
-    upload_duration_sec?: SortOrder
-    ai_processing_duration_sec?: SortOrder
-    photo_url?: SortOrder
-    extracted_data?: SortOrder
-  }
-
-  export type Spice_jar_photos_uploadAvgOrderByAggregateInput = {
-    upload_duration_sec?: SortOrder
-    ai_processing_duration_sec?: SortOrder
-  }
-
-  export type Spice_jar_photos_uploadMaxOrderByAggregateInput = {
+  export type Ingredients_photo_uploadsCountOrderByAggregateInput = {
     id?: SortOrder
     created_at?: SortOrder
     uploaded_at?: SortOrder
@@ -2179,7 +3627,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     photo_url?: SortOrder
   }
 
-  export type Spice_jar_photos_uploadMinOrderByAggregateInput = {
+  export type Ingredients_photo_uploadsAvgOrderByAggregateInput = {
+    upload_duration_sec?: SortOrder
+    ai_processing_duration_sec?: SortOrder
+  }
+
+  export type Ingredients_photo_uploadsMaxOrderByAggregateInput = {
     id?: SortOrder
     created_at?: SortOrder
     uploaded_at?: SortOrder
@@ -2188,24 +3641,18 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     photo_url?: SortOrder
   }
 
-  export type Spice_jar_photos_uploadSumOrderByAggregateInput = {
+  export type Ingredients_photo_uploadsMinOrderByAggregateInput = {
+    id?: SortOrder
+    created_at?: SortOrder
+    uploaded_at?: SortOrder
     upload_duration_sec?: SortOrder
     ai_processing_duration_sec?: SortOrder
+    photo_url?: SortOrder
   }
 
-  export type UuidWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedUuidWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
+  export type Ingredients_photo_uploadsSumOrderByAggregateInput = {
+    upload_duration_sec?: SortOrder
+    ai_processing_duration_sec?: SortOrder
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -2269,34 +3716,59 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
-  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> = 
-    | PatchUndefined<
-        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
 
-  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedJsonNullableFilter<$PrismaModel>
-    _max?: NestedJsonNullableFilter<$PrismaModel>
+  export type Ingredients_photo_uploadsCreateNestedOneWithoutIngredientsInput = {
+    create?: XOR<Ingredients_photo_uploadsCreateWithoutIngredientsInput, Ingredients_photo_uploadsUncheckedCreateWithoutIngredientsInput>
+    connectOrCreate?: Ingredients_photo_uploadsCreateOrConnectWithoutIngredientsInput
+    connect?: Ingredients_photo_uploadsWhereUniqueInput
   }
 
   export type StringFieldUpdateOperationsInput = {
     set?: string
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type NullableBoolFieldUpdateOperationsInput = {
+    set?: boolean | null
+  }
+
+  export type Ingredients_photo_uploadsUpdateOneWithoutIngredientsNestedInput = {
+    create?: XOR<Ingredients_photo_uploadsCreateWithoutIngredientsInput, Ingredients_photo_uploadsUncheckedCreateWithoutIngredientsInput>
+    connectOrCreate?: Ingredients_photo_uploadsCreateOrConnectWithoutIngredientsInput
+    upsert?: Ingredients_photo_uploadsUpsertWithoutIngredientsInput
+    disconnect?: Ingredients_photo_uploadsWhereInput | boolean
+    delete?: Ingredients_photo_uploadsWhereInput | boolean
+    connect?: Ingredients_photo_uploadsWhereUniqueInput
+    update?: XOR<XOR<Ingredients_photo_uploadsUpdateToOneWithWhereWithoutIngredientsInput, Ingredients_photo_uploadsUpdateWithoutIngredientsInput>, Ingredients_photo_uploadsUncheckedUpdateWithoutIngredientsInput>
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type IngredientsCreateNestedManyWithoutIngredients_photo_uploadsInput = {
+    create?: XOR<IngredientsCreateWithoutIngredients_photo_uploadsInput, IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput> | IngredientsCreateWithoutIngredients_photo_uploadsInput[] | IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput[]
+    connectOrCreate?: IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput | IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput[]
+    createMany?: IngredientsCreateManyIngredients_photo_uploadsInputEnvelope
+    connect?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
+  }
+
+  export type IngredientsUncheckedCreateNestedManyWithoutIngredients_photo_uploadsInput = {
+    create?: XOR<IngredientsCreateWithoutIngredients_photo_uploadsInput, IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput> | IngredientsCreateWithoutIngredients_photo_uploadsInput[] | IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput[]
+    connectOrCreate?: IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput | IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput[]
+    createMany?: IngredientsCreateManyIngredients_photo_uploadsInputEnvelope
+    connect?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -2315,8 +3787,32 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     divide?: number
   }
 
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
+  export type IngredientsUpdateManyWithoutIngredients_photo_uploadsNestedInput = {
+    create?: XOR<IngredientsCreateWithoutIngredients_photo_uploadsInput, IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput> | IngredientsCreateWithoutIngredients_photo_uploadsInput[] | IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput[]
+    connectOrCreate?: IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput | IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput[]
+    upsert?: IngredientsUpsertWithWhereUniqueWithoutIngredients_photo_uploadsInput | IngredientsUpsertWithWhereUniqueWithoutIngredients_photo_uploadsInput[]
+    createMany?: IngredientsCreateManyIngredients_photo_uploadsInputEnvelope
+    set?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
+    disconnect?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
+    delete?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
+    connect?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
+    update?: IngredientsUpdateWithWhereUniqueWithoutIngredients_photo_uploadsInput | IngredientsUpdateWithWhereUniqueWithoutIngredients_photo_uploadsInput[]
+    updateMany?: IngredientsUpdateManyWithWhereWithoutIngredients_photo_uploadsInput | IngredientsUpdateManyWithWhereWithoutIngredients_photo_uploadsInput[]
+    deleteMany?: IngredientsScalarWhereInput | IngredientsScalarWhereInput[]
+  }
+
+  export type IngredientsUncheckedUpdateManyWithoutIngredients_photo_uploadsNestedInput = {
+    create?: XOR<IngredientsCreateWithoutIngredients_photo_uploadsInput, IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput> | IngredientsCreateWithoutIngredients_photo_uploadsInput[] | IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput[]
+    connectOrCreate?: IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput | IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput[]
+    upsert?: IngredientsUpsertWithWhereUniqueWithoutIngredients_photo_uploadsInput | IngredientsUpsertWithWhereUniqueWithoutIngredients_photo_uploadsInput[]
+    createMany?: IngredientsCreateManyIngredients_photo_uploadsInputEnvelope
+    set?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
+    disconnect?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
+    delete?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
+    connect?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
+    update?: IngredientsUpdateWithWhereUniqueWithoutIngredients_photo_uploadsInput | IngredientsUpdateWithWhereUniqueWithoutIngredients_photo_uploadsInput[]
+    updateMany?: IngredientsUpdateManyWithWhereWithoutIngredients_photo_uploadsInput | IngredientsUpdateManyWithWhereWithoutIngredients_photo_uploadsInput[]
+    deleteMany?: IngredientsScalarWhereInput | IngredientsScalarWhereInput[]
   }
 
   export type NestedUuidFilter<$PrismaModel = never> = {
@@ -2328,6 +3824,165 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     gt?: string | StringFieldRefInput<$PrismaModel>
     gte?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedUuidFilter<$PrismaModel> | string
+  }
+
+  export type NestedStringFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringFilter<$PrismaModel> | string
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedIntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type NestedBoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
+  export type NestedUuidNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedUuidWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedUuidNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
@@ -2363,59 +4018,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
-  export type NestedUuidWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedUuidWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
-  }
-
-  export type NestedIntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
-  export type NestedStringFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringFilter<$PrismaModel> | string
-  }
-
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -2442,17 +4044,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -2487,27 +4078,150 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
-  export type NestedJsonNullableFilter<$PrismaModel = never> = 
-    | PatchUndefined<
-        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
 
-  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  export type Ingredients_photo_uploadsCreateWithoutIngredientsInput = {
+    id: string
+    created_at: Date | string
+    uploaded_at?: Date | string | null
+    upload_duration_sec?: number | null
+    ai_processing_duration_sec?: number | null
+    photo_url?: string | null
+  }
+
+  export type Ingredients_photo_uploadsUncheckedCreateWithoutIngredientsInput = {
+    id: string
+    created_at: Date | string
+    uploaded_at?: Date | string | null
+    upload_duration_sec?: number | null
+    ai_processing_duration_sec?: number | null
+    photo_url?: string | null
+  }
+
+  export type Ingredients_photo_uploadsCreateOrConnectWithoutIngredientsInput = {
+    where: Ingredients_photo_uploadsWhereUniqueInput
+    create: XOR<Ingredients_photo_uploadsCreateWithoutIngredientsInput, Ingredients_photo_uploadsUncheckedCreateWithoutIngredientsInput>
+  }
+
+  export type Ingredients_photo_uploadsUpsertWithoutIngredientsInput = {
+    update: XOR<Ingredients_photo_uploadsUpdateWithoutIngredientsInput, Ingredients_photo_uploadsUncheckedUpdateWithoutIngredientsInput>
+    create: XOR<Ingredients_photo_uploadsCreateWithoutIngredientsInput, Ingredients_photo_uploadsUncheckedCreateWithoutIngredientsInput>
+    where?: Ingredients_photo_uploadsWhereInput
+  }
+
+  export type Ingredients_photo_uploadsUpdateToOneWithWhereWithoutIngredientsInput = {
+    where?: Ingredients_photo_uploadsWhereInput
+    data: XOR<Ingredients_photo_uploadsUpdateWithoutIngredientsInput, Ingredients_photo_uploadsUncheckedUpdateWithoutIngredientsInput>
+  }
+
+  export type Ingredients_photo_uploadsUpdateWithoutIngredientsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
+    ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
+    photo_url?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type Ingredients_photo_uploadsUncheckedUpdateWithoutIngredientsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
+    ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
+    photo_url?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type IngredientsCreateWithoutIngredients_photo_uploadsInput = {
+    id: string
+    name: string
+    is_reviewed: boolean
+    fill_level: number
+    fill_date: string
+    is_ground?: boolean | null
+  }
+
+  export type IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput = {
+    id: string
+    name: string
+    is_reviewed: boolean
+    fill_level: number
+    fill_date: string
+    is_ground?: boolean | null
+  }
+
+  export type IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput = {
+    where: IngredientsWhereUniqueInput
+    create: XOR<IngredientsCreateWithoutIngredients_photo_uploadsInput, IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput>
+  }
+
+  export type IngredientsCreateManyIngredients_photo_uploadsInputEnvelope = {
+    data: IngredientsCreateManyIngredients_photo_uploadsInput | IngredientsCreateManyIngredients_photo_uploadsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type IngredientsUpsertWithWhereUniqueWithoutIngredients_photo_uploadsInput = {
+    where: IngredientsWhereUniqueInput
+    update: XOR<IngredientsUpdateWithoutIngredients_photo_uploadsInput, IngredientsUncheckedUpdateWithoutIngredients_photo_uploadsInput>
+    create: XOR<IngredientsCreateWithoutIngredients_photo_uploadsInput, IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput>
+  }
+
+  export type IngredientsUpdateWithWhereUniqueWithoutIngredients_photo_uploadsInput = {
+    where: IngredientsWhereUniqueInput
+    data: XOR<IngredientsUpdateWithoutIngredients_photo_uploadsInput, IngredientsUncheckedUpdateWithoutIngredients_photo_uploadsInput>
+  }
+
+  export type IngredientsUpdateManyWithWhereWithoutIngredients_photo_uploadsInput = {
+    where: IngredientsScalarWhereInput
+    data: XOR<IngredientsUpdateManyMutationInput, IngredientsUncheckedUpdateManyWithoutIngredients_photo_uploadsInput>
+  }
+
+  export type IngredientsScalarWhereInput = {
+    AND?: IngredientsScalarWhereInput | IngredientsScalarWhereInput[]
+    OR?: IngredientsScalarWhereInput[]
+    NOT?: IngredientsScalarWhereInput | IngredientsScalarWhereInput[]
+    id?: UuidFilter<"Ingredients"> | string
+    name?: StringFilter<"Ingredients"> | string
+    is_reviewed?: BoolFilter<"Ingredients"> | boolean
+    fill_level?: IntFilter<"Ingredients"> | number
+    fill_date?: StringFilter<"Ingredients"> | string
+    is_ground?: BoolNullableFilter<"Ingredients"> | boolean | null
+    ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
+  }
+
+  export type IngredientsCreateManyIngredients_photo_uploadsInput = {
+    id: string
+    name: string
+    is_reviewed: boolean
+    fill_level: number
+    fill_date: string
+    is_ground?: boolean | null
+  }
+
+  export type IngredientsUpdateWithoutIngredients_photo_uploadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    is_reviewed?: BoolFieldUpdateOperationsInput | boolean
+    fill_level?: IntFieldUpdateOperationsInput | number
+    fill_date?: StringFieldUpdateOperationsInput | string
+    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+  }
+
+  export type IngredientsUncheckedUpdateWithoutIngredients_photo_uploadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    is_reviewed?: BoolFieldUpdateOperationsInput | boolean
+    fill_level?: IntFieldUpdateOperationsInput | number
+    fill_date?: StringFieldUpdateOperationsInput | string
+    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+  }
+
+  export type IngredientsUncheckedUpdateManyWithoutIngredients_photo_uploadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    is_reviewed?: BoolFieldUpdateOperationsInput | boolean
+    fill_level?: IntFieldUpdateOperationsInput | number
+    fill_date?: StringFieldUpdateOperationsInput | string
+    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
 
 
@@ -2516,9 +4230,17 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    * Aliases for legacy arg types
    */
     /**
-     * @deprecated Use Spice_jar_photos_uploadDefaultArgs instead
+     * @deprecated Use Ingredients_photo_uploadsCountOutputTypeDefaultArgs instead
      */
-    export type Spice_jar_photos_uploadArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = Spice_jar_photos_uploadDefaultArgs<ExtArgs>
+    export type Ingredients_photo_uploadsCountOutputTypeArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = Ingredients_photo_uploadsCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use IngredientsDefaultArgs instead
+     */
+    export type IngredientsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = IngredientsDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use Ingredients_photo_uploadsDefaultArgs instead
+     */
+    export type Ingredients_photo_uploadsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = Ingredients_photo_uploadsDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany
