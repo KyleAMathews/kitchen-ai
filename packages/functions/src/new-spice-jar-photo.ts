@@ -51,8 +51,8 @@ export const main: S3Handler = async (event) => {
 
     // Update the record
     const updateQuery1 = `
-      UPDATE ingredients_photo_uploads set uploaded_at = $1, photo_url = $2 WHERE id = $3;`
-    const values1 = [new Date(), publicUrl, uuid]
+      UPDATE ingredients_photo_uploads set uploaded_at = $1, photo_url = $2, state = $3 WHERE id = $4;`
+    const values1 = [new Date(), publicUrl, `ai_processing`, uuid]
 
     // Execute the query
     client
@@ -171,12 +171,12 @@ export const main: S3Handler = async (event) => {
     const endTime = performance.now()
     const durationInSeconds = (endTime - startTime) / 1000
     const updateQuery2 = `
-      UPDATE ingredients_photo_uploads SET ai_processing_duration_sec = $1 WHERE id = $2`
-    const values2 = [durationInSeconds, uuid]
+      UPDATE ingredients_photo_uploads SET ai_processing_duration_sec = $1, state = $2 WHERE id = $3`
+    const values2 = [durationInSeconds, `reviewing`, uuid]
 
-    // Execute the prepared query (insert or update)
+    // Execute the prepared query
     await client.query(updateQuery2, values2).catch((e) => {
-      console.log(`insert failed`, e)
+      console.log(`update failed`, e)
     })
 
     function generateDateMonthsAgo(monthsAgo) {
@@ -193,26 +193,33 @@ export const main: S3Handler = async (event) => {
     }
 
     // Add each new ingredient
-    await Promise.all(
-      parsed.map((ingredient) => {
-        const ingredientInsertQuery = {
-          name: `ingredient-insert-query`,
-          text: `INSERT INTO ingredients (id, name, is_reviewed, fill_level, fill_date, is_ground, ingredients_photo_uploads_id)
+    try {
+      await client.query(`BEGIN`)
+      await Promise.all(
+        parsed.map((ingredient) => {
+          const ingredientInsertQuery = {
+            name: `ingredient-insert-query`,
+            text: `INSERT INTO ingredients (id, name, is_reviewed, fill_level, fill_date, is_ground, ingredients_photo_uploads_id)
           VALUES ($1, $2, $3, $4, $5, $6, $7);`,
-          values: [
-            randomUUID(),
-            ingredient.name,
-            false,
-            ingredient.fill_level,
-            generateDateMonthsAgo(18),
-            ingredient.is_ground,
-            uuid,
-          ],
-        }
+            values: [
+              randomUUID(),
+              ingredient.name,
+              false,
+              ingredient.fill_level,
+              generateDateMonthsAgo(18),
+              ingredient.is_ground,
+              uuid,
+            ],
+          }
 
-        return client.query(ingredientInsertQuery)
-      })
-    )
+          return client.query(ingredientInsertQuery)
+        })
+      )
+      await client.query(`COMMIT`)
+    } catch (e) {
+      console.log(`inserts failed`, e)
+      await client.query(`ROLLBACK`)
+    }
   } catch (err) {
     console.log(`Error generating pre-signed URL`, err)
     throw err

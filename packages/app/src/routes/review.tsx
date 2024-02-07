@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { useElectric } from "../context"
 import { Electric } from "../generated/client"
 import { useElectricData } from "electric-query"
@@ -132,6 +132,7 @@ Review.queries = queries
 
 export default function Review() {
   const { db } = useElectric()!
+  const navigate = useNavigate()
   const location = useLocation()
   const { photos, ingredients } = useElectricData(
     location.pathname + location.search
@@ -159,15 +160,26 @@ export default function Review() {
         })}
       </Flex>
       <Button
-        onClick={() => {
-          db.ingredients.updateMany({
-            data: {
-              is_reviewed: true,
-            },
-            where: {
-              is_reviewed: false,
-            },
-          })
+        onClick={async () => {
+          navigate(`/`)
+          Promise.all([
+            db.ingredients_photo_uploads.updateMany({
+              data: {
+                state: `done`,
+              },
+              where: {
+                state: `reviewing`,
+              },
+            }),
+            db.ingredients.updateMany({
+              data: {
+                is_reviewed: true,
+              },
+              where: {
+                is_reviewed: false,
+              },
+            }),
+          ])
         }}
       >
         Save

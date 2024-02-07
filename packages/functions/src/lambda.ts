@@ -7,9 +7,10 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"
 export const handler = ApiHandler(async (_evt) => {
   const fileName = _evt.queryStringParameters?.fileName || ``
   const contentType = _evt.queryStringParameters?.contentType || ``
+  const uuid = _evt.queryStringParameters?.uuid
   const command = new PutObjectCommand({
     ACL: `public-read`,
-    Key: fileName + `---` + crypto.randomUUID(),
+    Key: fileName + `---` + uuid,
     ContentType: contentType,
     Bucket: Bucket.SpiceJarPhotosBucket.bucketName,
   })

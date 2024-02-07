@@ -1,5 +1,6 @@
 import { Outlet, Link } from "react-router-dom"
 import { Flex, Box, Heading, Separator } from "@radix-ui/themes"
+import Working from "../components/working-icon"
 
 export default function Root() {
   return (
@@ -11,7 +12,7 @@ export default function Root() {
               to="/"
               style={{ textDecoration: `inherit`, color: `inherit` }}
             >
-              Kitchen.ai
+              Kitchen.ai <Working />
             </Link>
           </Heading>
         </nav>

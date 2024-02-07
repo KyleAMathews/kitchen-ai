@@ -1,6 +1,4 @@
 import { useLocation, Link } from "react-router-dom"
-import { useLiveQuery } from "electric-sql/react"
-import { useElectric } from "../context"
 import { Electric } from "../generated/client"
 import { useElectricData } from "electric-query"
 import { Flex, Heading, Box, Text, Button } from "@radix-ui/themes"
@@ -29,7 +27,11 @@ const queries = ({ db }: { db: Electric[`db`] }) => {
       // ingredients: true,
       // },
     }),
-    ingredients: db.ingredients.liveMany(),
+    ingredients: db.ingredients.liveMany({
+      where: {
+        is_reviewed: false,
+      },
+    }),
   }
 }
 
@@ -47,24 +49,44 @@ export default function AddIngredients() {
     const photoIngredients = ingredients.filter(
       (i) => i.ingredients_photo_uploads_id === photo.id
     )
-    return !photo.uploaded_at
-      ? `uploading...`
-      : !photo.ai_processing_duration_sec
-        ? `Analyzing photo with AI...`
-        : photoIngredients.length > 0
-          ? photoIngredients.map((ingredient) => ingredient.name).join(`, `)
-          : `no ingredients found`
+
+    if (photo.state === `uploading`) {
+      return `uploading...`
+    }
+    if (photo.state === `ai_processing`) {
+      return `Analyzing photo with AI...`
+    }
+    if (photo.state === `reviewing`) {
+      return photoIngredients.length > 0
+        ? photoIngredients.map((ingredient) => ingredient.name).join(`, `)
+        : `no ingredients found`
+    }
+    if (photo.state === `done`) {
+      return `Reviewed`
+    }
   }
   return (
     <Flex direction="column" gap="5">
-      <Heading size="6">Add new spice/herb</Heading>
+      <Flex direction="column" gap="3">
+        <Heading size="6">Upload Ingredients Photos</Heading>
+        <Text size="2">
+          You can leave this page at any time without interrupting the uploading
+          process.
+        </Text>
+      </Flex>
       {photos.map((photo) => {
         return (
           <Flex gap="3" align="center" key={photo.id}>
             {photo.photo_url ? (
               <Box height="8" width="9">
                 {` `}
-                <img src={photo.photo_url} style={{ height: `100%` }} />
+                <img
+                  src={photo.photo_url}
+                  style={{
+                    height: `100%`,
+                    filter: `grayscale(${photo.state === `done` ? `100%` : `0%`})`,
+                  }}
+                />
               </Box>
             ) : (
               <Box height="8" width="9" style={{ background: `gray` }} />
@@ -80,8 +102,13 @@ export default function AddIngredients() {
       })}
       <Flex gap="4">
         <FileUploadToS3 />
-        <Button asChild>
-          <Link to="/review">Review {ingredients.length} spices</Link>
+        <Button asChild disabled={ingredients.length === 0}>
+          <Link
+            to="/review"
+            style={{ pointerEvents: ingredients.length === 0 && `none` }}
+          >
+            Review {ingredients.length} spices
+          </Link>
         </Button>
       </Flex>
     </Flex>

@@ -4,21 +4,20 @@ import { useElectric } from "../context"
 import { Electric } from "../generated/client"
 import { useElectricData } from "electric-query"
 import { Flex, Heading, Box, Text, Button, Separator } from "@radix-ui/themes"
-import { PlusCircledIcon } from "@radix-ui/react-icons"
+import { PlusCircledIcon, ArrowRightIcon } from "@radix-ui/react-icons"
 
 const queries = ({ db }: { db: Electric[`db`] }) => {
   return {
     photos: db.ingredients_photo_uploads.liveMany({
-      orderBy: {
-        created_at: `asc`,
+      where: {
+        state: {
+          equals: `reviewing`,
+        },
       },
     }),
     ingredients: db.ingredients.liveMany({
       orderBy: {
         name: `asc`,
-      },
-      where: {
-        is_reviewed: true,
       },
     }),
   }
@@ -42,16 +41,35 @@ export default function Index() {
           <PlusCircledIcon />
         </Link>
       </Heading>
+      {photos && (
+        <Button variant="soft">
+          <Link
+            to="/review"
+            style={{ textDecoration: `none`, color: `inherit` }}
+          >
+            Review {ingredients.filter((i) => i.is_reviewed === false).length}
+            {` `}
+            new ingredients{` `}
+            <ArrowRightIcon
+              width="16"
+              height="16"
+              style={{ position: `relative`, top: 1 }}
+            />
+          </Link>
+        </Button>
+      )}
       <Flex direction="column" gap="2">
         {ingredients.map((ingredient, i) => {
-          return (
-            <>
-              <Text>{ingredient.name}</Text>
-              {i !== ingredients.length - 1 && (
-                <Separator orientation="horizontal" size="4" />
-              )}
-            </>
-          )
+          if (ingredient.is_reviewed) {
+            return (
+              <>
+                <Text>{ingredient.name}</Text>
+                {i !== ingredients.length - 1 && (
+                  <Separator orientation="horizontal" size="4" />
+                )}
+              </>
+            )
+          }
         })}
       </Flex>
     </Flex>

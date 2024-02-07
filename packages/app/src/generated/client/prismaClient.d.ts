@@ -25,6 +25,25 @@ export type Ingredients = $Result.DefaultSelection<Prisma.$IngredientsPayload>
 export type Ingredients_photo_uploads = $Result.DefaultSelection<Prisma.$Ingredients_photo_uploadsPayload>
 
 /**
+ * Enums
+ */
+export namespace $Enums {
+  export const photo_upload_state: {
+  uploading: 'uploading',
+  ai_processing: 'ai_processing',
+  reviewing: 'reviewing',
+  done: 'done'
+};
+
+export type photo_upload_state = (typeof photo_upload_state)[keyof typeof photo_upload_state]
+
+}
+
+export type photo_upload_state = $Enums.photo_upload_state
+
+export const photo_upload_state: typeof $Enums.photo_upload_state
+
+/**
  * ##  Prisma Client ʲˢ
  * 
  * Type-safe database client for TypeScript & Node.js
@@ -2000,6 +2019,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: string | null
     created_at: Date | null
     uploaded_at: Date | null
+    state: $Enums.photo_upload_state | null
     upload_duration_sec: number | null
     ai_processing_duration_sec: number | null
     photo_url: string | null
@@ -2009,6 +2029,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: string | null
     created_at: Date | null
     uploaded_at: Date | null
+    state: $Enums.photo_upload_state | null
     upload_duration_sec: number | null
     ai_processing_duration_sec: number | null
     photo_url: string | null
@@ -2018,6 +2039,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: number
     created_at: number
     uploaded_at: number
+    state: number
     upload_duration_sec: number
     ai_processing_duration_sec: number
     photo_url: number
@@ -2039,6 +2061,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: true
     created_at?: true
     uploaded_at?: true
+    state?: true
     upload_duration_sec?: true
     ai_processing_duration_sec?: true
     photo_url?: true
@@ -2048,6 +2071,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: true
     created_at?: true
     uploaded_at?: true
+    state?: true
     upload_duration_sec?: true
     ai_processing_duration_sec?: true
     photo_url?: true
@@ -2057,6 +2081,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: true
     created_at?: true
     uploaded_at?: true
+    state?: true
     upload_duration_sec?: true
     ai_processing_duration_sec?: true
     photo_url?: true
@@ -2153,6 +2178,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: string
     created_at: Date
     uploaded_at: Date | null
+    state: $Enums.photo_upload_state
     upload_duration_sec: number | null
     ai_processing_duration_sec: number | null
     photo_url: string | null
@@ -2181,6 +2207,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: boolean
     created_at?: boolean
     uploaded_at?: boolean
+    state?: boolean
     upload_duration_sec?: boolean
     ai_processing_duration_sec?: boolean
     photo_url?: boolean
@@ -2192,6 +2219,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: boolean
     created_at?: boolean
     uploaded_at?: boolean
+    state?: boolean
     upload_duration_sec?: boolean
     ai_processing_duration_sec?: boolean
     photo_url?: boolean
@@ -2215,6 +2243,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
       id: string
       created_at: Date
       uploaded_at: Date | null
+      state: $Enums.photo_upload_state
       /**
        * @zod.custom.use(z.number().or(z.nan()))
        */
@@ -2622,6 +2651,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     readonly id: FieldRef<"Ingredients_photo_uploads", 'String'>
     readonly created_at: FieldRef<"Ingredients_photo_uploads", 'DateTime'>
     readonly uploaded_at: FieldRef<"Ingredients_photo_uploads", 'DateTime'>
+    readonly state: FieldRef<"Ingredients_photo_uploads", 'photo_upload_state'>
     readonly upload_duration_sec: FieldRef<"Ingredients_photo_uploads", 'Float'>
     readonly ai_processing_duration_sec: FieldRef<"Ingredients_photo_uploads", 'Float'>
     readonly photo_url: FieldRef<"Ingredients_photo_uploads", 'String'>
@@ -3004,6 +3034,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: 'id',
     created_at: 'created_at',
     uploaded_at: 'uploaded_at',
+    state: 'state',
     upload_duration_sec: 'upload_duration_sec',
     ai_processing_duration_sec: 'ai_processing_duration_sec',
     photo_url: 'photo_url'
@@ -3087,6 +3118,20 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    * Reference to a field of type 'DateTime[]'
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'photo_upload_state'
+   */
+  export type Enumphoto_upload_stateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'photo_upload_state'>
+    
+
+
+  /**
+   * Reference to a field of type 'photo_upload_state[]'
+   */
+  export type ListEnumphoto_upload_stateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'photo_upload_state[]'>
     
 
 
@@ -3181,6 +3226,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: UuidFilter<"Ingredients_photo_uploads"> | string
     created_at?: DateTimeFilter<"Ingredients_photo_uploads"> | Date | string
     uploaded_at?: DateTimeNullableFilter<"Ingredients_photo_uploads"> | Date | string | null
+    state?: Enumphoto_upload_stateFilter<"Ingredients_photo_uploads"> | $Enums.photo_upload_state
     upload_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
     ai_processing_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
     photo_url?: StringNullableFilter<"Ingredients_photo_uploads"> | string | null
@@ -3191,6 +3237,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: SortOrder
     created_at?: SortOrder
     uploaded_at?: SortOrderInput | SortOrder
+    state?: SortOrder
     upload_duration_sec?: SortOrderInput | SortOrder
     ai_processing_duration_sec?: SortOrderInput | SortOrder
     photo_url?: SortOrderInput | SortOrder
@@ -3204,6 +3251,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     NOT?: Ingredients_photo_uploadsWhereInput | Ingredients_photo_uploadsWhereInput[]
     created_at?: DateTimeFilter<"Ingredients_photo_uploads"> | Date | string
     uploaded_at?: DateTimeNullableFilter<"Ingredients_photo_uploads"> | Date | string | null
+    state?: Enumphoto_upload_stateFilter<"Ingredients_photo_uploads"> | $Enums.photo_upload_state
     upload_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
     ai_processing_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
     photo_url?: StringNullableFilter<"Ingredients_photo_uploads"> | string | null
@@ -3214,6 +3262,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: SortOrder
     created_at?: SortOrder
     uploaded_at?: SortOrderInput | SortOrder
+    state?: SortOrder
     upload_duration_sec?: SortOrderInput | SortOrder
     ai_processing_duration_sec?: SortOrderInput | SortOrder
     photo_url?: SortOrderInput | SortOrder
@@ -3231,6 +3280,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: UuidWithAggregatesFilter<"Ingredients_photo_uploads"> | string
     created_at?: DateTimeWithAggregatesFilter<"Ingredients_photo_uploads"> | Date | string
     uploaded_at?: DateTimeNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | Date | string | null
+    state?: Enumphoto_upload_stateWithAggregatesFilter<"Ingredients_photo_uploads"> | $Enums.photo_upload_state
     upload_duration_sec?: FloatNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | number | null
     ai_processing_duration_sec?: FloatNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | number | null
     photo_url?: StringNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | string | null
@@ -3309,6 +3359,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
+    state: $Enums.photo_upload_state
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
@@ -3319,6 +3370,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
+    state: $Enums.photo_upload_state
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
@@ -3329,6 +3381,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    state?: Enumphoto_upload_stateFieldUpdateOperationsInput | $Enums.photo_upload_state
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -3339,6 +3392,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    state?: Enumphoto_upload_stateFieldUpdateOperationsInput | $Enums.photo_upload_state
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -3349,6 +3403,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
+    state: $Enums.photo_upload_state
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
@@ -3358,6 +3413,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    state?: Enumphoto_upload_stateFieldUpdateOperationsInput | $Enums.photo_upload_state
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -3367,6 +3423,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    state?: Enumphoto_upload_stateFieldUpdateOperationsInput | $Enums.photo_upload_state
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -3582,6 +3639,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
+  export type Enumphoto_upload_stateFilter<$PrismaModel = never> = {
+    equals?: $Enums.photo_upload_state | Enumphoto_upload_stateFieldRefInput<$PrismaModel>
+    in?: $Enums.photo_upload_state[] | ListEnumphoto_upload_stateFieldRefInput<$PrismaModel>
+    notIn?: $Enums.photo_upload_state[] | ListEnumphoto_upload_stateFieldRefInput<$PrismaModel>
+    not?: NestedEnumphoto_upload_stateFilter<$PrismaModel> | $Enums.photo_upload_state
+  }
+
   export type FloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -3622,6 +3686,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: SortOrder
     created_at?: SortOrder
     uploaded_at?: SortOrder
+    state?: SortOrder
     upload_duration_sec?: SortOrder
     ai_processing_duration_sec?: SortOrder
     photo_url?: SortOrder
@@ -3636,6 +3701,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: SortOrder
     created_at?: SortOrder
     uploaded_at?: SortOrder
+    state?: SortOrder
     upload_duration_sec?: SortOrder
     ai_processing_duration_sec?: SortOrder
     photo_url?: SortOrder
@@ -3645,6 +3711,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: SortOrder
     created_at?: SortOrder
     uploaded_at?: SortOrder
+    state?: SortOrder
     upload_duration_sec?: SortOrder
     ai_processing_duration_sec?: SortOrder
     photo_url?: SortOrder
@@ -3681,6 +3748,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type Enumphoto_upload_stateWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.photo_upload_state | Enumphoto_upload_stateFieldRefInput<$PrismaModel>
+    in?: $Enums.photo_upload_state[] | ListEnumphoto_upload_stateFieldRefInput<$PrismaModel>
+    notIn?: $Enums.photo_upload_state[] | ListEnumphoto_upload_stateFieldRefInput<$PrismaModel>
+    not?: NestedEnumphoto_upload_stateWithAggregatesFilter<$PrismaModel> | $Enums.photo_upload_state
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumphoto_upload_stateFilter<$PrismaModel>
+    _max?: NestedEnumphoto_upload_stateFilter<$PrismaModel>
   }
 
   export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -3777,6 +3854,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
+  }
+
+  export type Enumphoto_upload_stateFieldUpdateOperationsInput = {
+    set?: $Enums.photo_upload_state
   }
 
   export type NullableFloatFieldUpdateOperationsInput = {
@@ -4007,6 +4088,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
+  export type NestedEnumphoto_upload_stateFilter<$PrismaModel = never> = {
+    equals?: $Enums.photo_upload_state | Enumphoto_upload_stateFieldRefInput<$PrismaModel>
+    in?: $Enums.photo_upload_state[] | ListEnumphoto_upload_stateFieldRefInput<$PrismaModel>
+    notIn?: $Enums.photo_upload_state[] | ListEnumphoto_upload_stateFieldRefInput<$PrismaModel>
+    not?: NestedEnumphoto_upload_stateFilter<$PrismaModel> | $Enums.photo_upload_state
+  }
+
   export type NestedFloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -4046,6 +4134,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumphoto_upload_stateWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.photo_upload_state | Enumphoto_upload_stateFieldRefInput<$PrismaModel>
+    in?: $Enums.photo_upload_state[] | ListEnumphoto_upload_stateFieldRefInput<$PrismaModel>
+    notIn?: $Enums.photo_upload_state[] | ListEnumphoto_upload_stateFieldRefInput<$PrismaModel>
+    not?: NestedEnumphoto_upload_stateWithAggregatesFilter<$PrismaModel> | $Enums.photo_upload_state
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumphoto_upload_stateFilter<$PrismaModel>
+    _max?: NestedEnumphoto_upload_stateFilter<$PrismaModel>
+  }
+
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -4083,6 +4181,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
+    state: $Enums.photo_upload_state
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
@@ -4092,6 +4191,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
+    state: $Enums.photo_upload_state
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
@@ -4117,6 +4217,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    state?: Enumphoto_upload_stateFieldUpdateOperationsInput | $Enums.photo_upload_state
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -4126,6 +4227,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    state?: Enumphoto_upload_stateFieldUpdateOperationsInput | $Enums.photo_upload_state
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
