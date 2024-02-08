@@ -1008,10 +1008,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type IngredientsAvgAggregateOutputType = {
     fill_level: number | null
+    shelf_life_months: number | null
   }
 
   export type IngredientsSumAggregateOutputType = {
     fill_level: number | null
+    shelf_life_months: number | null
   }
 
   export type IngredientsMinAggregateOutputType = {
@@ -1019,6 +1021,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name: string | null
     is_reviewed: boolean | null
     fill_level: number | null
+    shelf_life_months: number | null
     fill_date: string | null
     is_ground: boolean | null
     ingredients_photo_uploads_id: string | null
@@ -1029,6 +1032,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name: string | null
     is_reviewed: boolean | null
     fill_level: number | null
+    shelf_life_months: number | null
     fill_date: string | null
     is_ground: boolean | null
     ingredients_photo_uploads_id: string | null
@@ -1039,6 +1043,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name: number
     is_reviewed: number
     fill_level: number
+    shelf_life_months: number
     fill_date: number
     is_ground: number
     ingredients_photo_uploads_id: number
@@ -1048,10 +1053,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type IngredientsAvgAggregateInputType = {
     fill_level?: true
+    shelf_life_months?: true
   }
 
   export type IngredientsSumAggregateInputType = {
     fill_level?: true
+    shelf_life_months?: true
   }
 
   export type IngredientsMinAggregateInputType = {
@@ -1059,6 +1066,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: true
     is_reviewed?: true
     fill_level?: true
+    shelf_life_months?: true
     fill_date?: true
     is_ground?: true
     ingredients_photo_uploads_id?: true
@@ -1069,6 +1077,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: true
     is_reviewed?: true
     fill_level?: true
+    shelf_life_months?: true
     fill_date?: true
     is_ground?: true
     ingredients_photo_uploads_id?: true
@@ -1079,6 +1088,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: true
     is_reviewed?: true
     fill_level?: true
+    shelf_life_months?: true
     fill_date?: true
     is_ground?: true
     ingredients_photo_uploads_id?: true
@@ -1176,6 +1186,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name: string
     is_reviewed: boolean
     fill_level: number
+    shelf_life_months: number
     fill_date: string
     is_ground: boolean | null
     ingredients_photo_uploads_id: string | null
@@ -1205,6 +1216,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: boolean
     is_reviewed?: boolean
     fill_level?: boolean
+    shelf_life_months?: boolean
     fill_date?: boolean
     is_ground?: boolean
     ingredients_photo_uploads_id?: boolean
@@ -1216,6 +1228,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: boolean
     is_reviewed?: boolean
     fill_level?: boolean
+    shelf_life_months?: boolean
     fill_date?: boolean
     is_ground?: boolean
     ingredients_photo_uploads_id?: boolean
@@ -1242,6 +1255,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
        * @zod.number.int().gte(-2147483648).lte(2147483647)
        */
       fill_level: number
+      /**
+       * @zod.number.int().gte(-2147483648).lte(2147483647)
+       */
+      shelf_life_months: number
       fill_date: string
       is_ground: boolean | null
       /**
@@ -1647,6 +1664,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     readonly name: FieldRef<"Ingredients", 'String'>
     readonly is_reviewed: FieldRef<"Ingredients", 'Boolean'>
     readonly fill_level: FieldRef<"Ingredients", 'Int'>
+    readonly shelf_life_months: FieldRef<"Ingredients", 'Int'>
     readonly fill_date: FieldRef<"Ingredients", 'String'>
     readonly is_ground: FieldRef<"Ingredients", 'Boolean'>
     readonly ingredients_photo_uploads_id: FieldRef<"Ingredients", 'String'>
@@ -3022,6 +3040,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name: 'name',
     is_reviewed: 'is_reviewed',
     fill_level: 'fill_level',
+    shelf_life_months: 'shelf_life_months',
     fill_date: 'fill_date',
     is_ground: 'is_ground',
     ingredients_photo_uploads_id: 'ingredients_photo_uploads_id'
@@ -3160,6 +3179,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: StringFilter<"Ingredients"> | string
     is_reviewed?: BoolFilter<"Ingredients"> | boolean
     fill_level?: IntFilter<"Ingredients"> | number
+    shelf_life_months?: IntFilter<"Ingredients"> | number
     fill_date?: StringFilter<"Ingredients"> | string
     is_ground?: BoolNullableFilter<"Ingredients"> | boolean | null
     ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
@@ -3171,6 +3191,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: SortOrder
     is_reviewed?: SortOrder
     fill_level?: SortOrder
+    shelf_life_months?: SortOrder
     fill_date?: SortOrder
     is_ground?: SortOrderInput | SortOrder
     ingredients_photo_uploads_id?: SortOrderInput | SortOrder
@@ -3185,6 +3206,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: StringFilter<"Ingredients"> | string
     is_reviewed?: BoolFilter<"Ingredients"> | boolean
     fill_level?: IntFilter<"Ingredients"> | number
+    shelf_life_months?: IntFilter<"Ingredients"> | number
     fill_date?: StringFilter<"Ingredients"> | string
     is_ground?: BoolNullableFilter<"Ingredients"> | boolean | null
     ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
@@ -3196,6 +3218,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: SortOrder
     is_reviewed?: SortOrder
     fill_level?: SortOrder
+    shelf_life_months?: SortOrder
     fill_date?: SortOrder
     is_ground?: SortOrderInput | SortOrder
     ingredients_photo_uploads_id?: SortOrderInput | SortOrder
@@ -3214,6 +3237,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: StringWithAggregatesFilter<"Ingredients"> | string
     is_reviewed?: BoolWithAggregatesFilter<"Ingredients"> | boolean
     fill_level?: IntWithAggregatesFilter<"Ingredients"> | number
+    shelf_life_months?: IntWithAggregatesFilter<"Ingredients"> | number
     fill_date?: StringWithAggregatesFilter<"Ingredients"> | string
     is_ground?: BoolNullableWithAggregatesFilter<"Ingredients"> | boolean | null
     ingredients_photo_uploads_id?: UuidNullableWithAggregatesFilter<"Ingredients"> | string | null
@@ -3291,6 +3315,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name: string
     is_reviewed: boolean
     fill_level: number
+    shelf_life_months: number
     fill_date: string
     is_ground?: boolean | null
     ingredients_photo_uploads?: Ingredients_photo_uploadsCreateNestedOneWithoutIngredientsInput
@@ -3301,6 +3326,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name: string
     is_reviewed: boolean
     fill_level: number
+    shelf_life_months: number
     fill_date: string
     is_ground?: boolean | null
     ingredients_photo_uploads_id?: string | null
@@ -3311,6 +3337,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     fill_level?: IntFieldUpdateOperationsInput | number
+    shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
     ingredients_photo_uploads?: Ingredients_photo_uploadsUpdateOneWithoutIngredientsNestedInput
@@ -3321,6 +3348,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     fill_level?: IntFieldUpdateOperationsInput | number
+    shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
     ingredients_photo_uploads_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -3331,6 +3359,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name: string
     is_reviewed: boolean
     fill_level: number
+    shelf_life_months: number
     fill_date: string
     is_ground?: boolean | null
     ingredients_photo_uploads_id?: string | null
@@ -3341,6 +3370,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     fill_level?: IntFieldUpdateOperationsInput | number
+    shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
@@ -3350,6 +3380,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     fill_level?: IntFieldUpdateOperationsInput | number
+    shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
     ingredients_photo_uploads_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -3504,6 +3535,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: SortOrder
     is_reviewed?: SortOrder
     fill_level?: SortOrder
+    shelf_life_months?: SortOrder
     fill_date?: SortOrder
     is_ground?: SortOrder
     ingredients_photo_uploads_id?: SortOrder
@@ -3511,6 +3543,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type IngredientsAvgOrderByAggregateInput = {
     fill_level?: SortOrder
+    shelf_life_months?: SortOrder
   }
 
   export type IngredientsMaxOrderByAggregateInput = {
@@ -3518,6 +3551,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: SortOrder
     is_reviewed?: SortOrder
     fill_level?: SortOrder
+    shelf_life_months?: SortOrder
     fill_date?: SortOrder
     is_ground?: SortOrder
     ingredients_photo_uploads_id?: SortOrder
@@ -3528,6 +3562,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: SortOrder
     is_reviewed?: SortOrder
     fill_level?: SortOrder
+    shelf_life_months?: SortOrder
     fill_date?: SortOrder
     is_ground?: SortOrder
     ingredients_photo_uploads_id?: SortOrder
@@ -3535,6 +3570,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type IngredientsSumOrderByAggregateInput = {
     fill_level?: SortOrder
+    shelf_life_months?: SortOrder
   }
 
   export type UuidWithAggregatesFilter<$PrismaModel = never> = {
@@ -4238,6 +4274,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name: string
     is_reviewed: boolean
     fill_level: number
+    shelf_life_months: number
     fill_date: string
     is_ground?: boolean | null
   }
@@ -4247,6 +4284,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name: string
     is_reviewed: boolean
     fill_level: number
+    shelf_life_months: number
     fill_date: string
     is_ground?: boolean | null
   }
@@ -4285,6 +4323,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: StringFilter<"Ingredients"> | string
     is_reviewed?: BoolFilter<"Ingredients"> | boolean
     fill_level?: IntFilter<"Ingredients"> | number
+    shelf_life_months?: IntFilter<"Ingredients"> | number
     fill_date?: StringFilter<"Ingredients"> | string
     is_ground?: BoolNullableFilter<"Ingredients"> | boolean | null
     ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
@@ -4295,6 +4334,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name: string
     is_reviewed: boolean
     fill_level: number
+    shelf_life_months: number
     fill_date: string
     is_ground?: boolean | null
   }
@@ -4304,6 +4344,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     fill_level?: IntFieldUpdateOperationsInput | number
+    shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
@@ -4313,6 +4354,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     fill_level?: IntFieldUpdateOperationsInput | number
+    shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
@@ -4322,6 +4364,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     fill_level?: IntFieldUpdateOperationsInput | number
+    shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }

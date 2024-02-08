@@ -16,6 +16,7 @@ CREATE TABLE ingredients (
     name TEXT NOT NULL,
     is_reviewed BOOLEAN NOT NULL,
     fill_level INTEGER NOT NULL,
+    shelf_life_months INTEGER NOT NULL,
     fill_date TEXT  NOT NULL, /* YYYY/MM */
     is_ground BOOLEAN,
     ingredients_photo_uploads_id UUID,

@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { useElectric } from "../context"
 import { Electric } from "../generated/client"
 import { useElectricData } from "electric-query"
+import { TrashIcon } from "@radix-ui/react-icons"
 import {
   Flex,
   Heading,
@@ -10,6 +11,8 @@ import {
   Separator,
   Slider,
   Button,
+  Checkbox,
+  TextField,
 } from "@radix-ui/themes"
 
 const diffInMonths = (date1, date2) => {
@@ -34,11 +37,26 @@ function generateDateMonthsAgo(monthsAgo) {
 function ReviewSpice({ spice }) {
   const { db } = useElectric()!
   const age_months = diffInMonths(new Date(spice.fill_date), new Date())
-  // console.log({ age_months })
   return (
     <Flex gap="5" width="100%">
       <Box style={{ width: 300 }}>
-        <Heading size="3">{spice.name}</Heading>
+        <Heading size="3">
+          {spice.name}
+          {` `}
+          <TrashIcon
+            style={{
+              position: `relative`,
+              top: 2,
+            }}
+            onClick={() => {
+              db.ingredients.delete({
+                where: {
+                  id: spice.id,
+                },
+              })
+            }}
+          />
+        </Heading>
       </Box>
       <Flex direction="column" gap="5" width="100%" grow="1">
         <Flex direction="column" gap="2">
@@ -50,7 +68,6 @@ function ReviewSpice({ spice }) {
               defaultValue={[spice.fill_level]}
               onValueCommit={(val) => {
                 const newFillLevel = val[0] as number
-                console.log({ newFillLevel })
                 db.ingredients.update({
                   data: {
                     fill_level: newFillLevel,
@@ -80,11 +97,9 @@ function ReviewSpice({ spice }) {
               defaultValue={[100 - age_months * 2]}
               step={2}
               onValueCommit={(val) => {
-                console.log(`onValueCommit`, val[0])
                 const noZeroVal = val[0] === 0 ? 0.1 : val[0]
                 const newAge = Math.round(50 - noZeroVal / 2)
                 const newFillDate = generateDateMonthsAgo(newAge)
-                console.log({ newAge, newFillDate })
                 db.ingredients.update({
                   data: {
                     fill_date: newFillDate,
@@ -104,6 +119,47 @@ function ReviewSpice({ spice }) {
               </Text>
             </Flex>
           </Flex>
+        </Flex>
+        <Flex>
+          <Text as="label" size="2">
+            <Flex gap="2">
+              <Checkbox
+                variant="soft"
+                defaultChecked={spice.is_ground}
+                onCheckedChange={(newValue) => {
+                  db.ingredients.update({
+                    data: {
+                      is_ground: !!newValue,
+                    },
+                    where: {
+                      id: spice.id,
+                    },
+                  })
+                }}
+              />
+              Ground?
+            </Flex>
+          </Text>
+        </Flex>
+        <Flex direction="column" gap="2" color="gray">
+          <Text as="label" size="2">
+            Shelf Life (months)
+          </Text>
+          <TextField.Input
+            type="number"
+            defaultValue={spice.shelf_life_months}
+            onChange={(e) => {
+              const newValue = parseInt(e.target.value, 10)
+              db.ingredients.update({
+                data: {
+                  shelf_life_months: newValue,
+                },
+                where: {
+                  id: spice.id,
+                },
+              })
+            }}
+          />
         </Flex>
       </Flex>
     </Flex>

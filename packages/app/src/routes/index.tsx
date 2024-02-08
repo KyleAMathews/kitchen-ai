@@ -41,7 +41,7 @@ export default function Index() {
           <PlusCircledIcon />
         </Link>
       </Heading>
-      {photos && (
+      {photos && photos.length > 0 && (
         <Button variant="soft">
           <Link
             to="/review"
