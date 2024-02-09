@@ -14,6 +14,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
 
 
 /**
+ * Model Ingredient_events
+ * 
+ */
+export type Ingredient_events = $Result.DefaultSelection<Prisma.$Ingredient_eventsPayload>
+/**
  * Model Ingredients
  * 
  */
@@ -55,8 +60,8 @@ export const photo_upload_state: typeof $Enums.photo_upload_state
  * @example
  * ```
  * const prisma = new PrismaClient()
- * // Fetch zero or more Ingredients
- * const ingredients = await prisma.ingredients.findMany()
+ * // Fetch zero or more Ingredient_events
+ * const ingredient_events = await prisma.ingredient_events.findMany()
  * ```
  *
  * 
@@ -76,8 +81,8 @@ export class PrismaClient<
    * @example
    * ```
    * const prisma = new PrismaClient()
-   * // Fetch zero or more Ingredients
-   * const ingredients = await prisma.ingredients.findMany()
+   * // Fetch zero or more Ingredient_events
+   * const ingredient_events = await prisma.ingredient_events.findMany()
    * ```
    *
    * 
@@ -171,6 +176,16 @@ export class PrismaClient<
   $extends: $Extensions.ExtendsHook<'extends', Prisma.TypeMapCb, ExtArgs>
 
       /**
+   * `prisma.ingredient_events`: Exposes CRUD operations for the **Ingredient_events** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Ingredient_events
+    * const ingredient_events = await prisma.ingredient_events.findMany()
+    * ```
+    */
+  get ingredient_events(): Prisma.Ingredient_eventsDelegate<ExtArgs>;
+
+  /**
    * `prisma.ingredients`: Exposes CRUD operations for the **Ingredients** model.
     * Example usage:
     * ```ts
@@ -669,6 +684,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
   export const ModelName: {
+    Ingredient_events: 'Ingredient_events',
     Ingredients: 'Ingredients',
     Ingredients_photo_uploads: 'Ingredients_photo_uploads',
     Users: 'Users'
@@ -688,10 +704,76 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type TypeMap<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     meta: {
-      modelProps: 'ingredients' | 'ingredients_photo_uploads' | 'users'
+      modelProps: 'ingredient_events' | 'ingredients' | 'ingredients_photo_uploads' | 'users'
       txIsolationLevel: Prisma.TransactionIsolationLevel
     },
     model: {
+      Ingredient_events: {
+        payload: Prisma.$Ingredient_eventsPayload<ExtArgs>
+        fields: Prisma.Ingredient_eventsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.Ingredient_eventsFindUniqueArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.Ingredient_eventsFindUniqueOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload>
+          }
+          findFirst: {
+            args: Prisma.Ingredient_eventsFindFirstArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.Ingredient_eventsFindFirstOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload>
+          }
+          findMany: {
+            args: Prisma.Ingredient_eventsFindManyArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload>[]
+          }
+          create: {
+            args: Prisma.Ingredient_eventsCreateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload>
+          }
+          createMany: {
+            args: Prisma.Ingredient_eventsCreateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          delete: {
+            args: Prisma.Ingredient_eventsDeleteArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload>
+          }
+          update: {
+            args: Prisma.Ingredient_eventsUpdateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload>
+          }
+          deleteMany: {
+            args: Prisma.Ingredient_eventsDeleteManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          updateMany: {
+            args: Prisma.Ingredient_eventsUpdateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          upsert: {
+            args: Prisma.Ingredient_eventsUpsertArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload>
+          }
+          aggregate: {
+            args: Prisma.Ingredient_eventsAggregateArgs<ExtArgs>,
+            result: $Utils.Optional<AggregateIngredient_events>
+          }
+          groupBy: {
+            args: Prisma.Ingredient_eventsGroupByArgs<ExtArgs>,
+            result: $Utils.Optional<Ingredient_eventsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.Ingredient_eventsCountArgs<ExtArgs>,
+            result: $Utils.Optional<Ingredient_eventsCountAggregateOutputType> | number
+          }
+        }
+      }
       Ingredients: {
         payload: Prisma.$IngredientsPayload<ExtArgs>
         fields: Prisma.IngredientsFieldRefs
@@ -1039,6 +1121,40 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
   /**
+   * Count Type IngredientsCountOutputType
+   */
+
+  export type IngredientsCountOutputType = {
+    ingredient_events: number
+  }
+
+  export type IngredientsCountOutputTypeSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    ingredient_events?: boolean | IngredientsCountOutputTypeCountIngredient_eventsArgs
+  }
+
+  // Custom InputTypes
+
+  /**
+   * IngredientsCountOutputType without action
+   */
+  export type IngredientsCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IngredientsCountOutputType
+     */
+    select?: IngredientsCountOutputTypeSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * IngredientsCountOutputType without action
+   */
+  export type IngredientsCountOutputTypeCountIngredient_eventsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    where?: Ingredient_eventsWhereInput
+  }
+
+
+
+  /**
    * Count Type Ingredients_photo_uploadsCountOutputType
    */
 
@@ -1077,10 +1193,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    */
 
   export type UsersCountOutputType = {
+    ingredient_events: number
     ingredients_photo_uploads: number
   }
 
   export type UsersCountOutputTypeSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    ingredient_events?: boolean | UsersCountOutputTypeCountIngredient_eventsArgs
     ingredients_photo_uploads?: boolean | UsersCountOutputTypeCountIngredients_photo_uploadsArgs
   }
 
@@ -1100,6 +1218,14 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * UsersCountOutputType without action
    */
+  export type UsersCountOutputTypeCountIngredient_eventsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    where?: Ingredient_eventsWhereInput
+  }
+
+
+  /**
+   * UsersCountOutputType without action
+   */
   export type UsersCountOutputTypeCountIngredients_photo_uploadsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     where?: Ingredients_photo_uploadsWhereInput
   }
@@ -1109,6 +1235,938 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Models
    */
+
+  /**
+   * Model Ingredient_events
+   */
+
+  export type AggregateIngredient_events = {
+    _count: Ingredient_eventsCountAggregateOutputType | null
+    _min: Ingredient_eventsMinAggregateOutputType | null
+    _max: Ingredient_eventsMaxAggregateOutputType | null
+  }
+
+  export type Ingredient_eventsMinAggregateOutputType = {
+    id: string | null
+    ingredient_id: string | null
+    user_id: string | null
+    timestamp: Date | null
+  }
+
+  export type Ingredient_eventsMaxAggregateOutputType = {
+    id: string | null
+    ingredient_id: string | null
+    user_id: string | null
+    timestamp: Date | null
+  }
+
+  export type Ingredient_eventsCountAggregateOutputType = {
+    id: number
+    ingredient_id: number
+    user_id: number
+    timestamp: number
+    from_values: number
+    to_values: number
+    _all: number
+  }
+
+
+  export type Ingredient_eventsMinAggregateInputType = {
+    id?: true
+    ingredient_id?: true
+    user_id?: true
+    timestamp?: true
+  }
+
+  export type Ingredient_eventsMaxAggregateInputType = {
+    id?: true
+    ingredient_id?: true
+    user_id?: true
+    timestamp?: true
+  }
+
+  export type Ingredient_eventsCountAggregateInputType = {
+    id?: true
+    ingredient_id?: true
+    user_id?: true
+    timestamp?: true
+    from_values?: true
+    to_values?: true
+    _all?: true
+  }
+
+  export type Ingredient_eventsAggregateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Ingredient_events to aggregate.
+     */
+    where?: Ingredient_eventsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Ingredient_events to fetch.
+     */
+    orderBy?: Ingredient_eventsOrderByWithRelationInput | Ingredient_eventsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: Ingredient_eventsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Ingredient_events from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Ingredient_events.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Ingredient_events
+    **/
+    _count?: true | Ingredient_eventsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Ingredient_eventsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Ingredient_eventsMaxAggregateInputType
+  }
+
+  export type GetIngredient_eventsAggregateType<T extends Ingredient_eventsAggregateArgs> = {
+        [P in keyof T & keyof AggregateIngredient_events]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateIngredient_events[P]>
+      : GetScalarType<T[P], AggregateIngredient_events[P]>
+  }
+
+
+
+
+  export type Ingredient_eventsGroupByArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    where?: Ingredient_eventsWhereInput
+    orderBy?: Ingredient_eventsOrderByWithAggregationInput | Ingredient_eventsOrderByWithAggregationInput[]
+    by: Ingredient_eventsScalarFieldEnum[] | Ingredient_eventsScalarFieldEnum
+    having?: Ingredient_eventsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Ingredient_eventsCountAggregateInputType | true
+    _min?: Ingredient_eventsMinAggregateInputType
+    _max?: Ingredient_eventsMaxAggregateInputType
+  }
+
+  export type Ingredient_eventsGroupByOutputType = {
+    id: string
+    ingredient_id: string
+    user_id: string
+    timestamp: Date
+    from_values: JsonValue | null
+    to_values: JsonValue | null
+    _count: Ingredient_eventsCountAggregateOutputType | null
+    _min: Ingredient_eventsMinAggregateOutputType | null
+    _max: Ingredient_eventsMaxAggregateOutputType | null
+  }
+
+  type GetIngredient_eventsGroupByPayload<T extends Ingredient_eventsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Ingredient_eventsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Ingredient_eventsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Ingredient_eventsGroupByOutputType[P]>
+            : GetScalarType<T[P], Ingredient_eventsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type Ingredient_eventsSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ingredient_id?: boolean
+    user_id?: boolean
+    timestamp?: boolean
+    from_values?: boolean
+    to_values?: boolean
+    ingredients?: boolean | IngredientsDefaultArgs<ExtArgs>
+    users?: boolean | UsersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["ingredient_events"]>
+
+  export type Ingredient_eventsSelectScalar = {
+    id?: boolean
+    ingredient_id?: boolean
+    user_id?: boolean
+    timestamp?: boolean
+    from_values?: boolean
+    to_values?: boolean
+  }
+
+  export type Ingredient_eventsInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    ingredients?: boolean | IngredientsDefaultArgs<ExtArgs>
+    users?: boolean | UsersDefaultArgs<ExtArgs>
+  }
+
+
+  export type $Ingredient_eventsPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    name: "Ingredient_events"
+    objects: {
+      ingredients: Prisma.$IngredientsPayload<ExtArgs>
+      users: Prisma.$UsersPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetResult<{
+      /**
+       * @zod.string.uuid()
+       */
+      id: string
+      /**
+       * @zod.string.uuid()
+       */
+      ingredient_id: string
+      user_id: string
+      timestamp: Date
+      from_values: Prisma.JsonValue | null
+      to_values: Prisma.JsonValue | null
+    }, ExtArgs["result"]["ingredient_events"]>
+    composites: {}
+  }
+
+
+  type Ingredient_eventsGetPayload<S extends boolean | null | undefined | Ingredient_eventsDefaultArgs> = $Result.GetResult<Prisma.$Ingredient_eventsPayload, S>
+
+  type Ingredient_eventsCountArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = 
+    Omit<Ingredient_eventsFindManyArgs, 'select' | 'include'> & {
+      select?: Ingredient_eventsCountAggregateInputType | true
+    }
+
+  export interface Ingredient_eventsDelegate<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Ingredient_events'], meta: { name: 'Ingredient_events' } }
+    /**
+     * Find zero or one Ingredient_events that matches the filter.
+     * @param {Ingredient_eventsFindUniqueArgs} args - Arguments to find a Ingredient_events
+     * @example
+     * // Get one Ingredient_events
+     * const ingredient_events = await prisma.ingredient_events.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends Ingredient_eventsFindUniqueArgs<ExtArgs>>(
+      args: SelectSubset<T, Ingredient_eventsFindUniqueArgs<ExtArgs>>
+    ): Prisma__Ingredient_eventsClient<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'findUnique'> | null, null, ExtArgs>
+
+    /**
+     * Find one Ingredient_events that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {Ingredient_eventsFindUniqueOrThrowArgs} args - Arguments to find a Ingredient_events
+     * @example
+     * // Get one Ingredient_events
+     * const ingredient_events = await prisma.ingredient_events.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends Ingredient_eventsFindUniqueOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, Ingredient_eventsFindUniqueOrThrowArgs<ExtArgs>>
+    ): Prisma__Ingredient_eventsClient<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'findUniqueOrThrow'>, never, ExtArgs>
+
+    /**
+     * Find the first Ingredient_events that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Ingredient_eventsFindFirstArgs} args - Arguments to find a Ingredient_events
+     * @example
+     * // Get one Ingredient_events
+     * const ingredient_events = await prisma.ingredient_events.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends Ingredient_eventsFindFirstArgs<ExtArgs>>(
+      args?: SelectSubset<T, Ingredient_eventsFindFirstArgs<ExtArgs>>
+    ): Prisma__Ingredient_eventsClient<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'findFirst'> | null, null, ExtArgs>
+
+    /**
+     * Find the first Ingredient_events that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Ingredient_eventsFindFirstOrThrowArgs} args - Arguments to find a Ingredient_events
+     * @example
+     * // Get one Ingredient_events
+     * const ingredient_events = await prisma.ingredient_events.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends Ingredient_eventsFindFirstOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, Ingredient_eventsFindFirstOrThrowArgs<ExtArgs>>
+    ): Prisma__Ingredient_eventsClient<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'findFirstOrThrow'>, never, ExtArgs>
+
+    /**
+     * Find zero or more Ingredient_events that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Ingredient_eventsFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Ingredient_events
+     * const ingredient_events = await prisma.ingredient_events.findMany()
+     * 
+     * // Get first 10 Ingredient_events
+     * const ingredient_events = await prisma.ingredient_events.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const ingredient_eventsWithIdOnly = await prisma.ingredient_events.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends Ingredient_eventsFindManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, Ingredient_eventsFindManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'findMany'>>
+
+    /**
+     * Create a Ingredient_events.
+     * @param {Ingredient_eventsCreateArgs} args - Arguments to create a Ingredient_events.
+     * @example
+     * // Create one Ingredient_events
+     * const Ingredient_events = await prisma.ingredient_events.create({
+     *   data: {
+     *     // ... data to create a Ingredient_events
+     *   }
+     * })
+     * 
+    **/
+    create<T extends Ingredient_eventsCreateArgs<ExtArgs>>(
+      args: SelectSubset<T, Ingredient_eventsCreateArgs<ExtArgs>>
+    ): Prisma__Ingredient_eventsClient<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'create'>, never, ExtArgs>
+
+    /**
+     * Create many Ingredient_events.
+     *     @param {Ingredient_eventsCreateManyArgs} args - Arguments to create many Ingredient_events.
+     *     @example
+     *     // Create many Ingredient_events
+     *     const ingredient_events = await prisma.ingredient_events.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends Ingredient_eventsCreateManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, Ingredient_eventsCreateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Ingredient_events.
+     * @param {Ingredient_eventsDeleteArgs} args - Arguments to delete one Ingredient_events.
+     * @example
+     * // Delete one Ingredient_events
+     * const Ingredient_events = await prisma.ingredient_events.delete({
+     *   where: {
+     *     // ... filter to delete one Ingredient_events
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends Ingredient_eventsDeleteArgs<ExtArgs>>(
+      args: SelectSubset<T, Ingredient_eventsDeleteArgs<ExtArgs>>
+    ): Prisma__Ingredient_eventsClient<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'delete'>, never, ExtArgs>
+
+    /**
+     * Update one Ingredient_events.
+     * @param {Ingredient_eventsUpdateArgs} args - Arguments to update one Ingredient_events.
+     * @example
+     * // Update one Ingredient_events
+     * const ingredient_events = await prisma.ingredient_events.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends Ingredient_eventsUpdateArgs<ExtArgs>>(
+      args: SelectSubset<T, Ingredient_eventsUpdateArgs<ExtArgs>>
+    ): Prisma__Ingredient_eventsClient<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'update'>, never, ExtArgs>
+
+    /**
+     * Delete zero or more Ingredient_events.
+     * @param {Ingredient_eventsDeleteManyArgs} args - Arguments to filter Ingredient_events to delete.
+     * @example
+     * // Delete a few Ingredient_events
+     * const { count } = await prisma.ingredient_events.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends Ingredient_eventsDeleteManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, Ingredient_eventsDeleteManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Ingredient_events.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Ingredient_eventsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Ingredient_events
+     * const ingredient_events = await prisma.ingredient_events.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends Ingredient_eventsUpdateManyArgs<ExtArgs>>(
+      args: SelectSubset<T, Ingredient_eventsUpdateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Ingredient_events.
+     * @param {Ingredient_eventsUpsertArgs} args - Arguments to update or create a Ingredient_events.
+     * @example
+     * // Update or create a Ingredient_events
+     * const ingredient_events = await prisma.ingredient_events.upsert({
+     *   create: {
+     *     // ... data to create a Ingredient_events
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Ingredient_events we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends Ingredient_eventsUpsertArgs<ExtArgs>>(
+      args: SelectSubset<T, Ingredient_eventsUpsertArgs<ExtArgs>>
+    ): Prisma__Ingredient_eventsClient<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'upsert'>, never, ExtArgs>
+
+    /**
+     * Count the number of Ingredient_events.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Ingredient_eventsCountArgs} args - Arguments to filter Ingredient_events to count.
+     * @example
+     * // Count the number of Ingredient_events
+     * const count = await prisma.ingredient_events.count({
+     *   where: {
+     *     // ... the filter for the Ingredient_events we want to count
+     *   }
+     * })
+    **/
+    count<T extends Ingredient_eventsCountArgs>(
+      args?: Subset<T, Ingredient_eventsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Ingredient_eventsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Ingredient_events.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Ingredient_eventsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Ingredient_eventsAggregateArgs>(args: Subset<T, Ingredient_eventsAggregateArgs>): Prisma.PrismaPromise<GetIngredient_eventsAggregateType<T>>
+
+    /**
+     * Group by Ingredient_events.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Ingredient_eventsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends Ingredient_eventsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: Ingredient_eventsGroupByArgs['orderBy'] }
+        : { orderBy?: Ingredient_eventsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, Ingredient_eventsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetIngredient_eventsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Ingredient_events model
+   */
+  readonly fields: Ingredient_eventsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Ingredient_events.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__Ingredient_eventsClient<T, Null = never, ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+
+    ingredients<T extends IngredientsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, IngredientsDefaultArgs<ExtArgs>>): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'findUniqueOrThrow'> | Null, Null, ExtArgs>;
+
+    users<T extends UsersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UsersDefaultArgs<ExtArgs>>): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'findUniqueOrThrow'> | Null, Null, ExtArgs>;
+
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+  }
+
+
+
+  /**
+   * Fields of the Ingredient_events model
+   */ 
+  interface Ingredient_eventsFieldRefs {
+    readonly id: FieldRef<"Ingredient_events", 'String'>
+    readonly ingredient_id: FieldRef<"Ingredient_events", 'String'>
+    readonly user_id: FieldRef<"Ingredient_events", 'String'>
+    readonly timestamp: FieldRef<"Ingredient_events", 'DateTime'>
+    readonly from_values: FieldRef<"Ingredient_events", 'Json'>
+    readonly to_values: FieldRef<"Ingredient_events", 'Json'>
+  }
+    
+
+  // Custom InputTypes
+
+  /**
+   * Ingredient_events findUnique
+   */
+  export type Ingredient_eventsFindUniqueArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredient_events
+     */
+    select?: Ingredient_eventsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredient_eventsInclude<ExtArgs> | null
+    /**
+     * Filter, which Ingredient_events to fetch.
+     */
+    where: Ingredient_eventsWhereUniqueInput
+  }
+
+
+  /**
+   * Ingredient_events findUniqueOrThrow
+   */
+  export type Ingredient_eventsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredient_events
+     */
+    select?: Ingredient_eventsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredient_eventsInclude<ExtArgs> | null
+    /**
+     * Filter, which Ingredient_events to fetch.
+     */
+    where: Ingredient_eventsWhereUniqueInput
+  }
+
+
+  /**
+   * Ingredient_events findFirst
+   */
+  export type Ingredient_eventsFindFirstArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredient_events
+     */
+    select?: Ingredient_eventsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredient_eventsInclude<ExtArgs> | null
+    /**
+     * Filter, which Ingredient_events to fetch.
+     */
+    where?: Ingredient_eventsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Ingredient_events to fetch.
+     */
+    orderBy?: Ingredient_eventsOrderByWithRelationInput | Ingredient_eventsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Ingredient_events.
+     */
+    cursor?: Ingredient_eventsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Ingredient_events from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Ingredient_events.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Ingredient_events.
+     */
+    distinct?: Ingredient_eventsScalarFieldEnum | Ingredient_eventsScalarFieldEnum[]
+  }
+
+
+  /**
+   * Ingredient_events findFirstOrThrow
+   */
+  export type Ingredient_eventsFindFirstOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredient_events
+     */
+    select?: Ingredient_eventsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredient_eventsInclude<ExtArgs> | null
+    /**
+     * Filter, which Ingredient_events to fetch.
+     */
+    where?: Ingredient_eventsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Ingredient_events to fetch.
+     */
+    orderBy?: Ingredient_eventsOrderByWithRelationInput | Ingredient_eventsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Ingredient_events.
+     */
+    cursor?: Ingredient_eventsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Ingredient_events from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Ingredient_events.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Ingredient_events.
+     */
+    distinct?: Ingredient_eventsScalarFieldEnum | Ingredient_eventsScalarFieldEnum[]
+  }
+
+
+  /**
+   * Ingredient_events findMany
+   */
+  export type Ingredient_eventsFindManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredient_events
+     */
+    select?: Ingredient_eventsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredient_eventsInclude<ExtArgs> | null
+    /**
+     * Filter, which Ingredient_events to fetch.
+     */
+    where?: Ingredient_eventsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Ingredient_events to fetch.
+     */
+    orderBy?: Ingredient_eventsOrderByWithRelationInput | Ingredient_eventsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Ingredient_events.
+     */
+    cursor?: Ingredient_eventsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Ingredient_events from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Ingredient_events.
+     */
+    skip?: number
+    distinct?: Ingredient_eventsScalarFieldEnum | Ingredient_eventsScalarFieldEnum[]
+  }
+
+
+  /**
+   * Ingredient_events create
+   */
+  export type Ingredient_eventsCreateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredient_events
+     */
+    select?: Ingredient_eventsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredient_eventsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Ingredient_events.
+     */
+    data: XOR<Ingredient_eventsCreateInput, Ingredient_eventsUncheckedCreateInput>
+  }
+
+
+  /**
+   * Ingredient_events createMany
+   */
+  export type Ingredient_eventsCreateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Ingredient_events.
+     */
+    data: Ingredient_eventsCreateManyInput | Ingredient_eventsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * Ingredient_events update
+   */
+  export type Ingredient_eventsUpdateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredient_events
+     */
+    select?: Ingredient_eventsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredient_eventsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Ingredient_events.
+     */
+    data: XOR<Ingredient_eventsUpdateInput, Ingredient_eventsUncheckedUpdateInput>
+    /**
+     * Choose, which Ingredient_events to update.
+     */
+    where: Ingredient_eventsWhereUniqueInput
+  }
+
+
+  /**
+   * Ingredient_events updateMany
+   */
+  export type Ingredient_eventsUpdateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Ingredient_events.
+     */
+    data: XOR<Ingredient_eventsUpdateManyMutationInput, Ingredient_eventsUncheckedUpdateManyInput>
+    /**
+     * Filter which Ingredient_events to update
+     */
+    where?: Ingredient_eventsWhereInput
+  }
+
+
+  /**
+   * Ingredient_events upsert
+   */
+  export type Ingredient_eventsUpsertArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredient_events
+     */
+    select?: Ingredient_eventsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredient_eventsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Ingredient_events to update in case it exists.
+     */
+    where: Ingredient_eventsWhereUniqueInput
+    /**
+     * In case the Ingredient_events found by the `where` argument doesn't exist, create a new Ingredient_events with this data.
+     */
+    create: XOR<Ingredient_eventsCreateInput, Ingredient_eventsUncheckedCreateInput>
+    /**
+     * In case the Ingredient_events was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<Ingredient_eventsUpdateInput, Ingredient_eventsUncheckedUpdateInput>
+  }
+
+
+  /**
+   * Ingredient_events delete
+   */
+  export type Ingredient_eventsDeleteArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredient_events
+     */
+    select?: Ingredient_eventsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredient_eventsInclude<ExtArgs> | null
+    /**
+     * Filter which Ingredient_events to delete.
+     */
+    where: Ingredient_eventsWhereUniqueInput
+  }
+
+
+  /**
+   * Ingredient_events deleteMany
+   */
+  export type Ingredient_eventsDeleteManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Ingredient_events to delete
+     */
+    where?: Ingredient_eventsWhereInput
+  }
+
+
+  /**
+   * Ingredient_events without action
+   */
+  export type Ingredient_eventsDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredient_events
+     */
+    select?: Ingredient_eventsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredient_eventsInclude<ExtArgs> | null
+  }
+
+
 
   /**
    * Model Ingredients
@@ -1336,7 +2394,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     fill_date?: boolean
     is_ground?: boolean
     ingredients_photo_uploads_id?: boolean
+    ingredient_events?: boolean | Ingredients$ingredient_eventsArgs<ExtArgs>
     ingredients_photo_uploads?: boolean | Ingredients$ingredients_photo_uploadsArgs<ExtArgs>
+    _count?: boolean | IngredientsCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["ingredients"]>
 
   export type IngredientsSelectScalar = {
@@ -1351,13 +2411,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type IngredientsInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    ingredient_events?: boolean | Ingredients$ingredient_eventsArgs<ExtArgs>
     ingredients_photo_uploads?: boolean | Ingredients$ingredients_photo_uploadsArgs<ExtArgs>
+    _count?: boolean | IngredientsCountOutputTypeDefaultArgs<ExtArgs>
   }
 
 
   export type $IngredientsPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     name: "Ingredients"
     objects: {
+      ingredient_events: Prisma.$Ingredient_eventsPayload<ExtArgs>[]
       ingredients_photo_uploads: Prisma.$Ingredients_photo_uploadsPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetResult<{
@@ -1746,6 +2809,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export interface Prisma__IngredientsClient<T, Null = never, ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
 
+    ingredient_events<T extends Ingredients$ingredient_eventsArgs<ExtArgs> = {}>(args?: Subset<T, Ingredients$ingredient_eventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'findMany'> | Null>;
+
     ingredients_photo_uploads<T extends Ingredients$ingredients_photo_uploadsArgs<ExtArgs> = {}>(args?: Subset<T, Ingredients$ingredients_photo_uploadsArgs<ExtArgs>>): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'findUniqueOrThrow'> | null, null, ExtArgs>;
 
     /**
@@ -2092,6 +3157,27 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * Filter which Ingredients to delete
      */
     where?: IngredientsWhereInput
+  }
+
+
+  /**
+   * Ingredients.ingredient_events
+   */
+  export type Ingredients$ingredient_eventsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredient_events
+     */
+    select?: Ingredient_eventsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredient_eventsInclude<ExtArgs> | null
+    where?: Ingredient_eventsWhereInput
+    orderBy?: Ingredient_eventsOrderByWithRelationInput | Ingredient_eventsOrderByWithRelationInput[]
+    cursor?: Ingredient_eventsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Ingredient_eventsScalarFieldEnum | Ingredient_eventsScalarFieldEnum[]
   }
 
 
@@ -3301,6 +4387,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: boolean
     name?: boolean
     avatar_url?: boolean
+    ingredient_events?: boolean | Users$ingredient_eventsArgs<ExtArgs>
     ingredients_photo_uploads?: boolean | Users$ingredients_photo_uploadsArgs<ExtArgs>
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["users"]>
@@ -3312,6 +4399,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type UsersInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    ingredient_events?: boolean | Users$ingredient_eventsArgs<ExtArgs>
     ingredients_photo_uploads?: boolean | Users$ingredients_photo_uploadsArgs<ExtArgs>
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -3320,6 +4408,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type $UsersPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     name: "Users"
     objects: {
+      ingredient_events: Prisma.$Ingredient_eventsPayload<ExtArgs>[]
       ingredients_photo_uploads: Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetResult<{
@@ -3691,6 +4780,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export interface Prisma__UsersClient<T, Null = never, ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
 
+    ingredient_events<T extends Users$ingredient_eventsArgs<ExtArgs> = {}>(args?: Subset<T, Users$ingredient_eventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'findMany'> | Null>;
+
     ingredients_photo_uploads<T extends Users$ingredients_photo_uploadsArgs<ExtArgs> = {}>(args?: Subset<T, Users$ingredients_photo_uploadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'findMany'> | Null>;
 
     /**
@@ -4036,6 +5127,27 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
   /**
+   * Users.ingredient_events
+   */
+  export type Users$ingredient_eventsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredient_events
+     */
+    select?: Ingredient_eventsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredient_eventsInclude<ExtArgs> | null
+    where?: Ingredient_eventsWhereInput
+    orderBy?: Ingredient_eventsOrderByWithRelationInput | Ingredient_eventsOrderByWithRelationInput[]
+    cursor?: Ingredient_eventsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Ingredient_eventsScalarFieldEnum | Ingredient_eventsScalarFieldEnum[]
+  }
+
+
+  /**
    * Users.ingredients_photo_uploads
    */
   export type Users$ingredients_photo_uploadsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
@@ -4086,6 +5198,18 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+  export const Ingredient_eventsScalarFieldEnum: {
+    id: 'id',
+    ingredient_id: 'ingredient_id',
+    user_id: 'user_id',
+    timestamp: 'timestamp',
+    from_values: 'from_values',
+    to_values: 'to_values'
+  };
+
+  export type Ingredient_eventsScalarFieldEnum = (typeof Ingredient_eventsScalarFieldEnum)[keyof typeof Ingredient_eventsScalarFieldEnum]
+
+
   export const IngredientsScalarFieldEnum: {
     id: 'id',
     name: 'name',
@@ -4131,12 +5255,29 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
   export const QueryMode: {
     default: 'default',
     insensitive: 'insensitive'
   };
 
   export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   export const NullsOrder: {
@@ -4167,6 +5308,27 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
   /**
+   * Reference to a field of type 'DateTime'
+   */
+  export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+  /**
+   * Reference to a field of type 'DateTime[]'
+   */
+  export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -4184,20 +5346,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'DateTime'
-   */
-  export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
-    
-
-
-  /**
-   * Reference to a field of type 'DateTime[]'
-   */
-  export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
     
 
 
@@ -4232,6 +5380,69 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    */
 
 
+  export type Ingredient_eventsWhereInput = {
+    AND?: Ingredient_eventsWhereInput | Ingredient_eventsWhereInput[]
+    OR?: Ingredient_eventsWhereInput[]
+    NOT?: Ingredient_eventsWhereInput | Ingredient_eventsWhereInput[]
+    id?: UuidFilter<"Ingredient_events"> | string
+    ingredient_id?: UuidFilter<"Ingredient_events"> | string
+    user_id?: StringFilter<"Ingredient_events"> | string
+    timestamp?: DateTimeFilter<"Ingredient_events"> | Date | string
+    from_values?: JsonNullableFilter<"Ingredient_events">
+    to_values?: JsonNullableFilter<"Ingredient_events">
+    ingredients?: XOR<IngredientsRelationFilter, IngredientsWhereInput>
+    users?: XOR<UsersRelationFilter, UsersWhereInput>
+  }
+
+  export type Ingredient_eventsOrderByWithRelationInput = {
+    id?: SortOrder
+    ingredient_id?: SortOrder
+    user_id?: SortOrder
+    timestamp?: SortOrder
+    from_values?: SortOrderInput | SortOrder
+    to_values?: SortOrderInput | SortOrder
+    ingredients?: IngredientsOrderByWithRelationInput
+    users?: UsersOrderByWithRelationInput
+  }
+
+  export type Ingredient_eventsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: Ingredient_eventsWhereInput | Ingredient_eventsWhereInput[]
+    OR?: Ingredient_eventsWhereInput[]
+    NOT?: Ingredient_eventsWhereInput | Ingredient_eventsWhereInput[]
+    ingredient_id?: UuidFilter<"Ingredient_events"> | string
+    user_id?: StringFilter<"Ingredient_events"> | string
+    timestamp?: DateTimeFilter<"Ingredient_events"> | Date | string
+    from_values?: JsonNullableFilter<"Ingredient_events">
+    to_values?: JsonNullableFilter<"Ingredient_events">
+    ingredients?: XOR<IngredientsRelationFilter, IngredientsWhereInput>
+    users?: XOR<UsersRelationFilter, UsersWhereInput>
+  }, "id">
+
+  export type Ingredient_eventsOrderByWithAggregationInput = {
+    id?: SortOrder
+    ingredient_id?: SortOrder
+    user_id?: SortOrder
+    timestamp?: SortOrder
+    from_values?: SortOrderInput | SortOrder
+    to_values?: SortOrderInput | SortOrder
+    _count?: Ingredient_eventsCountOrderByAggregateInput
+    _max?: Ingredient_eventsMaxOrderByAggregateInput
+    _min?: Ingredient_eventsMinOrderByAggregateInput
+  }
+
+  export type Ingredient_eventsScalarWhereWithAggregatesInput = {
+    AND?: Ingredient_eventsScalarWhereWithAggregatesInput | Ingredient_eventsScalarWhereWithAggregatesInput[]
+    OR?: Ingredient_eventsScalarWhereWithAggregatesInput[]
+    NOT?: Ingredient_eventsScalarWhereWithAggregatesInput | Ingredient_eventsScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"Ingredient_events"> | string
+    ingredient_id?: UuidWithAggregatesFilter<"Ingredient_events"> | string
+    user_id?: StringWithAggregatesFilter<"Ingredient_events"> | string
+    timestamp?: DateTimeWithAggregatesFilter<"Ingredient_events"> | Date | string
+    from_values?: JsonNullableWithAggregatesFilter<"Ingredient_events">
+    to_values?: JsonNullableWithAggregatesFilter<"Ingredient_events">
+  }
+
   export type IngredientsWhereInput = {
     AND?: IngredientsWhereInput | IngredientsWhereInput[]
     OR?: IngredientsWhereInput[]
@@ -4244,6 +5455,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     fill_date?: StringFilter<"Ingredients"> | string
     is_ground?: BoolNullableFilter<"Ingredients"> | boolean | null
     ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
+    ingredient_events?: Ingredient_eventsListRelationFilter
     ingredients_photo_uploads?: XOR<Ingredients_photo_uploadsNullableRelationFilter, Ingredients_photo_uploadsWhereInput> | null
   }
 
@@ -4256,6 +5468,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     fill_date?: SortOrder
     is_ground?: SortOrderInput | SortOrder
     ingredients_photo_uploads_id?: SortOrderInput | SortOrder
+    ingredient_events?: Ingredient_eventsOrderByRelationAggregateInput
     ingredients_photo_uploads?: Ingredients_photo_uploadsOrderByWithRelationInput
   }
 
@@ -4271,6 +5484,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     fill_date?: StringFilter<"Ingredients"> | string
     is_ground?: BoolNullableFilter<"Ingredients"> | boolean | null
     ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
+    ingredient_events?: Ingredient_eventsListRelationFilter
     ingredients_photo_uploads?: XOR<Ingredients_photo_uploadsNullableRelationFilter, Ingredients_photo_uploadsWhereInput> | null
   }, "id">
 
@@ -4386,6 +5600,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: StringFilter<"Users"> | string
     name?: StringFilter<"Users"> | string
     avatar_url?: StringNullableFilter<"Users"> | string | null
+    ingredient_events?: Ingredient_eventsListRelationFilter
     ingredients_photo_uploads?: Ingredients_photo_uploadsListRelationFilter
   }
 
@@ -4393,6 +5608,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: SortOrder
     name?: SortOrder
     avatar_url?: SortOrderInput | SortOrder
+    ingredient_events?: Ingredient_eventsOrderByRelationAggregateInput
     ingredients_photo_uploads?: Ingredients_photo_uploadsOrderByRelationAggregateInput
   }
 
@@ -4403,6 +5619,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     NOT?: UsersWhereInput | UsersWhereInput[]
     name?: StringFilter<"Users"> | string
     avatar_url?: StringNullableFilter<"Users"> | string | null
+    ingredient_events?: Ingredient_eventsListRelationFilter
     ingredients_photo_uploads?: Ingredients_photo_uploadsListRelationFilter
   }, "id">
 
@@ -4424,6 +5641,67 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     avatar_url?: StringNullableWithAggregatesFilter<"Users"> | string | null
   }
 
+  export type Ingredient_eventsCreateInput = {
+    id: string
+    timestamp: Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+    ingredients: IngredientsCreateNestedOneWithoutIngredient_eventsInput
+    users: UsersCreateNestedOneWithoutIngredient_eventsInput
+  }
+
+  export type Ingredient_eventsUncheckedCreateInput = {
+    id: string
+    ingredient_id: string
+    user_id: string
+    timestamp: Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type Ingredient_eventsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+    ingredients?: IngredientsUpdateOneRequiredWithoutIngredient_eventsNestedInput
+    users?: UsersUpdateOneRequiredWithoutIngredient_eventsNestedInput
+  }
+
+  export type Ingredient_eventsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ingredient_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type Ingredient_eventsCreateManyInput = {
+    id: string
+    ingredient_id: string
+    user_id: string
+    timestamp: Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type Ingredient_eventsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type Ingredient_eventsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ingredient_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+  }
+
   export type IngredientsCreateInput = {
     id: string
     name: string
@@ -4432,6 +5710,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     shelf_life_months: number
     fill_date: string
     is_ground?: boolean | null
+    ingredient_events?: Ingredient_eventsCreateNestedManyWithoutIngredientsInput
     ingredients_photo_uploads?: Ingredients_photo_uploadsCreateNestedOneWithoutIngredientsInput
   }
 
@@ -4444,6 +5723,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     fill_date: string
     is_ground?: boolean | null
     ingredients_photo_uploads_id?: string | null
+    ingredient_events?: Ingredient_eventsUncheckedCreateNestedManyWithoutIngredientsInput
   }
 
   export type IngredientsUpdateInput = {
@@ -4454,6 +5734,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    ingredient_events?: Ingredient_eventsUpdateManyWithoutIngredientsNestedInput
     ingredients_photo_uploads?: Ingredients_photo_uploadsUpdateOneWithoutIngredientsNestedInput
   }
 
@@ -4466,6 +5747,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
     ingredients_photo_uploads_id?: NullableStringFieldUpdateOperationsInput | string | null
+    ingredient_events?: Ingredient_eventsUncheckedUpdateManyWithoutIngredientsNestedInput
   }
 
   export type IngredientsCreateManyInput = {
@@ -4584,6 +5866,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: string
     name: string
     avatar_url?: string | null
+    ingredient_events?: Ingredient_eventsCreateNestedManyWithoutUsersInput
     ingredients_photo_uploads?: Ingredients_photo_uploadsCreateNestedManyWithoutUsersInput
   }
 
@@ -4591,6 +5874,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: string
     name: string
     avatar_url?: string | null
+    ingredient_events?: Ingredient_eventsUncheckedCreateNestedManyWithoutUsersInput
     ingredients_photo_uploads?: Ingredients_photo_uploadsUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -4598,6 +5882,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    ingredient_events?: Ingredient_eventsUpdateManyWithoutUsersNestedInput
     ingredients_photo_uploads?: Ingredients_photo_uploadsUpdateManyWithoutUsersNestedInput
   }
 
@@ -4605,6 +5890,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    ingredient_events?: Ingredient_eventsUncheckedUpdateManyWithoutUsersNestedInput
     ingredients_photo_uploads?: Ingredients_photo_uploadsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -4653,6 +5939,149 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type DateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+  export type JsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type IngredientsRelationFilter = {
+    is?: IngredientsWhereInput
+    isNot?: IngredientsWhereInput
+  }
+
+  export type UsersRelationFilter = {
+    is?: UsersWhereInput
+    isNot?: UsersWhereInput
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
+  export type Ingredient_eventsCountOrderByAggregateInput = {
+    id?: SortOrder
+    ingredient_id?: SortOrder
+    user_id?: SortOrder
+    timestamp?: SortOrder
+    from_values?: SortOrder
+    to_values?: SortOrder
+  }
+
+  export type Ingredient_eventsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    ingredient_id?: SortOrder
+    user_id?: SortOrder
+    timestamp?: SortOrder
+  }
+
+  export type Ingredient_eventsMinOrderByAggregateInput = {
+    id?: SortOrder
+    ingredient_id?: SortOrder
+    user_id?: SortOrder
+    timestamp?: SortOrder
+  }
+
+  export type UuidWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type StringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
   export type BoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -4686,14 +6115,19 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     not?: NestedUuidNullableFilter<$PrismaModel> | string | null
   }
 
+  export type Ingredient_eventsListRelationFilter = {
+    every?: Ingredient_eventsWhereInput
+    some?: Ingredient_eventsWhereInput
+    none?: Ingredient_eventsWhereInput
+  }
+
   export type Ingredients_photo_uploadsNullableRelationFilter = {
     is?: Ingredients_photo_uploadsWhereInput | null
     isNot?: Ingredients_photo_uploadsWhereInput | null
   }
 
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
+  export type Ingredient_eventsOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type IngredientsCountOrderByAggregateInput = {
@@ -4737,39 +6171,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type IngredientsSumOrderByAggregateInput = {
     fill_level?: SortOrder
     shelf_life_months?: SortOrder
-  }
-
-  export type UuidWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedUuidWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
-  }
-
-  export type StringWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
   }
 
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -4817,17 +6218,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
-  }
-
-  export type DateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
   export type DateTimeNullableFilter<$PrismaModel = never> = {
@@ -4880,11 +6270,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     none?: IngredientsWhereInput
   }
 
-  export type UsersRelationFilter = {
-    is?: UsersWhereInput
-    isNot?: UsersWhereInput
-  }
-
   export type IngredientsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -4930,20 +6315,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type Ingredients_photo_uploadsSumOrderByAggregateInput = {
     upload_duration_sec?: SortOrder
     ai_processing_duration_sec?: SortOrder
-  }
-
-  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -5032,14 +6403,60 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     avatar_url?: SortOrder
   }
 
+  export type IngredientsCreateNestedOneWithoutIngredient_eventsInput = {
+    create?: XOR<IngredientsCreateWithoutIngredient_eventsInput, IngredientsUncheckedCreateWithoutIngredient_eventsInput>
+    connectOrCreate?: IngredientsCreateOrConnectWithoutIngredient_eventsInput
+    connect?: IngredientsWhereUniqueInput
+  }
+
+  export type UsersCreateNestedOneWithoutIngredient_eventsInput = {
+    create?: XOR<UsersCreateWithoutIngredient_eventsInput, UsersUncheckedCreateWithoutIngredient_eventsInput>
+    connectOrCreate?: UsersCreateOrConnectWithoutIngredient_eventsInput
+    connect?: UsersWhereUniqueInput
+  }
+
+  export type StringFieldUpdateOperationsInput = {
+    set?: string
+  }
+
+  export type DateTimeFieldUpdateOperationsInput = {
+    set?: Date | string
+  }
+
+  export type IngredientsUpdateOneRequiredWithoutIngredient_eventsNestedInput = {
+    create?: XOR<IngredientsCreateWithoutIngredient_eventsInput, IngredientsUncheckedCreateWithoutIngredient_eventsInput>
+    connectOrCreate?: IngredientsCreateOrConnectWithoutIngredient_eventsInput
+    upsert?: IngredientsUpsertWithoutIngredient_eventsInput
+    connect?: IngredientsWhereUniqueInput
+    update?: XOR<XOR<IngredientsUpdateToOneWithWhereWithoutIngredient_eventsInput, IngredientsUpdateWithoutIngredient_eventsInput>, IngredientsUncheckedUpdateWithoutIngredient_eventsInput>
+  }
+
+  export type UsersUpdateOneRequiredWithoutIngredient_eventsNestedInput = {
+    create?: XOR<UsersCreateWithoutIngredient_eventsInput, UsersUncheckedCreateWithoutIngredient_eventsInput>
+    connectOrCreate?: UsersCreateOrConnectWithoutIngredient_eventsInput
+    upsert?: UsersUpsertWithoutIngredient_eventsInput
+    connect?: UsersWhereUniqueInput
+    update?: XOR<XOR<UsersUpdateToOneWithWhereWithoutIngredient_eventsInput, UsersUpdateWithoutIngredient_eventsInput>, UsersUncheckedUpdateWithoutIngredient_eventsInput>
+  }
+
+  export type Ingredient_eventsCreateNestedManyWithoutIngredientsInput = {
+    create?: XOR<Ingredient_eventsCreateWithoutIngredientsInput, Ingredient_eventsUncheckedCreateWithoutIngredientsInput> | Ingredient_eventsCreateWithoutIngredientsInput[] | Ingredient_eventsUncheckedCreateWithoutIngredientsInput[]
+    connectOrCreate?: Ingredient_eventsCreateOrConnectWithoutIngredientsInput | Ingredient_eventsCreateOrConnectWithoutIngredientsInput[]
+    createMany?: Ingredient_eventsCreateManyIngredientsInputEnvelope
+    connect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+  }
+
   export type Ingredients_photo_uploadsCreateNestedOneWithoutIngredientsInput = {
     create?: XOR<Ingredients_photo_uploadsCreateWithoutIngredientsInput, Ingredients_photo_uploadsUncheckedCreateWithoutIngredientsInput>
     connectOrCreate?: Ingredients_photo_uploadsCreateOrConnectWithoutIngredientsInput
     connect?: Ingredients_photo_uploadsWhereUniqueInput
   }
 
-  export type StringFieldUpdateOperationsInput = {
-    set?: string
+  export type Ingredient_eventsUncheckedCreateNestedManyWithoutIngredientsInput = {
+    create?: XOR<Ingredient_eventsCreateWithoutIngredientsInput, Ingredient_eventsUncheckedCreateWithoutIngredientsInput> | Ingredient_eventsCreateWithoutIngredientsInput[] | Ingredient_eventsUncheckedCreateWithoutIngredientsInput[]
+    connectOrCreate?: Ingredient_eventsCreateOrConnectWithoutIngredientsInput | Ingredient_eventsCreateOrConnectWithoutIngredientsInput[]
+    createMany?: Ingredient_eventsCreateManyIngredientsInputEnvelope
+    connect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -5058,6 +6475,20 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     set?: boolean | null
   }
 
+  export type Ingredient_eventsUpdateManyWithoutIngredientsNestedInput = {
+    create?: XOR<Ingredient_eventsCreateWithoutIngredientsInput, Ingredient_eventsUncheckedCreateWithoutIngredientsInput> | Ingredient_eventsCreateWithoutIngredientsInput[] | Ingredient_eventsUncheckedCreateWithoutIngredientsInput[]
+    connectOrCreate?: Ingredient_eventsCreateOrConnectWithoutIngredientsInput | Ingredient_eventsCreateOrConnectWithoutIngredientsInput[]
+    upsert?: Ingredient_eventsUpsertWithWhereUniqueWithoutIngredientsInput | Ingredient_eventsUpsertWithWhereUniqueWithoutIngredientsInput[]
+    createMany?: Ingredient_eventsCreateManyIngredientsInputEnvelope
+    set?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    disconnect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    delete?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    connect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    update?: Ingredient_eventsUpdateWithWhereUniqueWithoutIngredientsInput | Ingredient_eventsUpdateWithWhereUniqueWithoutIngredientsInput[]
+    updateMany?: Ingredient_eventsUpdateManyWithWhereWithoutIngredientsInput | Ingredient_eventsUpdateManyWithWhereWithoutIngredientsInput[]
+    deleteMany?: Ingredient_eventsScalarWhereInput | Ingredient_eventsScalarWhereInput[]
+  }
+
   export type Ingredients_photo_uploadsUpdateOneWithoutIngredientsNestedInput = {
     create?: XOR<Ingredients_photo_uploadsCreateWithoutIngredientsInput, Ingredients_photo_uploadsUncheckedCreateWithoutIngredientsInput>
     connectOrCreate?: Ingredients_photo_uploadsCreateOrConnectWithoutIngredientsInput
@@ -5070,6 +6501,20 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
+  }
+
+  export type Ingredient_eventsUncheckedUpdateManyWithoutIngredientsNestedInput = {
+    create?: XOR<Ingredient_eventsCreateWithoutIngredientsInput, Ingredient_eventsUncheckedCreateWithoutIngredientsInput> | Ingredient_eventsCreateWithoutIngredientsInput[] | Ingredient_eventsUncheckedCreateWithoutIngredientsInput[]
+    connectOrCreate?: Ingredient_eventsCreateOrConnectWithoutIngredientsInput | Ingredient_eventsCreateOrConnectWithoutIngredientsInput[]
+    upsert?: Ingredient_eventsUpsertWithWhereUniqueWithoutIngredientsInput | Ingredient_eventsUpsertWithWhereUniqueWithoutIngredientsInput[]
+    createMany?: Ingredient_eventsCreateManyIngredientsInputEnvelope
+    set?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    disconnect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    delete?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    connect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    update?: Ingredient_eventsUpdateWithWhereUniqueWithoutIngredientsInput | Ingredient_eventsUpdateWithWhereUniqueWithoutIngredientsInput[]
+    updateMany?: Ingredient_eventsUpdateManyWithWhereWithoutIngredientsInput | Ingredient_eventsUpdateManyWithWhereWithoutIngredientsInput[]
+    deleteMany?: Ingredient_eventsScalarWhereInput | Ingredient_eventsScalarWhereInput[]
   }
 
   export type IngredientsCreateNestedManyWithoutIngredients_photo_uploadsInput = {
@@ -5090,10 +6535,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     connectOrCreate?: IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput | IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput[]
     createMany?: IngredientsCreateManyIngredients_photo_uploadsInputEnvelope
     connect?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
-  }
-
-  export type DateTimeFieldUpdateOperationsInput = {
-    set?: Date | string
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -5148,6 +6589,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     deleteMany?: IngredientsScalarWhereInput | IngredientsScalarWhereInput[]
   }
 
+  export type Ingredient_eventsCreateNestedManyWithoutUsersInput = {
+    create?: XOR<Ingredient_eventsCreateWithoutUsersInput, Ingredient_eventsUncheckedCreateWithoutUsersInput> | Ingredient_eventsCreateWithoutUsersInput[] | Ingredient_eventsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: Ingredient_eventsCreateOrConnectWithoutUsersInput | Ingredient_eventsCreateOrConnectWithoutUsersInput[]
+    createMany?: Ingredient_eventsCreateManyUsersInputEnvelope
+    connect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+  }
+
   export type Ingredients_photo_uploadsCreateNestedManyWithoutUsersInput = {
     create?: XOR<Ingredients_photo_uploadsCreateWithoutUsersInput, Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput> | Ingredients_photo_uploadsCreateWithoutUsersInput[] | Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput | Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput[]
@@ -5155,11 +6603,32 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     connect?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
   }
 
+  export type Ingredient_eventsUncheckedCreateNestedManyWithoutUsersInput = {
+    create?: XOR<Ingredient_eventsCreateWithoutUsersInput, Ingredient_eventsUncheckedCreateWithoutUsersInput> | Ingredient_eventsCreateWithoutUsersInput[] | Ingredient_eventsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: Ingredient_eventsCreateOrConnectWithoutUsersInput | Ingredient_eventsCreateOrConnectWithoutUsersInput[]
+    createMany?: Ingredient_eventsCreateManyUsersInputEnvelope
+    connect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+  }
+
   export type Ingredients_photo_uploadsUncheckedCreateNestedManyWithoutUsersInput = {
     create?: XOR<Ingredients_photo_uploadsCreateWithoutUsersInput, Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput> | Ingredients_photo_uploadsCreateWithoutUsersInput[] | Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput | Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput[]
     createMany?: Ingredients_photo_uploadsCreateManyUsersInputEnvelope
     connect?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
+  }
+
+  export type Ingredient_eventsUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<Ingredient_eventsCreateWithoutUsersInput, Ingredient_eventsUncheckedCreateWithoutUsersInput> | Ingredient_eventsCreateWithoutUsersInput[] | Ingredient_eventsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: Ingredient_eventsCreateOrConnectWithoutUsersInput | Ingredient_eventsCreateOrConnectWithoutUsersInput[]
+    upsert?: Ingredient_eventsUpsertWithWhereUniqueWithoutUsersInput | Ingredient_eventsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: Ingredient_eventsCreateManyUsersInputEnvelope
+    set?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    disconnect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    delete?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    connect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    update?: Ingredient_eventsUpdateWithWhereUniqueWithoutUsersInput | Ingredient_eventsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: Ingredient_eventsUpdateManyWithWhereWithoutUsersInput | Ingredient_eventsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: Ingredient_eventsScalarWhereInput | Ingredient_eventsScalarWhereInput[]
   }
 
   export type Ingredients_photo_uploadsUpdateManyWithoutUsersNestedInput = {
@@ -5174,6 +6643,20 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     update?: Ingredients_photo_uploadsUpdateWithWhereUniqueWithoutUsersInput | Ingredients_photo_uploadsUpdateWithWhereUniqueWithoutUsersInput[]
     updateMany?: Ingredients_photo_uploadsUpdateManyWithWhereWithoutUsersInput | Ingredients_photo_uploadsUpdateManyWithWhereWithoutUsersInput[]
     deleteMany?: Ingredients_photo_uploadsScalarWhereInput | Ingredients_photo_uploadsScalarWhereInput[]
+  }
+
+  export type Ingredient_eventsUncheckedUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<Ingredient_eventsCreateWithoutUsersInput, Ingredient_eventsUncheckedCreateWithoutUsersInput> | Ingredient_eventsCreateWithoutUsersInput[] | Ingredient_eventsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: Ingredient_eventsCreateOrConnectWithoutUsersInput | Ingredient_eventsCreateOrConnectWithoutUsersInput[]
+    upsert?: Ingredient_eventsUpsertWithWhereUniqueWithoutUsersInput | Ingredient_eventsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: Ingredient_eventsCreateManyUsersInputEnvelope
+    set?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    disconnect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    delete?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    connect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    update?: Ingredient_eventsUpdateWithWhereUniqueWithoutUsersInput | Ingredient_eventsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: Ingredient_eventsUpdateManyWithWhereWithoutUsersInput | Ingredient_eventsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: Ingredient_eventsScalarWhereInput | Ingredient_eventsScalarWhereInput[]
   }
 
   export type Ingredients_photo_uploadsUncheckedUpdateManyWithoutUsersNestedInput = {
@@ -5215,36 +6698,15 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type NestedIntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
-  export type NestedBoolNullableFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
-  }
-
-  export type NestedUuidNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
+  export type NestedDateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
   export type NestedUuidWithAggregatesFilter<$PrismaModel = never> = {
@@ -5259,6 +6721,17 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type NestedIntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
@@ -5276,6 +6749,74 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+  export type NestedJsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedBoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
+  export type NestedUuidNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
   }
 
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -5321,17 +6862,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type NestedUuidNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -5358,17 +6888,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
-  export type NestedDateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
@@ -5398,20 +6917,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
-  }
-
-  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -5471,6 +6976,136 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type IngredientsCreateWithoutIngredient_eventsInput = {
+    id: string
+    name: string
+    is_reviewed: boolean
+    fill_level: number
+    shelf_life_months: number
+    fill_date: string
+    is_ground?: boolean | null
+    ingredients_photo_uploads?: Ingredients_photo_uploadsCreateNestedOneWithoutIngredientsInput
+  }
+
+  export type IngredientsUncheckedCreateWithoutIngredient_eventsInput = {
+    id: string
+    name: string
+    is_reviewed: boolean
+    fill_level: number
+    shelf_life_months: number
+    fill_date: string
+    is_ground?: boolean | null
+    ingredients_photo_uploads_id?: string | null
+  }
+
+  export type IngredientsCreateOrConnectWithoutIngredient_eventsInput = {
+    where: IngredientsWhereUniqueInput
+    create: XOR<IngredientsCreateWithoutIngredient_eventsInput, IngredientsUncheckedCreateWithoutIngredient_eventsInput>
+  }
+
+  export type UsersCreateWithoutIngredient_eventsInput = {
+    id: string
+    name: string
+    avatar_url?: string | null
+    ingredients_photo_uploads?: Ingredients_photo_uploadsCreateNestedManyWithoutUsersInput
+  }
+
+  export type UsersUncheckedCreateWithoutIngredient_eventsInput = {
+    id: string
+    name: string
+    avatar_url?: string | null
+    ingredients_photo_uploads?: Ingredients_photo_uploadsUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type UsersCreateOrConnectWithoutIngredient_eventsInput = {
+    where: UsersWhereUniqueInput
+    create: XOR<UsersCreateWithoutIngredient_eventsInput, UsersUncheckedCreateWithoutIngredient_eventsInput>
+  }
+
+  export type IngredientsUpsertWithoutIngredient_eventsInput = {
+    update: XOR<IngredientsUpdateWithoutIngredient_eventsInput, IngredientsUncheckedUpdateWithoutIngredient_eventsInput>
+    create: XOR<IngredientsCreateWithoutIngredient_eventsInput, IngredientsUncheckedCreateWithoutIngredient_eventsInput>
+    where?: IngredientsWhereInput
+  }
+
+  export type IngredientsUpdateToOneWithWhereWithoutIngredient_eventsInput = {
+    where?: IngredientsWhereInput
+    data: XOR<IngredientsUpdateWithoutIngredient_eventsInput, IngredientsUncheckedUpdateWithoutIngredient_eventsInput>
+  }
+
+  export type IngredientsUpdateWithoutIngredient_eventsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    is_reviewed?: BoolFieldUpdateOperationsInput | boolean
+    fill_level?: IntFieldUpdateOperationsInput | number
+    shelf_life_months?: IntFieldUpdateOperationsInput | number
+    fill_date?: StringFieldUpdateOperationsInput | string
+    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    ingredients_photo_uploads?: Ingredients_photo_uploadsUpdateOneWithoutIngredientsNestedInput
+  }
+
+  export type IngredientsUncheckedUpdateWithoutIngredient_eventsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    is_reviewed?: BoolFieldUpdateOperationsInput | boolean
+    fill_level?: IntFieldUpdateOperationsInput | number
+    shelf_life_months?: IntFieldUpdateOperationsInput | number
+    fill_date?: StringFieldUpdateOperationsInput | string
+    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    ingredients_photo_uploads_id?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type UsersUpsertWithoutIngredient_eventsInput = {
+    update: XOR<UsersUpdateWithoutIngredient_eventsInput, UsersUncheckedUpdateWithoutIngredient_eventsInput>
+    create: XOR<UsersCreateWithoutIngredient_eventsInput, UsersUncheckedCreateWithoutIngredient_eventsInput>
+    where?: UsersWhereInput
+  }
+
+  export type UsersUpdateToOneWithWhereWithoutIngredient_eventsInput = {
+    where?: UsersWhereInput
+    data: XOR<UsersUpdateWithoutIngredient_eventsInput, UsersUncheckedUpdateWithoutIngredient_eventsInput>
+  }
+
+  export type UsersUpdateWithoutIngredient_eventsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    ingredients_photo_uploads?: Ingredients_photo_uploadsUpdateManyWithoutUsersNestedInput
+  }
+
+  export type UsersUncheckedUpdateWithoutIngredient_eventsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    ingredients_photo_uploads?: Ingredients_photo_uploadsUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type Ingredient_eventsCreateWithoutIngredientsInput = {
+    id: string
+    timestamp: Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+    users: UsersCreateNestedOneWithoutIngredient_eventsInput
+  }
+
+  export type Ingredient_eventsUncheckedCreateWithoutIngredientsInput = {
+    id: string
+    user_id: string
+    timestamp: Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type Ingredient_eventsCreateOrConnectWithoutIngredientsInput = {
+    where: Ingredient_eventsWhereUniqueInput
+    create: XOR<Ingredient_eventsCreateWithoutIngredientsInput, Ingredient_eventsUncheckedCreateWithoutIngredientsInput>
+  }
+
+  export type Ingredient_eventsCreateManyIngredientsInputEnvelope = {
+    data: Ingredient_eventsCreateManyIngredientsInput | Ingredient_eventsCreateManyIngredientsInput[]
+    skipDuplicates?: boolean
+  }
+
   export type Ingredients_photo_uploadsCreateWithoutIngredientsInput = {
     id: string
     created_at: Date | string
@@ -5496,6 +7131,34 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type Ingredients_photo_uploadsCreateOrConnectWithoutIngredientsInput = {
     where: Ingredients_photo_uploadsWhereUniqueInput
     create: XOR<Ingredients_photo_uploadsCreateWithoutIngredientsInput, Ingredients_photo_uploadsUncheckedCreateWithoutIngredientsInput>
+  }
+
+  export type Ingredient_eventsUpsertWithWhereUniqueWithoutIngredientsInput = {
+    where: Ingredient_eventsWhereUniqueInput
+    update: XOR<Ingredient_eventsUpdateWithoutIngredientsInput, Ingredient_eventsUncheckedUpdateWithoutIngredientsInput>
+    create: XOR<Ingredient_eventsCreateWithoutIngredientsInput, Ingredient_eventsUncheckedCreateWithoutIngredientsInput>
+  }
+
+  export type Ingredient_eventsUpdateWithWhereUniqueWithoutIngredientsInput = {
+    where: Ingredient_eventsWhereUniqueInput
+    data: XOR<Ingredient_eventsUpdateWithoutIngredientsInput, Ingredient_eventsUncheckedUpdateWithoutIngredientsInput>
+  }
+
+  export type Ingredient_eventsUpdateManyWithWhereWithoutIngredientsInput = {
+    where: Ingredient_eventsScalarWhereInput
+    data: XOR<Ingredient_eventsUpdateManyMutationInput, Ingredient_eventsUncheckedUpdateManyWithoutIngredientsInput>
+  }
+
+  export type Ingredient_eventsScalarWhereInput = {
+    AND?: Ingredient_eventsScalarWhereInput | Ingredient_eventsScalarWhereInput[]
+    OR?: Ingredient_eventsScalarWhereInput[]
+    NOT?: Ingredient_eventsScalarWhereInput | Ingredient_eventsScalarWhereInput[]
+    id?: UuidFilter<"Ingredient_events"> | string
+    ingredient_id?: UuidFilter<"Ingredient_events"> | string
+    user_id?: StringFilter<"Ingredient_events"> | string
+    timestamp?: DateTimeFilter<"Ingredient_events"> | Date | string
+    from_values?: JsonNullableFilter<"Ingredient_events">
+    to_values?: JsonNullableFilter<"Ingredient_events">
   }
 
   export type Ingredients_photo_uploadsUpsertWithoutIngredientsInput = {
@@ -5539,6 +7202,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     shelf_life_months: number
     fill_date: string
     is_ground?: boolean | null
+    ingredient_events?: Ingredient_eventsCreateNestedManyWithoutIngredientsInput
   }
 
   export type IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput = {
@@ -5549,6 +7213,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     shelf_life_months: number
     fill_date: string
     is_ground?: boolean | null
+    ingredient_events?: Ingredient_eventsUncheckedCreateNestedManyWithoutIngredientsInput
   }
 
   export type IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput = {
@@ -5565,12 +7230,14 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: string
     name: string
     avatar_url?: string | null
+    ingredient_events?: Ingredient_eventsCreateNestedManyWithoutUsersInput
   }
 
   export type UsersUncheckedCreateWithoutIngredients_photo_uploadsInput = {
     id: string
     name: string
     avatar_url?: string | null
+    ingredient_events?: Ingredient_eventsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type UsersCreateOrConnectWithoutIngredients_photo_uploadsInput = {
@@ -5623,12 +7290,40 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    ingredient_events?: Ingredient_eventsUpdateManyWithoutUsersNestedInput
   }
 
   export type UsersUncheckedUpdateWithoutIngredients_photo_uploadsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    ingredient_events?: Ingredient_eventsUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type Ingredient_eventsCreateWithoutUsersInput = {
+    id: string
+    timestamp: Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+    ingredients: IngredientsCreateNestedOneWithoutIngredient_eventsInput
+  }
+
+  export type Ingredient_eventsUncheckedCreateWithoutUsersInput = {
+    id: string
+    ingredient_id: string
+    timestamp: Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type Ingredient_eventsCreateOrConnectWithoutUsersInput = {
+    where: Ingredient_eventsWhereUniqueInput
+    create: XOR<Ingredient_eventsCreateWithoutUsersInput, Ingredient_eventsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type Ingredient_eventsCreateManyUsersInputEnvelope = {
+    data: Ingredient_eventsCreateManyUsersInput | Ingredient_eventsCreateManyUsersInput[]
+    skipDuplicates?: boolean
   }
 
   export type Ingredients_photo_uploadsCreateWithoutUsersInput = {
@@ -5663,6 +7358,22 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     skipDuplicates?: boolean
   }
 
+  export type Ingredient_eventsUpsertWithWhereUniqueWithoutUsersInput = {
+    where: Ingredient_eventsWhereUniqueInput
+    update: XOR<Ingredient_eventsUpdateWithoutUsersInput, Ingredient_eventsUncheckedUpdateWithoutUsersInput>
+    create: XOR<Ingredient_eventsCreateWithoutUsersInput, Ingredient_eventsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type Ingredient_eventsUpdateWithWhereUniqueWithoutUsersInput = {
+    where: Ingredient_eventsWhereUniqueInput
+    data: XOR<Ingredient_eventsUpdateWithoutUsersInput, Ingredient_eventsUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type Ingredient_eventsUpdateManyWithWhereWithoutUsersInput = {
+    where: Ingredient_eventsScalarWhereInput
+    data: XOR<Ingredient_eventsUpdateManyMutationInput, Ingredient_eventsUncheckedUpdateManyWithoutUsersInput>
+  }
+
   export type Ingredients_photo_uploadsUpsertWithWhereUniqueWithoutUsersInput = {
     where: Ingredients_photo_uploadsWhereUniqueInput
     update: XOR<Ingredients_photo_uploadsUpdateWithoutUsersInput, Ingredients_photo_uploadsUncheckedUpdateWithoutUsersInput>
@@ -5693,6 +7404,38 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     photo_url?: StringNullableFilter<"Ingredients_photo_uploads"> | string | null
   }
 
+  export type Ingredient_eventsCreateManyIngredientsInput = {
+    id: string
+    user_id: string
+    timestamp: Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type Ingredient_eventsUpdateWithoutIngredientsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+    users?: UsersUpdateOneRequiredWithoutIngredient_eventsNestedInput
+  }
+
+  export type Ingredient_eventsUncheckedUpdateWithoutIngredientsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type Ingredient_eventsUncheckedUpdateManyWithoutIngredientsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+  }
+
   export type IngredientsCreateManyIngredients_photo_uploadsInput = {
     id: string
     name: string
@@ -5711,6 +7454,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    ingredient_events?: Ingredient_eventsUpdateManyWithoutIngredientsNestedInput
   }
 
   export type IngredientsUncheckedUpdateWithoutIngredients_photo_uploadsInput = {
@@ -5721,6 +7465,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    ingredient_events?: Ingredient_eventsUncheckedUpdateManyWithoutIngredientsNestedInput
   }
 
   export type IngredientsUncheckedUpdateManyWithoutIngredients_photo_uploadsInput = {
@@ -5733,6 +7478,14 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
 
+  export type Ingredient_eventsCreateManyUsersInput = {
+    id: string
+    ingredient_id: string
+    timestamp: Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+  }
+
   export type Ingredients_photo_uploadsCreateManyUsersInput = {
     id: string
     created_at: Date | string
@@ -5741,6 +7494,30 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
+  }
+
+  export type Ingredient_eventsUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+    ingredients?: IngredientsUpdateOneRequiredWithoutIngredient_eventsNestedInput
+  }
+
+  export type Ingredient_eventsUncheckedUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ingredient_id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type Ingredient_eventsUncheckedUpdateManyWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ingredient_id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    from_values?: NullableJsonNullValueInput | InputJsonValue
+    to_values?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type Ingredients_photo_uploadsUpdateWithoutUsersInput = {
@@ -5781,6 +7558,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    * Aliases for legacy arg types
    */
     /**
+     * @deprecated Use IngredientsCountOutputTypeDefaultArgs instead
+     */
+    export type IngredientsCountOutputTypeArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = IngredientsCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use Ingredients_photo_uploadsCountOutputTypeDefaultArgs instead
      */
     export type Ingredients_photo_uploadsCountOutputTypeArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = Ingredients_photo_uploadsCountOutputTypeDefaultArgs<ExtArgs>
@@ -5788,6 +7569,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * @deprecated Use UsersCountOutputTypeDefaultArgs instead
      */
     export type UsersCountOutputTypeArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = UsersCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use Ingredient_eventsDefaultArgs instead
+     */
+    export type Ingredient_eventsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = Ingredient_eventsDefaultArgs<ExtArgs>
     /**
      * @deprecated Use IngredientsDefaultArgs instead
      */

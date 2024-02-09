@@ -3,14 +3,21 @@ import { Button, Flex } from "@radix-ui/themes"
 import { useElectric } from "./context"
 import { genUUID } from "electric-sql/util"
 import { useUser } from "@clerk/clerk-react"
+import { useNavigate } from "react-router-dom"
 
-function FileUploadToS3() {
+function FileUploadToS3({
+  buttonVariant = `surface`,
+  children = `Add Another Photo`,
+  navigateTo,
+}) {
   const {
     user: { id: user_id },
   } = useUser()
+  const navigate = useNavigate()
 
   const { db } = useElectric()!
   const [uploadStatus, setUploadStatus] = useState(``)
+  const [uploading, setUploading] = useState(false)
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0]
@@ -20,6 +27,7 @@ function FileUploadToS3() {
     }
 
     console.log(file)
+    setUploading(true)
     const uuid = genUUID()
 
     const start = new Date()
@@ -58,10 +66,15 @@ function FileUploadToS3() {
             id: uuid,
           },
         })
+
+        if (navigateTo) {
+          navigate(navigateTo)
+        }
       } else {
         throw new Error(`Failed to get a signed URL.`)
       }
     } catch (error) {
+      setUploading(false)
       setUploadStatus(`Upload error: ${error.message}`)
     }
   }
@@ -82,6 +95,7 @@ function FileUploadToS3() {
         throw new Error(`Upload failed.`)
       }
     } catch (error) {
+      setUploading(false)
       setUploadStatus(`Upload error: ${error.message}`)
     }
   }
@@ -96,10 +110,11 @@ function FileUploadToS3() {
       />
       <div>
         <Button
-          variant="surface"
+          disabled={uploading}
+          variant={buttonVariant}
           onClick={() => document.getElementById(`fileInput`)?.click()}
         >
-          Add Another Photo
+          {children}
         </Button>
       </div>
       <div className="capsize-3">{uploadStatus}</div>

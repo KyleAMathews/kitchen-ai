@@ -29,6 +29,18 @@ CREATE TABLE ingredients (
     FOREIGN KEY (ingredients_photo_uploads_id) REFERENCES ingredients_photo_uploads(id)
 );
 
+CREATE TABLE ingredient_events (
+    id UUID PRIMARY KEY,
+    ingredient_id UUID NOT NULL,
+    user_id TEXT NOT NULL REFERENCES users(id),
+    timestamp TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    from_values JSONB,
+    to_values JSONB,
+    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id)
+);
+
+
 ALTER TABLE users ENABLE ELECTRIC;
 ALTER TABLE ingredients_photo_uploads ENABLE ELECTRIC;
 ALTER TABLE ingredients ENABLE ELECTRIC;
+ALTER TABLE ingredient_events ENABLE ELECTRIC;

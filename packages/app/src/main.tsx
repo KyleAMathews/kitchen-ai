@@ -154,6 +154,7 @@ const router = createBrowserRouter([
                     shape: db.ingredients.sync({
                       include: {
                         ingredients_photo_uploads: true,
+                        ingredient_events: true,
                       },
                     }),
                     isReady: async () => {

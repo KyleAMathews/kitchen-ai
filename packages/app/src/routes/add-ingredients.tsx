@@ -66,10 +66,10 @@ export default function AddIngredients() {
     }
   }
   return (
-    <Flex direction="column" gap="5">
-      <Flex direction="column" gap="3">
-        <Heading size="6">Upload Ingredients Photos</Heading>
-        <Text size="2">
+    <Flex direction="column" gap="7">
+      <Flex direction="column" gap="5">
+        <Heading size="6">My Photos</Heading>
+        <Text color="gray" size="2">
           You can leave this page at any time without interrupting the uploading
           process.
         </Text>

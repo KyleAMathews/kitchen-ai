@@ -24,7 +24,7 @@ export function ElectricalProvider({ children }) {
       const token = await getToken()
       if (token) {
         const config = {
-          appName: `chocolate-batches`,
+          appName: `kitchen-ai`,
           schema,
           sqliteWasmPath: sqliteWasm,
           config: {
