@@ -4,7 +4,7 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom"
-import { useState, useEffect } from "react"
+import * as React from "react"
 import {
   Electric,
   Ingredients,
@@ -146,7 +146,7 @@ export default function Index() {
 
           if (ingredient.is_reviewed) {
             return (
-              <>
+              <React.Fragment key={ingredient.id}>
                 <Flex
                   key={ingredient.id}
                   gap="5"
@@ -183,9 +183,13 @@ export default function Index() {
                   </Flex>
                 </Flex>
                 {i !== ingredients.length - 1 && (
-                  <Separator orientation="horizontal" size="4" />
+                  <Separator
+                    key={ingredient.id + `-seperator`}
+                    orientation="horizontal"
+                    size="4"
+                  />
                 )}
-              </>
+              </React.Fragment>
             )
           }
         })}
