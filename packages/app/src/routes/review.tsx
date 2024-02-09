@@ -61,7 +61,7 @@ function ReviewSpice({ spice }) {
       <Flex direction="column" gap="5" width="100%" grow="1">
         <Flex direction="column" gap="2">
           <Text size="1" weight="bold">
-            Fill-level
+            Fill Level
           </Text>
           <Flex direction="column" gap="1">
             <Slider
@@ -198,7 +198,7 @@ export default function Review() {
     <Flex direction="column" gap="8">
       <Flex direction="column" gap="4">
         <Heading size="6">Review new ingredients</Heading>
-        <Text size="2">
+        <Text size="2" color="gray">
           Once done reviewing Kitchen.ai's estimates, click save to add the
           spice jars to your Kitchen!
         </Text>

@@ -7,7 +7,7 @@ export default function Root() {
     <Flex direction="column">
       <Flex asChild p="4">
         <nav>
-          <Heading size="4">
+          <Heading weight="bold" size="4">
             <Link
               to="/"
               style={{ textDecoration: `inherit`, color: `inherit` }}

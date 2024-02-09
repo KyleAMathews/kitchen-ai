@@ -13,3 +13,8 @@
   animation: spin 2s linear infinite; /* Adjust timing as needed */
 }
 
+.no-thumb {
+  .rt-SliderThumb {
+    display: none;
+  }
+}
