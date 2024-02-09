@@ -18,3 +18,8 @@
     display: none;
   }
 }
+
+.cl-avatarBox {
+  height: 16px;
+  width: 16px;
+}

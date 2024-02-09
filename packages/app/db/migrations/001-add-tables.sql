@@ -1,8 +1,14 @@
-CREATE TYPE photo_upload_state AS ENUM ('uploading', 'ai_processing', 'reviewing', 'done');
+CREATE TABLE users (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    avatar_url TEXT
+);
 
+CREATE TYPE photo_upload_state AS ENUM ('uploading', 'ai_processing', 'reviewing', 'done');
 
 CREATE TABLE ingredients_photo_uploads (
     id UUID PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     uploaded_at TIMESTAMP WITH TIME ZONE,
     state photo_upload_state NOT NULL,
@@ -23,5 +29,6 @@ CREATE TABLE ingredients (
     FOREIGN KEY (ingredients_photo_uploads_id) REFERENCES ingredients_photo_uploads(id)
 );
 
+ALTER TABLE users ENABLE ELECTRIC;
 ALTER TABLE ingredients_photo_uploads ENABLE ELECTRIC;
 ALTER TABLE ingredients ENABLE ELECTRIC;

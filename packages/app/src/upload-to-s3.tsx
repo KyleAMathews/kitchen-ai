@@ -2,8 +2,13 @@ import React, { useState } from "react"
 import { Button, Flex } from "@radix-ui/themes"
 import { useElectric } from "./context"
 import { genUUID } from "electric-sql/util"
+import { useUser } from "@clerk/clerk-react"
 
 function FileUploadToS3() {
+  const {
+    user: { id: user_id },
+  } = useUser()
+
   const { db } = useElectric()!
   const [uploadStatus, setUploadStatus] = useState(``)
 
@@ -22,6 +27,7 @@ function FileUploadToS3() {
       const newUpload = await db.ingredients_photo_uploads.create({
         data: {
           id: uuid,
+          user_id,
           created_at: start,
           state: `uploading`,
         },

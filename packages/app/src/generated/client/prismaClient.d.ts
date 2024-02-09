@@ -23,6 +23,11 @@ export type Ingredients = $Result.DefaultSelection<Prisma.$IngredientsPayload>
  * 
  */
 export type Ingredients_photo_uploads = $Result.DefaultSelection<Prisma.$Ingredients_photo_uploadsPayload>
+/**
+ * Model Users
+ * 
+ */
+export type Users = $Result.DefaultSelection<Prisma.$UsersPayload>
 
 /**
  * Enums
@@ -184,6 +189,16 @@ export class PrismaClient<
     * ```
     */
   get ingredients_photo_uploads(): Prisma.Ingredients_photo_uploadsDelegate<ExtArgs>;
+
+  /**
+   * `prisma.users`: Exposes CRUD operations for the **Users** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Users
+    * const users = await prisma.users.findMany()
+    * ```
+    */
+  get users(): Prisma.UsersDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -655,7 +670,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export const ModelName: {
     Ingredients: 'Ingredients',
-    Ingredients_photo_uploads: 'Ingredients_photo_uploads'
+    Ingredients_photo_uploads: 'Ingredients_photo_uploads',
+    Users: 'Users'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -672,7 +688,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type TypeMap<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     meta: {
-      modelProps: 'ingredients' | 'ingredients_photo_uploads'
+      modelProps: 'ingredients' | 'ingredients_photo_uploads' | 'users'
       txIsolationLevel: Prisma.TransactionIsolationLevel
     },
     model: {
@@ -805,6 +821,72 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
           count: {
             args: Prisma.Ingredients_photo_uploadsCountArgs<ExtArgs>,
             result: $Utils.Optional<Ingredients_photo_uploadsCountAggregateOutputType> | number
+          }
+        }
+      }
+      Users: {
+        payload: Prisma.$UsersPayload<ExtArgs>
+        fields: Prisma.UsersFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.UsersFindUniqueArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$UsersPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.UsersFindUniqueOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$UsersPayload>
+          }
+          findFirst: {
+            args: Prisma.UsersFindFirstArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$UsersPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.UsersFindFirstOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$UsersPayload>
+          }
+          findMany: {
+            args: Prisma.UsersFindManyArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$UsersPayload>[]
+          }
+          create: {
+            args: Prisma.UsersCreateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$UsersPayload>
+          }
+          createMany: {
+            args: Prisma.UsersCreateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          delete: {
+            args: Prisma.UsersDeleteArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$UsersPayload>
+          }
+          update: {
+            args: Prisma.UsersUpdateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$UsersPayload>
+          }
+          deleteMany: {
+            args: Prisma.UsersDeleteManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          updateMany: {
+            args: Prisma.UsersUpdateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          upsert: {
+            args: Prisma.UsersUpsertArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<Prisma.$UsersPayload>
+          }
+          aggregate: {
+            args: Prisma.UsersAggregateArgs<ExtArgs>,
+            result: $Utils.Optional<AggregateUsers>
+          }
+          groupBy: {
+            args: Prisma.UsersGroupByArgs<ExtArgs>,
+            result: $Utils.Optional<UsersGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.UsersCountArgs<ExtArgs>,
+            result: $Utils.Optional<UsersCountAggregateOutputType> | number
           }
         }
       }
@@ -986,6 +1068,40 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    */
   export type Ingredients_photo_uploadsCountOutputTypeCountIngredientsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     where?: IngredientsWhereInput
+  }
+
+
+
+  /**
+   * Count Type UsersCountOutputType
+   */
+
+  export type UsersCountOutputType = {
+    ingredients_photo_uploads: number
+  }
+
+  export type UsersCountOutputTypeSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    ingredients_photo_uploads?: boolean | UsersCountOutputTypeCountIngredients_photo_uploadsArgs
+  }
+
+  // Custom InputTypes
+
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UsersCountOutputType
+     */
+    select?: UsersCountOutputTypeSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeCountIngredients_photo_uploadsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    where?: Ingredients_photo_uploadsWhereInput
   }
 
 
@@ -2035,6 +2151,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredients_photo_uploadsMinAggregateOutputType = {
     id: string | null
+    user_id: string | null
     created_at: Date | null
     uploaded_at: Date | null
     state: $Enums.photo_upload_state | null
@@ -2045,6 +2162,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredients_photo_uploadsMaxAggregateOutputType = {
     id: string | null
+    user_id: string | null
     created_at: Date | null
     uploaded_at: Date | null
     state: $Enums.photo_upload_state | null
@@ -2055,6 +2173,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredients_photo_uploadsCountAggregateOutputType = {
     id: number
+    user_id: number
     created_at: number
     uploaded_at: number
     state: number
@@ -2077,6 +2196,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredients_photo_uploadsMinAggregateInputType = {
     id?: true
+    user_id?: true
     created_at?: true
     uploaded_at?: true
     state?: true
@@ -2087,6 +2207,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredients_photo_uploadsMaxAggregateInputType = {
     id?: true
+    user_id?: true
     created_at?: true
     uploaded_at?: true
     state?: true
@@ -2097,6 +2218,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredients_photo_uploadsCountAggregateInputType = {
     id?: true
+    user_id?: true
     created_at?: true
     uploaded_at?: true
     state?: true
@@ -2194,6 +2316,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredients_photo_uploadsGroupByOutputType = {
     id: string
+    user_id: string
     created_at: Date
     uploaded_at: Date | null
     state: $Enums.photo_upload_state
@@ -2223,6 +2346,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredients_photo_uploadsSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    user_id?: boolean
     created_at?: boolean
     uploaded_at?: boolean
     state?: boolean
@@ -2230,11 +2354,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     ai_processing_duration_sec?: boolean
     photo_url?: boolean
     ingredients?: boolean | Ingredients_photo_uploads$ingredientsArgs<ExtArgs>
+    users?: boolean | UsersDefaultArgs<ExtArgs>
     _count?: boolean | Ingredients_photo_uploadsCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["ingredients_photo_uploads"]>
 
   export type Ingredients_photo_uploadsSelectScalar = {
     id?: boolean
+    user_id?: boolean
     created_at?: boolean
     uploaded_at?: boolean
     state?: boolean
@@ -2245,6 +2371,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredients_photo_uploadsInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     ingredients?: boolean | Ingredients_photo_uploads$ingredientsArgs<ExtArgs>
+    users?: boolean | UsersDefaultArgs<ExtArgs>
     _count?: boolean | Ingredients_photo_uploadsCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -2253,12 +2380,14 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     name: "Ingredients_photo_uploads"
     objects: {
       ingredients: Prisma.$IngredientsPayload<ExtArgs>[]
+      users: Prisma.$UsersPayload<ExtArgs>
     }
     scalars: $Extensions.GetResult<{
       /**
        * @zod.string.uuid()
        */
       id: string
+      user_id: string
       created_at: Date
       uploaded_at: Date | null
       state: $Enums.photo_upload_state
@@ -2638,6 +2767,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
     ingredients<T extends Ingredients_photo_uploads$ingredientsArgs<ExtArgs> = {}>(args?: Subset<T, Ingredients_photo_uploads$ingredientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'findMany'> | Null>;
 
+    users<T extends UsersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UsersDefaultArgs<ExtArgs>>): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'findUniqueOrThrow'> | Null, Null, ExtArgs>;
+
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2667,6 +2798,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    */ 
   interface Ingredients_photo_uploadsFieldRefs {
     readonly id: FieldRef<"Ingredients_photo_uploads", 'String'>
+    readonly user_id: FieldRef<"Ingredients_photo_uploads", 'String'>
     readonly created_at: FieldRef<"Ingredients_photo_uploads", 'DateTime'>
     readonly uploaded_at: FieldRef<"Ingredients_photo_uploads", 'DateTime'>
     readonly state: FieldRef<"Ingredients_photo_uploads", 'photo_upload_state'>
@@ -3022,6 +3154,925 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
   /**
+   * Model Users
+   */
+
+  export type AggregateUsers = {
+    _count: UsersCountAggregateOutputType | null
+    _min: UsersMinAggregateOutputType | null
+    _max: UsersMaxAggregateOutputType | null
+  }
+
+  export type UsersMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    avatar_url: string | null
+  }
+
+  export type UsersMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    avatar_url: string | null
+  }
+
+  export type UsersCountAggregateOutputType = {
+    id: number
+    name: number
+    avatar_url: number
+    _all: number
+  }
+
+
+  export type UsersMinAggregateInputType = {
+    id?: true
+    name?: true
+    avatar_url?: true
+  }
+
+  export type UsersMaxAggregateInputType = {
+    id?: true
+    name?: true
+    avatar_url?: true
+  }
+
+  export type UsersCountAggregateInputType = {
+    id?: true
+    name?: true
+    avatar_url?: true
+    _all?: true
+  }
+
+  export type UsersAggregateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Users to aggregate.
+     */
+    where?: UsersWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Users to fetch.
+     */
+    orderBy?: UsersOrderByWithRelationInput | UsersOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: UsersWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Users from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Users.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Users
+    **/
+    _count?: true | UsersCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UsersMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UsersMaxAggregateInputType
+  }
+
+  export type GetUsersAggregateType<T extends UsersAggregateArgs> = {
+        [P in keyof T & keyof AggregateUsers]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUsers[P]>
+      : GetScalarType<T[P], AggregateUsers[P]>
+  }
+
+
+
+
+  export type UsersGroupByArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    where?: UsersWhereInput
+    orderBy?: UsersOrderByWithAggregationInput | UsersOrderByWithAggregationInput[]
+    by: UsersScalarFieldEnum[] | UsersScalarFieldEnum
+    having?: UsersScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UsersCountAggregateInputType | true
+    _min?: UsersMinAggregateInputType
+    _max?: UsersMaxAggregateInputType
+  }
+
+  export type UsersGroupByOutputType = {
+    id: string
+    name: string
+    avatar_url: string | null
+    _count: UsersCountAggregateOutputType | null
+    _min: UsersMinAggregateOutputType | null
+    _max: UsersMaxAggregateOutputType | null
+  }
+
+  type GetUsersGroupByPayload<T extends UsersGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<UsersGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UsersGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UsersGroupByOutputType[P]>
+            : GetScalarType<T[P], UsersGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UsersSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    avatar_url?: boolean
+    ingredients_photo_uploads?: boolean | Users$ingredients_photo_uploadsArgs<ExtArgs>
+    _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["users"]>
+
+  export type UsersSelectScalar = {
+    id?: boolean
+    name?: boolean
+    avatar_url?: boolean
+  }
+
+  export type UsersInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    ingredients_photo_uploads?: boolean | Users$ingredients_photo_uploadsArgs<ExtArgs>
+    _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+
+  export type $UsersPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    name: "Users"
+    objects: {
+      ingredients_photo_uploads: Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetResult<{
+      id: string
+      name: string
+      avatar_url: string | null
+    }, ExtArgs["result"]["users"]>
+    composites: {}
+  }
+
+
+  type UsersGetPayload<S extends boolean | null | undefined | UsersDefaultArgs> = $Result.GetResult<Prisma.$UsersPayload, S>
+
+  type UsersCountArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = 
+    Omit<UsersFindManyArgs, 'select' | 'include'> & {
+      select?: UsersCountAggregateInputType | true
+    }
+
+  export interface UsersDelegate<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Users'], meta: { name: 'Users' } }
+    /**
+     * Find zero or one Users that matches the filter.
+     * @param {UsersFindUniqueArgs} args - Arguments to find a Users
+     * @example
+     * // Get one Users
+     * const users = await prisma.users.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends UsersFindUniqueArgs<ExtArgs>>(
+      args: SelectSubset<T, UsersFindUniqueArgs<ExtArgs>>
+    ): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'findUnique'> | null, null, ExtArgs>
+
+    /**
+     * Find one Users that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {UsersFindUniqueOrThrowArgs} args - Arguments to find a Users
+     * @example
+     * // Get one Users
+     * const users = await prisma.users.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends UsersFindUniqueOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, UsersFindUniqueOrThrowArgs<ExtArgs>>
+    ): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'findUniqueOrThrow'>, never, ExtArgs>
+
+    /**
+     * Find the first Users that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UsersFindFirstArgs} args - Arguments to find a Users
+     * @example
+     * // Get one Users
+     * const users = await prisma.users.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends UsersFindFirstArgs<ExtArgs>>(
+      args?: SelectSubset<T, UsersFindFirstArgs<ExtArgs>>
+    ): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'findFirst'> | null, null, ExtArgs>
+
+    /**
+     * Find the first Users that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UsersFindFirstOrThrowArgs} args - Arguments to find a Users
+     * @example
+     * // Get one Users
+     * const users = await prisma.users.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends UsersFindFirstOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, UsersFindFirstOrThrowArgs<ExtArgs>>
+    ): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'findFirstOrThrow'>, never, ExtArgs>
+
+    /**
+     * Find zero or more Users that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UsersFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Users
+     * const users = await prisma.users.findMany()
+     * 
+     * // Get first 10 Users
+     * const users = await prisma.users.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const usersWithIdOnly = await prisma.users.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends UsersFindManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, UsersFindManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'findMany'>>
+
+    /**
+     * Create a Users.
+     * @param {UsersCreateArgs} args - Arguments to create a Users.
+     * @example
+     * // Create one Users
+     * const Users = await prisma.users.create({
+     *   data: {
+     *     // ... data to create a Users
+     *   }
+     * })
+     * 
+    **/
+    create<T extends UsersCreateArgs<ExtArgs>>(
+      args: SelectSubset<T, UsersCreateArgs<ExtArgs>>
+    ): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'create'>, never, ExtArgs>
+
+    /**
+     * Create many Users.
+     *     @param {UsersCreateManyArgs} args - Arguments to create many Users.
+     *     @example
+     *     // Create many Users
+     *     const users = await prisma.users.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends UsersCreateManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, UsersCreateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Users.
+     * @param {UsersDeleteArgs} args - Arguments to delete one Users.
+     * @example
+     * // Delete one Users
+     * const Users = await prisma.users.delete({
+     *   where: {
+     *     // ... filter to delete one Users
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends UsersDeleteArgs<ExtArgs>>(
+      args: SelectSubset<T, UsersDeleteArgs<ExtArgs>>
+    ): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'delete'>, never, ExtArgs>
+
+    /**
+     * Update one Users.
+     * @param {UsersUpdateArgs} args - Arguments to update one Users.
+     * @example
+     * // Update one Users
+     * const users = await prisma.users.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends UsersUpdateArgs<ExtArgs>>(
+      args: SelectSubset<T, UsersUpdateArgs<ExtArgs>>
+    ): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'update'>, never, ExtArgs>
+
+    /**
+     * Delete zero or more Users.
+     * @param {UsersDeleteManyArgs} args - Arguments to filter Users to delete.
+     * @example
+     * // Delete a few Users
+     * const { count } = await prisma.users.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends UsersDeleteManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, UsersDeleteManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Users.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UsersUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Users
+     * const users = await prisma.users.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends UsersUpdateManyArgs<ExtArgs>>(
+      args: SelectSubset<T, UsersUpdateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Users.
+     * @param {UsersUpsertArgs} args - Arguments to update or create a Users.
+     * @example
+     * // Update or create a Users
+     * const users = await prisma.users.upsert({
+     *   create: {
+     *     // ... data to create a Users
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Users we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends UsersUpsertArgs<ExtArgs>>(
+      args: SelectSubset<T, UsersUpsertArgs<ExtArgs>>
+    ): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'upsert'>, never, ExtArgs>
+
+    /**
+     * Count the number of Users.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UsersCountArgs} args - Arguments to filter Users to count.
+     * @example
+     * // Count the number of Users
+     * const count = await prisma.users.count({
+     *   where: {
+     *     // ... the filter for the Users we want to count
+     *   }
+     * })
+    **/
+    count<T extends UsersCountArgs>(
+      args?: Subset<T, UsersCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UsersCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Users.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UsersAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UsersAggregateArgs>(args: Subset<T, UsersAggregateArgs>): Prisma.PrismaPromise<GetUsersAggregateType<T>>
+
+    /**
+     * Group by Users.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UsersGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UsersGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UsersGroupByArgs['orderBy'] }
+        : { orderBy?: UsersGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UsersGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUsersGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Users model
+   */
+  readonly fields: UsersFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Users.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__UsersClient<T, Null = never, ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+
+    ingredients_photo_uploads<T extends Users$ingredients_photo_uploadsArgs<ExtArgs> = {}>(args?: Subset<T, Users$ingredients_photo_uploadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'findMany'> | Null>;
+
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+  }
+
+
+
+  /**
+   * Fields of the Users model
+   */ 
+  interface UsersFieldRefs {
+    readonly id: FieldRef<"Users", 'String'>
+    readonly name: FieldRef<"Users", 'String'>
+    readonly avatar_url: FieldRef<"Users", 'String'>
+  }
+    
+
+  // Custom InputTypes
+
+  /**
+   * Users findUnique
+   */
+  export type UsersFindUniqueArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Users
+     */
+    select?: UsersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UsersInclude<ExtArgs> | null
+    /**
+     * Filter, which Users to fetch.
+     */
+    where: UsersWhereUniqueInput
+  }
+
+
+  /**
+   * Users findUniqueOrThrow
+   */
+  export type UsersFindUniqueOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Users
+     */
+    select?: UsersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UsersInclude<ExtArgs> | null
+    /**
+     * Filter, which Users to fetch.
+     */
+    where: UsersWhereUniqueInput
+  }
+
+
+  /**
+   * Users findFirst
+   */
+  export type UsersFindFirstArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Users
+     */
+    select?: UsersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UsersInclude<ExtArgs> | null
+    /**
+     * Filter, which Users to fetch.
+     */
+    where?: UsersWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Users to fetch.
+     */
+    orderBy?: UsersOrderByWithRelationInput | UsersOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Users.
+     */
+    cursor?: UsersWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Users from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Users.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Users.
+     */
+    distinct?: UsersScalarFieldEnum | UsersScalarFieldEnum[]
+  }
+
+
+  /**
+   * Users findFirstOrThrow
+   */
+  export type UsersFindFirstOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Users
+     */
+    select?: UsersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UsersInclude<ExtArgs> | null
+    /**
+     * Filter, which Users to fetch.
+     */
+    where?: UsersWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Users to fetch.
+     */
+    orderBy?: UsersOrderByWithRelationInput | UsersOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Users.
+     */
+    cursor?: UsersWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Users from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Users.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Users.
+     */
+    distinct?: UsersScalarFieldEnum | UsersScalarFieldEnum[]
+  }
+
+
+  /**
+   * Users findMany
+   */
+  export type UsersFindManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Users
+     */
+    select?: UsersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UsersInclude<ExtArgs> | null
+    /**
+     * Filter, which Users to fetch.
+     */
+    where?: UsersWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Users to fetch.
+     */
+    orderBy?: UsersOrderByWithRelationInput | UsersOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Users.
+     */
+    cursor?: UsersWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Users from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Users.
+     */
+    skip?: number
+    distinct?: UsersScalarFieldEnum | UsersScalarFieldEnum[]
+  }
+
+
+  /**
+   * Users create
+   */
+  export type UsersCreateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Users
+     */
+    select?: UsersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UsersInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Users.
+     */
+    data: XOR<UsersCreateInput, UsersUncheckedCreateInput>
+  }
+
+
+  /**
+   * Users createMany
+   */
+  export type UsersCreateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Users.
+     */
+    data: UsersCreateManyInput | UsersCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * Users update
+   */
+  export type UsersUpdateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Users
+     */
+    select?: UsersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UsersInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Users.
+     */
+    data: XOR<UsersUpdateInput, UsersUncheckedUpdateInput>
+    /**
+     * Choose, which Users to update.
+     */
+    where: UsersWhereUniqueInput
+  }
+
+
+  /**
+   * Users updateMany
+   */
+  export type UsersUpdateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Users.
+     */
+    data: XOR<UsersUpdateManyMutationInput, UsersUncheckedUpdateManyInput>
+    /**
+     * Filter which Users to update
+     */
+    where?: UsersWhereInput
+  }
+
+
+  /**
+   * Users upsert
+   */
+  export type UsersUpsertArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Users
+     */
+    select?: UsersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UsersInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Users to update in case it exists.
+     */
+    where: UsersWhereUniqueInput
+    /**
+     * In case the Users found by the `where` argument doesn't exist, create a new Users with this data.
+     */
+    create: XOR<UsersCreateInput, UsersUncheckedCreateInput>
+    /**
+     * In case the Users was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<UsersUpdateInput, UsersUncheckedUpdateInput>
+  }
+
+
+  /**
+   * Users delete
+   */
+  export type UsersDeleteArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Users
+     */
+    select?: UsersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UsersInclude<ExtArgs> | null
+    /**
+     * Filter which Users to delete.
+     */
+    where: UsersWhereUniqueInput
+  }
+
+
+  /**
+   * Users deleteMany
+   */
+  export type UsersDeleteManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Users to delete
+     */
+    where?: UsersWhereInput
+  }
+
+
+  /**
+   * Users.ingredients_photo_uploads
+   */
+  export type Users$ingredients_photo_uploadsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Ingredients_photo_uploads
+     */
+    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+    where?: Ingredients_photo_uploadsWhereInput
+    orderBy?: Ingredients_photo_uploadsOrderByWithRelationInput | Ingredients_photo_uploadsOrderByWithRelationInput[]
+    cursor?: Ingredients_photo_uploadsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Ingredients_photo_uploadsScalarFieldEnum | Ingredients_photo_uploadsScalarFieldEnum[]
+  }
+
+
+  /**
+   * Users without action
+   */
+  export type UsersDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Users
+     */
+    select?: UsersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: UsersInclude<ExtArgs> | null
+  }
+
+
+
+  /**
    * Enums
    */
 
@@ -3051,6 +4102,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export const Ingredients_photo_uploadsScalarFieldEnum: {
     id: 'id',
+    user_id: 'user_id',
     created_at: 'created_at',
     uploaded_at: 'uploaded_at',
     state: 'state',
@@ -3060,6 +4112,15 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   };
 
   export type Ingredients_photo_uploadsScalarFieldEnum = (typeof Ingredients_photo_uploadsScalarFieldEnum)[keyof typeof Ingredients_photo_uploadsScalarFieldEnum]
+
+
+  export const UsersScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    avatar_url: 'avatar_url'
+  };
+
+  export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -3248,6 +4309,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     OR?: Ingredients_photo_uploadsWhereInput[]
     NOT?: Ingredients_photo_uploadsWhereInput | Ingredients_photo_uploadsWhereInput[]
     id?: UuidFilter<"Ingredients_photo_uploads"> | string
+    user_id?: StringFilter<"Ingredients_photo_uploads"> | string
     created_at?: DateTimeFilter<"Ingredients_photo_uploads"> | Date | string
     uploaded_at?: DateTimeNullableFilter<"Ingredients_photo_uploads"> | Date | string | null
     state?: Enumphoto_upload_stateFilter<"Ingredients_photo_uploads"> | $Enums.photo_upload_state
@@ -3255,10 +4317,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     ai_processing_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
     photo_url?: StringNullableFilter<"Ingredients_photo_uploads"> | string | null
     ingredients?: IngredientsListRelationFilter
+    users?: XOR<UsersRelationFilter, UsersWhereInput>
   }
 
   export type Ingredients_photo_uploadsOrderByWithRelationInput = {
     id?: SortOrder
+    user_id?: SortOrder
     created_at?: SortOrder
     uploaded_at?: SortOrderInput | SortOrder
     state?: SortOrder
@@ -3266,6 +4330,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     ai_processing_duration_sec?: SortOrderInput | SortOrder
     photo_url?: SortOrderInput | SortOrder
     ingredients?: IngredientsOrderByRelationAggregateInput
+    users?: UsersOrderByWithRelationInput
   }
 
   export type Ingredients_photo_uploadsWhereUniqueInput = Prisma.AtLeast<{
@@ -3273,6 +4338,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     AND?: Ingredients_photo_uploadsWhereInput | Ingredients_photo_uploadsWhereInput[]
     OR?: Ingredients_photo_uploadsWhereInput[]
     NOT?: Ingredients_photo_uploadsWhereInput | Ingredients_photo_uploadsWhereInput[]
+    user_id?: StringFilter<"Ingredients_photo_uploads"> | string
     created_at?: DateTimeFilter<"Ingredients_photo_uploads"> | Date | string
     uploaded_at?: DateTimeNullableFilter<"Ingredients_photo_uploads"> | Date | string | null
     state?: Enumphoto_upload_stateFilter<"Ingredients_photo_uploads"> | $Enums.photo_upload_state
@@ -3280,10 +4346,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     ai_processing_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
     photo_url?: StringNullableFilter<"Ingredients_photo_uploads"> | string | null
     ingredients?: IngredientsListRelationFilter
+    users?: XOR<UsersRelationFilter, UsersWhereInput>
   }, "id">
 
   export type Ingredients_photo_uploadsOrderByWithAggregationInput = {
     id?: SortOrder
+    user_id?: SortOrder
     created_at?: SortOrder
     uploaded_at?: SortOrderInput | SortOrder
     state?: SortOrder
@@ -3302,12 +4370,58 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     OR?: Ingredients_photo_uploadsScalarWhereWithAggregatesInput[]
     NOT?: Ingredients_photo_uploadsScalarWhereWithAggregatesInput | Ingredients_photo_uploadsScalarWhereWithAggregatesInput[]
     id?: UuidWithAggregatesFilter<"Ingredients_photo_uploads"> | string
+    user_id?: StringWithAggregatesFilter<"Ingredients_photo_uploads"> | string
     created_at?: DateTimeWithAggregatesFilter<"Ingredients_photo_uploads"> | Date | string
     uploaded_at?: DateTimeNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | Date | string | null
     state?: Enumphoto_upload_stateWithAggregatesFilter<"Ingredients_photo_uploads"> | $Enums.photo_upload_state
     upload_duration_sec?: FloatNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | number | null
     ai_processing_duration_sec?: FloatNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | number | null
     photo_url?: StringNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | string | null
+  }
+
+  export type UsersWhereInput = {
+    AND?: UsersWhereInput | UsersWhereInput[]
+    OR?: UsersWhereInput[]
+    NOT?: UsersWhereInput | UsersWhereInput[]
+    id?: StringFilter<"Users"> | string
+    name?: StringFilter<"Users"> | string
+    avatar_url?: StringNullableFilter<"Users"> | string | null
+    ingredients_photo_uploads?: Ingredients_photo_uploadsListRelationFilter
+  }
+
+  export type UsersOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    avatar_url?: SortOrderInput | SortOrder
+    ingredients_photo_uploads?: Ingredients_photo_uploadsOrderByRelationAggregateInput
+  }
+
+  export type UsersWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: UsersWhereInput | UsersWhereInput[]
+    OR?: UsersWhereInput[]
+    NOT?: UsersWhereInput | UsersWhereInput[]
+    name?: StringFilter<"Users"> | string
+    avatar_url?: StringNullableFilter<"Users"> | string | null
+    ingredients_photo_uploads?: Ingredients_photo_uploadsListRelationFilter
+  }, "id">
+
+  export type UsersOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    avatar_url?: SortOrderInput | SortOrder
+    _count?: UsersCountOrderByAggregateInput
+    _max?: UsersMaxOrderByAggregateInput
+    _min?: UsersMinOrderByAggregateInput
+  }
+
+  export type UsersScalarWhereWithAggregatesInput = {
+    AND?: UsersScalarWhereWithAggregatesInput | UsersScalarWhereWithAggregatesInput[]
+    OR?: UsersScalarWhereWithAggregatesInput[]
+    NOT?: UsersScalarWhereWithAggregatesInput | UsersScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Users"> | string
+    name?: StringWithAggregatesFilter<"Users"> | string
+    avatar_url?: StringNullableWithAggregatesFilter<"Users"> | string | null
   }
 
   export type IngredientsCreateInput = {
@@ -3395,10 +4509,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
     ingredients?: IngredientsCreateNestedManyWithoutIngredients_photo_uploadsInput
+    users: UsersCreateNestedOneWithoutIngredients_photo_uploadsInput
   }
 
   export type Ingredients_photo_uploadsUncheckedCreateInput = {
     id: string
+    user_id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
     state: $Enums.photo_upload_state
@@ -3417,10 +4533,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
     ingredients?: IngredientsUpdateManyWithoutIngredients_photo_uploadsNestedInput
+    users?: UsersUpdateOneRequiredWithoutIngredients_photo_uploadsNestedInput
   }
 
   export type Ingredients_photo_uploadsUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     state?: Enumphoto_upload_stateFieldUpdateOperationsInput | $Enums.photo_upload_state
@@ -3432,6 +4550,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredients_photo_uploadsCreateManyInput = {
     id: string
+    user_id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
     state: $Enums.photo_upload_state
@@ -3452,12 +4571,59 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredients_photo_uploadsUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     state?: Enumphoto_upload_stateFieldUpdateOperationsInput | $Enums.photo_upload_state
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type UsersCreateInput = {
+    id: string
+    name: string
+    avatar_url?: string | null
+    ingredients_photo_uploads?: Ingredients_photo_uploadsCreateNestedManyWithoutUsersInput
+  }
+
+  export type UsersUncheckedCreateInput = {
+    id: string
+    name: string
+    avatar_url?: string | null
+    ingredients_photo_uploads?: Ingredients_photo_uploadsUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type UsersUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    ingredients_photo_uploads?: Ingredients_photo_uploadsUpdateManyWithoutUsersNestedInput
+  }
+
+  export type UsersUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    ingredients_photo_uploads?: Ingredients_photo_uploadsUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type UsersCreateManyInput = {
+    id: string
+    name: string
+    avatar_url?: string | null
+  }
+
+  export type UsersUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type UsersUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UuidFilter<$PrismaModel = never> = {
@@ -3714,12 +4880,18 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     none?: IngredientsWhereInput
   }
 
+  export type UsersRelationFilter = {
+    is?: UsersWhereInput
+    isNot?: UsersWhereInput
+  }
+
   export type IngredientsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type Ingredients_photo_uploadsCountOrderByAggregateInput = {
     id?: SortOrder
+    user_id?: SortOrder
     created_at?: SortOrder
     uploaded_at?: SortOrder
     state?: SortOrder
@@ -3735,6 +4907,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredients_photo_uploadsMaxOrderByAggregateInput = {
     id?: SortOrder
+    user_id?: SortOrder
     created_at?: SortOrder
     uploaded_at?: SortOrder
     state?: SortOrder
@@ -3745,6 +4918,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredients_photo_uploadsMinOrderByAggregateInput = {
     id?: SortOrder
+    user_id?: SortOrder
     created_at?: SortOrder
     uploaded_at?: SortOrder
     state?: SortOrder
@@ -3830,6 +5004,34 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type Ingredients_photo_uploadsListRelationFilter = {
+    every?: Ingredients_photo_uploadsWhereInput
+    some?: Ingredients_photo_uploadsWhereInput
+    none?: Ingredients_photo_uploadsWhereInput
+  }
+
+  export type Ingredients_photo_uploadsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type UsersCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    avatar_url?: SortOrder
+  }
+
+  export type UsersMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    avatar_url?: SortOrder
+  }
+
+  export type UsersMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    avatar_url?: SortOrder
+  }
+
   export type Ingredients_photo_uploadsCreateNestedOneWithoutIngredientsInput = {
     create?: XOR<Ingredients_photo_uploadsCreateWithoutIngredientsInput, Ingredients_photo_uploadsUncheckedCreateWithoutIngredientsInput>
     connectOrCreate?: Ingredients_photo_uploadsCreateOrConnectWithoutIngredientsInput
@@ -3877,6 +5079,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     connect?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
   }
 
+  export type UsersCreateNestedOneWithoutIngredients_photo_uploadsInput = {
+    create?: XOR<UsersCreateWithoutIngredients_photo_uploadsInput, UsersUncheckedCreateWithoutIngredients_photo_uploadsInput>
+    connectOrCreate?: UsersCreateOrConnectWithoutIngredients_photo_uploadsInput
+    connect?: UsersWhereUniqueInput
+  }
+
   export type IngredientsUncheckedCreateNestedManyWithoutIngredients_photo_uploadsInput = {
     create?: XOR<IngredientsCreateWithoutIngredients_photo_uploadsInput, IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput> | IngredientsCreateWithoutIngredients_photo_uploadsInput[] | IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput[]
     connectOrCreate?: IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput | IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput[]
@@ -3918,6 +5126,14 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     deleteMany?: IngredientsScalarWhereInput | IngredientsScalarWhereInput[]
   }
 
+  export type UsersUpdateOneRequiredWithoutIngredients_photo_uploadsNestedInput = {
+    create?: XOR<UsersCreateWithoutIngredients_photo_uploadsInput, UsersUncheckedCreateWithoutIngredients_photo_uploadsInput>
+    connectOrCreate?: UsersCreateOrConnectWithoutIngredients_photo_uploadsInput
+    upsert?: UsersUpsertWithoutIngredients_photo_uploadsInput
+    connect?: UsersWhereUniqueInput
+    update?: XOR<XOR<UsersUpdateToOneWithWhereWithoutIngredients_photo_uploadsInput, UsersUpdateWithoutIngredients_photo_uploadsInput>, UsersUncheckedUpdateWithoutIngredients_photo_uploadsInput>
+  }
+
   export type IngredientsUncheckedUpdateManyWithoutIngredients_photo_uploadsNestedInput = {
     create?: XOR<IngredientsCreateWithoutIngredients_photo_uploadsInput, IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput> | IngredientsCreateWithoutIngredients_photo_uploadsInput[] | IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput[]
     connectOrCreate?: IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput | IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput[]
@@ -3930,6 +5146,48 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     update?: IngredientsUpdateWithWhereUniqueWithoutIngredients_photo_uploadsInput | IngredientsUpdateWithWhereUniqueWithoutIngredients_photo_uploadsInput[]
     updateMany?: IngredientsUpdateManyWithWhereWithoutIngredients_photo_uploadsInput | IngredientsUpdateManyWithWhereWithoutIngredients_photo_uploadsInput[]
     deleteMany?: IngredientsScalarWhereInput | IngredientsScalarWhereInput[]
+  }
+
+  export type Ingredients_photo_uploadsCreateNestedManyWithoutUsersInput = {
+    create?: XOR<Ingredients_photo_uploadsCreateWithoutUsersInput, Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput> | Ingredients_photo_uploadsCreateWithoutUsersInput[] | Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput | Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput[]
+    createMany?: Ingredients_photo_uploadsCreateManyUsersInputEnvelope
+    connect?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
+  }
+
+  export type Ingredients_photo_uploadsUncheckedCreateNestedManyWithoutUsersInput = {
+    create?: XOR<Ingredients_photo_uploadsCreateWithoutUsersInput, Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput> | Ingredients_photo_uploadsCreateWithoutUsersInput[] | Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput | Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput[]
+    createMany?: Ingredients_photo_uploadsCreateManyUsersInputEnvelope
+    connect?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
+  }
+
+  export type Ingredients_photo_uploadsUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<Ingredients_photo_uploadsCreateWithoutUsersInput, Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput> | Ingredients_photo_uploadsCreateWithoutUsersInput[] | Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput | Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput[]
+    upsert?: Ingredients_photo_uploadsUpsertWithWhereUniqueWithoutUsersInput | Ingredients_photo_uploadsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: Ingredients_photo_uploadsCreateManyUsersInputEnvelope
+    set?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
+    disconnect?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
+    delete?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
+    connect?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
+    update?: Ingredients_photo_uploadsUpdateWithWhereUniqueWithoutUsersInput | Ingredients_photo_uploadsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: Ingredients_photo_uploadsUpdateManyWithWhereWithoutUsersInput | Ingredients_photo_uploadsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: Ingredients_photo_uploadsScalarWhereInput | Ingredients_photo_uploadsScalarWhereInput[]
+  }
+
+  export type Ingredients_photo_uploadsUncheckedUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<Ingredients_photo_uploadsCreateWithoutUsersInput, Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput> | Ingredients_photo_uploadsCreateWithoutUsersInput[] | Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput | Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput[]
+    upsert?: Ingredients_photo_uploadsUpsertWithWhereUniqueWithoutUsersInput | Ingredients_photo_uploadsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: Ingredients_photo_uploadsCreateManyUsersInputEnvelope
+    set?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
+    disconnect?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
+    delete?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
+    connect?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
+    update?: Ingredients_photo_uploadsUpdateWithWhereUniqueWithoutUsersInput | Ingredients_photo_uploadsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: Ingredients_photo_uploadsUpdateManyWithWhereWithoutUsersInput | Ingredients_photo_uploadsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: Ingredients_photo_uploadsScalarWhereInput | Ingredients_photo_uploadsScalarWhereInput[]
   }
 
   export type NestedUuidFilter<$PrismaModel = never> = {
@@ -4221,10 +5479,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
+    users: UsersCreateNestedOneWithoutIngredients_photo_uploadsInput
   }
 
   export type Ingredients_photo_uploadsUncheckedCreateWithoutIngredientsInput = {
     id: string
+    user_id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
     state: $Enums.photo_upload_state
@@ -4257,10 +5517,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
+    users?: UsersUpdateOneRequiredWithoutIngredients_photo_uploadsNestedInput
   }
 
   export type Ingredients_photo_uploadsUncheckedUpdateWithoutIngredientsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     state?: Enumphoto_upload_stateFieldUpdateOperationsInput | $Enums.photo_upload_state
@@ -4299,6 +5561,23 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     skipDuplicates?: boolean
   }
 
+  export type UsersCreateWithoutIngredients_photo_uploadsInput = {
+    id: string
+    name: string
+    avatar_url?: string | null
+  }
+
+  export type UsersUncheckedCreateWithoutIngredients_photo_uploadsInput = {
+    id: string
+    name: string
+    avatar_url?: string | null
+  }
+
+  export type UsersCreateOrConnectWithoutIngredients_photo_uploadsInput = {
+    where: UsersWhereUniqueInput
+    create: XOR<UsersCreateWithoutIngredients_photo_uploadsInput, UsersUncheckedCreateWithoutIngredients_photo_uploadsInput>
+  }
+
   export type IngredientsUpsertWithWhereUniqueWithoutIngredients_photo_uploadsInput = {
     where: IngredientsWhereUniqueInput
     update: XOR<IngredientsUpdateWithoutIngredients_photo_uploadsInput, IngredientsUncheckedUpdateWithoutIngredients_photo_uploadsInput>
@@ -4327,6 +5606,91 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     fill_date?: StringFilter<"Ingredients"> | string
     is_ground?: BoolNullableFilter<"Ingredients"> | boolean | null
     ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
+  }
+
+  export type UsersUpsertWithoutIngredients_photo_uploadsInput = {
+    update: XOR<UsersUpdateWithoutIngredients_photo_uploadsInput, UsersUncheckedUpdateWithoutIngredients_photo_uploadsInput>
+    create: XOR<UsersCreateWithoutIngredients_photo_uploadsInput, UsersUncheckedCreateWithoutIngredients_photo_uploadsInput>
+    where?: UsersWhereInput
+  }
+
+  export type UsersUpdateToOneWithWhereWithoutIngredients_photo_uploadsInput = {
+    where?: UsersWhereInput
+    data: XOR<UsersUpdateWithoutIngredients_photo_uploadsInput, UsersUncheckedUpdateWithoutIngredients_photo_uploadsInput>
+  }
+
+  export type UsersUpdateWithoutIngredients_photo_uploadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type UsersUncheckedUpdateWithoutIngredients_photo_uploadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type Ingredients_photo_uploadsCreateWithoutUsersInput = {
+    id: string
+    created_at: Date | string
+    uploaded_at?: Date | string | null
+    state: $Enums.photo_upload_state
+    upload_duration_sec?: number | null
+    ai_processing_duration_sec?: number | null
+    photo_url?: string | null
+    ingredients?: IngredientsCreateNestedManyWithoutIngredients_photo_uploadsInput
+  }
+
+  export type Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput = {
+    id: string
+    created_at: Date | string
+    uploaded_at?: Date | string | null
+    state: $Enums.photo_upload_state
+    upload_duration_sec?: number | null
+    ai_processing_duration_sec?: number | null
+    photo_url?: string | null
+    ingredients?: IngredientsUncheckedCreateNestedManyWithoutIngredients_photo_uploadsInput
+  }
+
+  export type Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput = {
+    where: Ingredients_photo_uploadsWhereUniqueInput
+    create: XOR<Ingredients_photo_uploadsCreateWithoutUsersInput, Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type Ingredients_photo_uploadsCreateManyUsersInputEnvelope = {
+    data: Ingredients_photo_uploadsCreateManyUsersInput | Ingredients_photo_uploadsCreateManyUsersInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type Ingredients_photo_uploadsUpsertWithWhereUniqueWithoutUsersInput = {
+    where: Ingredients_photo_uploadsWhereUniqueInput
+    update: XOR<Ingredients_photo_uploadsUpdateWithoutUsersInput, Ingredients_photo_uploadsUncheckedUpdateWithoutUsersInput>
+    create: XOR<Ingredients_photo_uploadsCreateWithoutUsersInput, Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type Ingredients_photo_uploadsUpdateWithWhereUniqueWithoutUsersInput = {
+    where: Ingredients_photo_uploadsWhereUniqueInput
+    data: XOR<Ingredients_photo_uploadsUpdateWithoutUsersInput, Ingredients_photo_uploadsUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type Ingredients_photo_uploadsUpdateManyWithWhereWithoutUsersInput = {
+    where: Ingredients_photo_uploadsScalarWhereInput
+    data: XOR<Ingredients_photo_uploadsUpdateManyMutationInput, Ingredients_photo_uploadsUncheckedUpdateManyWithoutUsersInput>
+  }
+
+  export type Ingredients_photo_uploadsScalarWhereInput = {
+    AND?: Ingredients_photo_uploadsScalarWhereInput | Ingredients_photo_uploadsScalarWhereInput[]
+    OR?: Ingredients_photo_uploadsScalarWhereInput[]
+    NOT?: Ingredients_photo_uploadsScalarWhereInput | Ingredients_photo_uploadsScalarWhereInput[]
+    id?: UuidFilter<"Ingredients_photo_uploads"> | string
+    user_id?: StringFilter<"Ingredients_photo_uploads"> | string
+    created_at?: DateTimeFilter<"Ingredients_photo_uploads"> | Date | string
+    uploaded_at?: DateTimeNullableFilter<"Ingredients_photo_uploads"> | Date | string | null
+    state?: Enumphoto_upload_stateFilter<"Ingredients_photo_uploads"> | $Enums.photo_upload_state
+    upload_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
+    ai_processing_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
+    photo_url?: StringNullableFilter<"Ingredients_photo_uploads"> | string | null
   }
 
   export type IngredientsCreateManyIngredients_photo_uploadsInput = {
@@ -4369,6 +5733,48 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
 
+  export type Ingredients_photo_uploadsCreateManyUsersInput = {
+    id: string
+    created_at: Date | string
+    uploaded_at?: Date | string | null
+    state: $Enums.photo_upload_state
+    upload_duration_sec?: number | null
+    ai_processing_duration_sec?: number | null
+    photo_url?: string | null
+  }
+
+  export type Ingredients_photo_uploadsUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    state?: Enumphoto_upload_stateFieldUpdateOperationsInput | $Enums.photo_upload_state
+    upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
+    ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
+    photo_url?: NullableStringFieldUpdateOperationsInput | string | null
+    ingredients?: IngredientsUpdateManyWithoutIngredients_photo_uploadsNestedInput
+  }
+
+  export type Ingredients_photo_uploadsUncheckedUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    state?: Enumphoto_upload_stateFieldUpdateOperationsInput | $Enums.photo_upload_state
+    upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
+    ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
+    photo_url?: NullableStringFieldUpdateOperationsInput | string | null
+    ingredients?: IngredientsUncheckedUpdateManyWithoutIngredients_photo_uploadsNestedInput
+  }
+
+  export type Ingredients_photo_uploadsUncheckedUpdateManyWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    state?: Enumphoto_upload_stateFieldUpdateOperationsInput | $Enums.photo_upload_state
+    upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
+    ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
+    photo_url?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
 
 
   /**
@@ -4379,6 +5785,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      */
     export type Ingredients_photo_uploadsCountOutputTypeArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = Ingredients_photo_uploadsCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use UsersCountOutputTypeDefaultArgs instead
+     */
+    export type UsersCountOutputTypeArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = UsersCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use IngredientsDefaultArgs instead
      */
     export type IngredientsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = IngredientsDefaultArgs<ExtArgs>
@@ -4386,6 +5796,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * @deprecated Use Ingredients_photo_uploadsDefaultArgs instead
      */
     export type Ingredients_photo_uploadsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = Ingredients_photo_uploadsDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use UsersDefaultArgs instead
+     */
+    export type UsersArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = UsersDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany
