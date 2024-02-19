@@ -12,6 +12,7 @@ const electricUrl =
   typeof import.meta.env.VITE_ELECTRIC_URL === `undefined`
     ? `ws://localhost:5133`
     : `wss://${import.meta.env.VITE_ELECTRIC_URL}`
+// const electricUrl = `https://easy-coats-pick.loca.lt`
 
 export function ElectricalProvider({ children }) {
   const { getToken, isSignedIn } = useAuth()

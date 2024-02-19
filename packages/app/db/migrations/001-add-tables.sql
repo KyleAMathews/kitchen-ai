@@ -20,6 +20,7 @@ CREATE TABLE ingredients_photo_uploads (
 CREATE TABLE ingredients (
     id UUID PRIMARY KEY,
     name TEXT NOT NULL,
+    description TEXT NOT NULL,
     is_reviewed BOOLEAN NOT NULL,
     fill_level INTEGER NOT NULL,
     shelf_life_months INTEGER NOT NULL,

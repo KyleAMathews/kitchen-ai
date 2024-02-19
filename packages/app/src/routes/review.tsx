@@ -39,25 +39,28 @@ function ReviewSpice({ spice }) {
   const age_months = diffInMonths(new Date(spice.fill_date), new Date())
   return (
     <Flex gap="5" width="100%">
-      <Box style={{ width: 300 }}>
-        <Heading size="3">
-          {spice.name}
-          {` `}
-          <TrashIcon
-            style={{
-              position: `relative`,
-              top: 2,
-            }}
-            onClick={() => {
-              db.ingredients.delete({
-                where: {
-                  id: spice.id,
-                },
-              })
-            }}
-          />
-        </Heading>
-      </Box>
+      <Flex direction="column" gap="2" style={{ width: 360 }}>
+        <Box>
+          <Heading size="3">
+            {spice.name}
+            {` `}
+            <TrashIcon
+              style={{
+                position: `relative`,
+                top: 2,
+              }}
+              onClick={() => {
+                db.ingredients.delete({
+                  where: {
+                    id: spice.id,
+                  },
+                })
+              }}
+            />
+          </Heading>
+        </Box>
+        <Text>{spice.description}</Text>
+      </Flex>
       <Flex direction="column" gap="5" width="100%" grow="1">
         <Flex direction="column" gap="2">
           <Text size="1" weight="bold">
@@ -90,7 +93,7 @@ function ReviewSpice({ spice }) {
         </Flex>
         <Flex direction="column" gap="2">
           <Text size="1" weight="bold">
-            Age
+            Estimate purchase date
           </Text>
           <Flex direction="column" gap="1">
             <Slider
@@ -112,54 +115,13 @@ function ReviewSpice({ spice }) {
             />
             <Flex justify="between">
               <Text size="1" color="gray">
-                4 years
+                4 years ago
               </Text>
               <Text size="1" color="gray">
                 new
               </Text>
             </Flex>
           </Flex>
-        </Flex>
-        <Flex>
-          <Text as="label" size="2">
-            <Flex gap="2">
-              <Checkbox
-                variant="soft"
-                defaultChecked={spice.is_ground}
-                onCheckedChange={(newValue) => {
-                  db.ingredients.update({
-                    data: {
-                      is_ground: !!newValue,
-                    },
-                    where: {
-                      id: spice.id,
-                    },
-                  })
-                }}
-              />
-              Ground?
-            </Flex>
-          </Text>
-        </Flex>
-        <Flex direction="column" gap="2" color="gray">
-          <Text as="label" size="2">
-            Shelf Life (months)
-          </Text>
-          <TextField.Input
-            type="number"
-            defaultValue={spice.shelf_life_months}
-            onChange={(e) => {
-              const newValue = parseInt(e.target.value, 10)
-              db.ingredients.update({
-                data: {
-                  shelf_life_months: newValue,
-                },
-                where: {
-                  id: spice.id,
-                },
-              })
-            }}
-          />
         </Flex>
       </Flex>
     </Flex>

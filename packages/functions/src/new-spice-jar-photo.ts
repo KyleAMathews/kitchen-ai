@@ -72,6 +72,14 @@ export const main: S3Handler = async (event) => {
           Always put adjectives first e.g. yellow in "yellow mustard seed" should be
          first not e.g. "mustard seed yellow"`
         ),
+        description: z.string().describe(
+          `Short one sentece description of the spice. Follow this template:
+
+          A {{type of ingredient e.g. spice or her}} used
+          for x,y,z types of dishes
+            with a shelf-life of {{count months}} months.
+          `
+        ),
         fill_level: z
           .number()
           .min(0)
@@ -206,11 +214,12 @@ export const main: S3Handler = async (event) => {
         parsed.map((ingredient) => {
           const ingredientInsertQuery = {
             name: `ingredient-insert-query`,
-            text: `INSERT INTO ingredients (id, name, is_reviewed, fill_level, fill_date, is_ground, shelf_life_months, ingredients_photo_uploads_id)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`,
+            text: `INSERT INTO ingredients (id, name, description, is_reviewed, fill_level, fill_date, is_ground, shelf_life_months, ingredients_photo_uploads_id)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
             values: [
               randomUUID(),
               ingredient.name,
+              ingredient.description,
               false,
               ingredient.fill_level,
               generateDateMonthsAgo(18),
