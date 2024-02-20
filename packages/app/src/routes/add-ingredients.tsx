@@ -3,6 +3,8 @@ import { Electric } from "../generated/client"
 import { useElectricData } from "electric-query"
 import { Flex, Heading, Box, Text, Button } from "@radix-ui/themes"
 import FileUploadToS3 from "../upload-to-s3"
+import { Cross1Icon } from "@radix-ui/react-icons"
+import { useElectric } from "../context"
 
 function formatDate(date) {
   const year = date.getFullYear() // Gets the year (4 digits)
@@ -39,6 +41,7 @@ AddIngredients.queries = queries
 
 export default function AddIngredients() {
   const location = useLocation()
+  const { db } = useElectric()!
 
   const { photos, ingredients } = useElectricData(
     location.pathname + location.search
@@ -76,7 +79,20 @@ export default function AddIngredients() {
       </Flex>
       {photos.map((photo) => {
         return (
-          <Flex gap="3" align="center" key={photo.id}>
+          <Flex gap="3" align="center" position="relative" key={photo.id}>
+            <Cross1Icon
+              style={{ position: `absolute`, right: 0, top: 0 }}
+              onClick={() => {
+                db.ingredients_photo_uploads.delete({
+                  where: {
+                    id: photo.id,
+                  },
+                  include: {
+                    ingredients: true,
+                  },
+                })
+              }}
+            />
             {photo.photo_url ? (
               <Box height="8" width="9">
                 {` `}
