@@ -4,14 +4,13 @@ CREATE TABLE users (
     avatar_url TEXT
 );
 
-CREATE TYPE photo_upload_state AS ENUM ('uploading', 'ai_processing', 'reviewing', 'done');
-
+CREATE TYPE ingredient_photo_upload_state AS ENUM ('uploading', 'ai_processing', 'reviewing', 'done');
 CREATE TABLE ingredients_photo_uploads (
     id UUID PRIMARY KEY,
     user_id TEXT NOT NULL REFERENCES users(id),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     uploaded_at TIMESTAMP WITH TIME ZONE,
-    state photo_upload_state NOT NULL,
+    state ingredient_photo_upload_state NOT NULL,
     upload_duration_sec FLOAT,
     ai_processing_duration_sec FLOAT,
     photo_url TEXT
@@ -40,8 +39,26 @@ CREATE TABLE ingredient_events (
     FOREIGN KEY (ingredient_id) REFERENCES ingredients(id)
 );
 
+CREATE TABLE recipes (
+    id UUID PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL,
+    url TEXT NOT NULL,
+    user_id TEXT NOT NULL REFERENCES users(id),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE TABLE recipe_ingredients (
+    id UUID PRIMARY KEY,
+    text TEXT NOT NULL,
+    embedding TEXT NOT NULL,
+    recipe_id UUID NOT NULL REFERENCES recipes(id)
+);
+
 
 ALTER TABLE users ENABLE ELECTRIC;
 ALTER TABLE ingredients_photo_uploads ENABLE ELECTRIC;
 ALTER TABLE ingredients ENABLE ELECTRIC;
 ALTER TABLE ingredient_events ENABLE ELECTRIC;
+ALTER TABLE recipes ENABLE ELECTRIC;
+ALTER TABLE recipe_ingredients ENABLE ELECTRIC;

@@ -1,15 +1,10 @@
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3"
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { Config } from "sst/node/config"
-import { ZodFunctionDef, toTool } from "openai-zod-functions"
 import { z } from "zod"
 import { zodToJsonSchema } from "zod-to-json-schema"
 import pg from "pg"
 import { performance } from "perf_hooks"
 
 const { Client } = pg
-
-const S3 = new S3Client({})
 
 import { S3Handler } from "aws-lambda"
 import OpenAI from "openai"
@@ -24,14 +19,6 @@ const connectionString = process.env.IS_LOCAL
 export const main: S3Handler = async (event) => {
   let client
 
-  // Extract the bucket name and object key from the event
-  const bucketName = event.Records[0].s3.bucket.name
-  const objectKey = decodeURIComponent(
-    event.Records[0].s3.object.key.replace(/\+/g, ` `)
-  )
-
-  const uuid = objectKey.split(`---`)[1]
-
   try {
     client = new Client({ connectionString })
     await client.connect()
@@ -45,6 +32,7 @@ export const main: S3Handler = async (event) => {
     const objectKey = decodeURIComponent(
       event.Records[0].s3.object.key.replace(/\+/g, ` `)
     )
+    const uuid = objectKey.split(`---`)[1]
 
     // Construct the public URL
     const publicUrl = `https://${bucketName}.s3.amazonaws.com/${objectKey}`

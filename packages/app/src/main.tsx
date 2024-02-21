@@ -26,7 +26,9 @@ import Root from "./routes/root"
 import Index from "./routes/index"
 import Review from "./routes/review"
 import AddIngredients from "./routes/add-ingredients"
+import Recipes from "./routes/recipes"
 import IngredientDetail from "./routes/ingredient-detail"
+import RecipeDetail from "./routes/recipe-detail"
 
 const router = createBrowserRouter([
   {
@@ -135,6 +137,69 @@ const router = createBrowserRouter([
                 queries: ({ db }) =>
                   Review.queries({
                     db,
+                  }),
+              })
+
+              return null
+            },
+          },
+          {
+            path: `/recipes`,
+            element: <Recipes />,
+            loader: async (props) => {
+              const url = new URL(props.request.url)
+              const key = url.pathname + url.search
+              await electricSqlLoader<Electric>({
+                key,
+                shapes: ({ db }) => [
+                  {
+                    shape: db.recipes.sync({
+                      include: {
+                        recipe_ingredients: true,
+                        users: true,
+                      },
+                    }),
+                    isReady: async () =>
+                      !!(await db.rawQuery({
+                        sql: `select id from recipes limit 1`,
+                      })),
+                  },
+                ],
+                queries: ({ db }) =>
+                  Recipes.queries({
+                    db,
+                  }),
+              })
+
+              return null
+            },
+          },
+          {
+            path: `/recipes/:id`,
+            element: <RecipeDetail />,
+            loader: async (props) => {
+              const url = new URL(props.request.url)
+              const key = url.pathname + url.search
+              await electricSqlLoader<Electric>({
+                key,
+                shapes: ({ db }) => [
+                  {
+                    shape: db.recipes.sync({
+                      include: {
+                        recipe_ingredients: true,
+                        users: true,
+                      },
+                    }),
+                    isReady: async () =>
+                      !!(await db.rawQuery({
+                        sql: `select id from recipes limit 1`,
+                      })),
+                  },
+                ],
+                queries: ({ db }) =>
+                  RecipeDetail.queries({
+                    db,
+                    id: props.params.id,
                   }),
               })
 

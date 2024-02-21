@@ -1,32 +1,69 @@
-import { StackContext, Bucket, Api, Config } from "sst/constructs";
+import { StackContext, Bucket, Api, Config } from "sst/constructs"
 
 export function SpiceJarPhotos({ stack }: StackContext) {
-  const OPENAI_KEY_SECRET = new Config.Secret(stack, `OPENAI_KEY`);
+  const OPENAI_KEY_SECRET = new Config.Secret(stack, `OPENAI_KEY`)
 
-  const bucket = new Bucket(stack, "SpiceJarPhotosBucket", {
+  const ingredientBucket = new Bucket(stack, `SpiceJarPhotosBucket`, {
     notifications: {
       newSpicePhotos: {
         function: {
-          handler: "packages/functions/src/new-spice-jar-photo.main",
+          handler: `packages/functions/src/new-spice-jar-photo.main`,
           bind: [OPENAI_KEY_SECRET],
         },
-        events: ["object_created"],
+        events: [`object_created`],
       },
     },
-  });
+  })
 
   // Allow the notification functions to access the bucket
-  bucket.attachPermissions([bucket]);
+  ingredientBucket.attachPermissions([ingredientBucket])
 
-  const api = new Api(stack, "api", {
-    routes: {
-      "GET /": "packages/functions/src/lambda.handler",
+  const recipesPhotoBucket = new Bucket(stack, `RecipesPhotoBucket`, {
+    notifications: {
+      newSpicePhotos: {
+        function: {
+          handler: `packages/functions/src/new-recipe-photo.main`,
+          bind: [OPENAI_KEY_SECRET],
+        },
+        events: [`object_created`],
+      },
     },
-  });
-  api.bind([bucket]);
+  })
+
+  // Allow the notification functions to access the bucket
+  recipesPhotoBucket.attachPermissions([recipesPhotoBucket])
+
+  const api = new Api(stack, `api`, {
+    routes: {
+      "GET /": `packages/functions/src/lambda.handler`,
+      "POST /recipes": {
+        function: {
+          handler: `packages/functions/src/recipes.handler`,
+          timeout: 120,
+        },
+      },
+      "POST /recipe-ingredients-intersection": {
+        function: {
+          handler: `packages/functions/src/recipe-ingredients-intersection.handler`,
+          timeout: 125,
+        },
+      },
+      "POST /create-embedding": {
+        function: {
+          handler: `packages/functions/src/create-embedding.handler`,
+          timeout: 125,
+        },
+      },
+    },
+  })
+  api.bind([ingredientBucket, recipesPhotoBucket])
+  api.bindToRoute(`POST /recipes`, [OPENAI_KEY_SECRET])
+  api.bindToRoute(`POST /recipe-ingredients-intersection`, [OPENAI_KEY_SECRET])
+  api.bindToRoute(`POST /create-embedding`, [OPENAI_KEY_SECRET])
 
   stack.addOutputs({
     ApiEndpoint: api.url,
-    SpiceJarPhotosBucket: bucket.bucketName,
-  });
+    SpiceJarPhotosBucket: ingredientBucket.bucketName,
+    RecipesPhotoBucket: recipesPhotoBucket.bucketName,
+  })
 }

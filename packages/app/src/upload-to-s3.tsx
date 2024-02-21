@@ -8,7 +8,8 @@ import { useNavigate } from "react-router-dom"
 function FileUploadToS3({
   buttonVariant = `surface`,
   children = `Add Another Photo`,
-  navigateTo,
+  bucket = ``,
+  navigateTo = ``,
 }) {
   const {
     user: { id: user_id },
@@ -32,15 +33,17 @@ function FileUploadToS3({
 
     const start = new Date()
     try {
-      const newUpload = await db.ingredients_photo_uploads.create({
-        data: {
-          id: uuid,
-          user_id,
-          created_at: start,
-          state: `uploading`,
-        },
-      })
-      console.log({ newUpload })
+      if (bucket === `ingredient`) {
+        const newUpload = await db.ingredients_photo_uploads.create({
+          data: {
+            id: uuid,
+            user_id,
+            created_at: start,
+            state: `uploading`,
+          },
+        })
+        console.log({ newUpload })
+      }
     } catch (e) {
       console.log(`failed to insert new photo upload`, e)
       throw e
@@ -50,7 +53,7 @@ function FileUploadToS3({
     // Replace `your-backend-endpoint` with your actual endpoint that returns the signed URL
     try {
       const response = await fetch(
-        `https://7vxq1y2eu2.execute-api.us-east-1.amazonaws.com?fileName=${encodeURIComponent(file.name)}&contentType=${encodeURIComponent(file.type)}&uuid=${encodeURIComponent(uuid)}`
+        `https://7vxq1y2eu2.execute-api.us-east-1.amazonaws.com?bucket=${bucket}&fileName=${encodeURIComponent(file.name)}&contentType=${encodeURIComponent(file.type)}&uuid=${encodeURIComponent(uuid)}`
       )
       const url = await response.text()
       console.log({ url })
@@ -67,7 +70,7 @@ function FileUploadToS3({
           },
         })
 
-        if (navigateTo) {
+        if (navigateTo.length > 0) {
           navigate(navigateTo)
         }
       } else {

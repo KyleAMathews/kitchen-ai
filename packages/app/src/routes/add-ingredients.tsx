@@ -117,7 +117,7 @@ export default function AddIngredients() {
         )
       })}
       <Flex gap="4">
-        <FileUploadToS3 />
+        <FileUploadToS3 bucket="ingredient" />
         <Button asChild disabled={ingredients.length === 0}>
           <Link
             to="/review"

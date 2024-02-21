@@ -8,11 +8,15 @@ export const handler = ApiHandler(async (_evt) => {
   const fileName = _evt.queryStringParameters?.fileName || ``
   const contentType = _evt.queryStringParameters?.contentType || ``
   const uuid = _evt.queryStringParameters?.uuid
+  const bucket = _evt.queryStringParameters?.bucket
   const command = new PutObjectCommand({
     ACL: `public-read`,
     Key: fileName + `---` + uuid,
     ContentType: contentType,
-    Bucket: Bucket.SpiceJarPhotosBucket.bucketName,
+    Bucket:
+      bucket === `ingredient`
+        ? Bucket.SpiceJarPhotosBucket.bucketName
+        : Bucket.RecipesPhotoBucket.bucketName,
   })
 
   const url = await getSignedUrl(new S3Client({}), command)
