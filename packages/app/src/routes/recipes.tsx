@@ -32,6 +32,7 @@ const handleSubmit = async (
       id,
       user_id,
       created_at: new Date(),
+      updated_at: new Date(),
       name: ``,
       description: ``,
       url: formProps.url,
@@ -69,7 +70,7 @@ const queries = ({ db }: { db: Electric[`db`] }) => {
   return {
     recipes: db.recipes.liveMany({
       orderBy: {
-        created_at: `asc`,
+        updated_at: `asc`,
       },
       include: {
         recipe_ingredients: true,
@@ -90,7 +91,6 @@ export default function Recipes() {
   const { recipes }: { recipes: Recipes[] } = useElectricData(
     location.pathname + location.search
   )
-  console.log({ recipes })
 
   return (
     <Flex direction="column" gap="7">

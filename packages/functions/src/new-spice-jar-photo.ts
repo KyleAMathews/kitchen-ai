@@ -3,6 +3,7 @@ import { z } from "zod"
 import { zodToJsonSchema } from "zod-to-json-schema"
 import pg from "pg"
 import { performance } from "perf_hooks"
+import { getEmbedding } from "./_get-embedding"
 
 const { Client } = pg
 
@@ -64,8 +65,7 @@ export const main: S3Handler = async (event) => {
           `Short one sentece description of the spice. Follow this template:
 
           A {{type of ingredient e.g. spice or her}} used
-          for x,y,z types of dishes
-            with a shelf-life of {{count months}} months.
+          for x,y,z types of dishes.
           `
         ),
         fill_level: z
@@ -83,7 +83,7 @@ export const main: S3Handler = async (event) => {
         shelf_life_months: z
           .number()
           .describe(
-            `how long does this spice or herb last until it looses flavor? If there's a range e.g. 2-3 years, choose the midpoint, 2.5 years. Return your answer in the number of months e.g. 12 for 1 year, 30 for 2.5 years, etc.`
+            `how long does this spice or herb last until it looses flavor? If it's a ground spice/herb return 12 or if it's whole, return 24. Otherwise make your best guess.`
           ),
       })
     )
@@ -195,21 +195,32 @@ export const main: S3Handler = async (event) => {
       return `${year}/${month}` // Return the formatted date string
     }
 
+    // Get embeddings for each ingredient
+    const ingredients = await Promise.all(
+      parsed.map(async (ingredient) => {
+        const embedding = await getEmbedding(ingredient.name)
+        return { embedding, ...ingredient }
+      })
+    )
+
     // Add each new ingredient
     try {
       await client.query(`BEGIN`)
       await Promise.all(
-        parsed.map((ingredient) => {
+        ingredients.map((ingredient) => {
           const ingredientInsertQuery = {
             name: `ingredient-insert-query`,
-            text: `INSERT INTO ingredients (id, name, description, is_reviewed, fill_level, fill_date, is_ground, shelf_life_months, ingredients_photo_uploads_id)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
+            text: `INSERT INTO ingredients (id, name, description, is_reviewed, tracking_type, count, fill_level, embedding, fill_date, is_ground, shelf_life_months, ingredients_photo_uploads_id)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);`,
             values: [
               randomUUID(),
               ingredient.name,
               ingredient.description,
               false,
+              `fill_level`,
+              0,
               ingredient.fill_level,
+              JSON.stringify(ingredient.embedding),
               generateDateMonthsAgo(18),
               ingredient.is_ground,
               ingredient.shelf_life_months,

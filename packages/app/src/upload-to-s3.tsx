@@ -70,11 +70,14 @@ function FileUploadToS3({
           },
         })
 
+        setUploading(false)
+
         if (navigateTo.length > 0) {
           navigate(navigateTo)
         }
       } else {
         throw new Error(`Failed to get a signed URL.`)
+        setUploading(false)
       }
     } catch (error) {
       setUploading(false)

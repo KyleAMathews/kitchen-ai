@@ -120,14 +120,17 @@ async function generate() {
       zero: fontSizes[0],
       lineGap,
     })
-    const style = createStyleString(`rt-r-size-${i + 1}`, {
-      capHeight: fontSize,
-      // leading: fontSize * 1.75,
-      // leading: lineHeight,
-      // lineGap: fontSize / 1.5,
-      lineGap,
-      fontMetrics: metrics,
-    })
+    const style = createStyleString(
+      `rt-r-size-${i + 1}:not(.rt-DialogContent)`,
+      {
+        capHeight: fontSize,
+        // leading: fontSize * 1.75,
+        // leading: lineHeight,
+        // lineGap: fontSize / 1.5,
+        lineGap,
+        fontMetrics: metrics,
+      }
+    )
     return {
       style,
       ...createStyleObject({

@@ -47,154 +47,154 @@
 
 /* Class names for adding to text elements */
 
-.rt-r-size-1 {
+.rt-r-size-1:not(.rt-DialogContent) {
   font-size: 13.3333px;
   line-height: 16px;
 }
 
-.rt-r-size-1::before {
+.rt-r-size-1:not(.rt-DialogContent)::before {
   content: "";
   margin-bottom: -0.2785em;
   display: table;
 }
 
-.rt-r-size-1::after {
+.rt-r-size-1:not(.rt-DialogContent)::after {
   content: "";
   margin-top: -0.1715em;
   display: table;
 }
 
-.rt-r-size-2 {
+.rt-r-size-2:not(.rt-DialogContent) {
   font-size: 16px;
   line-height: 20px;
 }
 
-.rt-r-size-2::before {
+.rt-r-size-2:not(.rt-DialogContent)::before {
   content: "";
   margin-bottom: -0.3035em;
   display: table;
 }
 
-.rt-r-size-2::after {
+.rt-r-size-2:not(.rt-DialogContent)::after {
   content: "";
   margin-top: -0.1965em;
   display: table;
 }
 
-.rt-r-size-3 {
+.rt-r-size-3:not(.rt-DialogContent) {
   font-size: 18.6667px;
   line-height: 24px;
 }
 
-.rt-r-size-3::before {
+.rt-r-size-3:not(.rt-DialogContent)::before {
   content: "";
   margin-bottom: -0.3214em;
   display: table;
 }
 
-.rt-r-size-3::after {
+.rt-r-size-3:not(.rt-DialogContent)::after {
   content: "";
   margin-top: -0.2144em;
   display: table;
 }
 
-.rt-r-size-4 {
+.rt-r-size-4:not(.rt-DialogContent) {
   font-size: 21.3333px;
   line-height: 26px;
 }
 
-.rt-r-size-4::before {
+.rt-r-size-4:not(.rt-DialogContent)::before {
   content: "";
   margin-bottom: -0.2879em;
   display: table;
 }
 
-.rt-r-size-4::after {
+.rt-r-size-4:not(.rt-DialogContent)::after {
   content: "";
   margin-top: -0.1809em;
   display: table;
 }
 
-.rt-r-size-5 {
+.rt-r-size-5:not(.rt-DialogContent) {
   font-size: 24px;
   line-height: 26px;
 }
 
-.rt-r-size-5::before {
+.rt-r-size-5:not(.rt-DialogContent)::before {
   content: "";
   margin-bottom: -0.2202em;
   display: table;
 }
 
-.rt-r-size-5::after {
+.rt-r-size-5:not(.rt-DialogContent)::after {
   content: "";
   margin-top: -0.1132em;
   display: table;
 }
 
-.rt-r-size-6 {
+.rt-r-size-6:not(.rt-DialogContent) {
   font-size: 26.6667px;
   line-height: 28px;
 }
 
-.rt-r-size-6::before {
+.rt-r-size-6:not(.rt-DialogContent)::before {
   content: "";
   margin-bottom: -0.2035em;
   display: table;
 }
 
-.rt-r-size-6::after {
+.rt-r-size-6:not(.rt-DialogContent)::after {
   content: "";
   margin-top: -0.0965em;
   display: table;
 }
 
-.rt-r-size-7 {
+.rt-r-size-7:not(.rt-DialogContent) {
   font-size: 32px;
   line-height: 32px;
 }
 
-.rt-r-size-7::before {
+.rt-r-size-7:not(.rt-DialogContent)::before {
   content: "";
   margin-bottom: -0.1785em;
   display: table;
 }
 
-.rt-r-size-7::after {
+.rt-r-size-7:not(.rt-DialogContent)::after {
   content: "";
   margin-top: -0.0715em;
   display: table;
 }
 
-.rt-r-size-8 {
+.rt-r-size-8:not(.rt-DialogContent) {
   font-size: 46.6667px;
   line-height: 40px;
 }
 
-.rt-r-size-8::before {
+.rt-r-size-8:not(.rt-DialogContent)::before {
   content: "";
   margin-bottom: -0.1071em;
   display: table;
 }
 
-.rt-r-size-8::after {
+.rt-r-size-8:not(.rt-DialogContent)::after {
   content: "";
   margin-top: -0.0001em;
   display: table;
 }
 
-.rt-r-size-9 {
+.rt-r-size-9:not(.rt-DialogContent) {
   font-size: 80px;
   line-height: 60px;
 }
 
-.rt-r-size-9::before {
+.rt-r-size-9:not(.rt-DialogContent)::before {
   content: "";
   margin-bottom: -0.0535em;
   display: table;
 }
 
-.rt-r-size-9::after {
+.rt-r-size-9:not(.rt-DialogContent)::after {
   content: "";
   margin-top: 0.0535em;
   display: table;

@@ -9,7 +9,6 @@ import { getEmbedding } from "./_get-embedding"
 
 const { Client } = pg
 
-import { S3Handler } from "aws-lambda"
 import OpenAI from "openai"
 
 const openai = new OpenAI({ apiKey: Config.OPENAI_KEY })
@@ -31,33 +30,28 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   const startTime = performance.now()
   try {
     const body = JSON.parse(event.body || ``)
+    console.log({ body })
 
     const functions: ZodFunctionDef[] = [
       {
-        name: `get_ingredients`,
-        description: `Get ingredients from recipe`,
+        name: `get_ingredient`,
+        description: `Get ingredient arguments from name of ingredient`,
         schema: z.object({
-          name: z
-            .string()
-            .describe(`name of the recipe. Always return in Capitalized Case`),
           description: z
             .string()
-            .describe(`Short one sentece description of the recipe.`),
-          ingredients: z.array(
-            z.object({
-              listing: z
-                .string()
-                .max(140)
-                .describe(
-                  `A specific ingredient listing (make sure not to accidentally combine all ingredients). Include the name and the amount and description as written in the recipe. Specify if they're optional`
-                ),
-              extracted_name: z
-                .string()
-                .describe(
-                  `try to extract the name of the ingredient from the ingredient listing`
-                ),
-            })
-          ),
+            .describe(
+              `Short one sentence description of the ingredient and what kind of cuisines it's used with.`
+            ),
+          shelf_life_months: z
+            .number()
+            .describe(
+              `how long does this spice or herb last until it looses flavor? If it's a ground spice/herb return 12 or if it's whole or a full leaf, return 24. Otherwise make your best guess.`
+            ),
+          is_ground: z
+            .boolean()
+            .describe(
+              `If the ingredient is a spice or herb — is it ground (or crushed into small flakes) or still whole (larger pieces counts)? If the question is irrelevant to this type of ingredient, just return false `
+            ),
         }),
       },
     ]
@@ -67,11 +61,11 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         content: [
           {
             type: `text`,
-            text: `Process this recipe copy/pasted from an online recipe site.`,
+            text: `A user wants more informationa about this kitchen ingredient`,
           },
           {
             type: `text`,
-            text: body.pasted,
+            text: body.ingredient,
           },
         ],
       },
@@ -95,9 +89,10 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         })
         try {
           const { message } = response.choices[0]
+          console.log(message.tool_calls[0])
           if (message.tool_calls) {
             const func = message.tool_calls[0].function
-            if (func.name === `get_ingredients`) {
+            if (func.name === `get_ingredient`) {
               const ingredientsFunction = functions[0]
               const parsed = parseArguments(
                 func.name,
@@ -155,54 +150,12 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     console.log({ durationInSeconds })
     console.log(parsed)
 
-    const updateRecipe = `
-    UPDATE recipes SET name = $1, description = $2 WHERE id = $3`
-    const updateRecipeValues = [parsed.name, parsed.description, body.id]
-    console.log({ updateRecipe, updateRecipeValues })
-
-    // Execute the prepared query
-    await client.query(updateRecipe, updateRecipeValues).catch((e) => {
-      console.log(`update failed`, e)
-    })
-
-    // Get embeddings for each ingredient
-    const ingredients = await Promise.all(
-      parsed.ingredients.map(async (ingredient) => {
-        const embedding = await getEmbedding(ingredient.extracted_name)
-        return { embedding, ...ingredient }
-      })
-    )
-
-    // Add each new ingredient
-    try {
-      await client.query(`BEGIN`)
-      await Promise.all(
-        ingredients.map((ingredient) => {
-          const ingredientInsertQuery = {
-            name: `ingredient-insert-query`,
-            text: `INSERT INTO recipe_ingredients (id, listing, extracted_name, embedding, recipe_id)
-    VALUES ($1, $2, $3, $4, $5);`,
-            values: [
-              randomUUID(),
-              ingredient.listing,
-              ingredient.extracted_name,
-              JSON.stringify(ingredient.embedding),
-              body.id,
-            ],
-          }
-
-          return client.query(ingredientInsertQuery)
-        })
-      )
-      await client.query(`COMMIT`)
-    } catch (e) {
-      console.log(`inserts failed`, e)
-      await client.query(`ROLLBACK`)
-    }
+    // Get embeddings for the ingredient
+    const embedding = await getEmbedding(body.ingredient)
 
     return {
       statusCode: 200,
-      body: JSON.stringify(parsed),
+      body: JSON.stringify({ ...parsed, embedding }),
     }
   } catch (error) {
     console.log(`error`, error)

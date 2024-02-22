@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate, Link } from "react-router-dom"
 import { useElectric } from "../context"
 import { Electric } from "../generated/client"
 import { useElectricData } from "electric-query"
@@ -8,12 +8,14 @@ import {
   Heading,
   Box,
   Text,
+  Link as RadixLink,
   Separator,
   Slider,
   Button,
-  Checkbox,
+  Badge,
   TextField,
 } from "@radix-ui/themes"
+import { cosineSimilarity } from "../util"
 
 const diffInMonths = (date1, date2) => {
   const yearDiff = date2.getFullYear() - date1.getFullYear()
@@ -34,12 +36,35 @@ function generateDateMonthsAgo(monthsAgo) {
   return `${year}/${month}` // Return the formatted date string
 }
 
-function ReviewSpice({ spice }) {
+function ReviewSpice({ spice, allIngredients }) {
   const { db } = useElectric()!
   const age_months = diffInMonths(new Date(spice.fill_date), new Date())
+
+  // Check if there's any ingredients that we've probably uploaded before.
+  const similarIngredient = allIngredients
+    .map((i) => {
+      if (spice.id !== i.id) {
+        const distance = cosineSimilarity(
+          JSON.parse(spice.embedding),
+          JSON.parse(i.embedding)
+        )
+        return { distance, name: i.name, id: i.id }
+      }
+    })
+    .filter((i) => i?.distance > 0.7)
+
   return (
     <Flex gap="5" width="100%">
       <Flex direction="column" gap="2" style={{ width: 360 }}>
+        {similarIngredient.length > 0 && (
+          <Badge color="ruby">
+            Duplicate of
+            <Link to={`/ingredients/${similarIngredient[0].id}`}>
+              {similarIngredient[0].name}
+            </Link>
+            ?
+          </Badge>
+        )}
         <Box>
           <Heading size="3">
             {spice.name}
@@ -139,9 +164,6 @@ const queries = ({ db }: { db: Electric[`db`] }) => {
       orderBy: {
         name: `asc`,
       },
-      where: {
-        is_reviewed: false,
-      },
     }),
   }
 }
@@ -166,16 +188,22 @@ export default function Review() {
         </Text>
       </Flex>
       <Flex direction="column" gap="8">
-        {ingredients.map((spice, i) => {
-          return (
-            <>
-              <ReviewSpice spice={spice} key={spice.id} />
-              {i !== ingredients.length - 1 && (
-                <Separator orientation="horizontal" size="4" />
-              )}
-            </>
-          )
-        })}
+        {ingredients
+          .filter((i) => i.is_reviewed === false)
+          .map((spice, i) => {
+            return (
+              <>
+                <ReviewSpice
+                  spice={spice}
+                  key={spice.id}
+                  allIngredients={ingredients}
+                />
+                {i !== ingredients.length - 1 && (
+                  <Separator orientation="horizontal" size="4" />
+                )}
+              </>
+            )
+          })}
       </Flex>
       <Button
         onClick={async () => {

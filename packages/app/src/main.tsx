@@ -207,7 +207,7 @@ const router = createBrowserRouter([
             },
           },
           {
-            path: `/ingredient/:id`,
+            path: `/ingredients/:id`,
             element: <IngredientDetail />,
             loader: async (props) => {
               const url = new URL(props.request.url)

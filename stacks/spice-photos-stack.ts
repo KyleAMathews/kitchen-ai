@@ -42,9 +42,9 @@ export function SpiceJarPhotos({ stack }: StackContext) {
           timeout: 120,
         },
       },
-      "POST /recipe-ingredients-intersection": {
+      "POST /ingredients": {
         function: {
-          handler: `packages/functions/src/recipe-ingredients-intersection.handler`,
+          handler: `packages/functions/src/create-ingredient.handler`,
           timeout: 125,
         },
       },
@@ -58,7 +58,7 @@ export function SpiceJarPhotos({ stack }: StackContext) {
   })
   api.bind([ingredientBucket, recipesPhotoBucket])
   api.bindToRoute(`POST /recipes`, [OPENAI_KEY_SECRET])
-  api.bindToRoute(`POST /recipe-ingredients-intersection`, [OPENAI_KEY_SECRET])
+  api.bindToRoute(`POST /ingredients`, [OPENAI_KEY_SECRET])
   api.bindToRoute(`POST /create-embedding`, [OPENAI_KEY_SECRET])
 
   stack.addOutputs({

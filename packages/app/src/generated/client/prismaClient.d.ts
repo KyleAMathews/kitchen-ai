@@ -48,7 +48,15 @@ export type Users = $Result.DefaultSelection<Prisma.$UsersPayload>
  * Enums
  */
 export namespace $Enums {
-  export const ingredient_photo_upload_state: {
+  export const ingredients_tracking_type: {
+  fill_level: 'fill_level',
+  count: 'count'
+};
+
+export type ingredients_tracking_type = (typeof ingredients_tracking_type)[keyof typeof ingredients_tracking_type]
+
+
+export const ingredient_photo_upload_state: {
   uploading: 'uploading',
   ai_processing: 'ai_processing',
   reviewing: 'reviewing',
@@ -58,6 +66,10 @@ export namespace $Enums {
 export type ingredient_photo_upload_state = (typeof ingredient_photo_upload_state)[keyof typeof ingredient_photo_upload_state]
 
 }
+
+export type ingredients_tracking_type = $Enums.ingredients_tracking_type
+
+export const ingredients_tracking_type: typeof $Enums.ingredients_tracking_type
 
 export type ingredient_photo_upload_state = $Enums.ingredient_photo_upload_state
 
@@ -2390,11 +2402,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type IngredientsAvgAggregateOutputType = {
     fill_level: number | null
+    count: number | null
     shelf_life_months: number | null
   }
 
   export type IngredientsSumAggregateOutputType = {
     fill_level: number | null
+    count: number | null
     shelf_life_months: number | null
   }
 
@@ -2404,7 +2418,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string | null
     is_reviewed: boolean | null
     embedding: string | null
+    tracking_type: $Enums.ingredients_tracking_type | null
     fill_level: number | null
+    count: number | null
     shelf_life_months: number | null
     fill_date: string | null
     is_ground: boolean | null
@@ -2417,7 +2433,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string | null
     is_reviewed: boolean | null
     embedding: string | null
+    tracking_type: $Enums.ingredients_tracking_type | null
     fill_level: number | null
+    count: number | null
     shelf_life_months: number | null
     fill_date: string | null
     is_ground: boolean | null
@@ -2430,7 +2448,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: number
     is_reviewed: number
     embedding: number
+    tracking_type: number
     fill_level: number
+    count: number
     shelf_life_months: number
     fill_date: number
     is_ground: number
@@ -2441,11 +2461,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type IngredientsAvgAggregateInputType = {
     fill_level?: true
+    count?: true
     shelf_life_months?: true
   }
 
   export type IngredientsSumAggregateInputType = {
     fill_level?: true
+    count?: true
     shelf_life_months?: true
   }
 
@@ -2455,7 +2477,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: true
     is_reviewed?: true
     embedding?: true
+    tracking_type?: true
     fill_level?: true
+    count?: true
     shelf_life_months?: true
     fill_date?: true
     is_ground?: true
@@ -2468,7 +2492,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: true
     is_reviewed?: true
     embedding?: true
+    tracking_type?: true
     fill_level?: true
+    count?: true
     shelf_life_months?: true
     fill_date?: true
     is_ground?: true
@@ -2481,7 +2507,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: true
     is_reviewed?: true
     embedding?: true
+    tracking_type?: true
     fill_level?: true
+    count?: true
     shelf_life_months?: true
     fill_date?: true
     is_ground?: true
@@ -2581,7 +2609,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     is_reviewed: boolean
     embedding: string
+    tracking_type: $Enums.ingredients_tracking_type | null
     fill_level: number
+    count: number
     shelf_life_months: number
     fill_date: string
     is_ground: boolean | null
@@ -2613,7 +2643,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: boolean
     is_reviewed?: boolean
     embedding?: boolean
+    tracking_type?: boolean
     fill_level?: boolean
+    count?: boolean
     shelf_life_months?: boolean
     fill_date?: boolean
     is_ground?: boolean
@@ -2629,7 +2661,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: boolean
     is_reviewed?: boolean
     embedding?: boolean
+    tracking_type?: boolean
     fill_level?: boolean
+    count?: boolean
     shelf_life_months?: boolean
     fill_date?: boolean
     is_ground?: boolean
@@ -2658,10 +2692,15 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
       description: string
       is_reviewed: boolean
       embedding: string
+      tracking_type: $Enums.ingredients_tracking_type | null
       /**
        * @zod.number.int().gte(-2147483648).lte(2147483647)
        */
       fill_level: number
+      /**
+       * @zod.number.int().gte(-2147483648).lte(2147483647)
+       */
+      count: number
       /**
        * @zod.number.int().gte(-2147483648).lte(2147483647)
        */
@@ -3074,7 +3113,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     readonly description: FieldRef<"Ingredients", 'String'>
     readonly is_reviewed: FieldRef<"Ingredients", 'Boolean'>
     readonly embedding: FieldRef<"Ingredients", 'String'>
+    readonly tracking_type: FieldRef<"Ingredients", 'ingredients_tracking_type'>
     readonly fill_level: FieldRef<"Ingredients", 'Int'>
+    readonly count: FieldRef<"Ingredients", 'Int'>
     readonly shelf_life_months: FieldRef<"Ingredients", 'Int'>
     readonly fill_date: FieldRef<"Ingredients", 'String'>
     readonly is_ground: FieldRef<"Ingredients", 'Boolean'>
@@ -4481,21 +4522,24 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Recipe_ingredientsMinAggregateOutputType = {
     id: string | null
-    text: string | null
+    listing: string | null
+    extracted_name: string | null
     embedding: string | null
     recipe_id: string | null
   }
 
   export type Recipe_ingredientsMaxAggregateOutputType = {
     id: string | null
-    text: string | null
+    listing: string | null
+    extracted_name: string | null
     embedding: string | null
     recipe_id: string | null
   }
 
   export type Recipe_ingredientsCountAggregateOutputType = {
     id: number
-    text: number
+    listing: number
+    extracted_name: number
     embedding: number
     recipe_id: number
     _all: number
@@ -4504,21 +4548,24 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Recipe_ingredientsMinAggregateInputType = {
     id?: true
-    text?: true
+    listing?: true
+    extracted_name?: true
     embedding?: true
     recipe_id?: true
   }
 
   export type Recipe_ingredientsMaxAggregateInputType = {
     id?: true
-    text?: true
+    listing?: true
+    extracted_name?: true
     embedding?: true
     recipe_id?: true
   }
 
   export type Recipe_ingredientsCountAggregateInputType = {
     id?: true
-    text?: true
+    listing?: true
+    extracted_name?: true
     embedding?: true
     recipe_id?: true
     _all?: true
@@ -4598,7 +4645,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Recipe_ingredientsGroupByOutputType = {
     id: string
-    text: string
+    listing: string
+    extracted_name: string
     embedding: string
     recipe_id: string
     _count: Recipe_ingredientsCountAggregateOutputType | null
@@ -4622,7 +4670,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Recipe_ingredientsSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    text?: boolean
+    listing?: boolean
+    extracted_name?: boolean
     embedding?: boolean
     recipe_id?: boolean
     recipes?: boolean | RecipesDefaultArgs<ExtArgs>
@@ -4630,7 +4679,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Recipe_ingredientsSelectScalar = {
     id?: boolean
-    text?: boolean
+    listing?: boolean
+    extracted_name?: boolean
     embedding?: boolean
     recipe_id?: boolean
   }
@@ -4650,7 +4700,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
        * @zod.string.uuid()
        */
       id: string
-      text: string
+      listing: string
+      extracted_name: string
       embedding: string
       /**
        * @zod.string.uuid()
@@ -5052,7 +5103,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    */ 
   interface Recipe_ingredientsFieldRefs {
     readonly id: FieldRef<"Recipe_ingredients", 'String'>
-    readonly text: FieldRef<"Recipe_ingredients", 'String'>
+    readonly listing: FieldRef<"Recipe_ingredients", 'String'>
+    readonly extracted_name: FieldRef<"Recipe_ingredients", 'String'>
     readonly embedding: FieldRef<"Recipe_ingredients", 'String'>
     readonly recipe_id: FieldRef<"Recipe_ingredients", 'String'>
   }
@@ -5399,6 +5451,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url: string | null
     user_id: string | null
     created_at: Date | null
+    updated_at: Date | null
   }
 
   export type RecipesMaxAggregateOutputType = {
@@ -5408,6 +5461,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url: string | null
     user_id: string | null
     created_at: Date | null
+    updated_at: Date | null
   }
 
   export type RecipesCountAggregateOutputType = {
@@ -5417,6 +5471,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url: number
     user_id: number
     created_at: number
+    updated_at: number
     _all: number
   }
 
@@ -5428,6 +5483,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url?: true
     user_id?: true
     created_at?: true
+    updated_at?: true
   }
 
   export type RecipesMaxAggregateInputType = {
@@ -5437,6 +5493,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url?: true
     user_id?: true
     created_at?: true
+    updated_at?: true
   }
 
   export type RecipesCountAggregateInputType = {
@@ -5446,6 +5503,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url?: true
     user_id?: true
     created_at?: true
+    updated_at?: true
     _all?: true
   }
 
@@ -5528,6 +5586,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url: string
     user_id: string
     created_at: Date
+    updated_at: Date
     _count: RecipesCountAggregateOutputType | null
     _min: RecipesMinAggregateOutputType | null
     _max: RecipesMaxAggregateOutputType | null
@@ -5554,6 +5613,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url?: boolean
     user_id?: boolean
     created_at?: boolean
+    updated_at?: boolean
     recipe_ingredients?: boolean | Recipes$recipe_ingredientsArgs<ExtArgs>
     users?: boolean | UsersDefaultArgs<ExtArgs>
     _count?: boolean | RecipesCountOutputTypeDefaultArgs<ExtArgs>
@@ -5566,6 +5626,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url?: boolean
     user_id?: boolean
     created_at?: boolean
+    updated_at?: boolean
   }
 
   export type RecipesInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
@@ -5591,6 +5652,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
       url: string
       user_id: string
       created_at: Date
+      updated_at: Date
     }, ExtArgs["result"]["recipes"]>
     composites: {}
   }
@@ -5994,6 +6056,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     readonly url: FieldRef<"Recipes", 'String'>
     readonly user_id: FieldRef<"Recipes", 'String'>
     readonly created_at: FieldRef<"Recipes", 'DateTime'>
+    readonly updated_at: FieldRef<"Recipes", 'DateTime'>
   }
     
 
@@ -7345,7 +7408,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: 'description',
     is_reviewed: 'is_reviewed',
     embedding: 'embedding',
+    tracking_type: 'tracking_type',
     fill_level: 'fill_level',
+    count: 'count',
     shelf_life_months: 'shelf_life_months',
     fill_date: 'fill_date',
     is_ground: 'is_ground',
@@ -7371,7 +7436,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export const Recipe_ingredientsScalarFieldEnum: {
     id: 'id',
-    text: 'text',
+    listing: 'listing',
+    extracted_name: 'extracted_name',
     embedding: 'embedding',
     recipe_id: 'recipe_id'
   };
@@ -7385,7 +7451,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: 'description',
     url: 'url',
     user_id: 'user_id',
-    created_at: 'created_at'
+    created_at: 'created_at',
+    updated_at: 'updated_at'
   };
 
   export type RecipesScalarFieldEnum = (typeof RecipesScalarFieldEnum)[keyof typeof RecipesScalarFieldEnum]
@@ -7485,6 +7552,20 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
+   * Reference to a field of type 'ingredients_tracking_type'
+   */
+  export type Enumingredients_tracking_typeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ingredients_tracking_type'>
+    
+
+
+  /**
+   * Reference to a field of type 'ingredients_tracking_type[]'
+   */
+  export type ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ingredients_tracking_type[]'>
     
 
 
@@ -7605,7 +7686,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFilter<"Ingredients"> | string
     is_reviewed?: BoolFilter<"Ingredients"> | boolean
     embedding?: StringFilter<"Ingredients"> | string
+    tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | $Enums.ingredients_tracking_type | null
     fill_level?: IntFilter<"Ingredients"> | number
+    count?: IntFilter<"Ingredients"> | number
     shelf_life_months?: IntFilter<"Ingredients"> | number
     fill_date?: StringFilter<"Ingredients"> | string
     is_ground?: BoolNullableFilter<"Ingredients"> | boolean | null
@@ -7620,7 +7703,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: SortOrder
     is_reviewed?: SortOrder
     embedding?: SortOrder
+    tracking_type?: SortOrderInput | SortOrder
     fill_level?: SortOrder
+    count?: SortOrder
     shelf_life_months?: SortOrder
     fill_date?: SortOrder
     is_ground?: SortOrderInput | SortOrder
@@ -7638,7 +7723,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFilter<"Ingredients"> | string
     is_reviewed?: BoolFilter<"Ingredients"> | boolean
     embedding?: StringFilter<"Ingredients"> | string
+    tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | $Enums.ingredients_tracking_type | null
     fill_level?: IntFilter<"Ingredients"> | number
+    count?: IntFilter<"Ingredients"> | number
     shelf_life_months?: IntFilter<"Ingredients"> | number
     fill_date?: StringFilter<"Ingredients"> | string
     is_ground?: BoolNullableFilter<"Ingredients"> | boolean | null
@@ -7653,7 +7740,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: SortOrder
     is_reviewed?: SortOrder
     embedding?: SortOrder
+    tracking_type?: SortOrderInput | SortOrder
     fill_level?: SortOrder
+    count?: SortOrder
     shelf_life_months?: SortOrder
     fill_date?: SortOrder
     is_ground?: SortOrderInput | SortOrder
@@ -7674,7 +7763,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringWithAggregatesFilter<"Ingredients"> | string
     is_reviewed?: BoolWithAggregatesFilter<"Ingredients"> | boolean
     embedding?: StringWithAggregatesFilter<"Ingredients"> | string
+    tracking_type?: Enumingredients_tracking_typeNullableWithAggregatesFilter<"Ingredients"> | $Enums.ingredients_tracking_type | null
     fill_level?: IntWithAggregatesFilter<"Ingredients"> | number
+    count?: IntWithAggregatesFilter<"Ingredients"> | number
     shelf_life_months?: IntWithAggregatesFilter<"Ingredients"> | number
     fill_date?: StringWithAggregatesFilter<"Ingredients"> | string
     is_ground?: BoolNullableWithAggregatesFilter<"Ingredients"> | boolean | null
@@ -7761,7 +7852,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     OR?: Recipe_ingredientsWhereInput[]
     NOT?: Recipe_ingredientsWhereInput | Recipe_ingredientsWhereInput[]
     id?: UuidFilter<"Recipe_ingredients"> | string
-    text?: StringFilter<"Recipe_ingredients"> | string
+    listing?: StringFilter<"Recipe_ingredients"> | string
+    extracted_name?: StringFilter<"Recipe_ingredients"> | string
     embedding?: StringFilter<"Recipe_ingredients"> | string
     recipe_id?: UuidFilter<"Recipe_ingredients"> | string
     recipes?: XOR<RecipesRelationFilter, RecipesWhereInput>
@@ -7769,7 +7861,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Recipe_ingredientsOrderByWithRelationInput = {
     id?: SortOrder
-    text?: SortOrder
+    listing?: SortOrder
+    extracted_name?: SortOrder
     embedding?: SortOrder
     recipe_id?: SortOrder
     recipes?: RecipesOrderByWithRelationInput
@@ -7780,7 +7873,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     AND?: Recipe_ingredientsWhereInput | Recipe_ingredientsWhereInput[]
     OR?: Recipe_ingredientsWhereInput[]
     NOT?: Recipe_ingredientsWhereInput | Recipe_ingredientsWhereInput[]
-    text?: StringFilter<"Recipe_ingredients"> | string
+    listing?: StringFilter<"Recipe_ingredients"> | string
+    extracted_name?: StringFilter<"Recipe_ingredients"> | string
     embedding?: StringFilter<"Recipe_ingredients"> | string
     recipe_id?: UuidFilter<"Recipe_ingredients"> | string
     recipes?: XOR<RecipesRelationFilter, RecipesWhereInput>
@@ -7788,7 +7882,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Recipe_ingredientsOrderByWithAggregationInput = {
     id?: SortOrder
-    text?: SortOrder
+    listing?: SortOrder
+    extracted_name?: SortOrder
     embedding?: SortOrder
     recipe_id?: SortOrder
     _count?: Recipe_ingredientsCountOrderByAggregateInput
@@ -7801,7 +7896,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     OR?: Recipe_ingredientsScalarWhereWithAggregatesInput[]
     NOT?: Recipe_ingredientsScalarWhereWithAggregatesInput | Recipe_ingredientsScalarWhereWithAggregatesInput[]
     id?: UuidWithAggregatesFilter<"Recipe_ingredients"> | string
-    text?: StringWithAggregatesFilter<"Recipe_ingredients"> | string
+    listing?: StringWithAggregatesFilter<"Recipe_ingredients"> | string
+    extracted_name?: StringWithAggregatesFilter<"Recipe_ingredients"> | string
     embedding?: StringWithAggregatesFilter<"Recipe_ingredients"> | string
     recipe_id?: UuidWithAggregatesFilter<"Recipe_ingredients"> | string
   }
@@ -7816,6 +7912,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url?: StringFilter<"Recipes"> | string
     user_id?: StringFilter<"Recipes"> | string
     created_at?: DateTimeFilter<"Recipes"> | Date | string
+    updated_at?: DateTimeFilter<"Recipes"> | Date | string
     recipe_ingredients?: Recipe_ingredientsListRelationFilter
     users?: XOR<UsersRelationFilter, UsersWhereInput>
   }
@@ -7827,6 +7924,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url?: SortOrder
     user_id?: SortOrder
     created_at?: SortOrder
+    updated_at?: SortOrder
     recipe_ingredients?: Recipe_ingredientsOrderByRelationAggregateInput
     users?: UsersOrderByWithRelationInput
   }
@@ -7841,6 +7939,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url?: StringFilter<"Recipes"> | string
     user_id?: StringFilter<"Recipes"> | string
     created_at?: DateTimeFilter<"Recipes"> | Date | string
+    updated_at?: DateTimeFilter<"Recipes"> | Date | string
     recipe_ingredients?: Recipe_ingredientsListRelationFilter
     users?: XOR<UsersRelationFilter, UsersWhereInput>
   }, "id">
@@ -7852,6 +7951,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url?: SortOrder
     user_id?: SortOrder
     created_at?: SortOrder
+    updated_at?: SortOrder
     _count?: RecipesCountOrderByAggregateInput
     _max?: RecipesMaxOrderByAggregateInput
     _min?: RecipesMinOrderByAggregateInput
@@ -7867,6 +7967,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url?: StringWithAggregatesFilter<"Recipes"> | string
     user_id?: StringWithAggregatesFilter<"Recipes"> | string
     created_at?: DateTimeWithAggregatesFilter<"Recipes"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"Recipes"> | Date | string
   }
 
   export type UsersWhereInput = {
@@ -7987,7 +8088,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     is_reviewed: boolean
     embedding: string
+    tracking_type?: $Enums.ingredients_tracking_type | null
     fill_level: number
+    count: number
     shelf_life_months: number
     fill_date: string
     is_ground?: boolean | null
@@ -8001,7 +8104,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     is_reviewed: boolean
     embedding: string
+    tracking_type?: $Enums.ingredients_tracking_type | null
     fill_level: number
+    count: number
     shelf_life_months: number
     fill_date: string
     is_ground?: boolean | null
@@ -8015,7 +8120,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -8029,7 +8136,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -8043,7 +8152,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     is_reviewed: boolean
     embedding: string
+    tracking_type?: $Enums.ingredients_tracking_type | null
     fill_level: number
+    count: number
     shelf_life_months: number
     fill_date: string
     is_ground?: boolean | null
@@ -8056,7 +8167,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -8068,7 +8181,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -8157,48 +8272,55 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Recipe_ingredientsCreateInput = {
     id: string
-    text: string
+    listing: string
+    extracted_name: string
     embedding: string
     recipes: RecipesCreateNestedOneWithoutRecipe_ingredientsInput
   }
 
   export type Recipe_ingredientsUncheckedCreateInput = {
     id: string
-    text: string
+    listing: string
+    extracted_name: string
     embedding: string
     recipe_id: string
   }
 
   export type Recipe_ingredientsUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    text?: StringFieldUpdateOperationsInput | string
+    listing?: StringFieldUpdateOperationsInput | string
+    extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
     recipes?: RecipesUpdateOneRequiredWithoutRecipe_ingredientsNestedInput
   }
 
   export type Recipe_ingredientsUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    text?: StringFieldUpdateOperationsInput | string
+    listing?: StringFieldUpdateOperationsInput | string
+    extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
     recipe_id?: StringFieldUpdateOperationsInput | string
   }
 
   export type Recipe_ingredientsCreateManyInput = {
     id: string
-    text: string
+    listing: string
+    extracted_name: string
     embedding: string
     recipe_id: string
   }
 
   export type Recipe_ingredientsUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    text?: StringFieldUpdateOperationsInput | string
+    listing?: StringFieldUpdateOperationsInput | string
+    extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
   }
 
   export type Recipe_ingredientsUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    text?: StringFieldUpdateOperationsInput | string
+    listing?: StringFieldUpdateOperationsInput | string
+    extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
     recipe_id?: StringFieldUpdateOperationsInput | string
   }
@@ -8209,6 +8331,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     url: string
     created_at: Date | string
+    updated_at: Date | string
     recipe_ingredients?: Recipe_ingredientsCreateNestedManyWithoutRecipesInput
     users: UsersCreateNestedOneWithoutRecipesInput
   }
@@ -8220,6 +8343,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url: string
     user_id: string
     created_at: Date | string
+    updated_at: Date | string
     recipe_ingredients?: Recipe_ingredientsUncheckedCreateNestedManyWithoutRecipesInput
   }
 
@@ -8229,6 +8353,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     recipe_ingredients?: Recipe_ingredientsUpdateManyWithoutRecipesNestedInput
     users?: UsersUpdateOneRequiredWithoutRecipesNestedInput
   }
@@ -8240,6 +8365,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     recipe_ingredients?: Recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput
   }
 
@@ -8250,6 +8376,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url: string
     user_id: string
     created_at: Date | string
+    updated_at: Date | string
   }
 
   export type RecipesUpdateManyMutationInput = {
@@ -8258,6 +8385,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type RecipesUncheckedUpdateManyInput = {
@@ -8267,6 +8395,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UsersCreateInput = {
@@ -8498,6 +8627,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type Enumingredients_tracking_typeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.ingredients_tracking_type | Enumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ingredients_tracking_type[] | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ingredients_tracking_type[] | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel> | $Enums.ingredients_tracking_type | null
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -8547,7 +8683,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: SortOrder
     is_reviewed?: SortOrder
     embedding?: SortOrder
+    tracking_type?: SortOrder
     fill_level?: SortOrder
+    count?: SortOrder
     shelf_life_months?: SortOrder
     fill_date?: SortOrder
     is_ground?: SortOrder
@@ -8556,6 +8694,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type IngredientsAvgOrderByAggregateInput = {
     fill_level?: SortOrder
+    count?: SortOrder
     shelf_life_months?: SortOrder
   }
 
@@ -8565,7 +8704,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: SortOrder
     is_reviewed?: SortOrder
     embedding?: SortOrder
+    tracking_type?: SortOrder
     fill_level?: SortOrder
+    count?: SortOrder
     shelf_life_months?: SortOrder
     fill_date?: SortOrder
     is_ground?: SortOrder
@@ -8578,7 +8719,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: SortOrder
     is_reviewed?: SortOrder
     embedding?: SortOrder
+    tracking_type?: SortOrder
     fill_level?: SortOrder
+    count?: SortOrder
     shelf_life_months?: SortOrder
     fill_date?: SortOrder
     is_ground?: SortOrder
@@ -8587,6 +8730,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type IngredientsSumOrderByAggregateInput = {
     fill_level?: SortOrder
+    count?: SortOrder
     shelf_life_months?: SortOrder
   }
 
@@ -8596,6 +8740,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type Enumingredients_tracking_typeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ingredients_tracking_type | Enumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ingredients_tracking_type[] | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ingredients_tracking_type[] | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumingredients_tracking_typeNullableWithAggregatesFilter<$PrismaModel> | $Enums.ingredients_tracking_type | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel>
+    _max?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel>
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -8799,21 +8953,24 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Recipe_ingredientsCountOrderByAggregateInput = {
     id?: SortOrder
-    text?: SortOrder
+    listing?: SortOrder
+    extracted_name?: SortOrder
     embedding?: SortOrder
     recipe_id?: SortOrder
   }
 
   export type Recipe_ingredientsMaxOrderByAggregateInput = {
     id?: SortOrder
-    text?: SortOrder
+    listing?: SortOrder
+    extracted_name?: SortOrder
     embedding?: SortOrder
     recipe_id?: SortOrder
   }
 
   export type Recipe_ingredientsMinOrderByAggregateInput = {
     id?: SortOrder
-    text?: SortOrder
+    listing?: SortOrder
+    extracted_name?: SortOrder
     embedding?: SortOrder
     recipe_id?: SortOrder
   }
@@ -8835,6 +8992,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url?: SortOrder
     user_id?: SortOrder
     created_at?: SortOrder
+    updated_at?: SortOrder
   }
 
   export type RecipesMaxOrderByAggregateInput = {
@@ -8844,6 +9002,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url?: SortOrder
     user_id?: SortOrder
     created_at?: SortOrder
+    updated_at?: SortOrder
   }
 
   export type RecipesMinOrderByAggregateInput = {
@@ -8853,6 +9012,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url?: SortOrder
     user_id?: SortOrder
     created_at?: SortOrder
+    updated_at?: SortOrder
   }
 
   export type Ingredients_photo_uploadsListRelationFilter = {
@@ -8951,6 +9111,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
+  }
+
+  export type NullableEnumingredients_tracking_typeFieldUpdateOperationsInput = {
+    set?: $Enums.ingredients_tracking_type | null
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -9405,6 +9569,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.ingredients_tracking_type | Enumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ingredients_tracking_type[] | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ingredients_tracking_type[] | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel> | $Enums.ingredients_tracking_type | null
+  }
+
   export type NestedBoolNullableFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
     not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
@@ -9427,6 +9598,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type NestedEnumingredients_tracking_typeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ingredients_tracking_type | Enumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ingredients_tracking_type[] | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ingredients_tracking_type[] | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumingredients_tracking_typeNullableWithAggregatesFilter<$PrismaModel> | $Enums.ingredients_tracking_type | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel>
+    _max?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel>
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -9584,7 +9765,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     is_reviewed: boolean
     embedding: string
+    tracking_type?: $Enums.ingredients_tracking_type | null
     fill_level: number
+    count: number
     shelf_life_months: number
     fill_date: string
     is_ground?: boolean | null
@@ -9597,7 +9780,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     is_reviewed: boolean
     embedding: string
+    tracking_type?: $Enums.ingredients_tracking_type | null
     fill_level: number
+    count: number
     shelf_life_months: number
     fill_date: string
     is_ground?: boolean | null
@@ -9647,7 +9832,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -9660,7 +9847,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -9814,7 +10003,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     is_reviewed: boolean
     embedding: string
+    tracking_type?: $Enums.ingredients_tracking_type | null
     fill_level: number
+    count: number
     shelf_life_months: number
     fill_date: string
     is_ground?: boolean | null
@@ -9827,7 +10018,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     is_reviewed: boolean
     embedding: string
+    tracking_type?: $Enums.ingredients_tracking_type | null
     fill_level: number
+    count: number
     shelf_life_months: number
     fill_date: string
     is_ground?: boolean | null
@@ -9890,7 +10083,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFilter<"Ingredients"> | string
     is_reviewed?: BoolFilter<"Ingredients"> | boolean
     embedding?: StringFilter<"Ingredients"> | string
+    tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | $Enums.ingredients_tracking_type | null
     fill_level?: IntFilter<"Ingredients"> | number
+    count?: IntFilter<"Ingredients"> | number
     shelf_life_months?: IntFilter<"Ingredients"> | number
     fill_date?: StringFilter<"Ingredients"> | string
     is_ground?: BoolNullableFilter<"Ingredients"> | boolean | null
@@ -9930,6 +10125,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     url: string
     created_at: Date | string
+    updated_at: Date | string
     users: UsersCreateNestedOneWithoutRecipesInput
   }
 
@@ -9940,6 +10136,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url: string
     user_id: string
     created_at: Date | string
+    updated_at: Date | string
   }
 
   export type RecipesCreateOrConnectWithoutRecipe_ingredientsInput = {
@@ -9964,6 +10161,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UsersUpdateOneRequiredWithoutRecipesNestedInput
   }
 
@@ -9974,17 +10172,20 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type Recipe_ingredientsCreateWithoutRecipesInput = {
     id: string
-    text: string
+    listing: string
+    extracted_name: string
     embedding: string
   }
 
   export type Recipe_ingredientsUncheckedCreateWithoutRecipesInput = {
     id: string
-    text: string
+    listing: string
+    extracted_name: string
     embedding: string
   }
 
@@ -10040,7 +10241,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     OR?: Recipe_ingredientsScalarWhereInput[]
     NOT?: Recipe_ingredientsScalarWhereInput | Recipe_ingredientsScalarWhereInput[]
     id?: UuidFilter<"Recipe_ingredients"> | string
-    text?: StringFilter<"Recipe_ingredients"> | string
+    listing?: StringFilter<"Recipe_ingredients"> | string
+    extracted_name?: StringFilter<"Recipe_ingredients"> | string
     embedding?: StringFilter<"Recipe_ingredients"> | string
     recipe_id?: UuidFilter<"Recipe_ingredients"> | string
   }
@@ -10136,6 +10338,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     url: string
     created_at: Date | string
+    updated_at: Date | string
     recipe_ingredients?: Recipe_ingredientsCreateNestedManyWithoutRecipesInput
   }
 
@@ -10145,6 +10348,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     url: string
     created_at: Date | string
+    updated_at: Date | string
     recipe_ingredients?: Recipe_ingredientsUncheckedCreateNestedManyWithoutRecipesInput
   }
 
@@ -10230,6 +10434,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     url?: StringFilter<"Recipes"> | string
     user_id?: StringFilter<"Recipes"> | string
     created_at?: DateTimeFilter<"Recipes"> | Date | string
+    updated_at?: DateTimeFilter<"Recipes"> | Date | string
   }
 
   export type Ingredient_eventsCreateManyIngredientsInput = {
@@ -10270,7 +10475,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     is_reviewed: boolean
     embedding: string
+    tracking_type?: $Enums.ingredients_tracking_type | null
     fill_level: number
+    count: number
     shelf_life_months: number
     fill_date: string
     is_ground?: boolean | null
@@ -10282,7 +10489,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -10295,7 +10504,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -10308,7 +10519,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
     fill_date?: StringFieldUpdateOperationsInput | string
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -10316,25 +10529,29 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Recipe_ingredientsCreateManyRecipesInput = {
     id: string
-    text: string
+    listing: string
+    extracted_name: string
     embedding: string
   }
 
   export type Recipe_ingredientsUpdateWithoutRecipesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    text?: StringFieldUpdateOperationsInput | string
+    listing?: StringFieldUpdateOperationsInput | string
+    extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
   }
 
   export type Recipe_ingredientsUncheckedUpdateWithoutRecipesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    text?: StringFieldUpdateOperationsInput | string
+    listing?: StringFieldUpdateOperationsInput | string
+    extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
   }
 
   export type Recipe_ingredientsUncheckedUpdateManyWithoutRecipesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    text?: StringFieldUpdateOperationsInput | string
+    listing?: StringFieldUpdateOperationsInput | string
+    extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
   }
 
@@ -10362,6 +10579,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     url: string
     created_at: Date | string
+    updated_at: Date | string
   }
 
   export type Ingredient_eventsUpdateWithoutUsersInput = {
@@ -10426,6 +10644,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     recipe_ingredients?: Recipe_ingredientsUpdateManyWithoutRecipesNestedInput
   }
 
@@ -10435,6 +10654,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     recipe_ingredients?: Recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput
   }
 
@@ -10444,6 +10664,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

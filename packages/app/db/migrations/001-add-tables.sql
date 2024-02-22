@@ -16,12 +16,16 @@ CREATE TABLE ingredients_photo_uploads (
     photo_url TEXT
 );
 
+CREATE TYPE ingredients_tracking_type AS ENUM ('fill_level', 'count');
 CREATE TABLE ingredients (
     id UUID PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT NOT NULL,
     is_reviewed BOOLEAN NOT NULL,
+    embedding TEXT NOT NULL,
+    tracking_type ingredients_tracking_type,
     fill_level INTEGER NOT NULL,
+    count INTEGER NOT NULL,
     shelf_life_months INTEGER NOT NULL,
     fill_date TEXT  NOT NULL, /* YYYY/MM */
     is_ground BOOLEAN,
@@ -45,12 +49,14 @@ CREATE TABLE recipes (
     description TEXT NOT NULL,
     url TEXT NOT NULL,
     user_id TEXT NOT NULL REFERENCES users(id),
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE recipe_ingredients (
     id UUID PRIMARY KEY,
-    text TEXT NOT NULL,
+    listing TEXT NOT NULL,
+    extracted_name TEXT NOT NULL,
     embedding TEXT NOT NULL,
     recipe_id UUID NOT NULL REFERENCES recipes(id)
 );

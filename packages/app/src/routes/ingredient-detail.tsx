@@ -107,6 +107,9 @@ export default function IngredientDetail() {
     <Flex direction="column" gap="6">
       <Heading>{ingredient.name}</Heading>
       <Flex>
+        <Text>{ingredient.description}</Text>
+      </Flex>
+      <Flex>
         <Text>Expires: {expireDateStr}</Text>
       </Flex>
       <Flex direction="column" gap="3">
