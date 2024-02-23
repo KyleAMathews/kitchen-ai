@@ -1,4 +1,5 @@
 import { useLocation, Link } from "react-router-dom"
+import { useLiveQuery } from "electric-sql/react"
 import { useState } from "react"
 import {
   Flex,
@@ -22,12 +23,14 @@ import {
   Recipes,
   Ingredients,
   Recipe_ingredients,
+  Shopping_list,
 } from "../generated/client"
 import { genUUID, uuid } from "electric-sql/util"
 import { useElectric } from "../context"
 import { useUser } from "@clerk/clerk-react"
-import { cosineSimilarity } from "../util"
+import { cosineSimilarity, createJob } from "../util"
 import { UpdateIcon, LightningBoltIcon } from "@radix-ui/react-icons"
+import { FiShoppingCart } from "react-icons/fi"
 
 function generateDateMonthsAgo(monthsAgo) {
   const currentDate = new Date() // Get the current date
@@ -42,19 +45,78 @@ function generateDateMonthsAgo(monthsAgo) {
   return `${year}/${month}` // Return the formatted date string
 }
 
-function Working({ isWorking }: { isWorking: boolean }) {
+function Working({ isWorking, style }: { isWorking: boolean }) {
   if (isWorking) {
-    return <UpdateIcon className="icon-spin" />
+    return (
+      <UpdateIcon style={style} height="14" width="14" className="icon-spin" />
+    )
   } else {
     return null
   }
+}
+
+function AlreadyHaveIngredient({
+  ingredient,
+  setChecked,
+  checked,
+  possibleMatches,
+}) {
+  const { db } = useElectric()!
+  const { results: liveJobs } = useLiveQuery(
+    db.jobs.liveMany({
+      where: {
+        state: `working`,
+        target_id: ingredient.id,
+      },
+    })
+  )
+  const jobs = liveJobs || []
+  console.log(ingredient.extracted_name, { jobs })
+  return (
+    <Flex direction="column" gap="2" position="relative">
+      <Text as="label" size="2">
+        <Flex gap="2">
+          <Checkbox
+            checked={true}
+            onClick={() => {
+              setChecked({ ...checked, [ingredient.id]: false })
+            }}
+          />
+          {` `}
+          {ingredient.listing}
+          {` `}
+          <Working
+            isWorking={jobs.length > 0}
+            style={{ position: `relative`, top: 3.5 }}
+          />
+        </Flex>
+      </Text>
+      {jobs.length === 0 && !possibleMatches[ingredient.id] && (
+        <AddIngredient ingredient={ingredient} />
+      )}
+      {possibleMatches[ingredient.id] && (
+        <Box pl="5" asChild>
+          <Text color="gray" size="1">
+            <LightningBoltIcon height="10" width="10" /> matches:{` `}"
+            <Link
+              to={`/ingredients/${possibleMatches[ingredient.id].id}`}
+              style={{ color: `inherit`, textDecoration: `none` }}
+            >
+              {possibleMatches[ingredient.id].name}
+            </Link>
+            "
+          </Text>
+        </Box>
+      )}
+    </Flex>
+  )
 }
 
 function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
   const [type, setType] = useState(`fill_level`)
   const [open, setOpen] = useState(false)
   const [fillDate, setFillDate] = useState(generateDateMonthsAgo(3))
-  const [saving, setSaving] = useState(false)
+  const [jobPromise, setJobPromise] = useState(null)
   const { db } = useElectric()!
 
   return (
@@ -65,68 +127,61 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
         </Dialog.Trigger>
 
         <Dialog.Content style={{ maxWidth: 450 }}>
-          <Dialog.Title>
-            Add Ingredient <Working isWorking={saving} />
-          </Dialog.Title>
+          <Dialog.Title>Save Ingredient</Dialog.Title>
           <form
             onSubmit={async (event) => {
               event.preventDefault()
               const target = event.target as HTMLFormElement
               const formData = new FormData(target)
               const formProps = Object.fromEntries(formData)
-              console.log(formProps, fillDate)
 
-              setSaving(true)
-
-              // Make LLM call to get description, embedding, shelf_life_months, is_ground
-              const response = await fetch(
-                `https://7vxq1y2eu2.execute-api.us-east-1.amazonaws.com/ingredients`,
-                {
-                  method: `POST`,
-                  headers: {
-                    "Content-Type": `application/json`,
-                  },
-                  body: JSON.stringify({ ingredient: formProps.name }),
-                }
-              )
-              if (!response.ok) {
-                throw new Error(`Network response was not ok`)
-              }
-              const data = await response.json()
-              console.log({ data })
-              console.log(formProps, {
+              createJob({
                 id: uuid(),
-                name: formProps.name,
-                fill_level: parseInt(formProps.fill_level, 10) || 0,
-                embedding: JSON.stringify(data.embedding),
-                tracking_type: type,
-                fill_date: fillDate,
-                count: parseInt(formProps?.count, 10) || 0,
-                is_ground: data.is_ground,
-                description: data.description,
-                is_reviewed: true,
-                shelf_life_months: data.shelf_life_months,
+                db,
+                target_id: ingredient.id,
+                type: `Transform recipe ingredient to kitchen ingredient`,
+                fetchFn: async () => {
+                  // Make LLM call to get description, embedding, shelf_life_months, is_ground
+                  const response = await fetch(
+                    `https://7vxq1y2eu2.execute-api.us-east-1.amazonaws.com/ingredients`,
+                    {
+                      method: `POST`,
+                      headers: {
+                        "Content-Type": `application/json`,
+                      },
+                      body: JSON.stringify({ ingredient: formProps.name }),
+                    }
+                  )
+                  if (!response.ok) {
+                    throw new Error(`Network response was not ok`)
+                  }
+                  const data = await response.json()
+                  try {
+                    const newIngredient = await db.ingredients.create({
+                      data: {
+                        id: uuid(),
+                        name: formProps.name,
+                        fill_level: parseInt(formProps.fill_level, 10) || 0,
+                        embedding: JSON.stringify(data.embedding),
+                        tracking_type: type,
+                        fill_date: fillDate,
+                        count: parseInt(formProps?.count, 10) || 0,
+                        is_ground: data.is_ground,
+                        description: data.description,
+                        is_reviewed: true,
+                        shelf_life_months: data.shelf_life_months,
+                      },
+                    })
+                    console.log({ newIngredient })
+                  } catch (e) {
+                    throw e
+                  }
+
+                  return response
+                },
               })
-              try {
-                const newIngredient = await db.ingredients.create({
-                  data: {
-                    id: uuid(),
-                    name: formProps.name,
-                    fill_level: parseInt(formProps.fill_level, 10) || 0,
-                    embedding: JSON.stringify(data.embedding),
-                    tracking_type: type,
-                    fill_date: fillDate,
-                    count: parseInt(formProps?.count, 10) || 0,
-                    is_ground: data.is_ground,
-                    description: data.description,
-                    is_reviewed: true,
-                    shelf_life_months: data.shelf_life_months,
-                  },
-                })
-                console.log({ newIngredient })
-              } catch (e) {
-                console.log(e)
-              }
+
+              // Job is going so now let's close the dialog
               setOpen(false)
             }}
           >
@@ -245,13 +300,10 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
                   e.preventDefault()
                   setOpen(false)
                 }}
-                disabled={saving}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={saving}>
-                Save
-              </Button>
+              <Button type="submit">Save</Button>
             </Flex>
           </form>
         </Dialog.Content>
@@ -271,6 +323,11 @@ const queries = ({ db, id }: { db: Electric[`db`]; id: string }) => {
         recipe_ingredients: true,
       },
     }),
+    shopping_list: db.shopping_list.liveMany({
+      where: {
+        recipe_id: id,
+      },
+    }),
   }
 }
 
@@ -286,10 +343,12 @@ export default function RecipeDetail() {
   const {
     recipe,
     ingredients,
-  }: { recipe: Recipes; ingredients: Ingredients[] } = useElectricData(
-    location.pathname + location.search
-  )
-  console.log({ recipe, ingredients })
+    shopping_list,
+  }: {
+    recipe: Recipes
+    ingredients: Ingredients[]
+    shopping_list: Shopping_list[]
+  } = useElectricData(location.pathname + location.search)
   const [checked, setChecked] = useState({})
 
   const possibleMatches = Object.fromEntries(
@@ -302,7 +361,6 @@ export default function RecipeDetail() {
               JSON.parse(ri2.embedding)
             )
             if (distance > 0.65) {
-              console.log(ri.listing, `,`, ri2.name, `: `, distance)
               return { distance, ...ri2 }
             } else {
               return false
@@ -322,8 +380,6 @@ export default function RecipeDetail() {
     })
   )
 
-  console.log({ possibleMatches, checked })
-
   return (
     <Flex direction="column" gap="5">
       <Flex direction="column" gap="3">
@@ -342,7 +398,10 @@ export default function RecipeDetail() {
       </Flex>
       <Flex direction="column" gap="4">
         <Flex direction="column" gap="2">
-          <Heading size="4">Shopping List</Heading>
+          <Heading size="5" mb="2">
+            Ingredients
+          </Heading>
+          <Heading size="3">Needed</Heading>
           <Text size="1">
             <Em>Review ingredients Kitchen.ai thinks you need to buy</Em>
           </Text>
@@ -356,7 +415,11 @@ export default function RecipeDetail() {
             const ingredient: Recipe_ingredients =
               recipe.recipe_ingredients.find((i) => i.id === ingredient_id)
             return (
-              <Text as="label" size="2">
+              <Text
+                as="label"
+                size="2"
+                style={{ position: `relative`, paddingRight: 12 }}
+              >
                 <Flex gap="2">
                   <Checkbox
                     checked={false}
@@ -372,10 +435,39 @@ export default function RecipeDetail() {
             )
           }
         })}
-        <Button variant="outline">Add {} items to Shopping List</Button>
+        <Button
+          onClick={() => {
+            const createObjects = Object.keys(possibleMatches)
+              .map((ingredient_id: string) => {
+                if (
+                  checked[ingredient_id] === false ||
+                  (typeof checked[ingredient_id] === `undefined` &&
+                    possibleMatches[ingredient_id] === null)
+                ) {
+                  const ingredient: Recipe_ingredients =
+                    recipe.recipe_ingredients.find(
+                      (i) => i.id === ingredient_id
+                    )
+                  return {
+                    id: genUUID(),
+                    recipe_id: ingredient.recipe_id,
+                    recipe_ingredient_id: ingredient.id,
+                    purchased: false,
+                    created_at: new Date(),
+                  }
+                }
+              })
+              .filter((i) => i)
+            db.shopping_list.createMany({
+              data: createObjects,
+            })
+          }}
+        >
+          Add items to Shopping List
+        </Button>
       </Flex>
       <Flex direction="column" gap="4">
-        <Heading size="4">Already Have</Heading>
+        <Heading size="3">Already Have</Heading>
         {Object.values(possibleMatches).filter((i) => i).length === 0 && (
           <Text size="2">No matching ingredients</Text>
         )}
@@ -388,36 +480,12 @@ export default function RecipeDetail() {
             const ingredient: Recipe_ingredients =
               recipe.recipe_ingredients.find((i) => i.id === ingredient_id)
             return (
-              <Flex direction="column" gap="2" position="relative">
-                <Text as="label" size="2">
-                  <Flex gap="2">
-                    <Checkbox
-                      checked={true}
-                      onClick={() => {
-                        setChecked({ ...checked, [ingredient_id]: false })
-                      }}
-                    />
-                    {` `}
-                    {ingredient.listing}
-                  </Flex>
-                </Text>
-                {!possibleMatches[ingredient_id] && (
-                  <AddIngredient ingredient={ingredient} />
-                )}
-                {possibleMatches[ingredient_id] && (
-                  <Box pl="5" asChild>
-                    <Text size="1">
-                      <LightningBoltIcon height="10" width="10" /> matches:{` `}
-                      "
-                      <Link
-                        to={`/ingredients/${possibleMatches[ingredient_id].id}`}
-                      >
-                        {possibleMatches[ingredient_id].name}
-                      </Link>
-                    </Text>
-                  </Box>
-                )}
-              </Flex>
+              <AlreadyHaveIngredient
+                setChecked={setChecked}
+                ingredient={ingredient}
+                checked={checked}
+                possibleMatches={possibleMatches}
+              />
             )
           }
         })}

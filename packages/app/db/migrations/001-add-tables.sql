@@ -53,14 +53,48 @@ CREATE TABLE recipes (
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
+CREATE TYPE grocery_section AS ENUM (
+    'Produce',
+    'Deli',
+    'Bakery',
+    'Meat_Seafood',
+    'Dairy_Eggs',
+    'Dry_Goods',
+    'Canned_Foods',
+    'Spices_Herbs',
+    'Snacks',
+    'Beverages',
+    'Frozen_Foods',
+    'Other_Aisles'
+);
 CREATE TABLE recipe_ingredients (
     id UUID PRIMARY KEY,
     listing TEXT NOT NULL,
     extracted_name TEXT NOT NULL,
     embedding TEXT NOT NULL,
+    grocery_section grocery_section NOT NULL,
     recipe_id UUID NOT NULL REFERENCES recipes(id)
 );
 
+CREATE TABLE shopping_list (
+    id UUID PRIMARY KEY,
+    recipe_id UUID NOT NULL REFERENCES recipes(id),
+    recipe_ingredient_id UUID NOT NULL REFERENCES recipe_ingredients(id),
+    purchased BOOLEAN NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE TYPE jobs_state AS ENUM ('working', 'done', 'error');
+CREATE TABLE jobs (
+    id UUID PRIMARY KEY,
+    state jobs_state NOT NULL,
+    target_id UUID,
+    type TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    error JSONB,
+    result JSONB
+);
 
 ALTER TABLE users ENABLE ELECTRIC;
 ALTER TABLE ingredients_photo_uploads ENABLE ELECTRIC;
@@ -68,3 +102,5 @@ ALTER TABLE ingredients ENABLE ELECTRIC;
 ALTER TABLE ingredient_events ENABLE ELECTRIC;
 ALTER TABLE recipes ENABLE ELECTRIC;
 ALTER TABLE recipe_ingredients ENABLE ELECTRIC;
+ALTER TABLE shopping_list ENABLE ELECTRIC;
+ALTER TABLE jobs ENABLE ELECTRIC;

@@ -29,6 +29,7 @@ import AddIngredients from "./routes/add-ingredients"
 import Recipes from "./routes/recipes"
 import IngredientDetail from "./routes/ingredient-detail"
 import RecipeDetail from "./routes/recipe-detail"
+import ShoppingCart from "./routes/shopping-cart"
 
 const router = createBrowserRouter([
   {
@@ -51,6 +52,7 @@ const router = createBrowserRouter([
               const search = new URLSearchParams(url.search).get(`q`)
               console.log({ url, search })
               const key = url.pathname + url.search
+              console.log(`before loader`)
               await electricSqlLoader<Electric>({
                 key,
                 shapes: ({ db }) => [
@@ -72,6 +74,7 @@ const router = createBrowserRouter([
                       search: search,
                     }),
               })
+              console.log(`after loader`)
 
               return null
             },
@@ -195,6 +198,28 @@ const router = createBrowserRouter([
                         sql: `select id from recipes limit 1`,
                       })),
                   },
+                  {
+                    shape: db.shopping_list.sync({
+                      include: {
+                        recipe_ingredients: true,
+                        recipes: true,
+                      },
+                    }),
+                    isReady: async () =>
+                      !!(await db.rawQuery({
+                        sql: `select count(id) from shopping_list limit 1`,
+                      })),
+                  },
+                  {
+                    shape: db.jobs.sync(),
+                    isReady: async () => {
+                      const result = await db.rawQuery({
+                        sql: `select count(id) from jobs limit 1`,
+                      })
+                      console.log({ result })
+                      return !!result
+                    },
+                  },
                 ],
                 queries: ({ db }) =>
                   RecipeDetail.queries({
@@ -236,6 +261,40 @@ const router = createBrowserRouter([
                   IngredientDetail.queries({
                     db,
                     id: props.params.id,
+                  }),
+              })
+
+              return null
+            },
+          },
+          {
+            path: `/shopping-cart`,
+            element: <ShoppingCart />,
+            loader: async (props) => {
+              const url = new URL(props.request.url)
+              const key = url.pathname + url.search
+              await electricSqlLoader<Electric>({
+                key,
+                shapes: ({ db }) => [
+                  {
+                    shape: db.shopping_list.sync({
+                      include: {
+                        recipes: true,
+                        recipe_ingredients: true,
+                      },
+                    }),
+                    isReady: async () => {
+                      const result = await db.rawQuery({
+                        sql: `select id from shopping_list`,
+                      })
+
+                      return !!result
+                    },
+                  },
+                ],
+                queries: ({ db }) =>
+                  ShoppingCart.queries({
+                    db,
                   }),
               })
 

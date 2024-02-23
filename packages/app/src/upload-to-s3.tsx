@@ -33,17 +33,23 @@ function FileUploadToS3({
 
     const start = new Date()
     try {
-      if (bucket === `ingredient`) {
-        const newUpload = await db.ingredients_photo_uploads.create({
-          data: {
-            id: uuid,
-            user_id,
-            created_at: start,
-            state: `uploading`,
-          },
-        })
-        console.log({ newUpload })
-      }
+      console.log({
+        data: {
+          id: uuid,
+          user_id,
+          created_at: start,
+          state: `uploading`,
+        },
+      })
+      const newUpload = await db.ingredients_photo_uploads.create({
+        data: {
+          id: uuid,
+          user_id,
+          created_at: start,
+          state: `uploading`,
+        },
+      })
+      console.log({ newUpload })
     } catch (e) {
       console.log(`failed to insert new photo upload`, e)
       throw e

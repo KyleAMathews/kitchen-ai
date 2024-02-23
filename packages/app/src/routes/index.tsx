@@ -121,6 +121,7 @@ export default function Index() {
     ingredients_needing_review: Ingredients[]
     recipes: Recipes[]
   } = useElectricData(location.pathname + location.search)
+  console.log({ ingredients, photos, ingredients_needing_review, recipes })
 
   return (
     <>

@@ -56,6 +56,24 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                 .describe(
                   `try to extract the name of the ingredient from the ingredient listing`
                 ),
+              grocery_section: z
+                .enum([
+                  `Produce`,
+                  `Deli`,
+                  `Bakery`,
+                  `Meat_Seafood`,
+                  `Dairy_Eggs`,
+                  `Dry_Goods`,
+                  `Canned_Foods`,
+                  `Snacks`,
+                  `Spices_Herbs`,
+                  `Beverages`,
+                  `Frozen_Foods`,
+                  `Other_Aisles`,
+                ])
+                .describe(
+                  `The section of a US grocery store that someone is most likely to find this ingredient`
+                ),
             })
           ),
         }),
@@ -124,7 +142,9 @@ export const handler: APIGatewayProxyHandler = async (event) => {
             content: [
               {
                 type: `text`,
-                text: response.choices[0].message.content,
+                text:
+                  `previous function response` +
+                  response.choices[0].message.tool_calls[0].function,
               },
             ],
           })
@@ -180,12 +200,13 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         ingredients.map((ingredient) => {
           const ingredientInsertQuery = {
             name: `ingredient-insert-query`,
-            text: `INSERT INTO recipe_ingredients (id, listing, extracted_name, embedding, recipe_id)
-    VALUES ($1, $2, $3, $4, $5);`,
+            text: `INSERT INTO recipe_ingredients (id, listing, extracted_name, grocery_section, embedding, recipe_id)
+    VALUES ($1, $2, $3, $4, $5, $6);`,
             values: [
               randomUUID(),
               ingredient.listing,
               ingredient.extracted_name,
+              ingredient.grocery_section,
               JSON.stringify(ingredient.embedding),
               body.id,
             ],

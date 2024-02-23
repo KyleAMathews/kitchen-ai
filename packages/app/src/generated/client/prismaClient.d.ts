@@ -3,52 +3,189 @@
  * Client
 **/
 
-import * as runtime from './runtime/library';
-import $Types = runtime.Types // general types
-import $Public = runtime.Types.Public
-import $Utils = runtime.Types.Utils
-import $Extensions = runtime.Types.Extensions
-import $Result = runtime.Types.Result
-
-export type PrismaPromise<T> = $Public.PrismaPromise<T>
+import * as runtime from './runtime/index';
+declare const prisma: unique symbol
+export type PrismaPromise<A> = Promise<A> & {[prisma]: true}
+type UnwrapPromise<P extends any> = P extends Promise<infer R> ? R : P
+type UnwrapTuple<Tuple extends readonly unknown[]> = {
+  [K in keyof Tuple]: K extends `${number}` ? Tuple[K] extends PrismaPromise<infer X> ? X : UnwrapPromise<Tuple[K]> : UnwrapPromise<Tuple[K]>
+};
 
 
 /**
  * Model Ingredient_events
  * 
  */
-export type Ingredient_events = $Result.DefaultSelection<Prisma.$Ingredient_eventsPayload>
+export type Ingredient_events = {
+  /**
+   * @zod.string.uuid()
+   */
+  id: string
+  /**
+   * @zod.string.uuid()
+   */
+  ingredient_id: string
+  user_id: string
+  timestamp: Date
+  from_values: Prisma.JsonValue | null
+  to_values: Prisma.JsonValue | null
+}
+
 /**
  * Model Ingredients
  * 
  */
-export type Ingredients = $Result.DefaultSelection<Prisma.$IngredientsPayload>
+export type Ingredients = {
+  /**
+   * @zod.string.uuid()
+   */
+  id: string
+  name: string
+  description: string
+  is_reviewed: boolean
+  embedding: string
+  tracking_type: ingredients_tracking_type | null
+  /**
+   * @zod.number.int().gte(-2147483648).lte(2147483647)
+   */
+  fill_level: number
+  /**
+   * @zod.number.int().gte(-2147483648).lte(2147483647)
+   */
+  count: number
+  /**
+   * @zod.number.int().gte(-2147483648).lte(2147483647)
+   */
+  shelf_life_months: number
+  fill_date: string
+  is_ground: boolean | null
+  /**
+   * @zod.string.uuid()
+   */
+  ingredients_photo_uploads_id: string | null
+}
+
 /**
  * Model Ingredients_photo_uploads
  * 
  */
-export type Ingredients_photo_uploads = $Result.DefaultSelection<Prisma.$Ingredients_photo_uploadsPayload>
+export type Ingredients_photo_uploads = {
+  /**
+   * @zod.string.uuid()
+   */
+  id: string
+  user_id: string
+  created_at: Date
+  uploaded_at: Date | null
+  state: ingredient_photo_upload_state
+  /**
+   * @zod.custom.use(z.number().or(z.nan()))
+   */
+  upload_duration_sec: number | null
+  /**
+   * @zod.custom.use(z.number().or(z.nan()))
+   */
+  ai_processing_duration_sec: number | null
+  photo_url: string | null
+}
+
+/**
+ * Model Jobs
+ * 
+ */
+export type Jobs = {
+  /**
+   * @zod.string.uuid()
+   */
+  id: string
+  state: jobs_state
+  /**
+   * @zod.string.uuid()
+   */
+  target_id: string | null
+  type: string
+  created_at: Date
+  updated_at: Date
+  error: Prisma.JsonValue | null
+  result: Prisma.JsonValue | null
+}
+
 /**
  * Model Recipe_ingredients
  * 
  */
-export type Recipe_ingredients = $Result.DefaultSelection<Prisma.$Recipe_ingredientsPayload>
+export type Recipe_ingredients = {
+  /**
+   * @zod.string.uuid()
+   */
+  id: string
+  listing: string
+  extracted_name: string
+  embedding: string
+  grocery_section: grocery_section
+  /**
+   * @zod.string.uuid()
+   */
+  recipe_id: string
+}
+
 /**
  * Model Recipes
  * 
  */
-export type Recipes = $Result.DefaultSelection<Prisma.$RecipesPayload>
+export type Recipes = {
+  /**
+   * @zod.string.uuid()
+   */
+  id: string
+  name: string
+  description: string
+  url: string
+  user_id: string
+  created_at: Date
+  updated_at: Date
+}
+
+/**
+ * Model Shopping_list
+ * 
+ */
+export type Shopping_list = {
+  /**
+   * @zod.string.uuid()
+   */
+  id: string
+  /**
+   * @zod.string.uuid()
+   */
+  recipe_id: string
+  /**
+   * @zod.string.uuid()
+   */
+  recipe_ingredient_id: string
+  purchased: boolean
+  created_at: Date
+}
+
 /**
  * Model Users
  * 
  */
-export type Users = $Result.DefaultSelection<Prisma.$UsersPayload>
+export type Users = {
+  id: string
+  name: string
+  avatar_url: string | null
+}
+
 
 /**
  * Enums
  */
-export namespace $Enums {
-  export const ingredients_tracking_type: {
+
+// Based on
+// https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
+
+export const ingredients_tracking_type: {
   fill_level: 'fill_level',
   count: 'count'
 };
@@ -65,15 +202,33 @@ export const ingredient_photo_upload_state: {
 
 export type ingredient_photo_upload_state = (typeof ingredient_photo_upload_state)[keyof typeof ingredient_photo_upload_state]
 
-}
 
-export type ingredients_tracking_type = $Enums.ingredients_tracking_type
+export const jobs_state: {
+  working: 'working',
+  done: 'done',
+  error: 'error'
+};
 
-export const ingredients_tracking_type: typeof $Enums.ingredients_tracking_type
+export type jobs_state = (typeof jobs_state)[keyof typeof jobs_state]
 
-export type ingredient_photo_upload_state = $Enums.ingredient_photo_upload_state
 
-export const ingredient_photo_upload_state: typeof $Enums.ingredient_photo_upload_state
+export const grocery_section: {
+  Produce: 'Produce',
+  Deli: 'Deli',
+  Bakery: 'Bakery',
+  Meat_Seafood: 'Meat_Seafood',
+  Dairy_Eggs: 'Dairy_Eggs',
+  Dry_Goods: 'Dry_Goods',
+  Canned_Foods: 'Canned_Foods',
+  Spices_Herbs: 'Spices_Herbs',
+  Snacks: 'Snacks',
+  Beverages: 'Beverages',
+  Frozen_Foods: 'Frozen_Foods',
+  Other_Aisles: 'Other_Aisles'
+};
+
+export type grocery_section = (typeof grocery_section)[keyof typeof grocery_section]
+
 
 /**
  * ##  Prisma Client ʲˢ
@@ -92,10 +247,10 @@ export const ingredient_photo_upload_state: typeof $Enums.ingredient_photo_uploa
 export class PrismaClient<
   T extends Prisma.PrismaClientOptions = Prisma.PrismaClientOptions,
   U = 'log' extends keyof T ? T['log'] extends Array<Prisma.LogLevel | Prisma.LogDefinition> ? Prisma.GetEvents<T['log']> : never : never,
-  ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs
-> {
-  [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['other'] }
-
+  GlobalReject extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined = 'rejectOnNotFound' extends keyof T
+    ? T['rejectOnNotFound']
+    : false
+      > {
     /**
    * ##  Prisma Client ʲˢ
    * 
@@ -112,22 +267,20 @@ export class PrismaClient<
    */
 
   constructor(optionsArg ?: Prisma.Subset<T, Prisma.PrismaClientOptions>);
-  $on<V extends U>(eventType: V, callback: (event: V extends 'query' ? Prisma.QueryEvent : Prisma.LogEvent) => void): void;
+  $on<V extends (U | 'beforeExit')>(eventType: V, callback: (event: V extends 'query' ? Prisma.QueryEvent : V extends 'beforeExit' ? () => Promise<void> : Prisma.LogEvent) => void): void;
 
   /**
    * Connect with the database
    */
-  $connect(): $Utils.JsPromise<void>;
+  $connect(): Promise<void>;
 
   /**
    * Disconnect from the database
    */
-  $disconnect(): $Utils.JsPromise<void>;
+  $disconnect(): Promise<void>;
 
   /**
    * Add a middleware
-   * @deprecated since 4.16.0. For new code, prefer client extensions instead.
-   * @see https://pris.ly/d/extensions
    */
   $use(cb: Prisma.Middleware): void
 
@@ -140,7 +293,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $executeRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<number>;
+  $executeRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): PrismaPromise<number>;
 
   /**
    * Executes a raw query and returns the number of affected rows.
@@ -152,7 +305,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $executeRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<number>;
+  $executeRawUnsafe<T = unknown>(query: string, ...values: any[]): PrismaPromise<number>;
 
   /**
    * Performs a prepared raw query and returns the `SELECT` data.
@@ -163,7 +316,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $queryRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<T>;
+  $queryRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): PrismaPromise<T>;
 
   /**
    * Performs a raw query and returns the `SELECT` data.
@@ -175,7 +328,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $queryRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<T>;
+  $queryRawUnsafe<T = unknown>(query: string, ...values: any[]): PrismaPromise<T>;
 
   /**
    * Allows the running of a sequence of read/write operations that are guaranteed to either succeed or fail as a whole.
@@ -190,12 +343,9 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client/transactions).
    */
-  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
+  $transaction<P extends PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): Promise<UnwrapTuple<P>>;
 
-  $transaction<R>(fn: (prisma: Omit<PrismaClient, runtime.ITXClientDenyList>) => $Utils.JsPromise<R>, options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<R>
-
-
-  $extends: $Extensions.ExtendsHook<'extends', Prisma.TypeMapCb, ExtArgs>
+  $transaction<R>(fn: (prisma: Prisma.TransactionClient) => Promise<R>, options?: {maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel}): Promise<R>;
 
       /**
    * `prisma.ingredient_events`: Exposes CRUD operations for the **Ingredient_events** model.
@@ -205,7 +355,7 @@ export class PrismaClient<
     * const ingredient_events = await prisma.ingredient_events.findMany()
     * ```
     */
-  get ingredient_events(): Prisma.Ingredient_eventsDelegate<ExtArgs>;
+  get ingredient_events(): Prisma.Ingredient_eventsDelegate<GlobalReject>;
 
   /**
    * `prisma.ingredients`: Exposes CRUD operations for the **Ingredients** model.
@@ -215,7 +365,7 @@ export class PrismaClient<
     * const ingredients = await prisma.ingredients.findMany()
     * ```
     */
-  get ingredients(): Prisma.IngredientsDelegate<ExtArgs>;
+  get ingredients(): Prisma.IngredientsDelegate<GlobalReject>;
 
   /**
    * `prisma.ingredients_photo_uploads`: Exposes CRUD operations for the **Ingredients_photo_uploads** model.
@@ -225,7 +375,17 @@ export class PrismaClient<
     * const ingredients_photo_uploads = await prisma.ingredients_photo_uploads.findMany()
     * ```
     */
-  get ingredients_photo_uploads(): Prisma.Ingredients_photo_uploadsDelegate<ExtArgs>;
+  get ingredients_photo_uploads(): Prisma.Ingredients_photo_uploadsDelegate<GlobalReject>;
+
+  /**
+   * `prisma.jobs`: Exposes CRUD operations for the **Jobs** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Jobs
+    * const jobs = await prisma.jobs.findMany()
+    * ```
+    */
+  get jobs(): Prisma.JobsDelegate<GlobalReject>;
 
   /**
    * `prisma.recipe_ingredients`: Exposes CRUD operations for the **Recipe_ingredients** model.
@@ -235,7 +395,7 @@ export class PrismaClient<
     * const recipe_ingredients = await prisma.recipe_ingredients.findMany()
     * ```
     */
-  get recipe_ingredients(): Prisma.Recipe_ingredientsDelegate<ExtArgs>;
+  get recipe_ingredients(): Prisma.Recipe_ingredientsDelegate<GlobalReject>;
 
   /**
    * `prisma.recipes`: Exposes CRUD operations for the **Recipes** model.
@@ -245,7 +405,17 @@ export class PrismaClient<
     * const recipes = await prisma.recipes.findMany()
     * ```
     */
-  get recipes(): Prisma.RecipesDelegate<ExtArgs>;
+  get recipes(): Prisma.RecipesDelegate<GlobalReject>;
+
+  /**
+   * `prisma.shopping_list`: Exposes CRUD operations for the **Shopping_list** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Shopping_lists
+    * const shopping_lists = await prisma.shopping_list.findMany()
+    * ```
+    */
+  get shopping_list(): Prisma.Shopping_listDelegate<GlobalReject>;
 
   /**
    * `prisma.users`: Exposes CRUD operations for the **Users** model.
@@ -255,18 +425,11 @@ export class PrismaClient<
     * const users = await prisma.users.findMany()
     * ```
     */
-  get users(): Prisma.UsersDelegate<ExtArgs>;
+  get users(): Prisma.UsersDelegate<GlobalReject>;
 }
 
 export namespace Prisma {
   export import DMMF = runtime.DMMF
-
-  export type PrismaPromise<T> = $Public.PrismaPromise<T>
-
-  /**
-   * Validator
-   */
-  export import validator = runtime.Public.validator
 
   /**
    * Prisma Errors
@@ -302,19 +465,10 @@ export namespace Prisma {
   export type MetricHistogram = runtime.MetricHistogram
   export type MetricHistogramBucket = runtime.MetricHistogramBucket
 
-  /**
-  * Extensions
-  */
-  export import Extension = $Extensions.UserArgs
-  export import getExtensionContext = runtime.Extensions.getExtensionContext
-  export import Args = $Public.Args
-  export import Payload = $Public.Payload
-  export import Result = $Public.Result
-  export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 5.2.0
-   * Query Engine version: 2804dc98259d2ea960602aca6b8e7fdc03c1758f
+   * Prisma Client JS version: 4.8.1
+   * Query Engine version: 23fdc5965b1e05fc54e5f26ed3de66776b93de64
    */
   export type PrismaVersion = {
     client: string
@@ -370,7 +524,7 @@ export namespace Prisma {
    *
    * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-by-null-values
    */
-export type InputJsonValue = null | string | number | boolean | InputJsonObject | InputJsonArray | { toJSON(): unknown }
+export type InputJsonValue = null | string | number | boolean | InputJsonObject | InputJsonArray
 
   /**
    * Types of the values used to represent different kinds of `null` values when working with JSON fields.
@@ -440,6 +594,19 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     select: any
     include: any
   }
+  type HasSelect = {
+    select: any
+  }
+  type HasInclude = {
+    include: any
+  }
+  type CheckSelect<T, S, U> = T extends SelectAndInclude
+    ? 'Please either choose `select` or `include`'
+    : T extends HasSelect
+    ? U
+    : T extends HasInclude
+    ? U
+    : S
 
   /**
    * Get the type of the value, that the Promise holds.
@@ -449,7 +616,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Get the return type of a function which returns a Promise.
    */
-  export type PromiseReturnType<T extends (...args: any) => $Utils.JsPromise<any>> = PromiseType<ReturnType<T>>
+  export type PromiseReturnType<T extends (...args: any) => Promise<any>> = PromiseType<ReturnType<T>>
 
   /**
    * From T, pick a set of properties whose keys are in the union K
@@ -665,11 +832,19 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Keys<U extends Union> = U extends unknown ? keyof U : never
 
+  type Exact<A, W = unknown> = 
+  W extends unknown ? A extends Narrowable ? Cast<A, W> : Cast<
+  {[K in keyof A]: K extends keyof W ? Exact<A[K], W[K]> : never},
+  {[K in keyof W]: K extends keyof A ? Exact<A[K], W[K]> : W[K]}>
+  : never;
+
+  type Narrowable = string | number | boolean | bigint;
+
   type Cast<A, B> = A extends B ? A : B;
 
   export const type: unique symbol;
 
-
+  export function validator<V>(): <S>(select: Exact<S, V>) => S;
 
   /**
    * Used by group by
@@ -710,9 +885,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   type MaybeTupleToUnion<T> = T extends any[] ? TupleToUnion<T> : T
 
   /**
-   * Like `Pick`, but additionally can also accept an array of keys
+   * Like `Pick`, but with an array
    */
-  type PickEnumerable<T, K extends Enumerable<keyof T> | keyof T> = Prisma__Pick<T, MaybeTupleToUnion<K>>
+  type PickArray<T, K extends Array<keyof T>> = Prisma__Pick<T, TupleToUnion<K>>
 
   /**
    * Exclude all keys with underscores
@@ -724,13 +899,24 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRef<Model, FieldType>
 
+  class PrismaClientFetcher {
+    private readonly prisma;
+    private readonly debug;
+    private readonly hooks?;
+    constructor(prisma: PrismaClient<any, any>, debug?: boolean, hooks?: Hooks | undefined);
+    request<T>(document: any, dataPath?: string[], rootField?: string, typeName?: string, isList?: boolean, callsite?: string): Promise<T>;
+    sanitizeMessage(message: string): string;
+    protected unpack(document: any, data: any, path: string[], rootField?: string, isList?: boolean): any;
+  }
 
   export const ModelName: {
     Ingredient_events: 'Ingredient_events',
     Ingredients: 'Ingredients',
     Ingredients_photo_uploads: 'Ingredients_photo_uploads',
+    Jobs: 'Jobs',
     Recipe_ingredients: 'Recipe_ingredients',
     Recipes: 'Recipes',
+    Shopping_list: 'Shopping_list',
     Users: 'Users'
   };
 
@@ -741,451 +927,50 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     db?: Datasource
   }
 
-
-  interface TypeMapCb extends $Utils.Fn<{extArgs: $Extensions.Args}, $Utils.Record<string, any>> {
-    returns: Prisma.TypeMap<this['params']['extArgs']>
-  }
-
-  export type TypeMap<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    meta: {
-      modelProps: 'ingredient_events' | 'ingredients' | 'ingredients_photo_uploads' | 'recipe_ingredients' | 'recipes' | 'users'
-      txIsolationLevel: Prisma.TransactionIsolationLevel
-    },
-    model: {
-      Ingredient_events: {
-        payload: Prisma.$Ingredient_eventsPayload<ExtArgs>
-        fields: Prisma.Ingredient_eventsFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.Ingredient_eventsFindUniqueArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.Ingredient_eventsFindUniqueOrThrowArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload>
-          }
-          findFirst: {
-            args: Prisma.Ingredient_eventsFindFirstArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.Ingredient_eventsFindFirstOrThrowArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload>
-          }
-          findMany: {
-            args: Prisma.Ingredient_eventsFindManyArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload>[]
-          }
-          create: {
-            args: Prisma.Ingredient_eventsCreateArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload>
-          }
-          createMany: {
-            args: Prisma.Ingredient_eventsCreateManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          delete: {
-            args: Prisma.Ingredient_eventsDeleteArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload>
-          }
-          update: {
-            args: Prisma.Ingredient_eventsUpdateArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload>
-          }
-          deleteMany: {
-            args: Prisma.Ingredient_eventsDeleteManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          updateMany: {
-            args: Prisma.Ingredient_eventsUpdateManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          upsert: {
-            args: Prisma.Ingredient_eventsUpsertArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredient_eventsPayload>
-          }
-          aggregate: {
-            args: Prisma.Ingredient_eventsAggregateArgs<ExtArgs>,
-            result: $Utils.Optional<AggregateIngredient_events>
-          }
-          groupBy: {
-            args: Prisma.Ingredient_eventsGroupByArgs<ExtArgs>,
-            result: $Utils.Optional<Ingredient_eventsGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.Ingredient_eventsCountArgs<ExtArgs>,
-            result: $Utils.Optional<Ingredient_eventsCountAggregateOutputType> | number
-          }
-        }
-      }
-      Ingredients: {
-        payload: Prisma.$IngredientsPayload<ExtArgs>
-        fields: Prisma.IngredientsFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.IngredientsFindUniqueArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.IngredientsFindUniqueOrThrowArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload>
-          }
-          findFirst: {
-            args: Prisma.IngredientsFindFirstArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.IngredientsFindFirstOrThrowArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload>
-          }
-          findMany: {
-            args: Prisma.IngredientsFindManyArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload>[]
-          }
-          create: {
-            args: Prisma.IngredientsCreateArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload>
-          }
-          createMany: {
-            args: Prisma.IngredientsCreateManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          delete: {
-            args: Prisma.IngredientsDeleteArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload>
-          }
-          update: {
-            args: Prisma.IngredientsUpdateArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload>
-          }
-          deleteMany: {
-            args: Prisma.IngredientsDeleteManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          updateMany: {
-            args: Prisma.IngredientsUpdateManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          upsert: {
-            args: Prisma.IngredientsUpsertArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$IngredientsPayload>
-          }
-          aggregate: {
-            args: Prisma.IngredientsAggregateArgs<ExtArgs>,
-            result: $Utils.Optional<AggregateIngredients>
-          }
-          groupBy: {
-            args: Prisma.IngredientsGroupByArgs<ExtArgs>,
-            result: $Utils.Optional<IngredientsGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.IngredientsCountArgs<ExtArgs>,
-            result: $Utils.Optional<IngredientsCountAggregateOutputType> | number
-          }
-        }
-      }
-      Ingredients_photo_uploads: {
-        payload: Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>
-        fields: Prisma.Ingredients_photo_uploadsFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.Ingredients_photo_uploadsFindUniqueArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.Ingredients_photo_uploadsFindUniqueOrThrowArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload>
-          }
-          findFirst: {
-            args: Prisma.Ingredients_photo_uploadsFindFirstArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.Ingredients_photo_uploadsFindFirstOrThrowArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload>
-          }
-          findMany: {
-            args: Prisma.Ingredients_photo_uploadsFindManyArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload>[]
-          }
-          create: {
-            args: Prisma.Ingredients_photo_uploadsCreateArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload>
-          }
-          createMany: {
-            args: Prisma.Ingredients_photo_uploadsCreateManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          delete: {
-            args: Prisma.Ingredients_photo_uploadsDeleteArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload>
-          }
-          update: {
-            args: Prisma.Ingredients_photo_uploadsUpdateArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload>
-          }
-          deleteMany: {
-            args: Prisma.Ingredients_photo_uploadsDeleteManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          updateMany: {
-            args: Prisma.Ingredients_photo_uploadsUpdateManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          upsert: {
-            args: Prisma.Ingredients_photo_uploadsUpsertArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Ingredients_photo_uploadsPayload>
-          }
-          aggregate: {
-            args: Prisma.Ingredients_photo_uploadsAggregateArgs<ExtArgs>,
-            result: $Utils.Optional<AggregateIngredients_photo_uploads>
-          }
-          groupBy: {
-            args: Prisma.Ingredients_photo_uploadsGroupByArgs<ExtArgs>,
-            result: $Utils.Optional<Ingredients_photo_uploadsGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.Ingredients_photo_uploadsCountArgs<ExtArgs>,
-            result: $Utils.Optional<Ingredients_photo_uploadsCountAggregateOutputType> | number
-          }
-        }
-      }
-      Recipe_ingredients: {
-        payload: Prisma.$Recipe_ingredientsPayload<ExtArgs>
-        fields: Prisma.Recipe_ingredientsFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.Recipe_ingredientsFindUniqueArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Recipe_ingredientsPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.Recipe_ingredientsFindUniqueOrThrowArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Recipe_ingredientsPayload>
-          }
-          findFirst: {
-            args: Prisma.Recipe_ingredientsFindFirstArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Recipe_ingredientsPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.Recipe_ingredientsFindFirstOrThrowArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Recipe_ingredientsPayload>
-          }
-          findMany: {
-            args: Prisma.Recipe_ingredientsFindManyArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Recipe_ingredientsPayload>[]
-          }
-          create: {
-            args: Prisma.Recipe_ingredientsCreateArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Recipe_ingredientsPayload>
-          }
-          createMany: {
-            args: Prisma.Recipe_ingredientsCreateManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          delete: {
-            args: Prisma.Recipe_ingredientsDeleteArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Recipe_ingredientsPayload>
-          }
-          update: {
-            args: Prisma.Recipe_ingredientsUpdateArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Recipe_ingredientsPayload>
-          }
-          deleteMany: {
-            args: Prisma.Recipe_ingredientsDeleteManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          updateMany: {
-            args: Prisma.Recipe_ingredientsUpdateManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          upsert: {
-            args: Prisma.Recipe_ingredientsUpsertArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$Recipe_ingredientsPayload>
-          }
-          aggregate: {
-            args: Prisma.Recipe_ingredientsAggregateArgs<ExtArgs>,
-            result: $Utils.Optional<AggregateRecipe_ingredients>
-          }
-          groupBy: {
-            args: Prisma.Recipe_ingredientsGroupByArgs<ExtArgs>,
-            result: $Utils.Optional<Recipe_ingredientsGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.Recipe_ingredientsCountArgs<ExtArgs>,
-            result: $Utils.Optional<Recipe_ingredientsCountAggregateOutputType> | number
-          }
-        }
-      }
-      Recipes: {
-        payload: Prisma.$RecipesPayload<ExtArgs>
-        fields: Prisma.RecipesFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.RecipesFindUniqueArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$RecipesPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.RecipesFindUniqueOrThrowArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$RecipesPayload>
-          }
-          findFirst: {
-            args: Prisma.RecipesFindFirstArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$RecipesPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.RecipesFindFirstOrThrowArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$RecipesPayload>
-          }
-          findMany: {
-            args: Prisma.RecipesFindManyArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$RecipesPayload>[]
-          }
-          create: {
-            args: Prisma.RecipesCreateArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$RecipesPayload>
-          }
-          createMany: {
-            args: Prisma.RecipesCreateManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          delete: {
-            args: Prisma.RecipesDeleteArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$RecipesPayload>
-          }
-          update: {
-            args: Prisma.RecipesUpdateArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$RecipesPayload>
-          }
-          deleteMany: {
-            args: Prisma.RecipesDeleteManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          updateMany: {
-            args: Prisma.RecipesUpdateManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          upsert: {
-            args: Prisma.RecipesUpsertArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$RecipesPayload>
-          }
-          aggregate: {
-            args: Prisma.RecipesAggregateArgs<ExtArgs>,
-            result: $Utils.Optional<AggregateRecipes>
-          }
-          groupBy: {
-            args: Prisma.RecipesGroupByArgs<ExtArgs>,
-            result: $Utils.Optional<RecipesGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.RecipesCountArgs<ExtArgs>,
-            result: $Utils.Optional<RecipesCountAggregateOutputType> | number
-          }
-        }
-      }
-      Users: {
-        payload: Prisma.$UsersPayload<ExtArgs>
-        fields: Prisma.UsersFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.UsersFindUniqueArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$UsersPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.UsersFindUniqueOrThrowArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$UsersPayload>
-          }
-          findFirst: {
-            args: Prisma.UsersFindFirstArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$UsersPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.UsersFindFirstOrThrowArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$UsersPayload>
-          }
-          findMany: {
-            args: Prisma.UsersFindManyArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$UsersPayload>[]
-          }
-          create: {
-            args: Prisma.UsersCreateArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$UsersPayload>
-          }
-          createMany: {
-            args: Prisma.UsersCreateManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          delete: {
-            args: Prisma.UsersDeleteArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$UsersPayload>
-          }
-          update: {
-            args: Prisma.UsersUpdateArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$UsersPayload>
-          }
-          deleteMany: {
-            args: Prisma.UsersDeleteManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          updateMany: {
-            args: Prisma.UsersUpdateManyArgs<ExtArgs>,
-            result: Prisma.BatchPayload
-          }
-          upsert: {
-            args: Prisma.UsersUpsertArgs<ExtArgs>,
-            result: $Utils.PayloadToResult<Prisma.$UsersPayload>
-          }
-          aggregate: {
-            args: Prisma.UsersAggregateArgs<ExtArgs>,
-            result: $Utils.Optional<AggregateUsers>
-          }
-          groupBy: {
-            args: Prisma.UsersGroupByArgs<ExtArgs>,
-            result: $Utils.Optional<UsersGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.UsersCountArgs<ExtArgs>,
-            result: $Utils.Optional<UsersCountAggregateOutputType> | number
-          }
-        }
-      }
-    }
-  } & {
-    other: {
-      payload: any
-      operations: {
-        $executeRawUnsafe: {
-          args: [query: string, ...values: any[]],
-          result: any
-        }
-        $executeRaw: {
-          args: [query: TemplateStringsArray | Prisma.Sql, ...values: any[]],
-          result: any
-        }
-        $queryRawUnsafe: {
-          args: [query: string, ...values: any[]],
-          result: any
-        }
-        $queryRaw: {
-          args: [query: TemplateStringsArray | Prisma.Sql, ...values: any[]],
-          result: any
-        }
-      }
-    }
-  }
-  export const defineExtension: $Extensions.ExtendsHook<'define', Prisma.TypeMapCb, $Extensions.DefaultArgs>
   export type DefaultPrismaClient = PrismaClient
+  export type RejectOnNotFound = boolean | ((error: Error) => Error)
+  export type RejectPerModel = { [P in ModelName]?: RejectOnNotFound }
+  export type RejectPerOperation =  { [P in "findUnique" | "findFirst"]?: RejectPerModel | RejectOnNotFound } 
+  type IsReject<T> = T extends true ? True : T extends (err: Error) => Error ? True : False
+  export type HasReject<
+    GlobalRejectSettings extends Prisma.PrismaClientOptions['rejectOnNotFound'],
+    LocalRejectSettings,
+    Action extends PrismaAction,
+    Model extends ModelName
+  > = LocalRejectSettings extends RejectOnNotFound
+    ? IsReject<LocalRejectSettings>
+    : GlobalRejectSettings extends RejectPerOperation
+    ? Action extends keyof GlobalRejectSettings
+      ? GlobalRejectSettings[Action] extends RejectOnNotFound
+        ? IsReject<GlobalRejectSettings[Action]>
+        : GlobalRejectSettings[Action] extends RejectPerModel
+        ? Model extends keyof GlobalRejectSettings[Action]
+          ? IsReject<GlobalRejectSettings[Action][Model]>
+          : False
+        : False
+      : False
+    : IsReject<GlobalRejectSettings>
   export type ErrorFormat = 'pretty' | 'colorless' | 'minimal'
 
   export interface PrismaClientOptions {
     /**
-     * Overwrites the datasource url from your schema.prisma file
+     * Configure findUnique/findFirst to throw an error if the query returns null. 
+     * @deprecated since 4.0.0. Use `findUniqueOrThrow`/`findFirstOrThrow` methods instead.
+     * @example
+     * ```
+     * // Reject on both findUnique/findFirst
+     * rejectOnNotFound: true
+     * // Reject only on findFirst with a custom error
+     * rejectOnNotFound: { findFirst: (err) => new Error("Custom Error")}
+     * // Reject on user.findUnique with a custom error
+     * rejectOnNotFound: { findUnique: {User: (err) => new Error("User not found")}}
+     * ```
      */
-    datasources?: Datasources
-
+    rejectOnNotFound?: RejectOnNotFound | RejectPerOperation
     /**
      * Overwrites the datasource url from your schema.prisma file
      */
-    datasourceUrl?: string
+    datasources?: Datasources
 
     /**
      * @default "colorless"
@@ -1209,6 +994,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/logging#the-log-option).
      */
     log?: Array<LogLevel | LogDefinition>
+  }
+
+  export type Hooks = {
+    beforeRequest?: (options: { query: string, path: string[], rootField?: string, typeName?: string, document: any }) => any
   }
 
   /* Types for Logging */
@@ -1241,10 +1030,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type PrismaAction =
     | 'findUnique'
-    | 'findUniqueOrThrow'
     | 'findMany'
     | 'findFirst'
-    | 'findFirstOrThrow'
     | 'create'
     | 'createMany'
     | 'update'
@@ -1258,7 +1045,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     | 'count'
     | 'runCommandRaw'
     | 'findRaw'
-    | 'groupBy'
 
   /**
    * These options are being passed into the middleware as "params"
@@ -1276,8 +1062,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    */
   export type Middleware<T = any> = (
     params: MiddlewareParams,
-    next: (params: MiddlewareParams) => $Utils.JsPromise<T>,
-  ) => $Utils.JsPromise<T>
+    next: (params: MiddlewareParams) => Promise<T>,
+  ) => Promise<T>
 
   // tested in getLogLevel.test.ts
   export function getLogLevel(log: Array<LogLevel | LogDefinition>): LogLevel | undefined;
@@ -1285,7 +1071,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * `PrismaClient` proxy available in interactive transactions.
    */
-  export type TransactionClient = Omit<Prisma.DefaultPrismaClient, runtime.ITXClientDenyList>
+  export type TransactionClient = Omit<Prisma.DefaultPrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'>
 
   export type Datasource = {
     url?: string
@@ -1300,31 +1086,49 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    * Count Type IngredientsCountOutputType
    */
 
+
   export type IngredientsCountOutputType = {
     ingredient_events: number
   }
 
-  export type IngredientsCountOutputTypeSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsCountOutputTypeSelect = {
     ingredient_events?: boolean | IngredientsCountOutputTypeCountIngredient_eventsArgs
   }
+
+  export type IngredientsCountOutputTypeGetPayload<S extends boolean | null | undefined | IngredientsCountOutputTypeArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? IngredientsCountOutputType :
+    S extends undefined ? never :
+    S extends { include: any } & (IngredientsCountOutputTypeArgs)
+    ? IngredientsCountOutputType 
+    : S extends { select: any } & (IngredientsCountOutputTypeArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+    P extends keyof IngredientsCountOutputType ? IngredientsCountOutputType[P] : never
+  } 
+      : IngredientsCountOutputType
+
+
+
 
   // Custom InputTypes
 
   /**
    * IngredientsCountOutputType without action
    */
-  export type IngredientsCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsCountOutputTypeArgs = {
     /**
      * Select specific fields to fetch from the IngredientsCountOutputType
-     */
-    select?: IngredientsCountOutputTypeSelect<ExtArgs> | null
+     * 
+    **/
+    select?: IngredientsCountOutputTypeSelect | null
   }
 
 
   /**
    * IngredientsCountOutputType without action
    */
-  export type IngredientsCountOutputTypeCountIngredient_eventsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsCountOutputTypeCountIngredient_eventsArgs = {
     where?: Ingredient_eventsWhereInput
   }
 
@@ -1334,32 +1138,102 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    * Count Type Ingredients_photo_uploadsCountOutputType
    */
 
+
   export type Ingredients_photo_uploadsCountOutputType = {
     ingredients: number
   }
 
-  export type Ingredients_photo_uploadsCountOutputTypeSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsCountOutputTypeSelect = {
     ingredients?: boolean | Ingredients_photo_uploadsCountOutputTypeCountIngredientsArgs
   }
+
+  export type Ingredients_photo_uploadsCountOutputTypeGetPayload<S extends boolean | null | undefined | Ingredients_photo_uploadsCountOutputTypeArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? Ingredients_photo_uploadsCountOutputType :
+    S extends undefined ? never :
+    S extends { include: any } & (Ingredients_photo_uploadsCountOutputTypeArgs)
+    ? Ingredients_photo_uploadsCountOutputType 
+    : S extends { select: any } & (Ingredients_photo_uploadsCountOutputTypeArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+    P extends keyof Ingredients_photo_uploadsCountOutputType ? Ingredients_photo_uploadsCountOutputType[P] : never
+  } 
+      : Ingredients_photo_uploadsCountOutputType
+
+
+
 
   // Custom InputTypes
 
   /**
    * Ingredients_photo_uploadsCountOutputType without action
    */
-  export type Ingredients_photo_uploadsCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsCountOutputTypeArgs = {
     /**
      * Select specific fields to fetch from the Ingredients_photo_uploadsCountOutputType
-     */
-    select?: Ingredients_photo_uploadsCountOutputTypeSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredients_photo_uploadsCountOutputTypeSelect | null
   }
 
 
   /**
    * Ingredients_photo_uploadsCountOutputType without action
    */
-  export type Ingredients_photo_uploadsCountOutputTypeCountIngredientsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsCountOutputTypeCountIngredientsArgs = {
     where?: IngredientsWhereInput
+  }
+
+
+
+  /**
+   * Count Type Recipe_ingredientsCountOutputType
+   */
+
+
+  export type Recipe_ingredientsCountOutputType = {
+    shopping_list: number
+  }
+
+  export type Recipe_ingredientsCountOutputTypeSelect = {
+    shopping_list?: boolean | Recipe_ingredientsCountOutputTypeCountShopping_listArgs
+  }
+
+  export type Recipe_ingredientsCountOutputTypeGetPayload<S extends boolean | null | undefined | Recipe_ingredientsCountOutputTypeArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? Recipe_ingredientsCountOutputType :
+    S extends undefined ? never :
+    S extends { include: any } & (Recipe_ingredientsCountOutputTypeArgs)
+    ? Recipe_ingredientsCountOutputType 
+    : S extends { select: any } & (Recipe_ingredientsCountOutputTypeArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+    P extends keyof Recipe_ingredientsCountOutputType ? Recipe_ingredientsCountOutputType[P] : never
+  } 
+      : Recipe_ingredientsCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * Recipe_ingredientsCountOutputType without action
+   */
+  export type Recipe_ingredientsCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the Recipe_ingredientsCountOutputType
+     * 
+    **/
+    select?: Recipe_ingredientsCountOutputTypeSelect | null
+  }
+
+
+  /**
+   * Recipe_ingredientsCountOutputType without action
+   */
+  export type Recipe_ingredientsCountOutputTypeCountShopping_listArgs = {
+    where?: Shopping_listWhereInput
   }
 
 
@@ -1368,32 +1242,60 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    * Count Type RecipesCountOutputType
    */
 
+
   export type RecipesCountOutputType = {
     recipe_ingredients: number
+    shopping_list: number
   }
 
-  export type RecipesCountOutputTypeSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesCountOutputTypeSelect = {
     recipe_ingredients?: boolean | RecipesCountOutputTypeCountRecipe_ingredientsArgs
+    shopping_list?: boolean | RecipesCountOutputTypeCountShopping_listArgs
   }
+
+  export type RecipesCountOutputTypeGetPayload<S extends boolean | null | undefined | RecipesCountOutputTypeArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? RecipesCountOutputType :
+    S extends undefined ? never :
+    S extends { include: any } & (RecipesCountOutputTypeArgs)
+    ? RecipesCountOutputType 
+    : S extends { select: any } & (RecipesCountOutputTypeArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+    P extends keyof RecipesCountOutputType ? RecipesCountOutputType[P] : never
+  } 
+      : RecipesCountOutputType
+
+
+
 
   // Custom InputTypes
 
   /**
    * RecipesCountOutputType without action
    */
-  export type RecipesCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesCountOutputTypeArgs = {
     /**
      * Select specific fields to fetch from the RecipesCountOutputType
-     */
-    select?: RecipesCountOutputTypeSelect<ExtArgs> | null
+     * 
+    **/
+    select?: RecipesCountOutputTypeSelect | null
   }
 
 
   /**
    * RecipesCountOutputType without action
    */
-  export type RecipesCountOutputTypeCountRecipe_ingredientsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesCountOutputTypeCountRecipe_ingredientsArgs = {
     where?: Recipe_ingredientsWhereInput
+  }
+
+
+  /**
+   * RecipesCountOutputType without action
+   */
+  export type RecipesCountOutputTypeCountShopping_listArgs = {
+    where?: Shopping_listWhereInput
   }
 
 
@@ -1402,35 +1304,53 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    * Count Type UsersCountOutputType
    */
 
+
   export type UsersCountOutputType = {
     ingredient_events: number
     ingredients_photo_uploads: number
     recipes: number
   }
 
-  export type UsersCountOutputTypeSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersCountOutputTypeSelect = {
     ingredient_events?: boolean | UsersCountOutputTypeCountIngredient_eventsArgs
     ingredients_photo_uploads?: boolean | UsersCountOutputTypeCountIngredients_photo_uploadsArgs
     recipes?: boolean | UsersCountOutputTypeCountRecipesArgs
   }
+
+  export type UsersCountOutputTypeGetPayload<S extends boolean | null | undefined | UsersCountOutputTypeArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? UsersCountOutputType :
+    S extends undefined ? never :
+    S extends { include: any } & (UsersCountOutputTypeArgs)
+    ? UsersCountOutputType 
+    : S extends { select: any } & (UsersCountOutputTypeArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+    P extends keyof UsersCountOutputType ? UsersCountOutputType[P] : never
+  } 
+      : UsersCountOutputType
+
+
+
 
   // Custom InputTypes
 
   /**
    * UsersCountOutputType without action
    */
-  export type UsersCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersCountOutputTypeArgs = {
     /**
      * Select specific fields to fetch from the UsersCountOutputType
-     */
-    select?: UsersCountOutputTypeSelect<ExtArgs> | null
+     * 
+    **/
+    select?: UsersCountOutputTypeSelect | null
   }
 
 
   /**
    * UsersCountOutputType without action
    */
-  export type UsersCountOutputTypeCountIngredient_eventsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersCountOutputTypeCountIngredient_eventsArgs = {
     where?: Ingredient_eventsWhereInput
   }
 
@@ -1438,7 +1358,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * UsersCountOutputType without action
    */
-  export type UsersCountOutputTypeCountIngredients_photo_uploadsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersCountOutputTypeCountIngredients_photo_uploadsArgs = {
     where?: Ingredients_photo_uploadsWhereInput
   }
 
@@ -1446,7 +1366,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * UsersCountOutputType without action
    */
-  export type UsersCountOutputTypeCountRecipesArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersCountOutputTypeCountRecipesArgs = {
     where?: RecipesWhereInput
   }
 
@@ -1459,6 +1379,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Model Ingredient_events
    */
+
 
   export type AggregateIngredient_events = {
     _count: Ingredient_eventsCountAggregateOutputType | null
@@ -1515,34 +1436,39 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _all?: true
   }
 
-  export type Ingredient_eventsAggregateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredient_eventsAggregateArgs = {
     /**
      * Filter which Ingredient_events to aggregate.
-     */
+     * 
+    **/
     where?: Ingredient_eventsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Ingredient_events to fetch.
-     */
-    orderBy?: Ingredient_eventsOrderByWithRelationInput | Ingredient_eventsOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<Ingredient_eventsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     */
+     * 
+    **/
     cursor?: Ingredient_eventsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Ingredient_events from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Ingredient_events.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -1575,10 +1501,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
 
-  export type Ingredient_eventsGroupByArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredient_eventsGroupByArgs = {
     where?: Ingredient_eventsWhereInput
-    orderBy?: Ingredient_eventsOrderByWithAggregationInput | Ingredient_eventsOrderByWithAggregationInput[]
-    by: Ingredient_eventsScalarFieldEnum[] | Ingredient_eventsScalarFieldEnum
+    orderBy?: Enumerable<Ingredient_eventsOrderByWithAggregationInput>
+    by: Array<Ingredient_eventsScalarFieldEnum>
     having?: Ingredient_eventsScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -1586,6 +1512,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _min?: Ingredient_eventsMinAggregateInputType
     _max?: Ingredient_eventsMaxAggregateInputType
   }
+
 
   export type Ingredient_eventsGroupByOutputType = {
     id: string
@@ -1599,9 +1526,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _max: Ingredient_eventsMaxAggregateOutputType | null
   }
 
-  type GetIngredient_eventsGroupByPayload<T extends Ingredient_eventsGroupByArgs> = Prisma.PrismaPromise<
+  type GetIngredient_eventsGroupByPayload<T extends Ingredient_eventsGroupByArgs> = PrismaPromise<
     Array<
-      PickEnumerable<Ingredient_eventsGroupByOutputType, T['by']> &
+      PickArray<Ingredient_eventsGroupByOutputType, T['by']> &
         {
           [P in ((keyof T) & (keyof Ingredient_eventsGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
@@ -1613,65 +1540,49 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     >
 
 
-  export type Ingredient_eventsSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type Ingredient_eventsSelect = {
     id?: boolean
     ingredient_id?: boolean
     user_id?: boolean
     timestamp?: boolean
     from_values?: boolean
     to_values?: boolean
-    ingredients?: boolean | IngredientsDefaultArgs<ExtArgs>
-    users?: boolean | UsersDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["ingredient_events"]>
-
-  export type Ingredient_eventsSelectScalar = {
-    id?: boolean
-    ingredient_id?: boolean
-    user_id?: boolean
-    timestamp?: boolean
-    from_values?: boolean
-    to_values?: boolean
-  }
-
-  export type Ingredient_eventsInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    ingredients?: boolean | IngredientsDefaultArgs<ExtArgs>
-    users?: boolean | UsersDefaultArgs<ExtArgs>
+    ingredients?: boolean | IngredientsArgs
+    users?: boolean | UsersArgs
   }
 
 
-  export type $Ingredient_eventsPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    name: "Ingredient_events"
-    objects: {
-      ingredients: Prisma.$IngredientsPayload<ExtArgs>
-      users: Prisma.$UsersPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetResult<{
-      /**
-       * @zod.string.uuid()
-       */
-      id: string
-      /**
-       * @zod.string.uuid()
-       */
-      ingredient_id: string
-      user_id: string
-      timestamp: Date
-      from_values: Prisma.JsonValue | null
-      to_values: Prisma.JsonValue | null
-    }, ExtArgs["result"]["ingredient_events"]>
-    composites: {}
-  }
+  export type Ingredient_eventsInclude = {
+    ingredients?: boolean | IngredientsArgs
+    users?: boolean | UsersArgs
+  } 
+
+  export type Ingredient_eventsGetPayload<S extends boolean | null | undefined | Ingredient_eventsArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? Ingredient_events :
+    S extends undefined ? never :
+    S extends { include: any } & (Ingredient_eventsArgs | Ingredient_eventsFindManyArgs)
+    ? Ingredient_events  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'ingredients' ? IngredientsGetPayload<S['include'][P]> :
+        P extends 'users' ? UsersGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (Ingredient_eventsArgs | Ingredient_eventsFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'ingredients' ? IngredientsGetPayload<S['select'][P]> :
+        P extends 'users' ? UsersGetPayload<S['select'][P]> :  P extends keyof Ingredient_events ? Ingredient_events[P] : never
+  } 
+      : Ingredient_events
 
 
-  type Ingredient_eventsGetPayload<S extends boolean | null | undefined | Ingredient_eventsDefaultArgs> = $Result.GetResult<Prisma.$Ingredient_eventsPayload, S>
-
-  type Ingredient_eventsCountArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = 
+  type Ingredient_eventsCountArgs = Merge<
     Omit<Ingredient_eventsFindManyArgs, 'select' | 'include'> & {
       select?: Ingredient_eventsCountAggregateInputType | true
     }
+  >
 
-  export interface Ingredient_eventsDelegate<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Ingredient_events'], meta: { name: 'Ingredient_events' } }
+  export interface Ingredient_eventsDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
     /**
      * Find zero or one Ingredient_events that matches the filter.
      * @param {Ingredient_eventsFindUniqueArgs} args - Arguments to find a Ingredient_events
@@ -1683,9 +1594,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findUnique<T extends Ingredient_eventsFindUniqueArgs<ExtArgs>>(
-      args: SelectSubset<T, Ingredient_eventsFindUniqueArgs<ExtArgs>>
-    ): Prisma__Ingredient_eventsClient<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'findUnique'> | null, null, ExtArgs>
+    findUnique<T extends Ingredient_eventsFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, Ingredient_eventsFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Ingredient_events'> extends True ? Prisma__Ingredient_eventsClient<Ingredient_eventsGetPayload<T>> : Prisma__Ingredient_eventsClient<Ingredient_eventsGetPayload<T> | null, null>
 
     /**
      * Find one Ingredient_events that matches the filter or throw an error  with `error.code='P2025'` 
@@ -1699,9 +1610,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findUniqueOrThrow<T extends Ingredient_eventsFindUniqueOrThrowArgs<ExtArgs>>(
-      args?: SelectSubset<T, Ingredient_eventsFindUniqueOrThrowArgs<ExtArgs>>
-    ): Prisma__Ingredient_eventsClient<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'findUniqueOrThrow'>, never, ExtArgs>
+    findUniqueOrThrow<T extends Ingredient_eventsFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, Ingredient_eventsFindUniqueOrThrowArgs>
+    ): Prisma__Ingredient_eventsClient<Ingredient_eventsGetPayload<T>>
 
     /**
      * Find the first Ingredient_events that matches the filter.
@@ -1716,13 +1627,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findFirst<T extends Ingredient_eventsFindFirstArgs<ExtArgs>>(
-      args?: SelectSubset<T, Ingredient_eventsFindFirstArgs<ExtArgs>>
-    ): Prisma__Ingredient_eventsClient<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'findFirst'> | null, null, ExtArgs>
+    findFirst<T extends Ingredient_eventsFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, Ingredient_eventsFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Ingredient_events'> extends True ? Prisma__Ingredient_eventsClient<Ingredient_eventsGetPayload<T>> : Prisma__Ingredient_eventsClient<Ingredient_eventsGetPayload<T> | null, null>
 
     /**
      * Find the first Ingredient_events that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * throw `NotFoundError` if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
      * @param {Ingredient_eventsFindFirstOrThrowArgs} args - Arguments to find a Ingredient_events
@@ -1734,9 +1645,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findFirstOrThrow<T extends Ingredient_eventsFindFirstOrThrowArgs<ExtArgs>>(
-      args?: SelectSubset<T, Ingredient_eventsFindFirstOrThrowArgs<ExtArgs>>
-    ): Prisma__Ingredient_eventsClient<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'findFirstOrThrow'>, never, ExtArgs>
+    findFirstOrThrow<T extends Ingredient_eventsFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, Ingredient_eventsFindFirstOrThrowArgs>
+    ): Prisma__Ingredient_eventsClient<Ingredient_eventsGetPayload<T>>
 
     /**
      * Find zero or more Ingredient_events that matches the filter.
@@ -1754,9 +1665,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * const ingredient_eventsWithIdOnly = await prisma.ingredient_events.findMany({ select: { id: true } })
      * 
     **/
-    findMany<T extends Ingredient_eventsFindManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, Ingredient_eventsFindManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'findMany'>>
+    findMany<T extends Ingredient_eventsFindManyArgs>(
+      args?: SelectSubset<T, Ingredient_eventsFindManyArgs>
+    ): PrismaPromise<Array<Ingredient_eventsGetPayload<T>>>
 
     /**
      * Create a Ingredient_events.
@@ -1770,9 +1681,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    create<T extends Ingredient_eventsCreateArgs<ExtArgs>>(
-      args: SelectSubset<T, Ingredient_eventsCreateArgs<ExtArgs>>
-    ): Prisma__Ingredient_eventsClient<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'create'>, never, ExtArgs>
+    create<T extends Ingredient_eventsCreateArgs>(
+      args: SelectSubset<T, Ingredient_eventsCreateArgs>
+    ): Prisma__Ingredient_eventsClient<Ingredient_eventsGetPayload<T>>
 
     /**
      * Create many Ingredient_events.
@@ -1786,9 +1697,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *     })
      *     
     **/
-    createMany<T extends Ingredient_eventsCreateManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, Ingredient_eventsCreateManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends Ingredient_eventsCreateManyArgs>(
+      args?: SelectSubset<T, Ingredient_eventsCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Delete a Ingredient_events.
@@ -1802,9 +1713,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    delete<T extends Ingredient_eventsDeleteArgs<ExtArgs>>(
-      args: SelectSubset<T, Ingredient_eventsDeleteArgs<ExtArgs>>
-    ): Prisma__Ingredient_eventsClient<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'delete'>, never, ExtArgs>
+    delete<T extends Ingredient_eventsDeleteArgs>(
+      args: SelectSubset<T, Ingredient_eventsDeleteArgs>
+    ): Prisma__Ingredient_eventsClient<Ingredient_eventsGetPayload<T>>
 
     /**
      * Update one Ingredient_events.
@@ -1821,9 +1732,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    update<T extends Ingredient_eventsUpdateArgs<ExtArgs>>(
-      args: SelectSubset<T, Ingredient_eventsUpdateArgs<ExtArgs>>
-    ): Prisma__Ingredient_eventsClient<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'update'>, never, ExtArgs>
+    update<T extends Ingredient_eventsUpdateArgs>(
+      args: SelectSubset<T, Ingredient_eventsUpdateArgs>
+    ): Prisma__Ingredient_eventsClient<Ingredient_eventsGetPayload<T>>
 
     /**
      * Delete zero or more Ingredient_events.
@@ -1837,9 +1748,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    deleteMany<T extends Ingredient_eventsDeleteManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, Ingredient_eventsDeleteManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends Ingredient_eventsDeleteManyArgs>(
+      args?: SelectSubset<T, Ingredient_eventsDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more Ingredient_events.
@@ -1858,9 +1769,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    updateMany<T extends Ingredient_eventsUpdateManyArgs<ExtArgs>>(
-      args: SelectSubset<T, Ingredient_eventsUpdateManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends Ingredient_eventsUpdateManyArgs>(
+      args: SelectSubset<T, Ingredient_eventsUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Create or update one Ingredient_events.
@@ -1879,9 +1790,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    upsert<T extends Ingredient_eventsUpsertArgs<ExtArgs>>(
-      args: SelectSubset<T, Ingredient_eventsUpsertArgs<ExtArgs>>
-    ): Prisma__Ingredient_eventsClient<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'upsert'>, never, ExtArgs>
+    upsert<T extends Ingredient_eventsUpsertArgs>(
+      args: SelectSubset<T, Ingredient_eventsUpsertArgs>
+    ): Prisma__Ingredient_eventsClient<Ingredient_eventsGetPayload<T>>
 
     /**
      * Count the number of Ingredient_events.
@@ -1898,8 +1809,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     **/
     count<T extends Ingredient_eventsCountArgs>(
       args?: Subset<T, Ingredient_eventsCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
+    ): PrismaPromise<
+      T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
           : GetScalarType<T['select'], Ingredient_eventsCountAggregateOutputType>
@@ -1930,7 +1841,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   take: 10,
      * })
     **/
-    aggregate<T extends Ingredient_eventsAggregateArgs>(args: Subset<T, Ingredient_eventsAggregateArgs>): Prisma.PrismaPromise<GetIngredient_eventsAggregateType<T>>
+    aggregate<T extends Ingredient_eventsAggregateArgs>(args: Subset<T, Ingredient_eventsAggregateArgs>): PrismaPromise<GetIngredient_eventsAggregateType<T>>
 
     /**
      * Group by Ingredient_events.
@@ -1960,7 +1871,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
         ? { orderBy: Ingredient_eventsGroupByArgs['orderBy'] }
         : { orderBy?: Ingredient_eventsGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByFields extends TupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
       HavingFields extends GetHavingFields<T['having']>,
       HavingValid extends Has<ByFields, HavingFields>,
@@ -2007,11 +1918,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, Ingredient_eventsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetIngredient_eventsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Ingredient_events model
-   */
-  readonly fields: Ingredient_eventsFieldRefs;
+    >(args: SubsetIntersection<T, Ingredient_eventsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetIngredient_eventsGroupByPayload<T> : PrismaPromise<InputErrors>
+
   }
 
   /**
@@ -2020,247 +1928,303 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__Ingredient_eventsClient<T, Null = never, ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
+  export class Prisma__Ingredient_eventsClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    ingredients<T extends IngredientsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, IngredientsDefaultArgs<ExtArgs>>): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'findUniqueOrThrow'> | Null, Null, ExtArgs>;
+    ingredients<T extends IngredientsArgs= {}>(args?: Subset<T, IngredientsArgs>): Prisma__IngredientsClient<IngredientsGetPayload<T> | Null>;
 
-    users<T extends UsersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UsersDefaultArgs<ExtArgs>>): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'findUniqueOrThrow'> | Null, Null, ExtArgs>;
+    users<T extends UsersArgs= {}>(args?: Subset<T, UsersArgs>): Prisma__UsersClient<UsersGetPayload<T> | Null>;
 
+    private get _document();
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of which ever callback is executed.
      */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>;
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
     /**
      * Attaches a callback for only the rejection of the Promise.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
      * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
      * @returns A Promise for the completion of the callback.
      */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
   }
 
 
-
-  /**
-   * Fields of the Ingredient_events model
-   */ 
-  interface Ingredient_eventsFieldRefs {
-    readonly id: FieldRef<"Ingredient_events", 'String'>
-    readonly ingredient_id: FieldRef<"Ingredient_events", 'String'>
-    readonly user_id: FieldRef<"Ingredient_events", 'String'>
-    readonly timestamp: FieldRef<"Ingredient_events", 'DateTime'>
-    readonly from_values: FieldRef<"Ingredient_events", 'Json'>
-    readonly to_values: FieldRef<"Ingredient_events", 'Json'>
-  }
-    
 
   // Custom InputTypes
 
   /**
-   * Ingredient_events findUnique
+   * Ingredient_events base type for findUnique actions
    */
-  export type Ingredient_eventsFindUniqueArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredient_eventsFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the Ingredient_events
-     */
-    select?: Ingredient_eventsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredient_eventsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredient_eventsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredient_eventsInclude | null
     /**
      * Filter, which Ingredient_events to fetch.
-     */
+     * 
+    **/
     where: Ingredient_eventsWhereUniqueInput
   }
 
+  /**
+   * Ingredient_events findUnique
+   */
+  export interface Ingredient_eventsFindUniqueArgs extends Ingredient_eventsFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
 
   /**
    * Ingredient_events findUniqueOrThrow
    */
-  export type Ingredient_eventsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredient_eventsFindUniqueOrThrowArgs = {
     /**
      * Select specific fields to fetch from the Ingredient_events
-     */
-    select?: Ingredient_eventsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredient_eventsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredient_eventsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredient_eventsInclude | null
     /**
      * Filter, which Ingredient_events to fetch.
-     */
+     * 
+    **/
     where: Ingredient_eventsWhereUniqueInput
   }
 
 
   /**
-   * Ingredient_events findFirst
+   * Ingredient_events base type for findFirst actions
    */
-  export type Ingredient_eventsFindFirstArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredient_eventsFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the Ingredient_events
-     */
-    select?: Ingredient_eventsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredient_eventsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredient_eventsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredient_eventsInclude | null
     /**
      * Filter, which Ingredient_events to fetch.
-     */
+     * 
+    **/
     where?: Ingredient_eventsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Ingredient_events to fetch.
-     */
-    orderBy?: Ingredient_eventsOrderByWithRelationInput | Ingredient_eventsOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<Ingredient_eventsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Ingredient_events.
-     */
+     * 
+    **/
     cursor?: Ingredient_eventsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Ingredient_events from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Ingredient_events.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Ingredient_events.
-     */
-    distinct?: Ingredient_eventsScalarFieldEnum | Ingredient_eventsScalarFieldEnum[]
+     * 
+    **/
+    distinct?: Enumerable<Ingredient_eventsScalarFieldEnum>
   }
 
+  /**
+   * Ingredient_events findFirst
+   */
+  export interface Ingredient_eventsFindFirstArgs extends Ingredient_eventsFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
 
   /**
    * Ingredient_events findFirstOrThrow
    */
-  export type Ingredient_eventsFindFirstOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredient_eventsFindFirstOrThrowArgs = {
     /**
      * Select specific fields to fetch from the Ingredient_events
-     */
-    select?: Ingredient_eventsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredient_eventsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredient_eventsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredient_eventsInclude | null
     /**
      * Filter, which Ingredient_events to fetch.
-     */
+     * 
+    **/
     where?: Ingredient_eventsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Ingredient_events to fetch.
-     */
-    orderBy?: Ingredient_eventsOrderByWithRelationInput | Ingredient_eventsOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<Ingredient_eventsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Ingredient_events.
-     */
+     * 
+    **/
     cursor?: Ingredient_eventsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Ingredient_events from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Ingredient_events.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Ingredient_events.
-     */
-    distinct?: Ingredient_eventsScalarFieldEnum | Ingredient_eventsScalarFieldEnum[]
+     * 
+    **/
+    distinct?: Enumerable<Ingredient_eventsScalarFieldEnum>
   }
 
 
   /**
    * Ingredient_events findMany
    */
-  export type Ingredient_eventsFindManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredient_eventsFindManyArgs = {
     /**
      * Select specific fields to fetch from the Ingredient_events
-     */
-    select?: Ingredient_eventsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredient_eventsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredient_eventsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredient_eventsInclude | null
     /**
      * Filter, which Ingredient_events to fetch.
-     */
+     * 
+    **/
     where?: Ingredient_eventsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Ingredient_events to fetch.
-     */
-    orderBy?: Ingredient_eventsOrderByWithRelationInput | Ingredient_eventsOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<Ingredient_eventsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing Ingredient_events.
-     */
+     * 
+    **/
     cursor?: Ingredient_eventsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Ingredient_events from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Ingredient_events.
-     */
+     * 
+    **/
     skip?: number
-    distinct?: Ingredient_eventsScalarFieldEnum | Ingredient_eventsScalarFieldEnum[]
+    distinct?: Enumerable<Ingredient_eventsScalarFieldEnum>
   }
 
 
   /**
    * Ingredient_events create
    */
-  export type Ingredient_eventsCreateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredient_eventsCreateArgs = {
     /**
      * Select specific fields to fetch from the Ingredient_events
-     */
-    select?: Ingredient_eventsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredient_eventsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredient_eventsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredient_eventsInclude | null
     /**
      * The data needed to create a Ingredient_events.
-     */
+     * 
+    **/
     data: XOR<Ingredient_eventsCreateInput, Ingredient_eventsUncheckedCreateInput>
   }
 
@@ -2268,11 +2232,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredient_events createMany
    */
-  export type Ingredient_eventsCreateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredient_eventsCreateManyArgs = {
     /**
      * The data used to create many Ingredient_events.
-     */
-    data: Ingredient_eventsCreateManyInput | Ingredient_eventsCreateManyInput[]
+     * 
+    **/
+    data: Enumerable<Ingredient_eventsCreateManyInput>
     skipDuplicates?: boolean
   }
 
@@ -2280,22 +2245,26 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredient_events update
    */
-  export type Ingredient_eventsUpdateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredient_eventsUpdateArgs = {
     /**
      * Select specific fields to fetch from the Ingredient_events
-     */
-    select?: Ingredient_eventsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredient_eventsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredient_eventsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredient_eventsInclude | null
     /**
      * The data needed to update a Ingredient_events.
-     */
+     * 
+    **/
     data: XOR<Ingredient_eventsUpdateInput, Ingredient_eventsUncheckedUpdateInput>
     /**
      * Choose, which Ingredient_events to update.
-     */
+     * 
+    **/
     where: Ingredient_eventsWhereUniqueInput
   }
 
@@ -2303,14 +2272,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredient_events updateMany
    */
-  export type Ingredient_eventsUpdateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredient_eventsUpdateManyArgs = {
     /**
      * The data used to update Ingredient_events.
-     */
+     * 
+    **/
     data: XOR<Ingredient_eventsUpdateManyMutationInput, Ingredient_eventsUncheckedUpdateManyInput>
     /**
      * Filter which Ingredient_events to update
-     */
+     * 
+    **/
     where?: Ingredient_eventsWhereInput
   }
 
@@ -2318,26 +2289,31 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredient_events upsert
    */
-  export type Ingredient_eventsUpsertArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredient_eventsUpsertArgs = {
     /**
      * Select specific fields to fetch from the Ingredient_events
-     */
-    select?: Ingredient_eventsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredient_eventsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredient_eventsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredient_eventsInclude | null
     /**
      * The filter to search for the Ingredient_events to update in case it exists.
-     */
+     * 
+    **/
     where: Ingredient_eventsWhereUniqueInput
     /**
      * In case the Ingredient_events found by the `where` argument doesn't exist, create a new Ingredient_events with this data.
-     */
+     * 
+    **/
     create: XOR<Ingredient_eventsCreateInput, Ingredient_eventsUncheckedCreateInput>
     /**
      * In case the Ingredient_events was found with the provided `where` argument, update it with this data.
-     */
+     * 
+    **/
     update: XOR<Ingredient_eventsUpdateInput, Ingredient_eventsUncheckedUpdateInput>
   }
 
@@ -2345,18 +2321,21 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredient_events delete
    */
-  export type Ingredient_eventsDeleteArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredient_eventsDeleteArgs = {
     /**
      * Select specific fields to fetch from the Ingredient_events
-     */
-    select?: Ingredient_eventsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredient_eventsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredient_eventsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredient_eventsInclude | null
     /**
      * Filter which Ingredient_events to delete.
-     */
+     * 
+    **/
     where: Ingredient_eventsWhereUniqueInput
   }
 
@@ -2364,10 +2343,11 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredient_events deleteMany
    */
-  export type Ingredient_eventsDeleteManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredient_eventsDeleteManyArgs = {
     /**
      * Filter which Ingredient_events to delete
-     */
+     * 
+    **/
     where?: Ingredient_eventsWhereInput
   }
 
@@ -2375,15 +2355,17 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredient_events without action
    */
-  export type Ingredient_eventsDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredient_eventsArgs = {
     /**
      * Select specific fields to fetch from the Ingredient_events
-     */
-    select?: Ingredient_eventsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredient_eventsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredient_eventsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredient_eventsInclude | null
   }
 
 
@@ -2391,6 +2373,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Model Ingredients
    */
+
 
   export type AggregateIngredients = {
     _count: IngredientsCountAggregateOutputType | null
@@ -2418,7 +2401,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string | null
     is_reviewed: boolean | null
     embedding: string | null
-    tracking_type: $Enums.ingredients_tracking_type | null
+    tracking_type: ingredients_tracking_type | null
     fill_level: number | null
     count: number | null
     shelf_life_months: number | null
@@ -2433,7 +2416,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string | null
     is_reviewed: boolean | null
     embedding: string | null
-    tracking_type: $Enums.ingredients_tracking_type | null
+    tracking_type: ingredients_tracking_type | null
     fill_level: number | null
     count: number | null
     shelf_life_months: number | null
@@ -2517,34 +2500,39 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _all?: true
   }
 
-  export type IngredientsAggregateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsAggregateArgs = {
     /**
      * Filter which Ingredients to aggregate.
-     */
+     * 
+    **/
     where?: IngredientsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Ingredients to fetch.
-     */
-    orderBy?: IngredientsOrderByWithRelationInput | IngredientsOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<IngredientsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     */
+     * 
+    **/
     cursor?: IngredientsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Ingredients from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Ingredients.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -2589,10 +2577,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
 
-  export type IngredientsGroupByArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsGroupByArgs = {
     where?: IngredientsWhereInput
-    orderBy?: IngredientsOrderByWithAggregationInput | IngredientsOrderByWithAggregationInput[]
-    by: IngredientsScalarFieldEnum[] | IngredientsScalarFieldEnum
+    orderBy?: Enumerable<IngredientsOrderByWithAggregationInput>
+    by: Array<IngredientsScalarFieldEnum>
     having?: IngredientsScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -2603,13 +2591,14 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _max?: IngredientsMaxAggregateInputType
   }
 
+
   export type IngredientsGroupByOutputType = {
     id: string
     name: string
     description: string
     is_reviewed: boolean
     embedding: string
-    tracking_type: $Enums.ingredients_tracking_type | null
+    tracking_type: ingredients_tracking_type | null
     fill_level: number
     count: number
     shelf_life_months: number
@@ -2623,9 +2612,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _max: IngredientsMaxAggregateOutputType | null
   }
 
-  type GetIngredientsGroupByPayload<T extends IngredientsGroupByArgs> = Prisma.PrismaPromise<
+  type GetIngredientsGroupByPayload<T extends IngredientsGroupByArgs> = PrismaPromise<
     Array<
-      PickEnumerable<IngredientsGroupByOutputType, T['by']> &
+      PickArray<IngredientsGroupByOutputType, T['by']> &
         {
           [P in ((keyof T) & (keyof IngredientsGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
@@ -2637,7 +2626,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     >
 
 
-  export type IngredientsSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type IngredientsSelect = {
     id?: boolean
     name?: boolean
     description?: boolean
@@ -2650,81 +2639,46 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     fill_date?: boolean
     is_ground?: boolean
     ingredients_photo_uploads_id?: boolean
-    ingredient_events?: boolean | Ingredients$ingredient_eventsArgs<ExtArgs>
-    ingredients_photo_uploads?: boolean | Ingredients$ingredients_photo_uploadsArgs<ExtArgs>
-    _count?: boolean | IngredientsCountOutputTypeDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["ingredients"]>
-
-  export type IngredientsSelectScalar = {
-    id?: boolean
-    name?: boolean
-    description?: boolean
-    is_reviewed?: boolean
-    embedding?: boolean
-    tracking_type?: boolean
-    fill_level?: boolean
-    count?: boolean
-    shelf_life_months?: boolean
-    fill_date?: boolean
-    is_ground?: boolean
-    ingredients_photo_uploads_id?: boolean
-  }
-
-  export type IngredientsInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    ingredient_events?: boolean | Ingredients$ingredient_eventsArgs<ExtArgs>
-    ingredients_photo_uploads?: boolean | Ingredients$ingredients_photo_uploadsArgs<ExtArgs>
-    _count?: boolean | IngredientsCountOutputTypeDefaultArgs<ExtArgs>
+    ingredient_events?: boolean | Ingredients$ingredient_eventsArgs
+    ingredients_photo_uploads?: boolean | Ingredients$ingredients_photo_uploadsArgs
+    _count?: boolean | IngredientsCountOutputTypeArgs
   }
 
 
-  export type $IngredientsPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    name: "Ingredients"
-    objects: {
-      ingredient_events: Prisma.$Ingredient_eventsPayload<ExtArgs>[]
-      ingredients_photo_uploads: Prisma.$Ingredients_photo_uploadsPayload<ExtArgs> | null
-    }
-    scalars: $Extensions.GetResult<{
-      /**
-       * @zod.string.uuid()
-       */
-      id: string
-      name: string
-      description: string
-      is_reviewed: boolean
-      embedding: string
-      tracking_type: $Enums.ingredients_tracking_type | null
-      /**
-       * @zod.number.int().gte(-2147483648).lte(2147483647)
-       */
-      fill_level: number
-      /**
-       * @zod.number.int().gte(-2147483648).lte(2147483647)
-       */
-      count: number
-      /**
-       * @zod.number.int().gte(-2147483648).lte(2147483647)
-       */
-      shelf_life_months: number
-      fill_date: string
-      is_ground: boolean | null
-      /**
-       * @zod.string.uuid()
-       */
-      ingredients_photo_uploads_id: string | null
-    }, ExtArgs["result"]["ingredients"]>
-    composites: {}
-  }
+  export type IngredientsInclude = {
+    ingredient_events?: boolean | Ingredients$ingredient_eventsArgs
+    ingredients_photo_uploads?: boolean | Ingredients$ingredients_photo_uploadsArgs
+    _count?: boolean | IngredientsCountOutputTypeArgs
+  } 
+
+  export type IngredientsGetPayload<S extends boolean | null | undefined | IngredientsArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? Ingredients :
+    S extends undefined ? never :
+    S extends { include: any } & (IngredientsArgs | IngredientsFindManyArgs)
+    ? Ingredients  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'ingredient_events' ? Array < Ingredient_eventsGetPayload<S['include'][P]>>  :
+        P extends 'ingredients_photo_uploads' ? Ingredients_photo_uploadsGetPayload<S['include'][P]> | null :
+        P extends '_count' ? IngredientsCountOutputTypeGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (IngredientsArgs | IngredientsFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'ingredient_events' ? Array < Ingredient_eventsGetPayload<S['select'][P]>>  :
+        P extends 'ingredients_photo_uploads' ? Ingredients_photo_uploadsGetPayload<S['select'][P]> | null :
+        P extends '_count' ? IngredientsCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Ingredients ? Ingredients[P] : never
+  } 
+      : Ingredients
 
 
-  type IngredientsGetPayload<S extends boolean | null | undefined | IngredientsDefaultArgs> = $Result.GetResult<Prisma.$IngredientsPayload, S>
-
-  type IngredientsCountArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = 
+  type IngredientsCountArgs = Merge<
     Omit<IngredientsFindManyArgs, 'select' | 'include'> & {
       select?: IngredientsCountAggregateInputType | true
     }
+  >
 
-  export interface IngredientsDelegate<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Ingredients'], meta: { name: 'Ingredients' } }
+  export interface IngredientsDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
     /**
      * Find zero or one Ingredients that matches the filter.
      * @param {IngredientsFindUniqueArgs} args - Arguments to find a Ingredients
@@ -2736,9 +2690,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findUnique<T extends IngredientsFindUniqueArgs<ExtArgs>>(
-      args: SelectSubset<T, IngredientsFindUniqueArgs<ExtArgs>>
-    ): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'findUnique'> | null, null, ExtArgs>
+    findUnique<T extends IngredientsFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, IngredientsFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Ingredients'> extends True ? Prisma__IngredientsClient<IngredientsGetPayload<T>> : Prisma__IngredientsClient<IngredientsGetPayload<T> | null, null>
 
     /**
      * Find one Ingredients that matches the filter or throw an error  with `error.code='P2025'` 
@@ -2752,9 +2706,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findUniqueOrThrow<T extends IngredientsFindUniqueOrThrowArgs<ExtArgs>>(
-      args?: SelectSubset<T, IngredientsFindUniqueOrThrowArgs<ExtArgs>>
-    ): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'findUniqueOrThrow'>, never, ExtArgs>
+    findUniqueOrThrow<T extends IngredientsFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, IngredientsFindUniqueOrThrowArgs>
+    ): Prisma__IngredientsClient<IngredientsGetPayload<T>>
 
     /**
      * Find the first Ingredients that matches the filter.
@@ -2769,13 +2723,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findFirst<T extends IngredientsFindFirstArgs<ExtArgs>>(
-      args?: SelectSubset<T, IngredientsFindFirstArgs<ExtArgs>>
-    ): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'findFirst'> | null, null, ExtArgs>
+    findFirst<T extends IngredientsFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, IngredientsFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Ingredients'> extends True ? Prisma__IngredientsClient<IngredientsGetPayload<T>> : Prisma__IngredientsClient<IngredientsGetPayload<T> | null, null>
 
     /**
      * Find the first Ingredients that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * throw `NotFoundError` if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
      * @param {IngredientsFindFirstOrThrowArgs} args - Arguments to find a Ingredients
@@ -2787,9 +2741,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findFirstOrThrow<T extends IngredientsFindFirstOrThrowArgs<ExtArgs>>(
-      args?: SelectSubset<T, IngredientsFindFirstOrThrowArgs<ExtArgs>>
-    ): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'findFirstOrThrow'>, never, ExtArgs>
+    findFirstOrThrow<T extends IngredientsFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, IngredientsFindFirstOrThrowArgs>
+    ): Prisma__IngredientsClient<IngredientsGetPayload<T>>
 
     /**
      * Find zero or more Ingredients that matches the filter.
@@ -2807,9 +2761,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * const ingredientsWithIdOnly = await prisma.ingredients.findMany({ select: { id: true } })
      * 
     **/
-    findMany<T extends IngredientsFindManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, IngredientsFindManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'findMany'>>
+    findMany<T extends IngredientsFindManyArgs>(
+      args?: SelectSubset<T, IngredientsFindManyArgs>
+    ): PrismaPromise<Array<IngredientsGetPayload<T>>>
 
     /**
      * Create a Ingredients.
@@ -2823,9 +2777,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    create<T extends IngredientsCreateArgs<ExtArgs>>(
-      args: SelectSubset<T, IngredientsCreateArgs<ExtArgs>>
-    ): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'create'>, never, ExtArgs>
+    create<T extends IngredientsCreateArgs>(
+      args: SelectSubset<T, IngredientsCreateArgs>
+    ): Prisma__IngredientsClient<IngredientsGetPayload<T>>
 
     /**
      * Create many Ingredients.
@@ -2839,9 +2793,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *     })
      *     
     **/
-    createMany<T extends IngredientsCreateManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, IngredientsCreateManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends IngredientsCreateManyArgs>(
+      args?: SelectSubset<T, IngredientsCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Delete a Ingredients.
@@ -2855,9 +2809,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    delete<T extends IngredientsDeleteArgs<ExtArgs>>(
-      args: SelectSubset<T, IngredientsDeleteArgs<ExtArgs>>
-    ): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'delete'>, never, ExtArgs>
+    delete<T extends IngredientsDeleteArgs>(
+      args: SelectSubset<T, IngredientsDeleteArgs>
+    ): Prisma__IngredientsClient<IngredientsGetPayload<T>>
 
     /**
      * Update one Ingredients.
@@ -2874,9 +2828,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    update<T extends IngredientsUpdateArgs<ExtArgs>>(
-      args: SelectSubset<T, IngredientsUpdateArgs<ExtArgs>>
-    ): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'update'>, never, ExtArgs>
+    update<T extends IngredientsUpdateArgs>(
+      args: SelectSubset<T, IngredientsUpdateArgs>
+    ): Prisma__IngredientsClient<IngredientsGetPayload<T>>
 
     /**
      * Delete zero or more Ingredients.
@@ -2890,9 +2844,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    deleteMany<T extends IngredientsDeleteManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, IngredientsDeleteManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends IngredientsDeleteManyArgs>(
+      args?: SelectSubset<T, IngredientsDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more Ingredients.
@@ -2911,9 +2865,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    updateMany<T extends IngredientsUpdateManyArgs<ExtArgs>>(
-      args: SelectSubset<T, IngredientsUpdateManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends IngredientsUpdateManyArgs>(
+      args: SelectSubset<T, IngredientsUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Create or update one Ingredients.
@@ -2932,9 +2886,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    upsert<T extends IngredientsUpsertArgs<ExtArgs>>(
-      args: SelectSubset<T, IngredientsUpsertArgs<ExtArgs>>
-    ): Prisma__IngredientsClient<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'upsert'>, never, ExtArgs>
+    upsert<T extends IngredientsUpsertArgs>(
+      args: SelectSubset<T, IngredientsUpsertArgs>
+    ): Prisma__IngredientsClient<IngredientsGetPayload<T>>
 
     /**
      * Count the number of Ingredients.
@@ -2951,8 +2905,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     **/
     count<T extends IngredientsCountArgs>(
       args?: Subset<T, IngredientsCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
+    ): PrismaPromise<
+      T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
           : GetScalarType<T['select'], IngredientsCountAggregateOutputType>
@@ -2983,7 +2937,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   take: 10,
      * })
     **/
-    aggregate<T extends IngredientsAggregateArgs>(args: Subset<T, IngredientsAggregateArgs>): Prisma.PrismaPromise<GetIngredientsAggregateType<T>>
+    aggregate<T extends IngredientsAggregateArgs>(args: Subset<T, IngredientsAggregateArgs>): PrismaPromise<GetIngredientsAggregateType<T>>
 
     /**
      * Group by Ingredients.
@@ -3013,7 +2967,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
         ? { orderBy: IngredientsGroupByArgs['orderBy'] }
         : { orderBy?: IngredientsGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByFields extends TupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
       HavingFields extends GetHavingFields<T['having']>,
       HavingValid extends Has<ByFields, HavingFields>,
@@ -3060,11 +3014,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, IngredientsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetIngredientsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Ingredients model
-   */
-  readonly fields: IngredientsFieldRefs;
+    >(args: SubsetIntersection<T, IngredientsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetIngredientsGroupByPayload<T> : PrismaPromise<InputErrors>
+
   }
 
   /**
@@ -3073,253 +3024,303 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__IngredientsClient<T, Null = never, ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
+  export class Prisma__IngredientsClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    ingredient_events<T extends Ingredients$ingredient_eventsArgs<ExtArgs> = {}>(args?: Subset<T, Ingredients$ingredient_eventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'findMany'> | Null>;
+    ingredient_events<T extends Ingredients$ingredient_eventsArgs= {}>(args?: Subset<T, Ingredients$ingredient_eventsArgs>): PrismaPromise<Array<Ingredient_eventsGetPayload<T>>| Null>;
 
-    ingredients_photo_uploads<T extends Ingredients$ingredients_photo_uploadsArgs<ExtArgs> = {}>(args?: Subset<T, Ingredients$ingredients_photo_uploadsArgs<ExtArgs>>): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'findUniqueOrThrow'> | null, null, ExtArgs>;
+    ingredients_photo_uploads<T extends Ingredients$ingredients_photo_uploadsArgs= {}>(args?: Subset<T, Ingredients$ingredients_photo_uploadsArgs>): Prisma__Ingredients_photo_uploadsClient<Ingredients_photo_uploadsGetPayload<T> | Null>;
 
+    private get _document();
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of which ever callback is executed.
      */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>;
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
     /**
      * Attaches a callback for only the rejection of the Promise.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
      * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
      * @returns A Promise for the completion of the callback.
      */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
   }
 
 
-
-  /**
-   * Fields of the Ingredients model
-   */ 
-  interface IngredientsFieldRefs {
-    readonly id: FieldRef<"Ingredients", 'String'>
-    readonly name: FieldRef<"Ingredients", 'String'>
-    readonly description: FieldRef<"Ingredients", 'String'>
-    readonly is_reviewed: FieldRef<"Ingredients", 'Boolean'>
-    readonly embedding: FieldRef<"Ingredients", 'String'>
-    readonly tracking_type: FieldRef<"Ingredients", 'ingredients_tracking_type'>
-    readonly fill_level: FieldRef<"Ingredients", 'Int'>
-    readonly count: FieldRef<"Ingredients", 'Int'>
-    readonly shelf_life_months: FieldRef<"Ingredients", 'Int'>
-    readonly fill_date: FieldRef<"Ingredients", 'String'>
-    readonly is_ground: FieldRef<"Ingredients", 'Boolean'>
-    readonly ingredients_photo_uploads_id: FieldRef<"Ingredients", 'String'>
-  }
-    
 
   // Custom InputTypes
 
   /**
-   * Ingredients findUnique
+   * Ingredients base type for findUnique actions
    */
-  export type IngredientsFindUniqueArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the Ingredients
-     */
-    select?: IngredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: IngredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: IngredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: IngredientsInclude | null
     /**
      * Filter, which Ingredients to fetch.
-     */
+     * 
+    **/
     where: IngredientsWhereUniqueInput
   }
 
+  /**
+   * Ingredients findUnique
+   */
+  export interface IngredientsFindUniqueArgs extends IngredientsFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
 
   /**
    * Ingredients findUniqueOrThrow
    */
-  export type IngredientsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsFindUniqueOrThrowArgs = {
     /**
      * Select specific fields to fetch from the Ingredients
-     */
-    select?: IngredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: IngredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: IngredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: IngredientsInclude | null
     /**
      * Filter, which Ingredients to fetch.
-     */
+     * 
+    **/
     where: IngredientsWhereUniqueInput
   }
 
 
   /**
-   * Ingredients findFirst
+   * Ingredients base type for findFirst actions
    */
-  export type IngredientsFindFirstArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the Ingredients
-     */
-    select?: IngredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: IngredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: IngredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: IngredientsInclude | null
     /**
      * Filter, which Ingredients to fetch.
-     */
+     * 
+    **/
     where?: IngredientsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Ingredients to fetch.
-     */
-    orderBy?: IngredientsOrderByWithRelationInput | IngredientsOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<IngredientsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Ingredients.
-     */
+     * 
+    **/
     cursor?: IngredientsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Ingredients from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Ingredients.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Ingredients.
-     */
-    distinct?: IngredientsScalarFieldEnum | IngredientsScalarFieldEnum[]
+     * 
+    **/
+    distinct?: Enumerable<IngredientsScalarFieldEnum>
   }
 
+  /**
+   * Ingredients findFirst
+   */
+  export interface IngredientsFindFirstArgs extends IngredientsFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
 
   /**
    * Ingredients findFirstOrThrow
    */
-  export type IngredientsFindFirstOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsFindFirstOrThrowArgs = {
     /**
      * Select specific fields to fetch from the Ingredients
-     */
-    select?: IngredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: IngredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: IngredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: IngredientsInclude | null
     /**
      * Filter, which Ingredients to fetch.
-     */
+     * 
+    **/
     where?: IngredientsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Ingredients to fetch.
-     */
-    orderBy?: IngredientsOrderByWithRelationInput | IngredientsOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<IngredientsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Ingredients.
-     */
+     * 
+    **/
     cursor?: IngredientsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Ingredients from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Ingredients.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Ingredients.
-     */
-    distinct?: IngredientsScalarFieldEnum | IngredientsScalarFieldEnum[]
+     * 
+    **/
+    distinct?: Enumerable<IngredientsScalarFieldEnum>
   }
 
 
   /**
    * Ingredients findMany
    */
-  export type IngredientsFindManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsFindManyArgs = {
     /**
      * Select specific fields to fetch from the Ingredients
-     */
-    select?: IngredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: IngredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: IngredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: IngredientsInclude | null
     /**
      * Filter, which Ingredients to fetch.
-     */
+     * 
+    **/
     where?: IngredientsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Ingredients to fetch.
-     */
-    orderBy?: IngredientsOrderByWithRelationInput | IngredientsOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<IngredientsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing Ingredients.
-     */
+     * 
+    **/
     cursor?: IngredientsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Ingredients from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Ingredients.
-     */
+     * 
+    **/
     skip?: number
-    distinct?: IngredientsScalarFieldEnum | IngredientsScalarFieldEnum[]
+    distinct?: Enumerable<IngredientsScalarFieldEnum>
   }
 
 
   /**
    * Ingredients create
    */
-  export type IngredientsCreateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsCreateArgs = {
     /**
      * Select specific fields to fetch from the Ingredients
-     */
-    select?: IngredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: IngredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: IngredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: IngredientsInclude | null
     /**
      * The data needed to create a Ingredients.
-     */
+     * 
+    **/
     data: XOR<IngredientsCreateInput, IngredientsUncheckedCreateInput>
   }
 
@@ -3327,11 +3328,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredients createMany
    */
-  export type IngredientsCreateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsCreateManyArgs = {
     /**
      * The data used to create many Ingredients.
-     */
-    data: IngredientsCreateManyInput | IngredientsCreateManyInput[]
+     * 
+    **/
+    data: Enumerable<IngredientsCreateManyInput>
     skipDuplicates?: boolean
   }
 
@@ -3339,22 +3341,26 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredients update
    */
-  export type IngredientsUpdateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsUpdateArgs = {
     /**
      * Select specific fields to fetch from the Ingredients
-     */
-    select?: IngredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: IngredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: IngredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: IngredientsInclude | null
     /**
      * The data needed to update a Ingredients.
-     */
+     * 
+    **/
     data: XOR<IngredientsUpdateInput, IngredientsUncheckedUpdateInput>
     /**
      * Choose, which Ingredients to update.
-     */
+     * 
+    **/
     where: IngredientsWhereUniqueInput
   }
 
@@ -3362,14 +3368,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredients updateMany
    */
-  export type IngredientsUpdateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsUpdateManyArgs = {
     /**
      * The data used to update Ingredients.
-     */
+     * 
+    **/
     data: XOR<IngredientsUpdateManyMutationInput, IngredientsUncheckedUpdateManyInput>
     /**
      * Filter which Ingredients to update
-     */
+     * 
+    **/
     where?: IngredientsWhereInput
   }
 
@@ -3377,26 +3385,31 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredients upsert
    */
-  export type IngredientsUpsertArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsUpsertArgs = {
     /**
      * Select specific fields to fetch from the Ingredients
-     */
-    select?: IngredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: IngredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: IngredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: IngredientsInclude | null
     /**
      * The filter to search for the Ingredients to update in case it exists.
-     */
+     * 
+    **/
     where: IngredientsWhereUniqueInput
     /**
      * In case the Ingredients found by the `where` argument doesn't exist, create a new Ingredients with this data.
-     */
+     * 
+    **/
     create: XOR<IngredientsCreateInput, IngredientsUncheckedCreateInput>
     /**
      * In case the Ingredients was found with the provided `where` argument, update it with this data.
-     */
+     * 
+    **/
     update: XOR<IngredientsUpdateInput, IngredientsUncheckedUpdateInput>
   }
 
@@ -3404,18 +3417,21 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredients delete
    */
-  export type IngredientsDeleteArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsDeleteArgs = {
     /**
      * Select specific fields to fetch from the Ingredients
-     */
-    select?: IngredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: IngredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: IngredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: IngredientsInclude | null
     /**
      * Filter which Ingredients to delete.
-     */
+     * 
+    **/
     where: IngredientsWhereUniqueInput
   }
 
@@ -3423,10 +3439,11 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredients deleteMany
    */
-  export type IngredientsDeleteManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsDeleteManyArgs = {
     /**
      * Filter which Ingredients to delete
-     */
+     * 
+    **/
     where?: IngredientsWhereInput
   }
 
@@ -3434,36 +3451,40 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredients.ingredient_events
    */
-  export type Ingredients$ingredient_eventsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients$ingredient_eventsArgs = {
     /**
      * Select specific fields to fetch from the Ingredient_events
-     */
-    select?: Ingredient_eventsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredient_eventsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredient_eventsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredient_eventsInclude | null
     where?: Ingredient_eventsWhereInput
-    orderBy?: Ingredient_eventsOrderByWithRelationInput | Ingredient_eventsOrderByWithRelationInput[]
+    orderBy?: Enumerable<Ingredient_eventsOrderByWithRelationInput>
     cursor?: Ingredient_eventsWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: Ingredient_eventsScalarFieldEnum | Ingredient_eventsScalarFieldEnum[]
+    distinct?: Enumerable<Ingredient_eventsScalarFieldEnum>
   }
 
 
   /**
    * Ingredients.ingredients_photo_uploads
    */
-  export type Ingredients$ingredients_photo_uploadsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients$ingredients_photo_uploadsArgs = {
     /**
      * Select specific fields to fetch from the Ingredients_photo_uploads
-     */
-    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredients_photo_uploadsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredients_photo_uploadsInclude | null
     where?: Ingredients_photo_uploadsWhereInput
   }
 
@@ -3471,15 +3492,17 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredients without action
    */
-  export type IngredientsDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type IngredientsArgs = {
     /**
      * Select specific fields to fetch from the Ingredients
-     */
-    select?: IngredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: IngredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: IngredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: IngredientsInclude | null
   }
 
 
@@ -3487,6 +3510,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Model Ingredients_photo_uploads
    */
+
 
   export type AggregateIngredients_photo_uploads = {
     _count: Ingredients_photo_uploadsCountAggregateOutputType | null
@@ -3511,7 +3535,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id: string | null
     created_at: Date | null
     uploaded_at: Date | null
-    state: $Enums.ingredient_photo_upload_state | null
+    state: ingredient_photo_upload_state | null
     upload_duration_sec: number | null
     ai_processing_duration_sec: number | null
     photo_url: string | null
@@ -3522,7 +3546,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id: string | null
     created_at: Date | null
     uploaded_at: Date | null
-    state: $Enums.ingredient_photo_upload_state | null
+    state: ingredient_photo_upload_state | null
     upload_duration_sec: number | null
     ai_processing_duration_sec: number | null
     photo_url: string | null
@@ -3585,34 +3609,39 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _all?: true
   }
 
-  export type Ingredients_photo_uploadsAggregateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsAggregateArgs = {
     /**
      * Filter which Ingredients_photo_uploads to aggregate.
-     */
+     * 
+    **/
     where?: Ingredients_photo_uploadsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Ingredients_photo_uploads to fetch.
-     */
-    orderBy?: Ingredients_photo_uploadsOrderByWithRelationInput | Ingredients_photo_uploadsOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<Ingredients_photo_uploadsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     */
+     * 
+    **/
     cursor?: Ingredients_photo_uploadsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Ingredients_photo_uploads from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Ingredients_photo_uploads.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -3657,10 +3686,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
 
-  export type Ingredients_photo_uploadsGroupByArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsGroupByArgs = {
     where?: Ingredients_photo_uploadsWhereInput
-    orderBy?: Ingredients_photo_uploadsOrderByWithAggregationInput | Ingredients_photo_uploadsOrderByWithAggregationInput[]
-    by: Ingredients_photo_uploadsScalarFieldEnum[] | Ingredients_photo_uploadsScalarFieldEnum
+    orderBy?: Enumerable<Ingredients_photo_uploadsOrderByWithAggregationInput>
+    by: Array<Ingredients_photo_uploadsScalarFieldEnum>
     having?: Ingredients_photo_uploadsScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -3671,12 +3700,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _max?: Ingredients_photo_uploadsMaxAggregateInputType
   }
 
+
   export type Ingredients_photo_uploadsGroupByOutputType = {
     id: string
     user_id: string
     created_at: Date
     uploaded_at: Date | null
-    state: $Enums.ingredient_photo_upload_state
+    state: ingredient_photo_upload_state
     upload_duration_sec: number | null
     ai_processing_duration_sec: number | null
     photo_url: string | null
@@ -3687,9 +3717,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _max: Ingredients_photo_uploadsMaxAggregateOutputType | null
   }
 
-  type GetIngredients_photo_uploadsGroupByPayload<T extends Ingredients_photo_uploadsGroupByArgs> = Prisma.PrismaPromise<
+  type GetIngredients_photo_uploadsGroupByPayload<T extends Ingredients_photo_uploadsGroupByArgs> = PrismaPromise<
     Array<
-      PickEnumerable<Ingredients_photo_uploadsGroupByOutputType, T['by']> &
+      PickArray<Ingredients_photo_uploadsGroupByOutputType, T['by']> &
         {
           [P in ((keyof T) & (keyof Ingredients_photo_uploadsGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
@@ -3701,7 +3731,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     >
 
 
-  export type Ingredients_photo_uploadsSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type Ingredients_photo_uploadsSelect = {
     id?: boolean
     user_id?: boolean
     created_at?: boolean
@@ -3710,67 +3740,46 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     upload_duration_sec?: boolean
     ai_processing_duration_sec?: boolean
     photo_url?: boolean
-    ingredients?: boolean | Ingredients_photo_uploads$ingredientsArgs<ExtArgs>
-    users?: boolean | UsersDefaultArgs<ExtArgs>
-    _count?: boolean | Ingredients_photo_uploadsCountOutputTypeDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["ingredients_photo_uploads"]>
-
-  export type Ingredients_photo_uploadsSelectScalar = {
-    id?: boolean
-    user_id?: boolean
-    created_at?: boolean
-    uploaded_at?: boolean
-    state?: boolean
-    upload_duration_sec?: boolean
-    ai_processing_duration_sec?: boolean
-    photo_url?: boolean
-  }
-
-  export type Ingredients_photo_uploadsInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    ingredients?: boolean | Ingredients_photo_uploads$ingredientsArgs<ExtArgs>
-    users?: boolean | UsersDefaultArgs<ExtArgs>
-    _count?: boolean | Ingredients_photo_uploadsCountOutputTypeDefaultArgs<ExtArgs>
+    ingredients?: boolean | Ingredients_photo_uploads$ingredientsArgs
+    users?: boolean | UsersArgs
+    _count?: boolean | Ingredients_photo_uploadsCountOutputTypeArgs
   }
 
 
-  export type $Ingredients_photo_uploadsPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    name: "Ingredients_photo_uploads"
-    objects: {
-      ingredients: Prisma.$IngredientsPayload<ExtArgs>[]
-      users: Prisma.$UsersPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetResult<{
-      /**
-       * @zod.string.uuid()
-       */
-      id: string
-      user_id: string
-      created_at: Date
-      uploaded_at: Date | null
-      state: $Enums.ingredient_photo_upload_state
-      /**
-       * @zod.custom.use(z.number().or(z.nan()))
-       */
-      upload_duration_sec: number | null
-      /**
-       * @zod.custom.use(z.number().or(z.nan()))
-       */
-      ai_processing_duration_sec: number | null
-      photo_url: string | null
-    }, ExtArgs["result"]["ingredients_photo_uploads"]>
-    composites: {}
-  }
+  export type Ingredients_photo_uploadsInclude = {
+    ingredients?: boolean | Ingredients_photo_uploads$ingredientsArgs
+    users?: boolean | UsersArgs
+    _count?: boolean | Ingredients_photo_uploadsCountOutputTypeArgs
+  } 
+
+  export type Ingredients_photo_uploadsGetPayload<S extends boolean | null | undefined | Ingredients_photo_uploadsArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? Ingredients_photo_uploads :
+    S extends undefined ? never :
+    S extends { include: any } & (Ingredients_photo_uploadsArgs | Ingredients_photo_uploadsFindManyArgs)
+    ? Ingredients_photo_uploads  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'ingredients' ? Array < IngredientsGetPayload<S['include'][P]>>  :
+        P extends 'users' ? UsersGetPayload<S['include'][P]> :
+        P extends '_count' ? Ingredients_photo_uploadsCountOutputTypeGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (Ingredients_photo_uploadsArgs | Ingredients_photo_uploadsFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'ingredients' ? Array < IngredientsGetPayload<S['select'][P]>>  :
+        P extends 'users' ? UsersGetPayload<S['select'][P]> :
+        P extends '_count' ? Ingredients_photo_uploadsCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Ingredients_photo_uploads ? Ingredients_photo_uploads[P] : never
+  } 
+      : Ingredients_photo_uploads
 
 
-  type Ingredients_photo_uploadsGetPayload<S extends boolean | null | undefined | Ingredients_photo_uploadsDefaultArgs> = $Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload, S>
-
-  type Ingredients_photo_uploadsCountArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = 
+  type Ingredients_photo_uploadsCountArgs = Merge<
     Omit<Ingredients_photo_uploadsFindManyArgs, 'select' | 'include'> & {
       select?: Ingredients_photo_uploadsCountAggregateInputType | true
     }
+  >
 
-  export interface Ingredients_photo_uploadsDelegate<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Ingredients_photo_uploads'], meta: { name: 'Ingredients_photo_uploads' } }
+  export interface Ingredients_photo_uploadsDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
     /**
      * Find zero or one Ingredients_photo_uploads that matches the filter.
      * @param {Ingredients_photo_uploadsFindUniqueArgs} args - Arguments to find a Ingredients_photo_uploads
@@ -3782,9 +3791,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findUnique<T extends Ingredients_photo_uploadsFindUniqueArgs<ExtArgs>>(
-      args: SelectSubset<T, Ingredients_photo_uploadsFindUniqueArgs<ExtArgs>>
-    ): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'findUnique'> | null, null, ExtArgs>
+    findUnique<T extends Ingredients_photo_uploadsFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, Ingredients_photo_uploadsFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Ingredients_photo_uploads'> extends True ? Prisma__Ingredients_photo_uploadsClient<Ingredients_photo_uploadsGetPayload<T>> : Prisma__Ingredients_photo_uploadsClient<Ingredients_photo_uploadsGetPayload<T> | null, null>
 
     /**
      * Find one Ingredients_photo_uploads that matches the filter or throw an error  with `error.code='P2025'` 
@@ -3798,9 +3807,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findUniqueOrThrow<T extends Ingredients_photo_uploadsFindUniqueOrThrowArgs<ExtArgs>>(
-      args?: SelectSubset<T, Ingredients_photo_uploadsFindUniqueOrThrowArgs<ExtArgs>>
-    ): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'findUniqueOrThrow'>, never, ExtArgs>
+    findUniqueOrThrow<T extends Ingredients_photo_uploadsFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, Ingredients_photo_uploadsFindUniqueOrThrowArgs>
+    ): Prisma__Ingredients_photo_uploadsClient<Ingredients_photo_uploadsGetPayload<T>>
 
     /**
      * Find the first Ingredients_photo_uploads that matches the filter.
@@ -3815,13 +3824,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findFirst<T extends Ingredients_photo_uploadsFindFirstArgs<ExtArgs>>(
-      args?: SelectSubset<T, Ingredients_photo_uploadsFindFirstArgs<ExtArgs>>
-    ): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'findFirst'> | null, null, ExtArgs>
+    findFirst<T extends Ingredients_photo_uploadsFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, Ingredients_photo_uploadsFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Ingredients_photo_uploads'> extends True ? Prisma__Ingredients_photo_uploadsClient<Ingredients_photo_uploadsGetPayload<T>> : Prisma__Ingredients_photo_uploadsClient<Ingredients_photo_uploadsGetPayload<T> | null, null>
 
     /**
      * Find the first Ingredients_photo_uploads that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * throw `NotFoundError` if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
      * @param {Ingredients_photo_uploadsFindFirstOrThrowArgs} args - Arguments to find a Ingredients_photo_uploads
@@ -3833,9 +3842,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findFirstOrThrow<T extends Ingredients_photo_uploadsFindFirstOrThrowArgs<ExtArgs>>(
-      args?: SelectSubset<T, Ingredients_photo_uploadsFindFirstOrThrowArgs<ExtArgs>>
-    ): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'findFirstOrThrow'>, never, ExtArgs>
+    findFirstOrThrow<T extends Ingredients_photo_uploadsFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, Ingredients_photo_uploadsFindFirstOrThrowArgs>
+    ): Prisma__Ingredients_photo_uploadsClient<Ingredients_photo_uploadsGetPayload<T>>
 
     /**
      * Find zero or more Ingredients_photo_uploads that matches the filter.
@@ -3853,9 +3862,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * const ingredients_photo_uploadsWithIdOnly = await prisma.ingredients_photo_uploads.findMany({ select: { id: true } })
      * 
     **/
-    findMany<T extends Ingredients_photo_uploadsFindManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, Ingredients_photo_uploadsFindManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'findMany'>>
+    findMany<T extends Ingredients_photo_uploadsFindManyArgs>(
+      args?: SelectSubset<T, Ingredients_photo_uploadsFindManyArgs>
+    ): PrismaPromise<Array<Ingredients_photo_uploadsGetPayload<T>>>
 
     /**
      * Create a Ingredients_photo_uploads.
@@ -3869,9 +3878,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    create<T extends Ingredients_photo_uploadsCreateArgs<ExtArgs>>(
-      args: SelectSubset<T, Ingredients_photo_uploadsCreateArgs<ExtArgs>>
-    ): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'create'>, never, ExtArgs>
+    create<T extends Ingredients_photo_uploadsCreateArgs>(
+      args: SelectSubset<T, Ingredients_photo_uploadsCreateArgs>
+    ): Prisma__Ingredients_photo_uploadsClient<Ingredients_photo_uploadsGetPayload<T>>
 
     /**
      * Create many Ingredients_photo_uploads.
@@ -3885,9 +3894,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *     })
      *     
     **/
-    createMany<T extends Ingredients_photo_uploadsCreateManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, Ingredients_photo_uploadsCreateManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends Ingredients_photo_uploadsCreateManyArgs>(
+      args?: SelectSubset<T, Ingredients_photo_uploadsCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Delete a Ingredients_photo_uploads.
@@ -3901,9 +3910,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    delete<T extends Ingredients_photo_uploadsDeleteArgs<ExtArgs>>(
-      args: SelectSubset<T, Ingredients_photo_uploadsDeleteArgs<ExtArgs>>
-    ): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'delete'>, never, ExtArgs>
+    delete<T extends Ingredients_photo_uploadsDeleteArgs>(
+      args: SelectSubset<T, Ingredients_photo_uploadsDeleteArgs>
+    ): Prisma__Ingredients_photo_uploadsClient<Ingredients_photo_uploadsGetPayload<T>>
 
     /**
      * Update one Ingredients_photo_uploads.
@@ -3920,9 +3929,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    update<T extends Ingredients_photo_uploadsUpdateArgs<ExtArgs>>(
-      args: SelectSubset<T, Ingredients_photo_uploadsUpdateArgs<ExtArgs>>
-    ): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'update'>, never, ExtArgs>
+    update<T extends Ingredients_photo_uploadsUpdateArgs>(
+      args: SelectSubset<T, Ingredients_photo_uploadsUpdateArgs>
+    ): Prisma__Ingredients_photo_uploadsClient<Ingredients_photo_uploadsGetPayload<T>>
 
     /**
      * Delete zero or more Ingredients_photo_uploads.
@@ -3936,9 +3945,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    deleteMany<T extends Ingredients_photo_uploadsDeleteManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, Ingredients_photo_uploadsDeleteManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends Ingredients_photo_uploadsDeleteManyArgs>(
+      args?: SelectSubset<T, Ingredients_photo_uploadsDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more Ingredients_photo_uploads.
@@ -3957,9 +3966,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    updateMany<T extends Ingredients_photo_uploadsUpdateManyArgs<ExtArgs>>(
-      args: SelectSubset<T, Ingredients_photo_uploadsUpdateManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends Ingredients_photo_uploadsUpdateManyArgs>(
+      args: SelectSubset<T, Ingredients_photo_uploadsUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Create or update one Ingredients_photo_uploads.
@@ -3978,9 +3987,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    upsert<T extends Ingredients_photo_uploadsUpsertArgs<ExtArgs>>(
-      args: SelectSubset<T, Ingredients_photo_uploadsUpsertArgs<ExtArgs>>
-    ): Prisma__Ingredients_photo_uploadsClient<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'upsert'>, never, ExtArgs>
+    upsert<T extends Ingredients_photo_uploadsUpsertArgs>(
+      args: SelectSubset<T, Ingredients_photo_uploadsUpsertArgs>
+    ): Prisma__Ingredients_photo_uploadsClient<Ingredients_photo_uploadsGetPayload<T>>
 
     /**
      * Count the number of Ingredients_photo_uploads.
@@ -3997,8 +4006,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     **/
     count<T extends Ingredients_photo_uploadsCountArgs>(
       args?: Subset<T, Ingredients_photo_uploadsCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
+    ): PrismaPromise<
+      T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
           : GetScalarType<T['select'], Ingredients_photo_uploadsCountAggregateOutputType>
@@ -4029,7 +4038,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   take: 10,
      * })
     **/
-    aggregate<T extends Ingredients_photo_uploadsAggregateArgs>(args: Subset<T, Ingredients_photo_uploadsAggregateArgs>): Prisma.PrismaPromise<GetIngredients_photo_uploadsAggregateType<T>>
+    aggregate<T extends Ingredients_photo_uploadsAggregateArgs>(args: Subset<T, Ingredients_photo_uploadsAggregateArgs>): PrismaPromise<GetIngredients_photo_uploadsAggregateType<T>>
 
     /**
      * Group by Ingredients_photo_uploads.
@@ -4059,7 +4068,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
         ? { orderBy: Ingredients_photo_uploadsGroupByArgs['orderBy'] }
         : { orderBy?: Ingredients_photo_uploadsGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByFields extends TupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
       HavingFields extends GetHavingFields<T['having']>,
       HavingValid extends Has<ByFields, HavingFields>,
@@ -4106,11 +4115,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, Ingredients_photo_uploadsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetIngredients_photo_uploadsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Ingredients_photo_uploads model
-   */
-  readonly fields: Ingredients_photo_uploadsFieldRefs;
+    >(args: SubsetIntersection<T, Ingredients_photo_uploadsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetIngredients_photo_uploadsGroupByPayload<T> : PrismaPromise<InputErrors>
+
   }
 
   /**
@@ -4119,249 +4125,303 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__Ingredients_photo_uploadsClient<T, Null = never, ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
+  export class Prisma__Ingredients_photo_uploadsClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    ingredients<T extends Ingredients_photo_uploads$ingredientsArgs<ExtArgs> = {}>(args?: Subset<T, Ingredients_photo_uploads$ingredientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IngredientsPayload<ExtArgs>, T, 'findMany'> | Null>;
+    ingredients<T extends Ingredients_photo_uploads$ingredientsArgs= {}>(args?: Subset<T, Ingredients_photo_uploads$ingredientsArgs>): PrismaPromise<Array<IngredientsGetPayload<T>>| Null>;
 
-    users<T extends UsersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UsersDefaultArgs<ExtArgs>>): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'findUniqueOrThrow'> | Null, Null, ExtArgs>;
+    users<T extends UsersArgs= {}>(args?: Subset<T, UsersArgs>): Prisma__UsersClient<UsersGetPayload<T> | Null>;
 
+    private get _document();
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of which ever callback is executed.
      */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>;
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
     /**
      * Attaches a callback for only the rejection of the Promise.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
      * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
      * @returns A Promise for the completion of the callback.
      */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
   }
 
 
-
-  /**
-   * Fields of the Ingredients_photo_uploads model
-   */ 
-  interface Ingredients_photo_uploadsFieldRefs {
-    readonly id: FieldRef<"Ingredients_photo_uploads", 'String'>
-    readonly user_id: FieldRef<"Ingredients_photo_uploads", 'String'>
-    readonly created_at: FieldRef<"Ingredients_photo_uploads", 'DateTime'>
-    readonly uploaded_at: FieldRef<"Ingredients_photo_uploads", 'DateTime'>
-    readonly state: FieldRef<"Ingredients_photo_uploads", 'ingredient_photo_upload_state'>
-    readonly upload_duration_sec: FieldRef<"Ingredients_photo_uploads", 'Float'>
-    readonly ai_processing_duration_sec: FieldRef<"Ingredients_photo_uploads", 'Float'>
-    readonly photo_url: FieldRef<"Ingredients_photo_uploads", 'String'>
-  }
-    
 
   // Custom InputTypes
 
   /**
-   * Ingredients_photo_uploads findUnique
+   * Ingredients_photo_uploads base type for findUnique actions
    */
-  export type Ingredients_photo_uploadsFindUniqueArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the Ingredients_photo_uploads
-     */
-    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredients_photo_uploadsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredients_photo_uploadsInclude | null
     /**
      * Filter, which Ingredients_photo_uploads to fetch.
-     */
+     * 
+    **/
     where: Ingredients_photo_uploadsWhereUniqueInput
   }
 
+  /**
+   * Ingredients_photo_uploads findUnique
+   */
+  export interface Ingredients_photo_uploadsFindUniqueArgs extends Ingredients_photo_uploadsFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
 
   /**
    * Ingredients_photo_uploads findUniqueOrThrow
    */
-  export type Ingredients_photo_uploadsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsFindUniqueOrThrowArgs = {
     /**
      * Select specific fields to fetch from the Ingredients_photo_uploads
-     */
-    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredients_photo_uploadsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredients_photo_uploadsInclude | null
     /**
      * Filter, which Ingredients_photo_uploads to fetch.
-     */
+     * 
+    **/
     where: Ingredients_photo_uploadsWhereUniqueInput
   }
 
 
   /**
-   * Ingredients_photo_uploads findFirst
+   * Ingredients_photo_uploads base type for findFirst actions
    */
-  export type Ingredients_photo_uploadsFindFirstArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the Ingredients_photo_uploads
-     */
-    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredients_photo_uploadsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredients_photo_uploadsInclude | null
     /**
      * Filter, which Ingredients_photo_uploads to fetch.
-     */
+     * 
+    **/
     where?: Ingredients_photo_uploadsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Ingredients_photo_uploads to fetch.
-     */
-    orderBy?: Ingredients_photo_uploadsOrderByWithRelationInput | Ingredients_photo_uploadsOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<Ingredients_photo_uploadsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Ingredients_photo_uploads.
-     */
+     * 
+    **/
     cursor?: Ingredients_photo_uploadsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Ingredients_photo_uploads from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Ingredients_photo_uploads.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Ingredients_photo_uploads.
-     */
-    distinct?: Ingredients_photo_uploadsScalarFieldEnum | Ingredients_photo_uploadsScalarFieldEnum[]
+     * 
+    **/
+    distinct?: Enumerable<Ingredients_photo_uploadsScalarFieldEnum>
   }
 
+  /**
+   * Ingredients_photo_uploads findFirst
+   */
+  export interface Ingredients_photo_uploadsFindFirstArgs extends Ingredients_photo_uploadsFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
 
   /**
    * Ingredients_photo_uploads findFirstOrThrow
    */
-  export type Ingredients_photo_uploadsFindFirstOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsFindFirstOrThrowArgs = {
     /**
      * Select specific fields to fetch from the Ingredients_photo_uploads
-     */
-    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredients_photo_uploadsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredients_photo_uploadsInclude | null
     /**
      * Filter, which Ingredients_photo_uploads to fetch.
-     */
+     * 
+    **/
     where?: Ingredients_photo_uploadsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Ingredients_photo_uploads to fetch.
-     */
-    orderBy?: Ingredients_photo_uploadsOrderByWithRelationInput | Ingredients_photo_uploadsOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<Ingredients_photo_uploadsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Ingredients_photo_uploads.
-     */
+     * 
+    **/
     cursor?: Ingredients_photo_uploadsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Ingredients_photo_uploads from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Ingredients_photo_uploads.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Ingredients_photo_uploads.
-     */
-    distinct?: Ingredients_photo_uploadsScalarFieldEnum | Ingredients_photo_uploadsScalarFieldEnum[]
+     * 
+    **/
+    distinct?: Enumerable<Ingredients_photo_uploadsScalarFieldEnum>
   }
 
 
   /**
    * Ingredients_photo_uploads findMany
    */
-  export type Ingredients_photo_uploadsFindManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsFindManyArgs = {
     /**
      * Select specific fields to fetch from the Ingredients_photo_uploads
-     */
-    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredients_photo_uploadsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredients_photo_uploadsInclude | null
     /**
      * Filter, which Ingredients_photo_uploads to fetch.
-     */
+     * 
+    **/
     where?: Ingredients_photo_uploadsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Ingredients_photo_uploads to fetch.
-     */
-    orderBy?: Ingredients_photo_uploadsOrderByWithRelationInput | Ingredients_photo_uploadsOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<Ingredients_photo_uploadsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing Ingredients_photo_uploads.
-     */
+     * 
+    **/
     cursor?: Ingredients_photo_uploadsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Ingredients_photo_uploads from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Ingredients_photo_uploads.
-     */
+     * 
+    **/
     skip?: number
-    distinct?: Ingredients_photo_uploadsScalarFieldEnum | Ingredients_photo_uploadsScalarFieldEnum[]
+    distinct?: Enumerable<Ingredients_photo_uploadsScalarFieldEnum>
   }
 
 
   /**
    * Ingredients_photo_uploads create
    */
-  export type Ingredients_photo_uploadsCreateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsCreateArgs = {
     /**
      * Select specific fields to fetch from the Ingredients_photo_uploads
-     */
-    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredients_photo_uploadsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredients_photo_uploadsInclude | null
     /**
      * The data needed to create a Ingredients_photo_uploads.
-     */
+     * 
+    **/
     data: XOR<Ingredients_photo_uploadsCreateInput, Ingredients_photo_uploadsUncheckedCreateInput>
   }
 
@@ -4369,11 +4429,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredients_photo_uploads createMany
    */
-  export type Ingredients_photo_uploadsCreateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsCreateManyArgs = {
     /**
      * The data used to create many Ingredients_photo_uploads.
-     */
-    data: Ingredients_photo_uploadsCreateManyInput | Ingredients_photo_uploadsCreateManyInput[]
+     * 
+    **/
+    data: Enumerable<Ingredients_photo_uploadsCreateManyInput>
     skipDuplicates?: boolean
   }
 
@@ -4381,22 +4442,26 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredients_photo_uploads update
    */
-  export type Ingredients_photo_uploadsUpdateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsUpdateArgs = {
     /**
      * Select specific fields to fetch from the Ingredients_photo_uploads
-     */
-    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredients_photo_uploadsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredients_photo_uploadsInclude | null
     /**
      * The data needed to update a Ingredients_photo_uploads.
-     */
+     * 
+    **/
     data: XOR<Ingredients_photo_uploadsUpdateInput, Ingredients_photo_uploadsUncheckedUpdateInput>
     /**
      * Choose, which Ingredients_photo_uploads to update.
-     */
+     * 
+    **/
     where: Ingredients_photo_uploadsWhereUniqueInput
   }
 
@@ -4404,14 +4469,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredients_photo_uploads updateMany
    */
-  export type Ingredients_photo_uploadsUpdateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsUpdateManyArgs = {
     /**
      * The data used to update Ingredients_photo_uploads.
-     */
+     * 
+    **/
     data: XOR<Ingredients_photo_uploadsUpdateManyMutationInput, Ingredients_photo_uploadsUncheckedUpdateManyInput>
     /**
      * Filter which Ingredients_photo_uploads to update
-     */
+     * 
+    **/
     where?: Ingredients_photo_uploadsWhereInput
   }
 
@@ -4419,26 +4486,31 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredients_photo_uploads upsert
    */
-  export type Ingredients_photo_uploadsUpsertArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsUpsertArgs = {
     /**
      * Select specific fields to fetch from the Ingredients_photo_uploads
-     */
-    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredients_photo_uploadsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredients_photo_uploadsInclude | null
     /**
      * The filter to search for the Ingredients_photo_uploads to update in case it exists.
-     */
+     * 
+    **/
     where: Ingredients_photo_uploadsWhereUniqueInput
     /**
      * In case the Ingredients_photo_uploads found by the `where` argument doesn't exist, create a new Ingredients_photo_uploads with this data.
-     */
+     * 
+    **/
     create: XOR<Ingredients_photo_uploadsCreateInput, Ingredients_photo_uploadsUncheckedCreateInput>
     /**
      * In case the Ingredients_photo_uploads was found with the provided `where` argument, update it with this data.
-     */
+     * 
+    **/
     update: XOR<Ingredients_photo_uploadsUpdateInput, Ingredients_photo_uploadsUncheckedUpdateInput>
   }
 
@@ -4446,18 +4518,21 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredients_photo_uploads delete
    */
-  export type Ingredients_photo_uploadsDeleteArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsDeleteArgs = {
     /**
      * Select specific fields to fetch from the Ingredients_photo_uploads
-     */
-    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredients_photo_uploadsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredients_photo_uploadsInclude | null
     /**
      * Filter which Ingredients_photo_uploads to delete.
-     */
+     * 
+    **/
     where: Ingredients_photo_uploadsWhereUniqueInput
   }
 
@@ -4465,10 +4540,11 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredients_photo_uploads deleteMany
    */
-  export type Ingredients_photo_uploadsDeleteManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsDeleteManyArgs = {
     /**
      * Filter which Ingredients_photo_uploads to delete
-     */
+     * 
+    **/
     where?: Ingredients_photo_uploadsWhereInput
   }
 
@@ -4476,36 +4552,985 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Ingredients_photo_uploads.ingredients
    */
-  export type Ingredients_photo_uploads$ingredientsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploads$ingredientsArgs = {
     /**
      * Select specific fields to fetch from the Ingredients
-     */
-    select?: IngredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: IngredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: IngredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: IngredientsInclude | null
     where?: IngredientsWhereInput
-    orderBy?: IngredientsOrderByWithRelationInput | IngredientsOrderByWithRelationInput[]
+    orderBy?: Enumerable<IngredientsOrderByWithRelationInput>
     cursor?: IngredientsWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: IngredientsScalarFieldEnum | IngredientsScalarFieldEnum[]
+    distinct?: Enumerable<IngredientsScalarFieldEnum>
   }
 
 
   /**
    * Ingredients_photo_uploads without action
    */
-  export type Ingredients_photo_uploadsDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Ingredients_photo_uploadsArgs = {
     /**
      * Select specific fields to fetch from the Ingredients_photo_uploads
-     */
-    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredients_photo_uploadsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: Ingredients_photo_uploadsInclude | null
+  }
+
+
+
+  /**
+   * Model Jobs
+   */
+
+
+  export type AggregateJobs = {
+    _count: JobsCountAggregateOutputType | null
+    _min: JobsMinAggregateOutputType | null
+    _max: JobsMaxAggregateOutputType | null
+  }
+
+  export type JobsMinAggregateOutputType = {
+    id: string | null
+    state: jobs_state | null
+    target_id: string | null
+    type: string | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type JobsMaxAggregateOutputType = {
+    id: string | null
+    state: jobs_state | null
+    target_id: string | null
+    type: string | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type JobsCountAggregateOutputType = {
+    id: number
+    state: number
+    target_id: number
+    type: number
+    created_at: number
+    updated_at: number
+    error: number
+    result: number
+    _all: number
+  }
+
+
+  export type JobsMinAggregateInputType = {
+    id?: true
+    state?: true
+    target_id?: true
+    type?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type JobsMaxAggregateInputType = {
+    id?: true
+    state?: true
+    target_id?: true
+    type?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type JobsCountAggregateInputType = {
+    id?: true
+    state?: true
+    target_id?: true
+    type?: true
+    created_at?: true
+    updated_at?: true
+    error?: true
+    result?: true
+    _all?: true
+  }
+
+  export type JobsAggregateArgs = {
+    /**
+     * Filter which Jobs to aggregate.
+     * 
+    **/
+    where?: JobsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Jobs to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<JobsOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     * 
+    **/
+    cursor?: JobsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Jobs from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Jobs.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Jobs
+    **/
+    _count?: true | JobsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: JobsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: JobsMaxAggregateInputType
+  }
+
+  export type GetJobsAggregateType<T extends JobsAggregateArgs> = {
+        [P in keyof T & keyof AggregateJobs]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateJobs[P]>
+      : GetScalarType<T[P], AggregateJobs[P]>
+  }
+
+
+
+
+  export type JobsGroupByArgs = {
+    where?: JobsWhereInput
+    orderBy?: Enumerable<JobsOrderByWithAggregationInput>
+    by: Array<JobsScalarFieldEnum>
+    having?: JobsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: JobsCountAggregateInputType | true
+    _min?: JobsMinAggregateInputType
+    _max?: JobsMaxAggregateInputType
+  }
+
+
+  export type JobsGroupByOutputType = {
+    id: string
+    state: jobs_state
+    target_id: string | null
+    type: string
+    created_at: Date
+    updated_at: Date
+    error: JsonValue | null
+    result: JsonValue | null
+    _count: JobsCountAggregateOutputType | null
+    _min: JobsMinAggregateOutputType | null
+    _max: JobsMaxAggregateOutputType | null
+  }
+
+  type GetJobsGroupByPayload<T extends JobsGroupByArgs> = PrismaPromise<
+    Array<
+      PickArray<JobsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof JobsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], JobsGroupByOutputType[P]>
+            : GetScalarType<T[P], JobsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type JobsSelect = {
+    id?: boolean
+    state?: boolean
+    target_id?: boolean
+    type?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    error?: boolean
+    result?: boolean
+  }
+
+
+  export type JobsGetPayload<S extends boolean | null | undefined | JobsArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? Jobs :
+    S extends undefined ? never :
+    S extends { include: any } & (JobsArgs | JobsFindManyArgs)
+    ? Jobs 
+    : S extends { select: any } & (JobsArgs | JobsFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+    P extends keyof Jobs ? Jobs[P] : never
+  } 
+      : Jobs
+
+
+  type JobsCountArgs = Merge<
+    Omit<JobsFindManyArgs, 'select' | 'include'> & {
+      select?: JobsCountAggregateInputType | true
+    }
+  >
+
+  export interface JobsDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+    /**
+     * Find zero or one Jobs that matches the filter.
+     * @param {JobsFindUniqueArgs} args - Arguments to find a Jobs
+     * @example
+     * // Get one Jobs
+     * const jobs = await prisma.jobs.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends JobsFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, JobsFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Jobs'> extends True ? Prisma__JobsClient<JobsGetPayload<T>> : Prisma__JobsClient<JobsGetPayload<T> | null, null>
+
+    /**
+     * Find one Jobs that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {JobsFindUniqueOrThrowArgs} args - Arguments to find a Jobs
+     * @example
+     * // Get one Jobs
+     * const jobs = await prisma.jobs.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends JobsFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, JobsFindUniqueOrThrowArgs>
+    ): Prisma__JobsClient<JobsGetPayload<T>>
+
+    /**
+     * Find the first Jobs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobsFindFirstArgs} args - Arguments to find a Jobs
+     * @example
+     * // Get one Jobs
+     * const jobs = await prisma.jobs.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends JobsFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, JobsFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Jobs'> extends True ? Prisma__JobsClient<JobsGetPayload<T>> : Prisma__JobsClient<JobsGetPayload<T> | null, null>
+
+    /**
+     * Find the first Jobs that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobsFindFirstOrThrowArgs} args - Arguments to find a Jobs
+     * @example
+     * // Get one Jobs
+     * const jobs = await prisma.jobs.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends JobsFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, JobsFindFirstOrThrowArgs>
+    ): Prisma__JobsClient<JobsGetPayload<T>>
+
+    /**
+     * Find zero or more Jobs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobsFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Jobs
+     * const jobs = await prisma.jobs.findMany()
+     * 
+     * // Get first 10 Jobs
+     * const jobs = await prisma.jobs.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const jobsWithIdOnly = await prisma.jobs.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends JobsFindManyArgs>(
+      args?: SelectSubset<T, JobsFindManyArgs>
+    ): PrismaPromise<Array<JobsGetPayload<T>>>
+
+    /**
+     * Create a Jobs.
+     * @param {JobsCreateArgs} args - Arguments to create a Jobs.
+     * @example
+     * // Create one Jobs
+     * const Jobs = await prisma.jobs.create({
+     *   data: {
+     *     // ... data to create a Jobs
+     *   }
+     * })
+     * 
+    **/
+    create<T extends JobsCreateArgs>(
+      args: SelectSubset<T, JobsCreateArgs>
+    ): Prisma__JobsClient<JobsGetPayload<T>>
+
+    /**
+     * Create many Jobs.
+     *     @param {JobsCreateManyArgs} args - Arguments to create many Jobs.
+     *     @example
+     *     // Create many Jobs
+     *     const jobs = await prisma.jobs.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends JobsCreateManyArgs>(
+      args?: SelectSubset<T, JobsCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Jobs.
+     * @param {JobsDeleteArgs} args - Arguments to delete one Jobs.
+     * @example
+     * // Delete one Jobs
+     * const Jobs = await prisma.jobs.delete({
+     *   where: {
+     *     // ... filter to delete one Jobs
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends JobsDeleteArgs>(
+      args: SelectSubset<T, JobsDeleteArgs>
+    ): Prisma__JobsClient<JobsGetPayload<T>>
+
+    /**
+     * Update one Jobs.
+     * @param {JobsUpdateArgs} args - Arguments to update one Jobs.
+     * @example
+     * // Update one Jobs
+     * const jobs = await prisma.jobs.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends JobsUpdateArgs>(
+      args: SelectSubset<T, JobsUpdateArgs>
+    ): Prisma__JobsClient<JobsGetPayload<T>>
+
+    /**
+     * Delete zero or more Jobs.
+     * @param {JobsDeleteManyArgs} args - Arguments to filter Jobs to delete.
+     * @example
+     * // Delete a few Jobs
+     * const { count } = await prisma.jobs.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends JobsDeleteManyArgs>(
+      args?: SelectSubset<T, JobsDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Jobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Jobs
+     * const jobs = await prisma.jobs.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends JobsUpdateManyArgs>(
+      args: SelectSubset<T, JobsUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Jobs.
+     * @param {JobsUpsertArgs} args - Arguments to update or create a Jobs.
+     * @example
+     * // Update or create a Jobs
+     * const jobs = await prisma.jobs.upsert({
+     *   create: {
+     *     // ... data to create a Jobs
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Jobs we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends JobsUpsertArgs>(
+      args: SelectSubset<T, JobsUpsertArgs>
+    ): Prisma__JobsClient<JobsGetPayload<T>>
+
+    /**
+     * Count the number of Jobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobsCountArgs} args - Arguments to filter Jobs to count.
+     * @example
+     * // Count the number of Jobs
+     * const count = await prisma.jobs.count({
+     *   where: {
+     *     // ... the filter for the Jobs we want to count
+     *   }
+     * })
+    **/
+    count<T extends JobsCountArgs>(
+      args?: Subset<T, JobsCountArgs>,
+    ): PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], JobsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Jobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends JobsAggregateArgs>(args: Subset<T, JobsAggregateArgs>): PrismaPromise<GetJobsAggregateType<T>>
+
+    /**
+     * Group by Jobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends JobsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: JobsGroupByArgs['orderBy'] }
+        : { orderBy?: JobsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, JobsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetJobsGroupByPayload<T> : PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Jobs.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__JobsClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
      */
-    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * Jobs base type for findUnique actions
+   */
+  export type JobsFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the Jobs
+     * 
+    **/
+    select?: JobsSelect | null
+    /**
+     * Filter, which Jobs to fetch.
+     * 
+    **/
+    where: JobsWhereUniqueInput
+  }
+
+  /**
+   * Jobs findUnique
+   */
+  export interface JobsFindUniqueArgs extends JobsFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * Jobs findUniqueOrThrow
+   */
+  export type JobsFindUniqueOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the Jobs
+     * 
+    **/
+    select?: JobsSelect | null
+    /**
+     * Filter, which Jobs to fetch.
+     * 
+    **/
+    where: JobsWhereUniqueInput
+  }
+
+
+  /**
+   * Jobs base type for findFirst actions
+   */
+  export type JobsFindFirstArgsBase = {
+    /**
+     * Select specific fields to fetch from the Jobs
+     * 
+    **/
+    select?: JobsSelect | null
+    /**
+     * Filter, which Jobs to fetch.
+     * 
+    **/
+    where?: JobsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Jobs to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<JobsOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Jobs.
+     * 
+    **/
+    cursor?: JobsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Jobs from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Jobs.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Jobs.
+     * 
+    **/
+    distinct?: Enumerable<JobsScalarFieldEnum>
+  }
+
+  /**
+   * Jobs findFirst
+   */
+  export interface JobsFindFirstArgs extends JobsFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * Jobs findFirstOrThrow
+   */
+  export type JobsFindFirstOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the Jobs
+     * 
+    **/
+    select?: JobsSelect | null
+    /**
+     * Filter, which Jobs to fetch.
+     * 
+    **/
+    where?: JobsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Jobs to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<JobsOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Jobs.
+     * 
+    **/
+    cursor?: JobsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Jobs from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Jobs.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Jobs.
+     * 
+    **/
+    distinct?: Enumerable<JobsScalarFieldEnum>
+  }
+
+
+  /**
+   * Jobs findMany
+   */
+  export type JobsFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the Jobs
+     * 
+    **/
+    select?: JobsSelect | null
+    /**
+     * Filter, which Jobs to fetch.
+     * 
+    **/
+    where?: JobsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Jobs to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<JobsOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Jobs.
+     * 
+    **/
+    cursor?: JobsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Jobs from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Jobs.
+     * 
+    **/
+    skip?: number
+    distinct?: Enumerable<JobsScalarFieldEnum>
+  }
+
+
+  /**
+   * Jobs create
+   */
+  export type JobsCreateArgs = {
+    /**
+     * Select specific fields to fetch from the Jobs
+     * 
+    **/
+    select?: JobsSelect | null
+    /**
+     * The data needed to create a Jobs.
+     * 
+    **/
+    data: XOR<JobsCreateInput, JobsUncheckedCreateInput>
+  }
+
+
+  /**
+   * Jobs createMany
+   */
+  export type JobsCreateManyArgs = {
+    /**
+     * The data used to create many Jobs.
+     * 
+    **/
+    data: Enumerable<JobsCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * Jobs update
+   */
+  export type JobsUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the Jobs
+     * 
+    **/
+    select?: JobsSelect | null
+    /**
+     * The data needed to update a Jobs.
+     * 
+    **/
+    data: XOR<JobsUpdateInput, JobsUncheckedUpdateInput>
+    /**
+     * Choose, which Jobs to update.
+     * 
+    **/
+    where: JobsWhereUniqueInput
+  }
+
+
+  /**
+   * Jobs updateMany
+   */
+  export type JobsUpdateManyArgs = {
+    /**
+     * The data used to update Jobs.
+     * 
+    **/
+    data: XOR<JobsUpdateManyMutationInput, JobsUncheckedUpdateManyInput>
+    /**
+     * Filter which Jobs to update
+     * 
+    **/
+    where?: JobsWhereInput
+  }
+
+
+  /**
+   * Jobs upsert
+   */
+  export type JobsUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the Jobs
+     * 
+    **/
+    select?: JobsSelect | null
+    /**
+     * The filter to search for the Jobs to update in case it exists.
+     * 
+    **/
+    where: JobsWhereUniqueInput
+    /**
+     * In case the Jobs found by the `where` argument doesn't exist, create a new Jobs with this data.
+     * 
+    **/
+    create: XOR<JobsCreateInput, JobsUncheckedCreateInput>
+    /**
+     * In case the Jobs was found with the provided `where` argument, update it with this data.
+     * 
+    **/
+    update: XOR<JobsUpdateInput, JobsUncheckedUpdateInput>
+  }
+
+
+  /**
+   * Jobs delete
+   */
+  export type JobsDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the Jobs
+     * 
+    **/
+    select?: JobsSelect | null
+    /**
+     * Filter which Jobs to delete.
+     * 
+    **/
+    where: JobsWhereUniqueInput
+  }
+
+
+  /**
+   * Jobs deleteMany
+   */
+  export type JobsDeleteManyArgs = {
+    /**
+     * Filter which Jobs to delete
+     * 
+    **/
+    where?: JobsWhereInput
+  }
+
+
+  /**
+   * Jobs without action
+   */
+  export type JobsArgs = {
+    /**
+     * Select specific fields to fetch from the Jobs
+     * 
+    **/
+    select?: JobsSelect | null
   }
 
 
@@ -4513,6 +5538,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Model Recipe_ingredients
    */
+
 
   export type AggregateRecipe_ingredients = {
     _count: Recipe_ingredientsCountAggregateOutputType | null
@@ -4525,6 +5551,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing: string | null
     extracted_name: string | null
     embedding: string | null
+    grocery_section: grocery_section | null
     recipe_id: string | null
   }
 
@@ -4533,6 +5560,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing: string | null
     extracted_name: string | null
     embedding: string | null
+    grocery_section: grocery_section | null
     recipe_id: string | null
   }
 
@@ -4541,6 +5569,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing: number
     extracted_name: number
     embedding: number
+    grocery_section: number
     recipe_id: number
     _all: number
   }
@@ -4551,6 +5580,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: true
     extracted_name?: true
     embedding?: true
+    grocery_section?: true
     recipe_id?: true
   }
 
@@ -4559,6 +5589,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: true
     extracted_name?: true
     embedding?: true
+    grocery_section?: true
     recipe_id?: true
   }
 
@@ -4567,38 +5598,44 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: true
     extracted_name?: true
     embedding?: true
+    grocery_section?: true
     recipe_id?: true
     _all?: true
   }
 
-  export type Recipe_ingredientsAggregateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Recipe_ingredientsAggregateArgs = {
     /**
      * Filter which Recipe_ingredients to aggregate.
-     */
+     * 
+    **/
     where?: Recipe_ingredientsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Recipe_ingredients to fetch.
-     */
-    orderBy?: Recipe_ingredientsOrderByWithRelationInput | Recipe_ingredientsOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<Recipe_ingredientsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     */
+     * 
+    **/
     cursor?: Recipe_ingredientsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Recipe_ingredients from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Recipe_ingredients.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -4631,10 +5668,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
 
-  export type Recipe_ingredientsGroupByArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Recipe_ingredientsGroupByArgs = {
     where?: Recipe_ingredientsWhereInput
-    orderBy?: Recipe_ingredientsOrderByWithAggregationInput | Recipe_ingredientsOrderByWithAggregationInput[]
-    by: Recipe_ingredientsScalarFieldEnum[] | Recipe_ingredientsScalarFieldEnum
+    orderBy?: Enumerable<Recipe_ingredientsOrderByWithAggregationInput>
+    by: Array<Recipe_ingredientsScalarFieldEnum>
     having?: Recipe_ingredientsScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -4643,20 +5680,22 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _max?: Recipe_ingredientsMaxAggregateInputType
   }
 
+
   export type Recipe_ingredientsGroupByOutputType = {
     id: string
     listing: string
     extracted_name: string
     embedding: string
+    grocery_section: grocery_section
     recipe_id: string
     _count: Recipe_ingredientsCountAggregateOutputType | null
     _min: Recipe_ingredientsMinAggregateOutputType | null
     _max: Recipe_ingredientsMaxAggregateOutputType | null
   }
 
-  type GetRecipe_ingredientsGroupByPayload<T extends Recipe_ingredientsGroupByArgs> = Prisma.PrismaPromise<
+  type GetRecipe_ingredientsGroupByPayload<T extends Recipe_ingredientsGroupByArgs> = PrismaPromise<
     Array<
-      PickEnumerable<Recipe_ingredientsGroupByOutputType, T['by']> &
+      PickArray<Recipe_ingredientsGroupByOutputType, T['by']> &
         {
           [P in ((keyof T) & (keyof Recipe_ingredientsGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
@@ -4668,59 +5707,53 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     >
 
 
-  export type Recipe_ingredientsSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type Recipe_ingredientsSelect = {
     id?: boolean
     listing?: boolean
     extracted_name?: boolean
     embedding?: boolean
+    grocery_section?: boolean
     recipe_id?: boolean
-    recipes?: boolean | RecipesDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["recipe_ingredients"]>
-
-  export type Recipe_ingredientsSelectScalar = {
-    id?: boolean
-    listing?: boolean
-    extracted_name?: boolean
-    embedding?: boolean
-    recipe_id?: boolean
-  }
-
-  export type Recipe_ingredientsInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    recipes?: boolean | RecipesDefaultArgs<ExtArgs>
+    recipes?: boolean | RecipesArgs
+    shopping_list?: boolean | Recipe_ingredients$shopping_listArgs
+    _count?: boolean | Recipe_ingredientsCountOutputTypeArgs
   }
 
 
-  export type $Recipe_ingredientsPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    name: "Recipe_ingredients"
-    objects: {
-      recipes: Prisma.$RecipesPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetResult<{
-      /**
-       * @zod.string.uuid()
-       */
-      id: string
-      listing: string
-      extracted_name: string
-      embedding: string
-      /**
-       * @zod.string.uuid()
-       */
-      recipe_id: string
-    }, ExtArgs["result"]["recipe_ingredients"]>
-    composites: {}
-  }
+  export type Recipe_ingredientsInclude = {
+    recipes?: boolean | RecipesArgs
+    shopping_list?: boolean | Recipe_ingredients$shopping_listArgs
+    _count?: boolean | Recipe_ingredientsCountOutputTypeArgs
+  } 
+
+  export type Recipe_ingredientsGetPayload<S extends boolean | null | undefined | Recipe_ingredientsArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? Recipe_ingredients :
+    S extends undefined ? never :
+    S extends { include: any } & (Recipe_ingredientsArgs | Recipe_ingredientsFindManyArgs)
+    ? Recipe_ingredients  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'recipes' ? RecipesGetPayload<S['include'][P]> :
+        P extends 'shopping_list' ? Array < Shopping_listGetPayload<S['include'][P]>>  :
+        P extends '_count' ? Recipe_ingredientsCountOutputTypeGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (Recipe_ingredientsArgs | Recipe_ingredientsFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'recipes' ? RecipesGetPayload<S['select'][P]> :
+        P extends 'shopping_list' ? Array < Shopping_listGetPayload<S['select'][P]>>  :
+        P extends '_count' ? Recipe_ingredientsCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Recipe_ingredients ? Recipe_ingredients[P] : never
+  } 
+      : Recipe_ingredients
 
 
-  type Recipe_ingredientsGetPayload<S extends boolean | null | undefined | Recipe_ingredientsDefaultArgs> = $Result.GetResult<Prisma.$Recipe_ingredientsPayload, S>
-
-  type Recipe_ingredientsCountArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = 
+  type Recipe_ingredientsCountArgs = Merge<
     Omit<Recipe_ingredientsFindManyArgs, 'select' | 'include'> & {
       select?: Recipe_ingredientsCountAggregateInputType | true
     }
+  >
 
-  export interface Recipe_ingredientsDelegate<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Recipe_ingredients'], meta: { name: 'Recipe_ingredients' } }
+  export interface Recipe_ingredientsDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
     /**
      * Find zero or one Recipe_ingredients that matches the filter.
      * @param {Recipe_ingredientsFindUniqueArgs} args - Arguments to find a Recipe_ingredients
@@ -4732,9 +5765,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findUnique<T extends Recipe_ingredientsFindUniqueArgs<ExtArgs>>(
-      args: SelectSubset<T, Recipe_ingredientsFindUniqueArgs<ExtArgs>>
-    ): Prisma__Recipe_ingredientsClient<$Result.GetResult<Prisma.$Recipe_ingredientsPayload<ExtArgs>, T, 'findUnique'> | null, null, ExtArgs>
+    findUnique<T extends Recipe_ingredientsFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, Recipe_ingredientsFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Recipe_ingredients'> extends True ? Prisma__Recipe_ingredientsClient<Recipe_ingredientsGetPayload<T>> : Prisma__Recipe_ingredientsClient<Recipe_ingredientsGetPayload<T> | null, null>
 
     /**
      * Find one Recipe_ingredients that matches the filter or throw an error  with `error.code='P2025'` 
@@ -4748,9 +5781,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findUniqueOrThrow<T extends Recipe_ingredientsFindUniqueOrThrowArgs<ExtArgs>>(
-      args?: SelectSubset<T, Recipe_ingredientsFindUniqueOrThrowArgs<ExtArgs>>
-    ): Prisma__Recipe_ingredientsClient<$Result.GetResult<Prisma.$Recipe_ingredientsPayload<ExtArgs>, T, 'findUniqueOrThrow'>, never, ExtArgs>
+    findUniqueOrThrow<T extends Recipe_ingredientsFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, Recipe_ingredientsFindUniqueOrThrowArgs>
+    ): Prisma__Recipe_ingredientsClient<Recipe_ingredientsGetPayload<T>>
 
     /**
      * Find the first Recipe_ingredients that matches the filter.
@@ -4765,13 +5798,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findFirst<T extends Recipe_ingredientsFindFirstArgs<ExtArgs>>(
-      args?: SelectSubset<T, Recipe_ingredientsFindFirstArgs<ExtArgs>>
-    ): Prisma__Recipe_ingredientsClient<$Result.GetResult<Prisma.$Recipe_ingredientsPayload<ExtArgs>, T, 'findFirst'> | null, null, ExtArgs>
+    findFirst<T extends Recipe_ingredientsFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, Recipe_ingredientsFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Recipe_ingredients'> extends True ? Prisma__Recipe_ingredientsClient<Recipe_ingredientsGetPayload<T>> : Prisma__Recipe_ingredientsClient<Recipe_ingredientsGetPayload<T> | null, null>
 
     /**
      * Find the first Recipe_ingredients that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * throw `NotFoundError` if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
      * @param {Recipe_ingredientsFindFirstOrThrowArgs} args - Arguments to find a Recipe_ingredients
@@ -4783,9 +5816,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findFirstOrThrow<T extends Recipe_ingredientsFindFirstOrThrowArgs<ExtArgs>>(
-      args?: SelectSubset<T, Recipe_ingredientsFindFirstOrThrowArgs<ExtArgs>>
-    ): Prisma__Recipe_ingredientsClient<$Result.GetResult<Prisma.$Recipe_ingredientsPayload<ExtArgs>, T, 'findFirstOrThrow'>, never, ExtArgs>
+    findFirstOrThrow<T extends Recipe_ingredientsFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, Recipe_ingredientsFindFirstOrThrowArgs>
+    ): Prisma__Recipe_ingredientsClient<Recipe_ingredientsGetPayload<T>>
 
     /**
      * Find zero or more Recipe_ingredients that matches the filter.
@@ -4803,9 +5836,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * const recipe_ingredientsWithIdOnly = await prisma.recipe_ingredients.findMany({ select: { id: true } })
      * 
     **/
-    findMany<T extends Recipe_ingredientsFindManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, Recipe_ingredientsFindManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Recipe_ingredientsPayload<ExtArgs>, T, 'findMany'>>
+    findMany<T extends Recipe_ingredientsFindManyArgs>(
+      args?: SelectSubset<T, Recipe_ingredientsFindManyArgs>
+    ): PrismaPromise<Array<Recipe_ingredientsGetPayload<T>>>
 
     /**
      * Create a Recipe_ingredients.
@@ -4819,9 +5852,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    create<T extends Recipe_ingredientsCreateArgs<ExtArgs>>(
-      args: SelectSubset<T, Recipe_ingredientsCreateArgs<ExtArgs>>
-    ): Prisma__Recipe_ingredientsClient<$Result.GetResult<Prisma.$Recipe_ingredientsPayload<ExtArgs>, T, 'create'>, never, ExtArgs>
+    create<T extends Recipe_ingredientsCreateArgs>(
+      args: SelectSubset<T, Recipe_ingredientsCreateArgs>
+    ): Prisma__Recipe_ingredientsClient<Recipe_ingredientsGetPayload<T>>
 
     /**
      * Create many Recipe_ingredients.
@@ -4835,9 +5868,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *     })
      *     
     **/
-    createMany<T extends Recipe_ingredientsCreateManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, Recipe_ingredientsCreateManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends Recipe_ingredientsCreateManyArgs>(
+      args?: SelectSubset<T, Recipe_ingredientsCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Delete a Recipe_ingredients.
@@ -4851,9 +5884,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    delete<T extends Recipe_ingredientsDeleteArgs<ExtArgs>>(
-      args: SelectSubset<T, Recipe_ingredientsDeleteArgs<ExtArgs>>
-    ): Prisma__Recipe_ingredientsClient<$Result.GetResult<Prisma.$Recipe_ingredientsPayload<ExtArgs>, T, 'delete'>, never, ExtArgs>
+    delete<T extends Recipe_ingredientsDeleteArgs>(
+      args: SelectSubset<T, Recipe_ingredientsDeleteArgs>
+    ): Prisma__Recipe_ingredientsClient<Recipe_ingredientsGetPayload<T>>
 
     /**
      * Update one Recipe_ingredients.
@@ -4870,9 +5903,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    update<T extends Recipe_ingredientsUpdateArgs<ExtArgs>>(
-      args: SelectSubset<T, Recipe_ingredientsUpdateArgs<ExtArgs>>
-    ): Prisma__Recipe_ingredientsClient<$Result.GetResult<Prisma.$Recipe_ingredientsPayload<ExtArgs>, T, 'update'>, never, ExtArgs>
+    update<T extends Recipe_ingredientsUpdateArgs>(
+      args: SelectSubset<T, Recipe_ingredientsUpdateArgs>
+    ): Prisma__Recipe_ingredientsClient<Recipe_ingredientsGetPayload<T>>
 
     /**
      * Delete zero or more Recipe_ingredients.
@@ -4886,9 +5919,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    deleteMany<T extends Recipe_ingredientsDeleteManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, Recipe_ingredientsDeleteManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends Recipe_ingredientsDeleteManyArgs>(
+      args?: SelectSubset<T, Recipe_ingredientsDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more Recipe_ingredients.
@@ -4907,9 +5940,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    updateMany<T extends Recipe_ingredientsUpdateManyArgs<ExtArgs>>(
-      args: SelectSubset<T, Recipe_ingredientsUpdateManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends Recipe_ingredientsUpdateManyArgs>(
+      args: SelectSubset<T, Recipe_ingredientsUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Create or update one Recipe_ingredients.
@@ -4928,9 +5961,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    upsert<T extends Recipe_ingredientsUpsertArgs<ExtArgs>>(
-      args: SelectSubset<T, Recipe_ingredientsUpsertArgs<ExtArgs>>
-    ): Prisma__Recipe_ingredientsClient<$Result.GetResult<Prisma.$Recipe_ingredientsPayload<ExtArgs>, T, 'upsert'>, never, ExtArgs>
+    upsert<T extends Recipe_ingredientsUpsertArgs>(
+      args: SelectSubset<T, Recipe_ingredientsUpsertArgs>
+    ): Prisma__Recipe_ingredientsClient<Recipe_ingredientsGetPayload<T>>
 
     /**
      * Count the number of Recipe_ingredients.
@@ -4947,8 +5980,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     **/
     count<T extends Recipe_ingredientsCountArgs>(
       args?: Subset<T, Recipe_ingredientsCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
+    ): PrismaPromise<
+      T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
           : GetScalarType<T['select'], Recipe_ingredientsCountAggregateOutputType>
@@ -4979,7 +6012,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   take: 10,
      * })
     **/
-    aggregate<T extends Recipe_ingredientsAggregateArgs>(args: Subset<T, Recipe_ingredientsAggregateArgs>): Prisma.PrismaPromise<GetRecipe_ingredientsAggregateType<T>>
+    aggregate<T extends Recipe_ingredientsAggregateArgs>(args: Subset<T, Recipe_ingredientsAggregateArgs>): PrismaPromise<GetRecipe_ingredientsAggregateType<T>>
 
     /**
      * Group by Recipe_ingredients.
@@ -5009,7 +6042,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
         ? { orderBy: Recipe_ingredientsGroupByArgs['orderBy'] }
         : { orderBy?: Recipe_ingredientsGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByFields extends TupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
       HavingFields extends GetHavingFields<T['having']>,
       HavingValid extends Has<ByFields, HavingFields>,
@@ -5056,11 +6089,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, Recipe_ingredientsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRecipe_ingredientsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Recipe_ingredients model
-   */
-  readonly fields: Recipe_ingredientsFieldRefs;
+    >(args: SubsetIntersection<T, Recipe_ingredientsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRecipe_ingredientsGroupByPayload<T> : PrismaPromise<InputErrors>
+
   }
 
   /**
@@ -5069,244 +6099,303 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__Recipe_ingredientsClient<T, Null = never, ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
+  export class Prisma__Recipe_ingredientsClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    recipes<T extends RecipesDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RecipesDefaultArgs<ExtArgs>>): Prisma__RecipesClient<$Result.GetResult<Prisma.$RecipesPayload<ExtArgs>, T, 'findUniqueOrThrow'> | Null, Null, ExtArgs>;
+    recipes<T extends RecipesArgs= {}>(args?: Subset<T, RecipesArgs>): Prisma__RecipesClient<RecipesGetPayload<T> | Null>;
 
+    shopping_list<T extends Recipe_ingredients$shopping_listArgs= {}>(args?: Subset<T, Recipe_ingredients$shopping_listArgs>): PrismaPromise<Array<Shopping_listGetPayload<T>>| Null>;
+
+    private get _document();
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of which ever callback is executed.
      */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>;
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
     /**
      * Attaches a callback for only the rejection of the Promise.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
      * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
      * @returns A Promise for the completion of the callback.
      */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
   }
 
 
-
-  /**
-   * Fields of the Recipe_ingredients model
-   */ 
-  interface Recipe_ingredientsFieldRefs {
-    readonly id: FieldRef<"Recipe_ingredients", 'String'>
-    readonly listing: FieldRef<"Recipe_ingredients", 'String'>
-    readonly extracted_name: FieldRef<"Recipe_ingredients", 'String'>
-    readonly embedding: FieldRef<"Recipe_ingredients", 'String'>
-    readonly recipe_id: FieldRef<"Recipe_ingredients", 'String'>
-  }
-    
 
   // Custom InputTypes
 
   /**
-   * Recipe_ingredients findUnique
+   * Recipe_ingredients base type for findUnique actions
    */
-  export type Recipe_ingredientsFindUniqueArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Recipe_ingredientsFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the Recipe_ingredients
-     */
-    select?: Recipe_ingredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Recipe_ingredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Recipe_ingredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Recipe_ingredientsInclude | null
     /**
      * Filter, which Recipe_ingredients to fetch.
-     */
+     * 
+    **/
     where: Recipe_ingredientsWhereUniqueInput
   }
 
+  /**
+   * Recipe_ingredients findUnique
+   */
+  export interface Recipe_ingredientsFindUniqueArgs extends Recipe_ingredientsFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
 
   /**
    * Recipe_ingredients findUniqueOrThrow
    */
-  export type Recipe_ingredientsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Recipe_ingredientsFindUniqueOrThrowArgs = {
     /**
      * Select specific fields to fetch from the Recipe_ingredients
-     */
-    select?: Recipe_ingredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Recipe_ingredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Recipe_ingredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Recipe_ingredientsInclude | null
     /**
      * Filter, which Recipe_ingredients to fetch.
-     */
+     * 
+    **/
     where: Recipe_ingredientsWhereUniqueInput
   }
 
 
   /**
-   * Recipe_ingredients findFirst
+   * Recipe_ingredients base type for findFirst actions
    */
-  export type Recipe_ingredientsFindFirstArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Recipe_ingredientsFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the Recipe_ingredients
-     */
-    select?: Recipe_ingredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Recipe_ingredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Recipe_ingredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Recipe_ingredientsInclude | null
     /**
      * Filter, which Recipe_ingredients to fetch.
-     */
+     * 
+    **/
     where?: Recipe_ingredientsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Recipe_ingredients to fetch.
-     */
-    orderBy?: Recipe_ingredientsOrderByWithRelationInput | Recipe_ingredientsOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<Recipe_ingredientsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Recipe_ingredients.
-     */
+     * 
+    **/
     cursor?: Recipe_ingredientsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Recipe_ingredients from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Recipe_ingredients.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Recipe_ingredients.
-     */
-    distinct?: Recipe_ingredientsScalarFieldEnum | Recipe_ingredientsScalarFieldEnum[]
+     * 
+    **/
+    distinct?: Enumerable<Recipe_ingredientsScalarFieldEnum>
   }
 
+  /**
+   * Recipe_ingredients findFirst
+   */
+  export interface Recipe_ingredientsFindFirstArgs extends Recipe_ingredientsFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
 
   /**
    * Recipe_ingredients findFirstOrThrow
    */
-  export type Recipe_ingredientsFindFirstOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Recipe_ingredientsFindFirstOrThrowArgs = {
     /**
      * Select specific fields to fetch from the Recipe_ingredients
-     */
-    select?: Recipe_ingredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Recipe_ingredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Recipe_ingredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Recipe_ingredientsInclude | null
     /**
      * Filter, which Recipe_ingredients to fetch.
-     */
+     * 
+    **/
     where?: Recipe_ingredientsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Recipe_ingredients to fetch.
-     */
-    orderBy?: Recipe_ingredientsOrderByWithRelationInput | Recipe_ingredientsOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<Recipe_ingredientsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Recipe_ingredients.
-     */
+     * 
+    **/
     cursor?: Recipe_ingredientsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Recipe_ingredients from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Recipe_ingredients.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Recipe_ingredients.
-     */
-    distinct?: Recipe_ingredientsScalarFieldEnum | Recipe_ingredientsScalarFieldEnum[]
+     * 
+    **/
+    distinct?: Enumerable<Recipe_ingredientsScalarFieldEnum>
   }
 
 
   /**
    * Recipe_ingredients findMany
    */
-  export type Recipe_ingredientsFindManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Recipe_ingredientsFindManyArgs = {
     /**
      * Select specific fields to fetch from the Recipe_ingredients
-     */
-    select?: Recipe_ingredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Recipe_ingredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Recipe_ingredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Recipe_ingredientsInclude | null
     /**
      * Filter, which Recipe_ingredients to fetch.
-     */
+     * 
+    **/
     where?: Recipe_ingredientsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Recipe_ingredients to fetch.
-     */
-    orderBy?: Recipe_ingredientsOrderByWithRelationInput | Recipe_ingredientsOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<Recipe_ingredientsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing Recipe_ingredients.
-     */
+     * 
+    **/
     cursor?: Recipe_ingredientsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Recipe_ingredients from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Recipe_ingredients.
-     */
+     * 
+    **/
     skip?: number
-    distinct?: Recipe_ingredientsScalarFieldEnum | Recipe_ingredientsScalarFieldEnum[]
+    distinct?: Enumerable<Recipe_ingredientsScalarFieldEnum>
   }
 
 
   /**
    * Recipe_ingredients create
    */
-  export type Recipe_ingredientsCreateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Recipe_ingredientsCreateArgs = {
     /**
      * Select specific fields to fetch from the Recipe_ingredients
-     */
-    select?: Recipe_ingredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Recipe_ingredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Recipe_ingredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Recipe_ingredientsInclude | null
     /**
      * The data needed to create a Recipe_ingredients.
-     */
+     * 
+    **/
     data: XOR<Recipe_ingredientsCreateInput, Recipe_ingredientsUncheckedCreateInput>
   }
 
@@ -5314,11 +6403,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Recipe_ingredients createMany
    */
-  export type Recipe_ingredientsCreateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Recipe_ingredientsCreateManyArgs = {
     /**
      * The data used to create many Recipe_ingredients.
-     */
-    data: Recipe_ingredientsCreateManyInput | Recipe_ingredientsCreateManyInput[]
+     * 
+    **/
+    data: Enumerable<Recipe_ingredientsCreateManyInput>
     skipDuplicates?: boolean
   }
 
@@ -5326,22 +6416,26 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Recipe_ingredients update
    */
-  export type Recipe_ingredientsUpdateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Recipe_ingredientsUpdateArgs = {
     /**
      * Select specific fields to fetch from the Recipe_ingredients
-     */
-    select?: Recipe_ingredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Recipe_ingredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Recipe_ingredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Recipe_ingredientsInclude | null
     /**
      * The data needed to update a Recipe_ingredients.
-     */
+     * 
+    **/
     data: XOR<Recipe_ingredientsUpdateInput, Recipe_ingredientsUncheckedUpdateInput>
     /**
      * Choose, which Recipe_ingredients to update.
-     */
+     * 
+    **/
     where: Recipe_ingredientsWhereUniqueInput
   }
 
@@ -5349,14 +6443,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Recipe_ingredients updateMany
    */
-  export type Recipe_ingredientsUpdateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Recipe_ingredientsUpdateManyArgs = {
     /**
      * The data used to update Recipe_ingredients.
-     */
+     * 
+    **/
     data: XOR<Recipe_ingredientsUpdateManyMutationInput, Recipe_ingredientsUncheckedUpdateManyInput>
     /**
      * Filter which Recipe_ingredients to update
-     */
+     * 
+    **/
     where?: Recipe_ingredientsWhereInput
   }
 
@@ -5364,26 +6460,31 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Recipe_ingredients upsert
    */
-  export type Recipe_ingredientsUpsertArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Recipe_ingredientsUpsertArgs = {
     /**
      * Select specific fields to fetch from the Recipe_ingredients
-     */
-    select?: Recipe_ingredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Recipe_ingredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Recipe_ingredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Recipe_ingredientsInclude | null
     /**
      * The filter to search for the Recipe_ingredients to update in case it exists.
-     */
+     * 
+    **/
     where: Recipe_ingredientsWhereUniqueInput
     /**
      * In case the Recipe_ingredients found by the `where` argument doesn't exist, create a new Recipe_ingredients with this data.
-     */
+     * 
+    **/
     create: XOR<Recipe_ingredientsCreateInput, Recipe_ingredientsUncheckedCreateInput>
     /**
      * In case the Recipe_ingredients was found with the provided `where` argument, update it with this data.
-     */
+     * 
+    **/
     update: XOR<Recipe_ingredientsUpdateInput, Recipe_ingredientsUncheckedUpdateInput>
   }
 
@@ -5391,18 +6492,21 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Recipe_ingredients delete
    */
-  export type Recipe_ingredientsDeleteArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Recipe_ingredientsDeleteArgs = {
     /**
      * Select specific fields to fetch from the Recipe_ingredients
-     */
-    select?: Recipe_ingredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Recipe_ingredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Recipe_ingredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Recipe_ingredientsInclude | null
     /**
      * Filter which Recipe_ingredients to delete.
-     */
+     * 
+    **/
     where: Recipe_ingredientsWhereUniqueInput
   }
 
@@ -5410,26 +6514,52 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Recipe_ingredients deleteMany
    */
-  export type Recipe_ingredientsDeleteManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Recipe_ingredientsDeleteManyArgs = {
     /**
      * Filter which Recipe_ingredients to delete
-     */
+     * 
+    **/
     where?: Recipe_ingredientsWhereInput
+  }
+
+
+  /**
+   * Recipe_ingredients.shopping_list
+   */
+  export type Recipe_ingredients$shopping_listArgs = {
+    /**
+     * Select specific fields to fetch from the Shopping_list
+     * 
+    **/
+    select?: Shopping_listSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: Shopping_listInclude | null
+    where?: Shopping_listWhereInput
+    orderBy?: Enumerable<Shopping_listOrderByWithRelationInput>
+    cursor?: Shopping_listWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<Shopping_listScalarFieldEnum>
   }
 
 
   /**
    * Recipe_ingredients without action
    */
-  export type Recipe_ingredientsDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Recipe_ingredientsArgs = {
     /**
      * Select specific fields to fetch from the Recipe_ingredients
-     */
-    select?: Recipe_ingredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Recipe_ingredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Recipe_ingredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Recipe_ingredientsInclude | null
   }
 
 
@@ -5437,6 +6567,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Model Recipes
    */
+
 
   export type AggregateRecipes = {
     _count: RecipesCountAggregateOutputType | null
@@ -5507,34 +6638,39 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _all?: true
   }
 
-  export type RecipesAggregateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesAggregateArgs = {
     /**
      * Filter which Recipes to aggregate.
-     */
+     * 
+    **/
     where?: RecipesWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Recipes to fetch.
-     */
-    orderBy?: RecipesOrderByWithRelationInput | RecipesOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<RecipesOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     */
+     * 
+    **/
     cursor?: RecipesWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Recipes from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Recipes.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -5567,10 +6703,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
 
-  export type RecipesGroupByArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesGroupByArgs = {
     where?: RecipesWhereInput
-    orderBy?: RecipesOrderByWithAggregationInput | RecipesOrderByWithAggregationInput[]
-    by: RecipesScalarFieldEnum[] | RecipesScalarFieldEnum
+    orderBy?: Enumerable<RecipesOrderByWithAggregationInput>
+    by: Array<RecipesScalarFieldEnum>
     having?: RecipesScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -5578,6 +6714,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _min?: RecipesMinAggregateInputType
     _max?: RecipesMaxAggregateInputType
   }
+
 
   export type RecipesGroupByOutputType = {
     id: string
@@ -5592,9 +6729,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _max: RecipesMaxAggregateOutputType | null
   }
 
-  type GetRecipesGroupByPayload<T extends RecipesGroupByArgs> = Prisma.PrismaPromise<
+  type GetRecipesGroupByPayload<T extends RecipesGroupByArgs> = PrismaPromise<
     Array<
-      PickEnumerable<RecipesGroupByOutputType, T['by']> &
+      PickArray<RecipesGroupByOutputType, T['by']> &
         {
           [P in ((keyof T) & (keyof RecipesGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
@@ -5606,7 +6743,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     >
 
 
-  export type RecipesSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type RecipesSelect = {
     id?: boolean
     name?: boolean
     description?: boolean
@@ -5614,59 +6751,50 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id?: boolean
     created_at?: boolean
     updated_at?: boolean
-    recipe_ingredients?: boolean | Recipes$recipe_ingredientsArgs<ExtArgs>
-    users?: boolean | UsersDefaultArgs<ExtArgs>
-    _count?: boolean | RecipesCountOutputTypeDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["recipes"]>
-
-  export type RecipesSelectScalar = {
-    id?: boolean
-    name?: boolean
-    description?: boolean
-    url?: boolean
-    user_id?: boolean
-    created_at?: boolean
-    updated_at?: boolean
-  }
-
-  export type RecipesInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    recipe_ingredients?: boolean | Recipes$recipe_ingredientsArgs<ExtArgs>
-    users?: boolean | UsersDefaultArgs<ExtArgs>
-    _count?: boolean | RecipesCountOutputTypeDefaultArgs<ExtArgs>
+    recipe_ingredients?: boolean | Recipes$recipe_ingredientsArgs
+    users?: boolean | UsersArgs
+    shopping_list?: boolean | Recipes$shopping_listArgs
+    _count?: boolean | RecipesCountOutputTypeArgs
   }
 
 
-  export type $RecipesPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    name: "Recipes"
-    objects: {
-      recipe_ingredients: Prisma.$Recipe_ingredientsPayload<ExtArgs>[]
-      users: Prisma.$UsersPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetResult<{
-      /**
-       * @zod.string.uuid()
-       */
-      id: string
-      name: string
-      description: string
-      url: string
-      user_id: string
-      created_at: Date
-      updated_at: Date
-    }, ExtArgs["result"]["recipes"]>
-    composites: {}
-  }
+  export type RecipesInclude = {
+    recipe_ingredients?: boolean | Recipes$recipe_ingredientsArgs
+    users?: boolean | UsersArgs
+    shopping_list?: boolean | Recipes$shopping_listArgs
+    _count?: boolean | RecipesCountOutputTypeArgs
+  } 
+
+  export type RecipesGetPayload<S extends boolean | null | undefined | RecipesArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? Recipes :
+    S extends undefined ? never :
+    S extends { include: any } & (RecipesArgs | RecipesFindManyArgs)
+    ? Recipes  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'recipe_ingredients' ? Array < Recipe_ingredientsGetPayload<S['include'][P]>>  :
+        P extends 'users' ? UsersGetPayload<S['include'][P]> :
+        P extends 'shopping_list' ? Array < Shopping_listGetPayload<S['include'][P]>>  :
+        P extends '_count' ? RecipesCountOutputTypeGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (RecipesArgs | RecipesFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'recipe_ingredients' ? Array < Recipe_ingredientsGetPayload<S['select'][P]>>  :
+        P extends 'users' ? UsersGetPayload<S['select'][P]> :
+        P extends 'shopping_list' ? Array < Shopping_listGetPayload<S['select'][P]>>  :
+        P extends '_count' ? RecipesCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Recipes ? Recipes[P] : never
+  } 
+      : Recipes
 
 
-  type RecipesGetPayload<S extends boolean | null | undefined | RecipesDefaultArgs> = $Result.GetResult<Prisma.$RecipesPayload, S>
-
-  type RecipesCountArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = 
+  type RecipesCountArgs = Merge<
     Omit<RecipesFindManyArgs, 'select' | 'include'> & {
       select?: RecipesCountAggregateInputType | true
     }
+  >
 
-  export interface RecipesDelegate<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Recipes'], meta: { name: 'Recipes' } }
+  export interface RecipesDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
     /**
      * Find zero or one Recipes that matches the filter.
      * @param {RecipesFindUniqueArgs} args - Arguments to find a Recipes
@@ -5678,9 +6806,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findUnique<T extends RecipesFindUniqueArgs<ExtArgs>>(
-      args: SelectSubset<T, RecipesFindUniqueArgs<ExtArgs>>
-    ): Prisma__RecipesClient<$Result.GetResult<Prisma.$RecipesPayload<ExtArgs>, T, 'findUnique'> | null, null, ExtArgs>
+    findUnique<T extends RecipesFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, RecipesFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Recipes'> extends True ? Prisma__RecipesClient<RecipesGetPayload<T>> : Prisma__RecipesClient<RecipesGetPayload<T> | null, null>
 
     /**
      * Find one Recipes that matches the filter or throw an error  with `error.code='P2025'` 
@@ -5694,9 +6822,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findUniqueOrThrow<T extends RecipesFindUniqueOrThrowArgs<ExtArgs>>(
-      args?: SelectSubset<T, RecipesFindUniqueOrThrowArgs<ExtArgs>>
-    ): Prisma__RecipesClient<$Result.GetResult<Prisma.$RecipesPayload<ExtArgs>, T, 'findUniqueOrThrow'>, never, ExtArgs>
+    findUniqueOrThrow<T extends RecipesFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, RecipesFindUniqueOrThrowArgs>
+    ): Prisma__RecipesClient<RecipesGetPayload<T>>
 
     /**
      * Find the first Recipes that matches the filter.
@@ -5711,13 +6839,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findFirst<T extends RecipesFindFirstArgs<ExtArgs>>(
-      args?: SelectSubset<T, RecipesFindFirstArgs<ExtArgs>>
-    ): Prisma__RecipesClient<$Result.GetResult<Prisma.$RecipesPayload<ExtArgs>, T, 'findFirst'> | null, null, ExtArgs>
+    findFirst<T extends RecipesFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, RecipesFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Recipes'> extends True ? Prisma__RecipesClient<RecipesGetPayload<T>> : Prisma__RecipesClient<RecipesGetPayload<T> | null, null>
 
     /**
      * Find the first Recipes that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * throw `NotFoundError` if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
      * @param {RecipesFindFirstOrThrowArgs} args - Arguments to find a Recipes
@@ -5729,9 +6857,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findFirstOrThrow<T extends RecipesFindFirstOrThrowArgs<ExtArgs>>(
-      args?: SelectSubset<T, RecipesFindFirstOrThrowArgs<ExtArgs>>
-    ): Prisma__RecipesClient<$Result.GetResult<Prisma.$RecipesPayload<ExtArgs>, T, 'findFirstOrThrow'>, never, ExtArgs>
+    findFirstOrThrow<T extends RecipesFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, RecipesFindFirstOrThrowArgs>
+    ): Prisma__RecipesClient<RecipesGetPayload<T>>
 
     /**
      * Find zero or more Recipes that matches the filter.
@@ -5749,9 +6877,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * const recipesWithIdOnly = await prisma.recipes.findMany({ select: { id: true } })
      * 
     **/
-    findMany<T extends RecipesFindManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, RecipesFindManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecipesPayload<ExtArgs>, T, 'findMany'>>
+    findMany<T extends RecipesFindManyArgs>(
+      args?: SelectSubset<T, RecipesFindManyArgs>
+    ): PrismaPromise<Array<RecipesGetPayload<T>>>
 
     /**
      * Create a Recipes.
@@ -5765,9 +6893,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    create<T extends RecipesCreateArgs<ExtArgs>>(
-      args: SelectSubset<T, RecipesCreateArgs<ExtArgs>>
-    ): Prisma__RecipesClient<$Result.GetResult<Prisma.$RecipesPayload<ExtArgs>, T, 'create'>, never, ExtArgs>
+    create<T extends RecipesCreateArgs>(
+      args: SelectSubset<T, RecipesCreateArgs>
+    ): Prisma__RecipesClient<RecipesGetPayload<T>>
 
     /**
      * Create many Recipes.
@@ -5781,9 +6909,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *     })
      *     
     **/
-    createMany<T extends RecipesCreateManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, RecipesCreateManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends RecipesCreateManyArgs>(
+      args?: SelectSubset<T, RecipesCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Delete a Recipes.
@@ -5797,9 +6925,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    delete<T extends RecipesDeleteArgs<ExtArgs>>(
-      args: SelectSubset<T, RecipesDeleteArgs<ExtArgs>>
-    ): Prisma__RecipesClient<$Result.GetResult<Prisma.$RecipesPayload<ExtArgs>, T, 'delete'>, never, ExtArgs>
+    delete<T extends RecipesDeleteArgs>(
+      args: SelectSubset<T, RecipesDeleteArgs>
+    ): Prisma__RecipesClient<RecipesGetPayload<T>>
 
     /**
      * Update one Recipes.
@@ -5816,9 +6944,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    update<T extends RecipesUpdateArgs<ExtArgs>>(
-      args: SelectSubset<T, RecipesUpdateArgs<ExtArgs>>
-    ): Prisma__RecipesClient<$Result.GetResult<Prisma.$RecipesPayload<ExtArgs>, T, 'update'>, never, ExtArgs>
+    update<T extends RecipesUpdateArgs>(
+      args: SelectSubset<T, RecipesUpdateArgs>
+    ): Prisma__RecipesClient<RecipesGetPayload<T>>
 
     /**
      * Delete zero or more Recipes.
@@ -5832,9 +6960,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    deleteMany<T extends RecipesDeleteManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, RecipesDeleteManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends RecipesDeleteManyArgs>(
+      args?: SelectSubset<T, RecipesDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more Recipes.
@@ -5853,9 +6981,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    updateMany<T extends RecipesUpdateManyArgs<ExtArgs>>(
-      args: SelectSubset<T, RecipesUpdateManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends RecipesUpdateManyArgs>(
+      args: SelectSubset<T, RecipesUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Create or update one Recipes.
@@ -5874,9 +7002,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    upsert<T extends RecipesUpsertArgs<ExtArgs>>(
-      args: SelectSubset<T, RecipesUpsertArgs<ExtArgs>>
-    ): Prisma__RecipesClient<$Result.GetResult<Prisma.$RecipesPayload<ExtArgs>, T, 'upsert'>, never, ExtArgs>
+    upsert<T extends RecipesUpsertArgs>(
+      args: SelectSubset<T, RecipesUpsertArgs>
+    ): Prisma__RecipesClient<RecipesGetPayload<T>>
 
     /**
      * Count the number of Recipes.
@@ -5893,8 +7021,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     **/
     count<T extends RecipesCountArgs>(
       args?: Subset<T, RecipesCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
+    ): PrismaPromise<
+      T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
           : GetScalarType<T['select'], RecipesCountAggregateOutputType>
@@ -5925,7 +7053,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   take: 10,
      * })
     **/
-    aggregate<T extends RecipesAggregateArgs>(args: Subset<T, RecipesAggregateArgs>): Prisma.PrismaPromise<GetRecipesAggregateType<T>>
+    aggregate<T extends RecipesAggregateArgs>(args: Subset<T, RecipesAggregateArgs>): PrismaPromise<GetRecipesAggregateType<T>>
 
     /**
      * Group by Recipes.
@@ -5955,7 +7083,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
         ? { orderBy: RecipesGroupByArgs['orderBy'] }
         : { orderBy?: RecipesGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByFields extends TupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
       HavingFields extends GetHavingFields<T['having']>,
       HavingValid extends Has<ByFields, HavingFields>,
@@ -6002,11 +7130,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, RecipesGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRecipesGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Recipes model
-   */
-  readonly fields: RecipesFieldRefs;
+    >(args: SubsetIntersection<T, RecipesGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRecipesGroupByPayload<T> : PrismaPromise<InputErrors>
+
   }
 
   /**
@@ -6015,248 +7140,305 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__RecipesClient<T, Null = never, ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
+  export class Prisma__RecipesClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    recipe_ingredients<T extends Recipes$recipe_ingredientsArgs<ExtArgs> = {}>(args?: Subset<T, Recipes$recipe_ingredientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Recipe_ingredientsPayload<ExtArgs>, T, 'findMany'> | Null>;
+    recipe_ingredients<T extends Recipes$recipe_ingredientsArgs= {}>(args?: Subset<T, Recipes$recipe_ingredientsArgs>): PrismaPromise<Array<Recipe_ingredientsGetPayload<T>>| Null>;
 
-    users<T extends UsersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UsersDefaultArgs<ExtArgs>>): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'findUniqueOrThrow'> | Null, Null, ExtArgs>;
+    users<T extends UsersArgs= {}>(args?: Subset<T, UsersArgs>): Prisma__UsersClient<UsersGetPayload<T> | Null>;
 
+    shopping_list<T extends Recipes$shopping_listArgs= {}>(args?: Subset<T, Recipes$shopping_listArgs>): PrismaPromise<Array<Shopping_listGetPayload<T>>| Null>;
+
+    private get _document();
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of which ever callback is executed.
      */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>;
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
     /**
      * Attaches a callback for only the rejection of the Promise.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
      * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
      * @returns A Promise for the completion of the callback.
      */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
   }
 
 
-
-  /**
-   * Fields of the Recipes model
-   */ 
-  interface RecipesFieldRefs {
-    readonly id: FieldRef<"Recipes", 'String'>
-    readonly name: FieldRef<"Recipes", 'String'>
-    readonly description: FieldRef<"Recipes", 'String'>
-    readonly url: FieldRef<"Recipes", 'String'>
-    readonly user_id: FieldRef<"Recipes", 'String'>
-    readonly created_at: FieldRef<"Recipes", 'DateTime'>
-    readonly updated_at: FieldRef<"Recipes", 'DateTime'>
-  }
-    
 
   // Custom InputTypes
 
   /**
-   * Recipes findUnique
+   * Recipes base type for findUnique actions
    */
-  export type RecipesFindUniqueArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the Recipes
-     */
-    select?: RecipesSelect<ExtArgs> | null
+     * 
+    **/
+    select?: RecipesSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: RecipesInclude<ExtArgs> | null
+     * 
+    **/
+    include?: RecipesInclude | null
     /**
      * Filter, which Recipes to fetch.
-     */
+     * 
+    **/
     where: RecipesWhereUniqueInput
   }
 
+  /**
+   * Recipes findUnique
+   */
+  export interface RecipesFindUniqueArgs extends RecipesFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
 
   /**
    * Recipes findUniqueOrThrow
    */
-  export type RecipesFindUniqueOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesFindUniqueOrThrowArgs = {
     /**
      * Select specific fields to fetch from the Recipes
-     */
-    select?: RecipesSelect<ExtArgs> | null
+     * 
+    **/
+    select?: RecipesSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: RecipesInclude<ExtArgs> | null
+     * 
+    **/
+    include?: RecipesInclude | null
     /**
      * Filter, which Recipes to fetch.
-     */
+     * 
+    **/
     where: RecipesWhereUniqueInput
   }
 
 
   /**
-   * Recipes findFirst
+   * Recipes base type for findFirst actions
    */
-  export type RecipesFindFirstArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the Recipes
-     */
-    select?: RecipesSelect<ExtArgs> | null
+     * 
+    **/
+    select?: RecipesSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: RecipesInclude<ExtArgs> | null
+     * 
+    **/
+    include?: RecipesInclude | null
     /**
      * Filter, which Recipes to fetch.
-     */
+     * 
+    **/
     where?: RecipesWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Recipes to fetch.
-     */
-    orderBy?: RecipesOrderByWithRelationInput | RecipesOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<RecipesOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Recipes.
-     */
+     * 
+    **/
     cursor?: RecipesWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Recipes from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Recipes.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Recipes.
-     */
-    distinct?: RecipesScalarFieldEnum | RecipesScalarFieldEnum[]
+     * 
+    **/
+    distinct?: Enumerable<RecipesScalarFieldEnum>
   }
 
+  /**
+   * Recipes findFirst
+   */
+  export interface RecipesFindFirstArgs extends RecipesFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
 
   /**
    * Recipes findFirstOrThrow
    */
-  export type RecipesFindFirstOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesFindFirstOrThrowArgs = {
     /**
      * Select specific fields to fetch from the Recipes
-     */
-    select?: RecipesSelect<ExtArgs> | null
+     * 
+    **/
+    select?: RecipesSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: RecipesInclude<ExtArgs> | null
+     * 
+    **/
+    include?: RecipesInclude | null
     /**
      * Filter, which Recipes to fetch.
-     */
+     * 
+    **/
     where?: RecipesWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Recipes to fetch.
-     */
-    orderBy?: RecipesOrderByWithRelationInput | RecipesOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<RecipesOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Recipes.
-     */
+     * 
+    **/
     cursor?: RecipesWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Recipes from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Recipes.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Recipes.
-     */
-    distinct?: RecipesScalarFieldEnum | RecipesScalarFieldEnum[]
+     * 
+    **/
+    distinct?: Enumerable<RecipesScalarFieldEnum>
   }
 
 
   /**
    * Recipes findMany
    */
-  export type RecipesFindManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesFindManyArgs = {
     /**
      * Select specific fields to fetch from the Recipes
-     */
-    select?: RecipesSelect<ExtArgs> | null
+     * 
+    **/
+    select?: RecipesSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: RecipesInclude<ExtArgs> | null
+     * 
+    **/
+    include?: RecipesInclude | null
     /**
      * Filter, which Recipes to fetch.
-     */
+     * 
+    **/
     where?: RecipesWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Recipes to fetch.
-     */
-    orderBy?: RecipesOrderByWithRelationInput | RecipesOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<RecipesOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing Recipes.
-     */
+     * 
+    **/
     cursor?: RecipesWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Recipes from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Recipes.
-     */
+     * 
+    **/
     skip?: number
-    distinct?: RecipesScalarFieldEnum | RecipesScalarFieldEnum[]
+    distinct?: Enumerable<RecipesScalarFieldEnum>
   }
 
 
   /**
    * Recipes create
    */
-  export type RecipesCreateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesCreateArgs = {
     /**
      * Select specific fields to fetch from the Recipes
-     */
-    select?: RecipesSelect<ExtArgs> | null
+     * 
+    **/
+    select?: RecipesSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: RecipesInclude<ExtArgs> | null
+     * 
+    **/
+    include?: RecipesInclude | null
     /**
      * The data needed to create a Recipes.
-     */
+     * 
+    **/
     data: XOR<RecipesCreateInput, RecipesUncheckedCreateInput>
   }
 
@@ -6264,11 +7446,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Recipes createMany
    */
-  export type RecipesCreateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesCreateManyArgs = {
     /**
      * The data used to create many Recipes.
-     */
-    data: RecipesCreateManyInput | RecipesCreateManyInput[]
+     * 
+    **/
+    data: Enumerable<RecipesCreateManyInput>
     skipDuplicates?: boolean
   }
 
@@ -6276,22 +7459,26 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Recipes update
    */
-  export type RecipesUpdateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesUpdateArgs = {
     /**
      * Select specific fields to fetch from the Recipes
-     */
-    select?: RecipesSelect<ExtArgs> | null
+     * 
+    **/
+    select?: RecipesSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: RecipesInclude<ExtArgs> | null
+     * 
+    **/
+    include?: RecipesInclude | null
     /**
      * The data needed to update a Recipes.
-     */
+     * 
+    **/
     data: XOR<RecipesUpdateInput, RecipesUncheckedUpdateInput>
     /**
      * Choose, which Recipes to update.
-     */
+     * 
+    **/
     where: RecipesWhereUniqueInput
   }
 
@@ -6299,14 +7486,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Recipes updateMany
    */
-  export type RecipesUpdateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesUpdateManyArgs = {
     /**
      * The data used to update Recipes.
-     */
+     * 
+    **/
     data: XOR<RecipesUpdateManyMutationInput, RecipesUncheckedUpdateManyInput>
     /**
      * Filter which Recipes to update
-     */
+     * 
+    **/
     where?: RecipesWhereInput
   }
 
@@ -6314,26 +7503,31 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Recipes upsert
    */
-  export type RecipesUpsertArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesUpsertArgs = {
     /**
      * Select specific fields to fetch from the Recipes
-     */
-    select?: RecipesSelect<ExtArgs> | null
+     * 
+    **/
+    select?: RecipesSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: RecipesInclude<ExtArgs> | null
+     * 
+    **/
+    include?: RecipesInclude | null
     /**
      * The filter to search for the Recipes to update in case it exists.
-     */
+     * 
+    **/
     where: RecipesWhereUniqueInput
     /**
      * In case the Recipes found by the `where` argument doesn't exist, create a new Recipes with this data.
-     */
+     * 
+    **/
     create: XOR<RecipesCreateInput, RecipesUncheckedCreateInput>
     /**
      * In case the Recipes was found with the provided `where` argument, update it with this data.
-     */
+     * 
+    **/
     update: XOR<RecipesUpdateInput, RecipesUncheckedUpdateInput>
   }
 
@@ -6341,18 +7535,21 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Recipes delete
    */
-  export type RecipesDeleteArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesDeleteArgs = {
     /**
      * Select specific fields to fetch from the Recipes
-     */
-    select?: RecipesSelect<ExtArgs> | null
+     * 
+    **/
+    select?: RecipesSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: RecipesInclude<ExtArgs> | null
+     * 
+    **/
+    include?: RecipesInclude | null
     /**
      * Filter which Recipes to delete.
-     */
+     * 
+    **/
     where: RecipesWhereUniqueInput
   }
 
@@ -6360,10 +7557,11 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Recipes deleteMany
    */
-  export type RecipesDeleteManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesDeleteManyArgs = {
     /**
      * Filter which Recipes to delete
-     */
+     * 
+    **/
     where?: RecipesWhereInput
   }
 
@@ -6371,36 +7569,1057 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Recipes.recipe_ingredients
    */
-  export type Recipes$recipe_ingredientsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Recipes$recipe_ingredientsArgs = {
     /**
      * Select specific fields to fetch from the Recipe_ingredients
-     */
-    select?: Recipe_ingredientsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Recipe_ingredientsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Recipe_ingredientsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Recipe_ingredientsInclude | null
     where?: Recipe_ingredientsWhereInput
-    orderBy?: Recipe_ingredientsOrderByWithRelationInput | Recipe_ingredientsOrderByWithRelationInput[]
+    orderBy?: Enumerable<Recipe_ingredientsOrderByWithRelationInput>
     cursor?: Recipe_ingredientsWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: Recipe_ingredientsScalarFieldEnum | Recipe_ingredientsScalarFieldEnum[]
+    distinct?: Enumerable<Recipe_ingredientsScalarFieldEnum>
+  }
+
+
+  /**
+   * Recipes.shopping_list
+   */
+  export type Recipes$shopping_listArgs = {
+    /**
+     * Select specific fields to fetch from the Shopping_list
+     * 
+    **/
+    select?: Shopping_listSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: Shopping_listInclude | null
+    where?: Shopping_listWhereInput
+    orderBy?: Enumerable<Shopping_listOrderByWithRelationInput>
+    cursor?: Shopping_listWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<Shopping_listScalarFieldEnum>
   }
 
 
   /**
    * Recipes without action
    */
-  export type RecipesDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type RecipesArgs = {
     /**
      * Select specific fields to fetch from the Recipes
-     */
-    select?: RecipesSelect<ExtArgs> | null
+     * 
+    **/
+    select?: RecipesSelect | null
     /**
      * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: RecipesInclude | null
+  }
+
+
+
+  /**
+   * Model Shopping_list
+   */
+
+
+  export type AggregateShopping_list = {
+    _count: Shopping_listCountAggregateOutputType | null
+    _min: Shopping_listMinAggregateOutputType | null
+    _max: Shopping_listMaxAggregateOutputType | null
+  }
+
+  export type Shopping_listMinAggregateOutputType = {
+    id: string | null
+    recipe_id: string | null
+    recipe_ingredient_id: string | null
+    purchased: boolean | null
+    created_at: Date | null
+  }
+
+  export type Shopping_listMaxAggregateOutputType = {
+    id: string | null
+    recipe_id: string | null
+    recipe_ingredient_id: string | null
+    purchased: boolean | null
+    created_at: Date | null
+  }
+
+  export type Shopping_listCountAggregateOutputType = {
+    id: number
+    recipe_id: number
+    recipe_ingredient_id: number
+    purchased: number
+    created_at: number
+    _all: number
+  }
+
+
+  export type Shopping_listMinAggregateInputType = {
+    id?: true
+    recipe_id?: true
+    recipe_ingredient_id?: true
+    purchased?: true
+    created_at?: true
+  }
+
+  export type Shopping_listMaxAggregateInputType = {
+    id?: true
+    recipe_id?: true
+    recipe_ingredient_id?: true
+    purchased?: true
+    created_at?: true
+  }
+
+  export type Shopping_listCountAggregateInputType = {
+    id?: true
+    recipe_id?: true
+    recipe_ingredient_id?: true
+    purchased?: true
+    created_at?: true
+    _all?: true
+  }
+
+  export type Shopping_listAggregateArgs = {
+    /**
+     * Filter which Shopping_list to aggregate.
+     * 
+    **/
+    where?: Shopping_listWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Shopping_lists to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<Shopping_listOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     * 
+    **/
+    cursor?: Shopping_listWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Shopping_lists from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Shopping_lists.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Shopping_lists
+    **/
+    _count?: true | Shopping_listCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Shopping_listMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Shopping_listMaxAggregateInputType
+  }
+
+  export type GetShopping_listAggregateType<T extends Shopping_listAggregateArgs> = {
+        [P in keyof T & keyof AggregateShopping_list]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateShopping_list[P]>
+      : GetScalarType<T[P], AggregateShopping_list[P]>
+  }
+
+
+
+
+  export type Shopping_listGroupByArgs = {
+    where?: Shopping_listWhereInput
+    orderBy?: Enumerable<Shopping_listOrderByWithAggregationInput>
+    by: Array<Shopping_listScalarFieldEnum>
+    having?: Shopping_listScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Shopping_listCountAggregateInputType | true
+    _min?: Shopping_listMinAggregateInputType
+    _max?: Shopping_listMaxAggregateInputType
+  }
+
+
+  export type Shopping_listGroupByOutputType = {
+    id: string
+    recipe_id: string
+    recipe_ingredient_id: string
+    purchased: boolean
+    created_at: Date
+    _count: Shopping_listCountAggregateOutputType | null
+    _min: Shopping_listMinAggregateOutputType | null
+    _max: Shopping_listMaxAggregateOutputType | null
+  }
+
+  type GetShopping_listGroupByPayload<T extends Shopping_listGroupByArgs> = PrismaPromise<
+    Array<
+      PickArray<Shopping_listGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Shopping_listGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Shopping_listGroupByOutputType[P]>
+            : GetScalarType<T[P], Shopping_listGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type Shopping_listSelect = {
+    id?: boolean
+    recipe_id?: boolean
+    recipe_ingredient_id?: boolean
+    purchased?: boolean
+    created_at?: boolean
+    recipes?: boolean | RecipesArgs
+    recipe_ingredients?: boolean | Recipe_ingredientsArgs
+  }
+
+
+  export type Shopping_listInclude = {
+    recipes?: boolean | RecipesArgs
+    recipe_ingredients?: boolean | Recipe_ingredientsArgs
+  } 
+
+  export type Shopping_listGetPayload<S extends boolean | null | undefined | Shopping_listArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? Shopping_list :
+    S extends undefined ? never :
+    S extends { include: any } & (Shopping_listArgs | Shopping_listFindManyArgs)
+    ? Shopping_list  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'recipes' ? RecipesGetPayload<S['include'][P]> :
+        P extends 'recipe_ingredients' ? Recipe_ingredientsGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (Shopping_listArgs | Shopping_listFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'recipes' ? RecipesGetPayload<S['select'][P]> :
+        P extends 'recipe_ingredients' ? Recipe_ingredientsGetPayload<S['select'][P]> :  P extends keyof Shopping_list ? Shopping_list[P] : never
+  } 
+      : Shopping_list
+
+
+  type Shopping_listCountArgs = Merge<
+    Omit<Shopping_listFindManyArgs, 'select' | 'include'> & {
+      select?: Shopping_listCountAggregateInputType | true
+    }
+  >
+
+  export interface Shopping_listDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+    /**
+     * Find zero or one Shopping_list that matches the filter.
+     * @param {Shopping_listFindUniqueArgs} args - Arguments to find a Shopping_list
+     * @example
+     * // Get one Shopping_list
+     * const shopping_list = await prisma.shopping_list.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends Shopping_listFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, Shopping_listFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Shopping_list'> extends True ? Prisma__Shopping_listClient<Shopping_listGetPayload<T>> : Prisma__Shopping_listClient<Shopping_listGetPayload<T> | null, null>
+
+    /**
+     * Find one Shopping_list that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {Shopping_listFindUniqueOrThrowArgs} args - Arguments to find a Shopping_list
+     * @example
+     * // Get one Shopping_list
+     * const shopping_list = await prisma.shopping_list.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends Shopping_listFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, Shopping_listFindUniqueOrThrowArgs>
+    ): Prisma__Shopping_listClient<Shopping_listGetPayload<T>>
+
+    /**
+     * Find the first Shopping_list that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Shopping_listFindFirstArgs} args - Arguments to find a Shopping_list
+     * @example
+     * // Get one Shopping_list
+     * const shopping_list = await prisma.shopping_list.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends Shopping_listFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, Shopping_listFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Shopping_list'> extends True ? Prisma__Shopping_listClient<Shopping_listGetPayload<T>> : Prisma__Shopping_listClient<Shopping_listGetPayload<T> | null, null>
+
+    /**
+     * Find the first Shopping_list that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Shopping_listFindFirstOrThrowArgs} args - Arguments to find a Shopping_list
+     * @example
+     * // Get one Shopping_list
+     * const shopping_list = await prisma.shopping_list.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends Shopping_listFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, Shopping_listFindFirstOrThrowArgs>
+    ): Prisma__Shopping_listClient<Shopping_listGetPayload<T>>
+
+    /**
+     * Find zero or more Shopping_lists that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Shopping_listFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Shopping_lists
+     * const shopping_lists = await prisma.shopping_list.findMany()
+     * 
+     * // Get first 10 Shopping_lists
+     * const shopping_lists = await prisma.shopping_list.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const shopping_listWithIdOnly = await prisma.shopping_list.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends Shopping_listFindManyArgs>(
+      args?: SelectSubset<T, Shopping_listFindManyArgs>
+    ): PrismaPromise<Array<Shopping_listGetPayload<T>>>
+
+    /**
+     * Create a Shopping_list.
+     * @param {Shopping_listCreateArgs} args - Arguments to create a Shopping_list.
+     * @example
+     * // Create one Shopping_list
+     * const Shopping_list = await prisma.shopping_list.create({
+     *   data: {
+     *     // ... data to create a Shopping_list
+     *   }
+     * })
+     * 
+    **/
+    create<T extends Shopping_listCreateArgs>(
+      args: SelectSubset<T, Shopping_listCreateArgs>
+    ): Prisma__Shopping_listClient<Shopping_listGetPayload<T>>
+
+    /**
+     * Create many Shopping_lists.
+     *     @param {Shopping_listCreateManyArgs} args - Arguments to create many Shopping_lists.
+     *     @example
+     *     // Create many Shopping_lists
+     *     const shopping_list = await prisma.shopping_list.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends Shopping_listCreateManyArgs>(
+      args?: SelectSubset<T, Shopping_listCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Shopping_list.
+     * @param {Shopping_listDeleteArgs} args - Arguments to delete one Shopping_list.
+     * @example
+     * // Delete one Shopping_list
+     * const Shopping_list = await prisma.shopping_list.delete({
+     *   where: {
+     *     // ... filter to delete one Shopping_list
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends Shopping_listDeleteArgs>(
+      args: SelectSubset<T, Shopping_listDeleteArgs>
+    ): Prisma__Shopping_listClient<Shopping_listGetPayload<T>>
+
+    /**
+     * Update one Shopping_list.
+     * @param {Shopping_listUpdateArgs} args - Arguments to update one Shopping_list.
+     * @example
+     * // Update one Shopping_list
+     * const shopping_list = await prisma.shopping_list.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends Shopping_listUpdateArgs>(
+      args: SelectSubset<T, Shopping_listUpdateArgs>
+    ): Prisma__Shopping_listClient<Shopping_listGetPayload<T>>
+
+    /**
+     * Delete zero or more Shopping_lists.
+     * @param {Shopping_listDeleteManyArgs} args - Arguments to filter Shopping_lists to delete.
+     * @example
+     * // Delete a few Shopping_lists
+     * const { count } = await prisma.shopping_list.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends Shopping_listDeleteManyArgs>(
+      args?: SelectSubset<T, Shopping_listDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Shopping_lists.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Shopping_listUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Shopping_lists
+     * const shopping_list = await prisma.shopping_list.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends Shopping_listUpdateManyArgs>(
+      args: SelectSubset<T, Shopping_listUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Shopping_list.
+     * @param {Shopping_listUpsertArgs} args - Arguments to update or create a Shopping_list.
+     * @example
+     * // Update or create a Shopping_list
+     * const shopping_list = await prisma.shopping_list.upsert({
+     *   create: {
+     *     // ... data to create a Shopping_list
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Shopping_list we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends Shopping_listUpsertArgs>(
+      args: SelectSubset<T, Shopping_listUpsertArgs>
+    ): Prisma__Shopping_listClient<Shopping_listGetPayload<T>>
+
+    /**
+     * Count the number of Shopping_lists.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Shopping_listCountArgs} args - Arguments to filter Shopping_lists to count.
+     * @example
+     * // Count the number of Shopping_lists
+     * const count = await prisma.shopping_list.count({
+     *   where: {
+     *     // ... the filter for the Shopping_lists we want to count
+     *   }
+     * })
+    **/
+    count<T extends Shopping_listCountArgs>(
+      args?: Subset<T, Shopping_listCountArgs>,
+    ): PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Shopping_listCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Shopping_list.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Shopping_listAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Shopping_listAggregateArgs>(args: Subset<T, Shopping_listAggregateArgs>): PrismaPromise<GetShopping_listAggregateType<T>>
+
+    /**
+     * Group by Shopping_list.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Shopping_listGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends Shopping_listGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: Shopping_listGroupByArgs['orderBy'] }
+        : { orderBy?: Shopping_listGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, Shopping_listGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetShopping_listGroupByPayload<T> : PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Shopping_list.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__Shopping_listClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+
+    recipes<T extends RecipesArgs= {}>(args?: Subset<T, RecipesArgs>): Prisma__RecipesClient<RecipesGetPayload<T> | Null>;
+
+    recipe_ingredients<T extends Recipe_ingredientsArgs= {}>(args?: Subset<T, Recipe_ingredientsArgs>): Prisma__Recipe_ingredientsClient<Recipe_ingredientsGetPayload<T> | Null>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
      */
-    include?: RecipesInclude<ExtArgs> | null
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * Shopping_list base type for findUnique actions
+   */
+  export type Shopping_listFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the Shopping_list
+     * 
+    **/
+    select?: Shopping_listSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: Shopping_listInclude | null
+    /**
+     * Filter, which Shopping_list to fetch.
+     * 
+    **/
+    where: Shopping_listWhereUniqueInput
+  }
+
+  /**
+   * Shopping_list findUnique
+   */
+  export interface Shopping_listFindUniqueArgs extends Shopping_listFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * Shopping_list findUniqueOrThrow
+   */
+  export type Shopping_listFindUniqueOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the Shopping_list
+     * 
+    **/
+    select?: Shopping_listSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: Shopping_listInclude | null
+    /**
+     * Filter, which Shopping_list to fetch.
+     * 
+    **/
+    where: Shopping_listWhereUniqueInput
+  }
+
+
+  /**
+   * Shopping_list base type for findFirst actions
+   */
+  export type Shopping_listFindFirstArgsBase = {
+    /**
+     * Select specific fields to fetch from the Shopping_list
+     * 
+    **/
+    select?: Shopping_listSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: Shopping_listInclude | null
+    /**
+     * Filter, which Shopping_list to fetch.
+     * 
+    **/
+    where?: Shopping_listWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Shopping_lists to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<Shopping_listOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Shopping_lists.
+     * 
+    **/
+    cursor?: Shopping_listWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Shopping_lists from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Shopping_lists.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Shopping_lists.
+     * 
+    **/
+    distinct?: Enumerable<Shopping_listScalarFieldEnum>
+  }
+
+  /**
+   * Shopping_list findFirst
+   */
+  export interface Shopping_listFindFirstArgs extends Shopping_listFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * Shopping_list findFirstOrThrow
+   */
+  export type Shopping_listFindFirstOrThrowArgs = {
+    /**
+     * Select specific fields to fetch from the Shopping_list
+     * 
+    **/
+    select?: Shopping_listSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: Shopping_listInclude | null
+    /**
+     * Filter, which Shopping_list to fetch.
+     * 
+    **/
+    where?: Shopping_listWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Shopping_lists to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<Shopping_listOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Shopping_lists.
+     * 
+    **/
+    cursor?: Shopping_listWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Shopping_lists from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Shopping_lists.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Shopping_lists.
+     * 
+    **/
+    distinct?: Enumerable<Shopping_listScalarFieldEnum>
+  }
+
+
+  /**
+   * Shopping_list findMany
+   */
+  export type Shopping_listFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the Shopping_list
+     * 
+    **/
+    select?: Shopping_listSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: Shopping_listInclude | null
+    /**
+     * Filter, which Shopping_lists to fetch.
+     * 
+    **/
+    where?: Shopping_listWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Shopping_lists to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<Shopping_listOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Shopping_lists.
+     * 
+    **/
+    cursor?: Shopping_listWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Shopping_lists from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Shopping_lists.
+     * 
+    **/
+    skip?: number
+    distinct?: Enumerable<Shopping_listScalarFieldEnum>
+  }
+
+
+  /**
+   * Shopping_list create
+   */
+  export type Shopping_listCreateArgs = {
+    /**
+     * Select specific fields to fetch from the Shopping_list
+     * 
+    **/
+    select?: Shopping_listSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: Shopping_listInclude | null
+    /**
+     * The data needed to create a Shopping_list.
+     * 
+    **/
+    data: XOR<Shopping_listCreateInput, Shopping_listUncheckedCreateInput>
+  }
+
+
+  /**
+   * Shopping_list createMany
+   */
+  export type Shopping_listCreateManyArgs = {
+    /**
+     * The data used to create many Shopping_lists.
+     * 
+    **/
+    data: Enumerable<Shopping_listCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * Shopping_list update
+   */
+  export type Shopping_listUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the Shopping_list
+     * 
+    **/
+    select?: Shopping_listSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: Shopping_listInclude | null
+    /**
+     * The data needed to update a Shopping_list.
+     * 
+    **/
+    data: XOR<Shopping_listUpdateInput, Shopping_listUncheckedUpdateInput>
+    /**
+     * Choose, which Shopping_list to update.
+     * 
+    **/
+    where: Shopping_listWhereUniqueInput
+  }
+
+
+  /**
+   * Shopping_list updateMany
+   */
+  export type Shopping_listUpdateManyArgs = {
+    /**
+     * The data used to update Shopping_lists.
+     * 
+    **/
+    data: XOR<Shopping_listUpdateManyMutationInput, Shopping_listUncheckedUpdateManyInput>
+    /**
+     * Filter which Shopping_lists to update
+     * 
+    **/
+    where?: Shopping_listWhereInput
+  }
+
+
+  /**
+   * Shopping_list upsert
+   */
+  export type Shopping_listUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the Shopping_list
+     * 
+    **/
+    select?: Shopping_listSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: Shopping_listInclude | null
+    /**
+     * The filter to search for the Shopping_list to update in case it exists.
+     * 
+    **/
+    where: Shopping_listWhereUniqueInput
+    /**
+     * In case the Shopping_list found by the `where` argument doesn't exist, create a new Shopping_list with this data.
+     * 
+    **/
+    create: XOR<Shopping_listCreateInput, Shopping_listUncheckedCreateInput>
+    /**
+     * In case the Shopping_list was found with the provided `where` argument, update it with this data.
+     * 
+    **/
+    update: XOR<Shopping_listUpdateInput, Shopping_listUncheckedUpdateInput>
+  }
+
+
+  /**
+   * Shopping_list delete
+   */
+  export type Shopping_listDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the Shopping_list
+     * 
+    **/
+    select?: Shopping_listSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: Shopping_listInclude | null
+    /**
+     * Filter which Shopping_list to delete.
+     * 
+    **/
+    where: Shopping_listWhereUniqueInput
+  }
+
+
+  /**
+   * Shopping_list deleteMany
+   */
+  export type Shopping_listDeleteManyArgs = {
+    /**
+     * Filter which Shopping_lists to delete
+     * 
+    **/
+    where?: Shopping_listWhereInput
+  }
+
+
+  /**
+   * Shopping_list without action
+   */
+  export type Shopping_listArgs = {
+    /**
+     * Select specific fields to fetch from the Shopping_list
+     * 
+    **/
+    select?: Shopping_listSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: Shopping_listInclude | null
   }
 
 
@@ -6408,6 +8627,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Model Users
    */
+
 
   export type AggregateUsers = {
     _count: UsersCountAggregateOutputType | null
@@ -6454,34 +8674,39 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _all?: true
   }
 
-  export type UsersAggregateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersAggregateArgs = {
     /**
      * Filter which Users to aggregate.
-     */
+     * 
+    **/
     where?: UsersWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Users to fetch.
-     */
-    orderBy?: UsersOrderByWithRelationInput | UsersOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<UsersOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     */
+     * 
+    **/
     cursor?: UsersWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Users from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Users.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -6514,10 +8739,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
 
-  export type UsersGroupByArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersGroupByArgs = {
     where?: UsersWhereInput
-    orderBy?: UsersOrderByWithAggregationInput | UsersOrderByWithAggregationInput[]
-    by: UsersScalarFieldEnum[] | UsersScalarFieldEnum
+    orderBy?: Enumerable<UsersOrderByWithAggregationInput>
+    by: Array<UsersScalarFieldEnum>
     having?: UsersScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -6525,6 +8750,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _min?: UsersMinAggregateInputType
     _max?: UsersMaxAggregateInputType
   }
+
 
   export type UsersGroupByOutputType = {
     id: string
@@ -6535,9 +8761,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _max: UsersMaxAggregateOutputType | null
   }
 
-  type GetUsersGroupByPayload<T extends UsersGroupByArgs> = Prisma.PrismaPromise<
+  type GetUsersGroupByPayload<T extends UsersGroupByArgs> = PrismaPromise<
     Array<
-      PickEnumerable<UsersGroupByOutputType, T['by']> &
+      PickArray<UsersGroupByOutputType, T['by']> &
         {
           [P in ((keyof T) & (keyof UsersGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
@@ -6549,55 +8775,54 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     >
 
 
-  export type UsersSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type UsersSelect = {
     id?: boolean
     name?: boolean
     avatar_url?: boolean
-    ingredient_events?: boolean | Users$ingredient_eventsArgs<ExtArgs>
-    ingredients_photo_uploads?: boolean | Users$ingredients_photo_uploadsArgs<ExtArgs>
-    recipes?: boolean | Users$recipesArgs<ExtArgs>
-    _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["users"]>
-
-  export type UsersSelectScalar = {
-    id?: boolean
-    name?: boolean
-    avatar_url?: boolean
-  }
-
-  export type UsersInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    ingredient_events?: boolean | Users$ingredient_eventsArgs<ExtArgs>
-    ingredients_photo_uploads?: boolean | Users$ingredients_photo_uploadsArgs<ExtArgs>
-    recipes?: boolean | Users$recipesArgs<ExtArgs>
-    _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
+    ingredient_events?: boolean | Users$ingredient_eventsArgs
+    ingredients_photo_uploads?: boolean | Users$ingredients_photo_uploadsArgs
+    recipes?: boolean | Users$recipesArgs
+    _count?: boolean | UsersCountOutputTypeArgs
   }
 
 
-  export type $UsersPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    name: "Users"
-    objects: {
-      ingredient_events: Prisma.$Ingredient_eventsPayload<ExtArgs>[]
-      ingredients_photo_uploads: Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>[]
-      recipes: Prisma.$RecipesPayload<ExtArgs>[]
-    }
-    scalars: $Extensions.GetResult<{
-      id: string
-      name: string
-      avatar_url: string | null
-    }, ExtArgs["result"]["users"]>
-    composites: {}
-  }
+  export type UsersInclude = {
+    ingredient_events?: boolean | Users$ingredient_eventsArgs
+    ingredients_photo_uploads?: boolean | Users$ingredients_photo_uploadsArgs
+    recipes?: boolean | Users$recipesArgs
+    _count?: boolean | UsersCountOutputTypeArgs
+  } 
+
+  export type UsersGetPayload<S extends boolean | null | undefined | UsersArgs> =
+    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
+    S extends true ? Users :
+    S extends undefined ? never :
+    S extends { include: any } & (UsersArgs | UsersFindManyArgs)
+    ? Users  & {
+    [P in TruthyKeys<S['include']>]:
+        P extends 'ingredient_events' ? Array < Ingredient_eventsGetPayload<S['include'][P]>>  :
+        P extends 'ingredients_photo_uploads' ? Array < Ingredients_photo_uploadsGetPayload<S['include'][P]>>  :
+        P extends 'recipes' ? Array < RecipesGetPayload<S['include'][P]>>  :
+        P extends '_count' ? UsersCountOutputTypeGetPayload<S['include'][P]> :  never
+  } 
+    : S extends { select: any } & (UsersArgs | UsersFindManyArgs)
+      ? {
+    [P in TruthyKeys<S['select']>]:
+        P extends 'ingredient_events' ? Array < Ingredient_eventsGetPayload<S['select'][P]>>  :
+        P extends 'ingredients_photo_uploads' ? Array < Ingredients_photo_uploadsGetPayload<S['select'][P]>>  :
+        P extends 'recipes' ? Array < RecipesGetPayload<S['select'][P]>>  :
+        P extends '_count' ? UsersCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Users ? Users[P] : never
+  } 
+      : Users
 
 
-  type UsersGetPayload<S extends boolean | null | undefined | UsersDefaultArgs> = $Result.GetResult<Prisma.$UsersPayload, S>
-
-  type UsersCountArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = 
+  type UsersCountArgs = Merge<
     Omit<UsersFindManyArgs, 'select' | 'include'> & {
       select?: UsersCountAggregateInputType | true
     }
+  >
 
-  export interface UsersDelegate<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Users'], meta: { name: 'Users' } }
+  export interface UsersDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
     /**
      * Find zero or one Users that matches the filter.
      * @param {UsersFindUniqueArgs} args - Arguments to find a Users
@@ -6609,9 +8834,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findUnique<T extends UsersFindUniqueArgs<ExtArgs>>(
-      args: SelectSubset<T, UsersFindUniqueArgs<ExtArgs>>
-    ): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'findUnique'> | null, null, ExtArgs>
+    findUnique<T extends UsersFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, UsersFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Users'> extends True ? Prisma__UsersClient<UsersGetPayload<T>> : Prisma__UsersClient<UsersGetPayload<T> | null, null>
 
     /**
      * Find one Users that matches the filter or throw an error  with `error.code='P2025'` 
@@ -6625,9 +8850,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findUniqueOrThrow<T extends UsersFindUniqueOrThrowArgs<ExtArgs>>(
-      args?: SelectSubset<T, UsersFindUniqueOrThrowArgs<ExtArgs>>
-    ): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'findUniqueOrThrow'>, never, ExtArgs>
+    findUniqueOrThrow<T extends UsersFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, UsersFindUniqueOrThrowArgs>
+    ): Prisma__UsersClient<UsersGetPayload<T>>
 
     /**
      * Find the first Users that matches the filter.
@@ -6642,13 +8867,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findFirst<T extends UsersFindFirstArgs<ExtArgs>>(
-      args?: SelectSubset<T, UsersFindFirstArgs<ExtArgs>>
-    ): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'findFirst'> | null, null, ExtArgs>
+    findFirst<T extends UsersFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, UsersFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Users'> extends True ? Prisma__UsersClient<UsersGetPayload<T>> : Prisma__UsersClient<UsersGetPayload<T> | null, null>
 
     /**
      * Find the first Users that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * throw `NotFoundError` if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
      * @param {UsersFindFirstOrThrowArgs} args - Arguments to find a Users
@@ -6660,9 +8885,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    findFirstOrThrow<T extends UsersFindFirstOrThrowArgs<ExtArgs>>(
-      args?: SelectSubset<T, UsersFindFirstOrThrowArgs<ExtArgs>>
-    ): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'findFirstOrThrow'>, never, ExtArgs>
+    findFirstOrThrow<T extends UsersFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, UsersFindFirstOrThrowArgs>
+    ): Prisma__UsersClient<UsersGetPayload<T>>
 
     /**
      * Find zero or more Users that matches the filter.
@@ -6680,9 +8905,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * const usersWithIdOnly = await prisma.users.findMany({ select: { id: true } })
      * 
     **/
-    findMany<T extends UsersFindManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, UsersFindManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'findMany'>>
+    findMany<T extends UsersFindManyArgs>(
+      args?: SelectSubset<T, UsersFindManyArgs>
+    ): PrismaPromise<Array<UsersGetPayload<T>>>
 
     /**
      * Create a Users.
@@ -6696,9 +8921,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    create<T extends UsersCreateArgs<ExtArgs>>(
-      args: SelectSubset<T, UsersCreateArgs<ExtArgs>>
-    ): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'create'>, never, ExtArgs>
+    create<T extends UsersCreateArgs>(
+      args: SelectSubset<T, UsersCreateArgs>
+    ): Prisma__UsersClient<UsersGetPayload<T>>
 
     /**
      * Create many Users.
@@ -6712,9 +8937,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *     })
      *     
     **/
-    createMany<T extends UsersCreateManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, UsersCreateManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends UsersCreateManyArgs>(
+      args?: SelectSubset<T, UsersCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Delete a Users.
@@ -6728,9 +8953,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    delete<T extends UsersDeleteArgs<ExtArgs>>(
-      args: SelectSubset<T, UsersDeleteArgs<ExtArgs>>
-    ): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'delete'>, never, ExtArgs>
+    delete<T extends UsersDeleteArgs>(
+      args: SelectSubset<T, UsersDeleteArgs>
+    ): Prisma__UsersClient<UsersGetPayload<T>>
 
     /**
      * Update one Users.
@@ -6747,9 +8972,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    update<T extends UsersUpdateArgs<ExtArgs>>(
-      args: SelectSubset<T, UsersUpdateArgs<ExtArgs>>
-    ): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'update'>, never, ExtArgs>
+    update<T extends UsersUpdateArgs>(
+      args: SelectSubset<T, UsersUpdateArgs>
+    ): Prisma__UsersClient<UsersGetPayload<T>>
 
     /**
      * Delete zero or more Users.
@@ -6763,9 +8988,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    deleteMany<T extends UsersDeleteManyArgs<ExtArgs>>(
-      args?: SelectSubset<T, UsersDeleteManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends UsersDeleteManyArgs>(
+      args?: SelectSubset<T, UsersDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more Users.
@@ -6784,9 +9009,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * })
      * 
     **/
-    updateMany<T extends UsersUpdateManyArgs<ExtArgs>>(
-      args: SelectSubset<T, UsersUpdateManyArgs<ExtArgs>>
-    ): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends UsersUpdateManyArgs>(
+      args: SelectSubset<T, UsersUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Create or update one Users.
@@ -6805,9 +9030,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   }
      * })
     **/
-    upsert<T extends UsersUpsertArgs<ExtArgs>>(
-      args: SelectSubset<T, UsersUpsertArgs<ExtArgs>>
-    ): Prisma__UsersClient<$Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, 'upsert'>, never, ExtArgs>
+    upsert<T extends UsersUpsertArgs>(
+      args: SelectSubset<T, UsersUpsertArgs>
+    ): Prisma__UsersClient<UsersGetPayload<T>>
 
     /**
      * Count the number of Users.
@@ -6824,8 +9049,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     **/
     count<T extends UsersCountArgs>(
       args?: Subset<T, UsersCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
+    ): PrismaPromise<
+      T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
           : GetScalarType<T['select'], UsersCountAggregateOutputType>
@@ -6856,7 +9081,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      *   take: 10,
      * })
     **/
-    aggregate<T extends UsersAggregateArgs>(args: Subset<T, UsersAggregateArgs>): Prisma.PrismaPromise<GetUsersAggregateType<T>>
+    aggregate<T extends UsersAggregateArgs>(args: Subset<T, UsersAggregateArgs>): PrismaPromise<GetUsersAggregateType<T>>
 
     /**
      * Group by Users.
@@ -6886,7 +9111,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
         ? { orderBy: UsersGroupByArgs['orderBy'] }
         : { orderBy?: UsersGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByFields extends TupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
       HavingFields extends GetHavingFields<T['having']>,
       HavingValid extends Has<ByFields, HavingFields>,
@@ -6933,11 +9158,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, UsersGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUsersGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Users model
-   */
-  readonly fields: UsersFieldRefs;
+    >(args: SubsetIntersection<T, UsersGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUsersGroupByPayload<T> : PrismaPromise<InputErrors>
+
   }
 
   /**
@@ -6946,246 +9168,305 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__UsersClient<T, Null = never, ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
+  export class Prisma__UsersClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    ingredient_events<T extends Users$ingredient_eventsArgs<ExtArgs> = {}>(args?: Subset<T, Users$ingredient_eventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Ingredient_eventsPayload<ExtArgs>, T, 'findMany'> | Null>;
+    ingredient_events<T extends Users$ingredient_eventsArgs= {}>(args?: Subset<T, Users$ingredient_eventsArgs>): PrismaPromise<Array<Ingredient_eventsGetPayload<T>>| Null>;
 
-    ingredients_photo_uploads<T extends Users$ingredients_photo_uploadsArgs<ExtArgs> = {}>(args?: Subset<T, Users$ingredients_photo_uploadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Ingredients_photo_uploadsPayload<ExtArgs>, T, 'findMany'> | Null>;
+    ingredients_photo_uploads<T extends Users$ingredients_photo_uploadsArgs= {}>(args?: Subset<T, Users$ingredients_photo_uploadsArgs>): PrismaPromise<Array<Ingredients_photo_uploadsGetPayload<T>>| Null>;
 
-    recipes<T extends Users$recipesArgs<ExtArgs> = {}>(args?: Subset<T, Users$recipesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecipesPayload<ExtArgs>, T, 'findMany'> | Null>;
+    recipes<T extends Users$recipesArgs= {}>(args?: Subset<T, Users$recipesArgs>): PrismaPromise<Array<RecipesGetPayload<T>>| Null>;
 
+    private get _document();
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of which ever callback is executed.
      */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>;
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
     /**
      * Attaches a callback for only the rejection of the Promise.
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
      * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
      * @returns A Promise for the completion of the callback.
      */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
   }
 
 
-
-  /**
-   * Fields of the Users model
-   */ 
-  interface UsersFieldRefs {
-    readonly id: FieldRef<"Users", 'String'>
-    readonly name: FieldRef<"Users", 'String'>
-    readonly avatar_url: FieldRef<"Users", 'String'>
-  }
-    
 
   // Custom InputTypes
 
   /**
-   * Users findUnique
+   * Users base type for findUnique actions
    */
-  export type UsersFindUniqueArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the Users
-     */
-    select?: UsersSelect<ExtArgs> | null
+     * 
+    **/
+    select?: UsersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: UsersInclude<ExtArgs> | null
+     * 
+    **/
+    include?: UsersInclude | null
     /**
      * Filter, which Users to fetch.
-     */
+     * 
+    **/
     where: UsersWhereUniqueInput
   }
 
+  /**
+   * Users findUnique
+   */
+  export interface UsersFindUniqueArgs extends UsersFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
 
   /**
    * Users findUniqueOrThrow
    */
-  export type UsersFindUniqueOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersFindUniqueOrThrowArgs = {
     /**
      * Select specific fields to fetch from the Users
-     */
-    select?: UsersSelect<ExtArgs> | null
+     * 
+    **/
+    select?: UsersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: UsersInclude<ExtArgs> | null
+     * 
+    **/
+    include?: UsersInclude | null
     /**
      * Filter, which Users to fetch.
-     */
+     * 
+    **/
     where: UsersWhereUniqueInput
   }
 
 
   /**
-   * Users findFirst
+   * Users base type for findFirst actions
    */
-  export type UsersFindFirstArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the Users
-     */
-    select?: UsersSelect<ExtArgs> | null
+     * 
+    **/
+    select?: UsersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: UsersInclude<ExtArgs> | null
+     * 
+    **/
+    include?: UsersInclude | null
     /**
      * Filter, which Users to fetch.
-     */
+     * 
+    **/
     where?: UsersWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Users to fetch.
-     */
-    orderBy?: UsersOrderByWithRelationInput | UsersOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<UsersOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Users.
-     */
+     * 
+    **/
     cursor?: UsersWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Users from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Users.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Users.
-     */
-    distinct?: UsersScalarFieldEnum | UsersScalarFieldEnum[]
+     * 
+    **/
+    distinct?: Enumerable<UsersScalarFieldEnum>
   }
 
+  /**
+   * Users findFirst
+   */
+  export interface UsersFindFirstArgs extends UsersFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
 
   /**
    * Users findFirstOrThrow
    */
-  export type UsersFindFirstOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersFindFirstOrThrowArgs = {
     /**
      * Select specific fields to fetch from the Users
-     */
-    select?: UsersSelect<ExtArgs> | null
+     * 
+    **/
+    select?: UsersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: UsersInclude<ExtArgs> | null
+     * 
+    **/
+    include?: UsersInclude | null
     /**
      * Filter, which Users to fetch.
-     */
+     * 
+    **/
     where?: UsersWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Users to fetch.
-     */
-    orderBy?: UsersOrderByWithRelationInput | UsersOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<UsersOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Users.
-     */
+     * 
+    **/
     cursor?: UsersWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Users from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Users.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Users.
-     */
-    distinct?: UsersScalarFieldEnum | UsersScalarFieldEnum[]
+     * 
+    **/
+    distinct?: Enumerable<UsersScalarFieldEnum>
   }
 
 
   /**
    * Users findMany
    */
-  export type UsersFindManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersFindManyArgs = {
     /**
      * Select specific fields to fetch from the Users
-     */
-    select?: UsersSelect<ExtArgs> | null
+     * 
+    **/
+    select?: UsersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: UsersInclude<ExtArgs> | null
+     * 
+    **/
+    include?: UsersInclude | null
     /**
      * Filter, which Users to fetch.
-     */
+     * 
+    **/
     where?: UsersWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Users to fetch.
-     */
-    orderBy?: UsersOrderByWithRelationInput | UsersOrderByWithRelationInput[]
+     * 
+    **/
+    orderBy?: Enumerable<UsersOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing Users.
-     */
+     * 
+    **/
     cursor?: UsersWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Users from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Users.
-     */
+     * 
+    **/
     skip?: number
-    distinct?: UsersScalarFieldEnum | UsersScalarFieldEnum[]
+    distinct?: Enumerable<UsersScalarFieldEnum>
   }
 
 
   /**
    * Users create
    */
-  export type UsersCreateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersCreateArgs = {
     /**
      * Select specific fields to fetch from the Users
-     */
-    select?: UsersSelect<ExtArgs> | null
+     * 
+    **/
+    select?: UsersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: UsersInclude<ExtArgs> | null
+     * 
+    **/
+    include?: UsersInclude | null
     /**
      * The data needed to create a Users.
-     */
+     * 
+    **/
     data: XOR<UsersCreateInput, UsersUncheckedCreateInput>
   }
 
@@ -7193,11 +9474,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Users createMany
    */
-  export type UsersCreateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersCreateManyArgs = {
     /**
      * The data used to create many Users.
-     */
-    data: UsersCreateManyInput | UsersCreateManyInput[]
+     * 
+    **/
+    data: Enumerable<UsersCreateManyInput>
     skipDuplicates?: boolean
   }
 
@@ -7205,22 +9487,26 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Users update
    */
-  export type UsersUpdateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersUpdateArgs = {
     /**
      * Select specific fields to fetch from the Users
-     */
-    select?: UsersSelect<ExtArgs> | null
+     * 
+    **/
+    select?: UsersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: UsersInclude<ExtArgs> | null
+     * 
+    **/
+    include?: UsersInclude | null
     /**
      * The data needed to update a Users.
-     */
+     * 
+    **/
     data: XOR<UsersUpdateInput, UsersUncheckedUpdateInput>
     /**
      * Choose, which Users to update.
-     */
+     * 
+    **/
     where: UsersWhereUniqueInput
   }
 
@@ -7228,14 +9514,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Users updateMany
    */
-  export type UsersUpdateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersUpdateManyArgs = {
     /**
      * The data used to update Users.
-     */
+     * 
+    **/
     data: XOR<UsersUpdateManyMutationInput, UsersUncheckedUpdateManyInput>
     /**
      * Filter which Users to update
-     */
+     * 
+    **/
     where?: UsersWhereInput
   }
 
@@ -7243,26 +9531,31 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Users upsert
    */
-  export type UsersUpsertArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersUpsertArgs = {
     /**
      * Select specific fields to fetch from the Users
-     */
-    select?: UsersSelect<ExtArgs> | null
+     * 
+    **/
+    select?: UsersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: UsersInclude<ExtArgs> | null
+     * 
+    **/
+    include?: UsersInclude | null
     /**
      * The filter to search for the Users to update in case it exists.
-     */
+     * 
+    **/
     where: UsersWhereUniqueInput
     /**
      * In case the Users found by the `where` argument doesn't exist, create a new Users with this data.
-     */
+     * 
+    **/
     create: XOR<UsersCreateInput, UsersUncheckedCreateInput>
     /**
      * In case the Users was found with the provided `where` argument, update it with this data.
-     */
+     * 
+    **/
     update: XOR<UsersUpdateInput, UsersUncheckedUpdateInput>
   }
 
@@ -7270,18 +9563,21 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Users delete
    */
-  export type UsersDeleteArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersDeleteArgs = {
     /**
      * Select specific fields to fetch from the Users
-     */
-    select?: UsersSelect<ExtArgs> | null
+     * 
+    **/
+    select?: UsersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: UsersInclude<ExtArgs> | null
+     * 
+    **/
+    include?: UsersInclude | null
     /**
      * Filter which Users to delete.
-     */
+     * 
+    **/
     where: UsersWhereUniqueInput
   }
 
@@ -7289,10 +9585,11 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Users deleteMany
    */
-  export type UsersDeleteManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersDeleteManyArgs = {
     /**
      * Filter which Users to delete
-     */
+     * 
+    **/
     where?: UsersWhereInput
   }
 
@@ -7300,78 +9597,86 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Users.ingredient_events
    */
-  export type Users$ingredient_eventsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Users$ingredient_eventsArgs = {
     /**
      * Select specific fields to fetch from the Ingredient_events
-     */
-    select?: Ingredient_eventsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredient_eventsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredient_eventsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredient_eventsInclude | null
     where?: Ingredient_eventsWhereInput
-    orderBy?: Ingredient_eventsOrderByWithRelationInput | Ingredient_eventsOrderByWithRelationInput[]
+    orderBy?: Enumerable<Ingredient_eventsOrderByWithRelationInput>
     cursor?: Ingredient_eventsWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: Ingredient_eventsScalarFieldEnum | Ingredient_eventsScalarFieldEnum[]
+    distinct?: Enumerable<Ingredient_eventsScalarFieldEnum>
   }
 
 
   /**
    * Users.ingredients_photo_uploads
    */
-  export type Users$ingredients_photo_uploadsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Users$ingredients_photo_uploadsArgs = {
     /**
      * Select specific fields to fetch from the Ingredients_photo_uploads
-     */
-    select?: Ingredients_photo_uploadsSelect<ExtArgs> | null
+     * 
+    **/
+    select?: Ingredients_photo_uploadsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: Ingredients_photo_uploadsInclude<ExtArgs> | null
+     * 
+    **/
+    include?: Ingredients_photo_uploadsInclude | null
     where?: Ingredients_photo_uploadsWhereInput
-    orderBy?: Ingredients_photo_uploadsOrderByWithRelationInput | Ingredients_photo_uploadsOrderByWithRelationInput[]
+    orderBy?: Enumerable<Ingredients_photo_uploadsOrderByWithRelationInput>
     cursor?: Ingredients_photo_uploadsWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: Ingredients_photo_uploadsScalarFieldEnum | Ingredients_photo_uploadsScalarFieldEnum[]
+    distinct?: Enumerable<Ingredients_photo_uploadsScalarFieldEnum>
   }
 
 
   /**
    * Users.recipes
    */
-  export type Users$recipesArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Users$recipesArgs = {
     /**
      * Select specific fields to fetch from the Recipes
-     */
-    select?: RecipesSelect<ExtArgs> | null
+     * 
+    **/
+    select?: RecipesSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: RecipesInclude<ExtArgs> | null
+     * 
+    **/
+    include?: RecipesInclude | null
     where?: RecipesWhereInput
-    orderBy?: RecipesOrderByWithRelationInput | RecipesOrderByWithRelationInput[]
+    orderBy?: Enumerable<RecipesOrderByWithRelationInput>
     cursor?: RecipesWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: RecipesScalarFieldEnum | RecipesScalarFieldEnum[]
+    distinct?: Enumerable<RecipesScalarFieldEnum>
   }
 
 
   /**
    * Users without action
    */
-  export type UsersDefaultArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type UsersArgs = {
     /**
      * Select specific fields to fetch from the Users
-     */
-    select?: UsersSelect<ExtArgs> | null
+     * 
+    **/
+    select?: UsersSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
-    include?: UsersInclude<ExtArgs> | null
+     * 
+    **/
+    include?: UsersInclude | null
   }
 
 
@@ -7379,6 +9684,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   /**
    * Enums
    */
+
+  // Based on
+  // https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
 
   export const TransactionIsolationLevel: {
     ReadUncommitted: 'ReadUncommitted',
@@ -7434,11 +9742,26 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type Ingredients_photo_uploadsScalarFieldEnum = (typeof Ingredients_photo_uploadsScalarFieldEnum)[keyof typeof Ingredients_photo_uploadsScalarFieldEnum]
 
 
+  export const JobsScalarFieldEnum: {
+    id: 'id',
+    state: 'state',
+    target_id: 'target_id',
+    type: 'type',
+    created_at: 'created_at',
+    updated_at: 'updated_at',
+    error: 'error',
+    result: 'result'
+  };
+
+  export type JobsScalarFieldEnum = (typeof JobsScalarFieldEnum)[keyof typeof JobsScalarFieldEnum]
+
+
   export const Recipe_ingredientsScalarFieldEnum: {
     id: 'id',
     listing: 'listing',
     extracted_name: 'extracted_name',
     embedding: 'embedding',
+    grocery_section: 'grocery_section',
     recipe_id: 'recipe_id'
   };
 
@@ -7456,6 +9779,17 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   };
 
   export type RecipesScalarFieldEnum = (typeof RecipesScalarFieldEnum)[keyof typeof RecipesScalarFieldEnum]
+
+
+  export const Shopping_listScalarFieldEnum: {
+    id: 'id',
+    recipe_id: 'recipe_id',
+    recipe_ingredient_id: 'recipe_ingredient_id',
+    purchased: 'purchased',
+    created_at: 'created_at'
+  };
+
+  export type Shopping_listScalarFieldEnum = (typeof Shopping_listScalarFieldEnum)[keyof typeof Shopping_listScalarFieldEnum]
 
 
   export const UsersScalarFieldEnum: {
@@ -7609,15 +9943,43 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
+
+
+  /**
+   * Reference to a field of type 'jobs_state'
+   */
+  export type Enumjobs_stateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'jobs_state'>
+    
+
+
+  /**
+   * Reference to a field of type 'jobs_state[]'
+   */
+  export type ListEnumjobs_stateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'jobs_state[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'grocery_section'
+   */
+  export type Enumgrocery_sectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'grocery_section'>
+    
+
+
+  /**
+   * Reference to a field of type 'grocery_section[]'
+   */
+  export type ListEnumgrocery_sectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'grocery_section[]'>
+    
   /**
    * Deep Input Types
    */
 
 
   export type Ingredient_eventsWhereInput = {
-    AND?: Ingredient_eventsWhereInput | Ingredient_eventsWhereInput[]
-    OR?: Ingredient_eventsWhereInput[]
-    NOT?: Ingredient_eventsWhereInput | Ingredient_eventsWhereInput[]
+    AND?: Enumerable<Ingredient_eventsWhereInput>
+    OR?: Enumerable<Ingredient_eventsWhereInput>
+    NOT?: Enumerable<Ingredient_eventsWhereInput>
     id?: UuidFilter<"Ingredient_events"> | string
     ingredient_id?: UuidFilter<"Ingredient_events"> | string
     user_id?: StringFilter<"Ingredient_events"> | string
@@ -7641,9 +10003,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredient_eventsWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    AND?: Ingredient_eventsWhereInput | Ingredient_eventsWhereInput[]
-    OR?: Ingredient_eventsWhereInput[]
-    NOT?: Ingredient_eventsWhereInput | Ingredient_eventsWhereInput[]
+    AND?: Enumerable<Ingredient_eventsWhereInput>
+    OR?: Enumerable<Ingredient_eventsWhereInput>
+    NOT?: Enumerable<Ingredient_eventsWhereInput>
     ingredient_id?: UuidFilter<"Ingredient_events"> | string
     user_id?: StringFilter<"Ingredient_events"> | string
     timestamp?: DateTimeFilter<"Ingredient_events"> | Date | string
@@ -7666,9 +10028,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Ingredient_eventsScalarWhereWithAggregatesInput = {
-    AND?: Ingredient_eventsScalarWhereWithAggregatesInput | Ingredient_eventsScalarWhereWithAggregatesInput[]
-    OR?: Ingredient_eventsScalarWhereWithAggregatesInput[]
-    NOT?: Ingredient_eventsScalarWhereWithAggregatesInput | Ingredient_eventsScalarWhereWithAggregatesInput[]
+    AND?: Enumerable<Ingredient_eventsScalarWhereWithAggregatesInput>
+    OR?: Enumerable<Ingredient_eventsScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<Ingredient_eventsScalarWhereWithAggregatesInput>
     id?: UuidWithAggregatesFilter<"Ingredient_events"> | string
     ingredient_id?: UuidWithAggregatesFilter<"Ingredient_events"> | string
     user_id?: StringWithAggregatesFilter<"Ingredient_events"> | string
@@ -7678,15 +10040,15 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type IngredientsWhereInput = {
-    AND?: IngredientsWhereInput | IngredientsWhereInput[]
-    OR?: IngredientsWhereInput[]
-    NOT?: IngredientsWhereInput | IngredientsWhereInput[]
+    AND?: Enumerable<IngredientsWhereInput>
+    OR?: Enumerable<IngredientsWhereInput>
+    NOT?: Enumerable<IngredientsWhereInput>
     id?: UuidFilter<"Ingredients"> | string
     name?: StringFilter<"Ingredients"> | string
     description?: StringFilter<"Ingredients"> | string
     is_reviewed?: BoolFilter<"Ingredients"> | boolean
     embedding?: StringFilter<"Ingredients"> | string
-    tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | $Enums.ingredients_tracking_type | null
+    tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | ingredients_tracking_type | null
     fill_level?: IntFilter<"Ingredients"> | number
     count?: IntFilter<"Ingredients"> | number
     shelf_life_months?: IntFilter<"Ingredients"> | number
@@ -7716,14 +10078,14 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type IngredientsWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    AND?: IngredientsWhereInput | IngredientsWhereInput[]
-    OR?: IngredientsWhereInput[]
-    NOT?: IngredientsWhereInput | IngredientsWhereInput[]
+    AND?: Enumerable<IngredientsWhereInput>
+    OR?: Enumerable<IngredientsWhereInput>
+    NOT?: Enumerable<IngredientsWhereInput>
     name?: StringFilter<"Ingredients"> | string
     description?: StringFilter<"Ingredients"> | string
     is_reviewed?: BoolFilter<"Ingredients"> | boolean
     embedding?: StringFilter<"Ingredients"> | string
-    tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | $Enums.ingredients_tracking_type | null
+    tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | ingredients_tracking_type | null
     fill_level?: IntFilter<"Ingredients"> | number
     count?: IntFilter<"Ingredients"> | number
     shelf_life_months?: IntFilter<"Ingredients"> | number
@@ -7755,15 +10117,15 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type IngredientsScalarWhereWithAggregatesInput = {
-    AND?: IngredientsScalarWhereWithAggregatesInput | IngredientsScalarWhereWithAggregatesInput[]
-    OR?: IngredientsScalarWhereWithAggregatesInput[]
-    NOT?: IngredientsScalarWhereWithAggregatesInput | IngredientsScalarWhereWithAggregatesInput[]
+    AND?: Enumerable<IngredientsScalarWhereWithAggregatesInput>
+    OR?: Enumerable<IngredientsScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<IngredientsScalarWhereWithAggregatesInput>
     id?: UuidWithAggregatesFilter<"Ingredients"> | string
     name?: StringWithAggregatesFilter<"Ingredients"> | string
     description?: StringWithAggregatesFilter<"Ingredients"> | string
     is_reviewed?: BoolWithAggregatesFilter<"Ingredients"> | boolean
     embedding?: StringWithAggregatesFilter<"Ingredients"> | string
-    tracking_type?: Enumingredients_tracking_typeNullableWithAggregatesFilter<"Ingredients"> | $Enums.ingredients_tracking_type | null
+    tracking_type?: Enumingredients_tracking_typeNullableWithAggregatesFilter<"Ingredients"> | ingredients_tracking_type | null
     fill_level?: IntWithAggregatesFilter<"Ingredients"> | number
     count?: IntWithAggregatesFilter<"Ingredients"> | number
     shelf_life_months?: IntWithAggregatesFilter<"Ingredients"> | number
@@ -7773,14 +10135,14 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Ingredients_photo_uploadsWhereInput = {
-    AND?: Ingredients_photo_uploadsWhereInput | Ingredients_photo_uploadsWhereInput[]
-    OR?: Ingredients_photo_uploadsWhereInput[]
-    NOT?: Ingredients_photo_uploadsWhereInput | Ingredients_photo_uploadsWhereInput[]
+    AND?: Enumerable<Ingredients_photo_uploadsWhereInput>
+    OR?: Enumerable<Ingredients_photo_uploadsWhereInput>
+    NOT?: Enumerable<Ingredients_photo_uploadsWhereInput>
     id?: UuidFilter<"Ingredients_photo_uploads"> | string
     user_id?: StringFilter<"Ingredients_photo_uploads"> | string
     created_at?: DateTimeFilter<"Ingredients_photo_uploads"> | Date | string
     uploaded_at?: DateTimeNullableFilter<"Ingredients_photo_uploads"> | Date | string | null
-    state?: Enumingredient_photo_upload_stateFilter<"Ingredients_photo_uploads"> | $Enums.ingredient_photo_upload_state
+    state?: Enumingredient_photo_upload_stateFilter<"Ingredients_photo_uploads"> | ingredient_photo_upload_state
     upload_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
     ai_processing_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
     photo_url?: StringNullableFilter<"Ingredients_photo_uploads"> | string | null
@@ -7803,13 +10165,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredients_photo_uploadsWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    AND?: Ingredients_photo_uploadsWhereInput | Ingredients_photo_uploadsWhereInput[]
-    OR?: Ingredients_photo_uploadsWhereInput[]
-    NOT?: Ingredients_photo_uploadsWhereInput | Ingredients_photo_uploadsWhereInput[]
+    AND?: Enumerable<Ingredients_photo_uploadsWhereInput>
+    OR?: Enumerable<Ingredients_photo_uploadsWhereInput>
+    NOT?: Enumerable<Ingredients_photo_uploadsWhereInput>
     user_id?: StringFilter<"Ingredients_photo_uploads"> | string
     created_at?: DateTimeFilter<"Ingredients_photo_uploads"> | Date | string
     uploaded_at?: DateTimeNullableFilter<"Ingredients_photo_uploads"> | Date | string | null
-    state?: Enumingredient_photo_upload_stateFilter<"Ingredients_photo_uploads"> | $Enums.ingredient_photo_upload_state
+    state?: Enumingredient_photo_upload_stateFilter<"Ingredients_photo_uploads"> | ingredient_photo_upload_state
     upload_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
     ai_processing_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
     photo_url?: StringNullableFilter<"Ingredients_photo_uploads"> | string | null
@@ -7834,29 +10196,98 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Ingredients_photo_uploadsScalarWhereWithAggregatesInput = {
-    AND?: Ingredients_photo_uploadsScalarWhereWithAggregatesInput | Ingredients_photo_uploadsScalarWhereWithAggregatesInput[]
-    OR?: Ingredients_photo_uploadsScalarWhereWithAggregatesInput[]
-    NOT?: Ingredients_photo_uploadsScalarWhereWithAggregatesInput | Ingredients_photo_uploadsScalarWhereWithAggregatesInput[]
+    AND?: Enumerable<Ingredients_photo_uploadsScalarWhereWithAggregatesInput>
+    OR?: Enumerable<Ingredients_photo_uploadsScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<Ingredients_photo_uploadsScalarWhereWithAggregatesInput>
     id?: UuidWithAggregatesFilter<"Ingredients_photo_uploads"> | string
     user_id?: StringWithAggregatesFilter<"Ingredients_photo_uploads"> | string
     created_at?: DateTimeWithAggregatesFilter<"Ingredients_photo_uploads"> | Date | string
     uploaded_at?: DateTimeNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | Date | string | null
-    state?: Enumingredient_photo_upload_stateWithAggregatesFilter<"Ingredients_photo_uploads"> | $Enums.ingredient_photo_upload_state
+    state?: Enumingredient_photo_upload_stateWithAggregatesFilter<"Ingredients_photo_uploads"> | ingredient_photo_upload_state
     upload_duration_sec?: FloatNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | number | null
     ai_processing_duration_sec?: FloatNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | number | null
     photo_url?: StringNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | string | null
   }
 
+  export type JobsWhereInput = {
+    AND?: Enumerable<JobsWhereInput>
+    OR?: Enumerable<JobsWhereInput>
+    NOT?: Enumerable<JobsWhereInput>
+    id?: UuidFilter<"Jobs"> | string
+    state?: Enumjobs_stateFilter<"Jobs"> | jobs_state
+    target_id?: UuidNullableFilter<"Jobs"> | string | null
+    type?: StringFilter<"Jobs"> | string
+    created_at?: DateTimeFilter<"Jobs"> | Date | string
+    updated_at?: DateTimeFilter<"Jobs"> | Date | string
+    error?: JsonNullableFilter<"Jobs">
+    result?: JsonNullableFilter<"Jobs">
+  }
+
+  export type JobsOrderByWithRelationInput = {
+    id?: SortOrder
+    state?: SortOrder
+    target_id?: SortOrderInput | SortOrder
+    type?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    error?: SortOrderInput | SortOrder
+    result?: SortOrderInput | SortOrder
+  }
+
+  export type JobsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: Enumerable<JobsWhereInput>
+    OR?: Enumerable<JobsWhereInput>
+    NOT?: Enumerable<JobsWhereInput>
+    state?: Enumjobs_stateFilter<"Jobs"> | jobs_state
+    target_id?: UuidNullableFilter<"Jobs"> | string | null
+    type?: StringFilter<"Jobs"> | string
+    created_at?: DateTimeFilter<"Jobs"> | Date | string
+    updated_at?: DateTimeFilter<"Jobs"> | Date | string
+    error?: JsonNullableFilter<"Jobs">
+    result?: JsonNullableFilter<"Jobs">
+  }, "id">
+
+  export type JobsOrderByWithAggregationInput = {
+    id?: SortOrder
+    state?: SortOrder
+    target_id?: SortOrderInput | SortOrder
+    type?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    error?: SortOrderInput | SortOrder
+    result?: SortOrderInput | SortOrder
+    _count?: JobsCountOrderByAggregateInput
+    _max?: JobsMaxOrderByAggregateInput
+    _min?: JobsMinOrderByAggregateInput
+  }
+
+  export type JobsScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<JobsScalarWhereWithAggregatesInput>
+    OR?: Enumerable<JobsScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<JobsScalarWhereWithAggregatesInput>
+    id?: UuidWithAggregatesFilter<"Jobs"> | string
+    state?: Enumjobs_stateWithAggregatesFilter<"Jobs"> | jobs_state
+    target_id?: UuidNullableWithAggregatesFilter<"Jobs"> | string | null
+    type?: StringWithAggregatesFilter<"Jobs"> | string
+    created_at?: DateTimeWithAggregatesFilter<"Jobs"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"Jobs"> | Date | string
+    error?: JsonNullableWithAggregatesFilter<"Jobs">
+    result?: JsonNullableWithAggregatesFilter<"Jobs">
+  }
+
   export type Recipe_ingredientsWhereInput = {
-    AND?: Recipe_ingredientsWhereInput | Recipe_ingredientsWhereInput[]
-    OR?: Recipe_ingredientsWhereInput[]
-    NOT?: Recipe_ingredientsWhereInput | Recipe_ingredientsWhereInput[]
+    AND?: Enumerable<Recipe_ingredientsWhereInput>
+    OR?: Enumerable<Recipe_ingredientsWhereInput>
+    NOT?: Enumerable<Recipe_ingredientsWhereInput>
     id?: UuidFilter<"Recipe_ingredients"> | string
     listing?: StringFilter<"Recipe_ingredients"> | string
     extracted_name?: StringFilter<"Recipe_ingredients"> | string
     embedding?: StringFilter<"Recipe_ingredients"> | string
+    grocery_section?: Enumgrocery_sectionFilter<"Recipe_ingredients"> | grocery_section
     recipe_id?: UuidFilter<"Recipe_ingredients"> | string
     recipes?: XOR<RecipesRelationFilter, RecipesWhereInput>
+    shopping_list?: Shopping_listListRelationFilter
   }
 
   export type Recipe_ingredientsOrderByWithRelationInput = {
@@ -7864,20 +10295,24 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: SortOrder
     extracted_name?: SortOrder
     embedding?: SortOrder
+    grocery_section?: SortOrder
     recipe_id?: SortOrder
     recipes?: RecipesOrderByWithRelationInput
+    shopping_list?: Shopping_listOrderByRelationAggregateInput
   }
 
   export type Recipe_ingredientsWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    AND?: Recipe_ingredientsWhereInput | Recipe_ingredientsWhereInput[]
-    OR?: Recipe_ingredientsWhereInput[]
-    NOT?: Recipe_ingredientsWhereInput | Recipe_ingredientsWhereInput[]
+    AND?: Enumerable<Recipe_ingredientsWhereInput>
+    OR?: Enumerable<Recipe_ingredientsWhereInput>
+    NOT?: Enumerable<Recipe_ingredientsWhereInput>
     listing?: StringFilter<"Recipe_ingredients"> | string
     extracted_name?: StringFilter<"Recipe_ingredients"> | string
     embedding?: StringFilter<"Recipe_ingredients"> | string
+    grocery_section?: Enumgrocery_sectionFilter<"Recipe_ingredients"> | grocery_section
     recipe_id?: UuidFilter<"Recipe_ingredients"> | string
     recipes?: XOR<RecipesRelationFilter, RecipesWhereInput>
+    shopping_list?: Shopping_listListRelationFilter
   }, "id">
 
   export type Recipe_ingredientsOrderByWithAggregationInput = {
@@ -7885,6 +10320,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: SortOrder
     extracted_name?: SortOrder
     embedding?: SortOrder
+    grocery_section?: SortOrder
     recipe_id?: SortOrder
     _count?: Recipe_ingredientsCountOrderByAggregateInput
     _max?: Recipe_ingredientsMaxOrderByAggregateInput
@@ -7892,20 +10328,21 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Recipe_ingredientsScalarWhereWithAggregatesInput = {
-    AND?: Recipe_ingredientsScalarWhereWithAggregatesInput | Recipe_ingredientsScalarWhereWithAggregatesInput[]
-    OR?: Recipe_ingredientsScalarWhereWithAggregatesInput[]
-    NOT?: Recipe_ingredientsScalarWhereWithAggregatesInput | Recipe_ingredientsScalarWhereWithAggregatesInput[]
+    AND?: Enumerable<Recipe_ingredientsScalarWhereWithAggregatesInput>
+    OR?: Enumerable<Recipe_ingredientsScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<Recipe_ingredientsScalarWhereWithAggregatesInput>
     id?: UuidWithAggregatesFilter<"Recipe_ingredients"> | string
     listing?: StringWithAggregatesFilter<"Recipe_ingredients"> | string
     extracted_name?: StringWithAggregatesFilter<"Recipe_ingredients"> | string
     embedding?: StringWithAggregatesFilter<"Recipe_ingredients"> | string
+    grocery_section?: Enumgrocery_sectionWithAggregatesFilter<"Recipe_ingredients"> | grocery_section
     recipe_id?: UuidWithAggregatesFilter<"Recipe_ingredients"> | string
   }
 
   export type RecipesWhereInput = {
-    AND?: RecipesWhereInput | RecipesWhereInput[]
-    OR?: RecipesWhereInput[]
-    NOT?: RecipesWhereInput | RecipesWhereInput[]
+    AND?: Enumerable<RecipesWhereInput>
+    OR?: Enumerable<RecipesWhereInput>
+    NOT?: Enumerable<RecipesWhereInput>
     id?: UuidFilter<"Recipes"> | string
     name?: StringFilter<"Recipes"> | string
     description?: StringFilter<"Recipes"> | string
@@ -7915,6 +10352,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     updated_at?: DateTimeFilter<"Recipes"> | Date | string
     recipe_ingredients?: Recipe_ingredientsListRelationFilter
     users?: XOR<UsersRelationFilter, UsersWhereInput>
+    shopping_list?: Shopping_listListRelationFilter
   }
 
   export type RecipesOrderByWithRelationInput = {
@@ -7927,13 +10365,14 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     updated_at?: SortOrder
     recipe_ingredients?: Recipe_ingredientsOrderByRelationAggregateInput
     users?: UsersOrderByWithRelationInput
+    shopping_list?: Shopping_listOrderByRelationAggregateInput
   }
 
   export type RecipesWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    AND?: RecipesWhereInput | RecipesWhereInput[]
-    OR?: RecipesWhereInput[]
-    NOT?: RecipesWhereInput | RecipesWhereInput[]
+    AND?: Enumerable<RecipesWhereInput>
+    OR?: Enumerable<RecipesWhereInput>
+    NOT?: Enumerable<RecipesWhereInput>
     name?: StringFilter<"Recipes"> | string
     description?: StringFilter<"Recipes"> | string
     url?: StringFilter<"Recipes"> | string
@@ -7942,6 +10381,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     updated_at?: DateTimeFilter<"Recipes"> | Date | string
     recipe_ingredients?: Recipe_ingredientsListRelationFilter
     users?: XOR<UsersRelationFilter, UsersWhereInput>
+    shopping_list?: Shopping_listListRelationFilter
   }, "id">
 
   export type RecipesOrderByWithAggregationInput = {
@@ -7958,9 +10398,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type RecipesScalarWhereWithAggregatesInput = {
-    AND?: RecipesScalarWhereWithAggregatesInput | RecipesScalarWhereWithAggregatesInput[]
-    OR?: RecipesScalarWhereWithAggregatesInput[]
-    NOT?: RecipesScalarWhereWithAggregatesInput | RecipesScalarWhereWithAggregatesInput[]
+    AND?: Enumerable<RecipesScalarWhereWithAggregatesInput>
+    OR?: Enumerable<RecipesScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<RecipesScalarWhereWithAggregatesInput>
     id?: UuidWithAggregatesFilter<"Recipes"> | string
     name?: StringWithAggregatesFilter<"Recipes"> | string
     description?: StringWithAggregatesFilter<"Recipes"> | string
@@ -7970,10 +10410,68 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     updated_at?: DateTimeWithAggregatesFilter<"Recipes"> | Date | string
   }
 
+  export type Shopping_listWhereInput = {
+    AND?: Enumerable<Shopping_listWhereInput>
+    OR?: Enumerable<Shopping_listWhereInput>
+    NOT?: Enumerable<Shopping_listWhereInput>
+    id?: UuidFilter<"Shopping_list"> | string
+    recipe_id?: UuidFilter<"Shopping_list"> | string
+    recipe_ingredient_id?: UuidFilter<"Shopping_list"> | string
+    purchased?: BoolFilter<"Shopping_list"> | boolean
+    created_at?: DateTimeFilter<"Shopping_list"> | Date | string
+    recipes?: XOR<RecipesRelationFilter, RecipesWhereInput>
+    recipe_ingredients?: XOR<Recipe_ingredientsRelationFilter, Recipe_ingredientsWhereInput>
+  }
+
+  export type Shopping_listOrderByWithRelationInput = {
+    id?: SortOrder
+    recipe_id?: SortOrder
+    recipe_ingredient_id?: SortOrder
+    purchased?: SortOrder
+    created_at?: SortOrder
+    recipes?: RecipesOrderByWithRelationInput
+    recipe_ingredients?: Recipe_ingredientsOrderByWithRelationInput
+  }
+
+  export type Shopping_listWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: Enumerable<Shopping_listWhereInput>
+    OR?: Enumerable<Shopping_listWhereInput>
+    NOT?: Enumerable<Shopping_listWhereInput>
+    recipe_id?: UuidFilter<"Shopping_list"> | string
+    recipe_ingredient_id?: UuidFilter<"Shopping_list"> | string
+    purchased?: BoolFilter<"Shopping_list"> | boolean
+    created_at?: DateTimeFilter<"Shopping_list"> | Date | string
+    recipes?: XOR<RecipesRelationFilter, RecipesWhereInput>
+    recipe_ingredients?: XOR<Recipe_ingredientsRelationFilter, Recipe_ingredientsWhereInput>
+  }, "id">
+
+  export type Shopping_listOrderByWithAggregationInput = {
+    id?: SortOrder
+    recipe_id?: SortOrder
+    recipe_ingredient_id?: SortOrder
+    purchased?: SortOrder
+    created_at?: SortOrder
+    _count?: Shopping_listCountOrderByAggregateInput
+    _max?: Shopping_listMaxOrderByAggregateInput
+    _min?: Shopping_listMinOrderByAggregateInput
+  }
+
+  export type Shopping_listScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<Shopping_listScalarWhereWithAggregatesInput>
+    OR?: Enumerable<Shopping_listScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<Shopping_listScalarWhereWithAggregatesInput>
+    id?: UuidWithAggregatesFilter<"Shopping_list"> | string
+    recipe_id?: UuidWithAggregatesFilter<"Shopping_list"> | string
+    recipe_ingredient_id?: UuidWithAggregatesFilter<"Shopping_list"> | string
+    purchased?: BoolWithAggregatesFilter<"Shopping_list"> | boolean
+    created_at?: DateTimeWithAggregatesFilter<"Shopping_list"> | Date | string
+  }
+
   export type UsersWhereInput = {
-    AND?: UsersWhereInput | UsersWhereInput[]
-    OR?: UsersWhereInput[]
-    NOT?: UsersWhereInput | UsersWhereInput[]
+    AND?: Enumerable<UsersWhereInput>
+    OR?: Enumerable<UsersWhereInput>
+    NOT?: Enumerable<UsersWhereInput>
     id?: StringFilter<"Users"> | string
     name?: StringFilter<"Users"> | string
     avatar_url?: StringNullableFilter<"Users"> | string | null
@@ -7993,9 +10491,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type UsersWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    AND?: UsersWhereInput | UsersWhereInput[]
-    OR?: UsersWhereInput[]
-    NOT?: UsersWhereInput | UsersWhereInput[]
+    AND?: Enumerable<UsersWhereInput>
+    OR?: Enumerable<UsersWhereInput>
+    NOT?: Enumerable<UsersWhereInput>
     name?: StringFilter<"Users"> | string
     avatar_url?: StringNullableFilter<"Users"> | string | null
     ingredient_events?: Ingredient_eventsListRelationFilter
@@ -8013,9 +10511,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type UsersScalarWhereWithAggregatesInput = {
-    AND?: UsersScalarWhereWithAggregatesInput | UsersScalarWhereWithAggregatesInput[]
-    OR?: UsersScalarWhereWithAggregatesInput[]
-    NOT?: UsersScalarWhereWithAggregatesInput | UsersScalarWhereWithAggregatesInput[]
+    AND?: Enumerable<UsersScalarWhereWithAggregatesInput>
+    OR?: Enumerable<UsersScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<UsersScalarWhereWithAggregatesInput>
     id?: StringWithAggregatesFilter<"Users"> | string
     name?: StringWithAggregatesFilter<"Users"> | string
     avatar_url?: StringNullableWithAggregatesFilter<"Users"> | string | null
@@ -8088,7 +10586,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     is_reviewed: boolean
     embedding: string
-    tracking_type?: $Enums.ingredients_tracking_type | null
+    tracking_type?: ingredients_tracking_type | null
     fill_level: number
     count: number
     shelf_life_months: number
@@ -8104,7 +10602,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     is_reviewed: boolean
     embedding: string
-    tracking_type?: $Enums.ingredients_tracking_type | null
+    tracking_type?: ingredients_tracking_type | null
     fill_level: number
     count: number
     shelf_life_months: number
@@ -8120,7 +10618,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
-    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
@@ -8136,7 +10634,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
-    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
@@ -8152,7 +10650,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     is_reviewed: boolean
     embedding: string
-    tracking_type?: $Enums.ingredients_tracking_type | null
+    tracking_type?: ingredients_tracking_type | null
     fill_level: number
     count: number
     shelf_life_months: number
@@ -8167,7 +10665,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
-    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
@@ -8181,7 +10679,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
-    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
@@ -8194,7 +10692,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
-    state: $Enums.ingredient_photo_upload_state
+    state: ingredient_photo_upload_state
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
@@ -8207,7 +10705,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
-    state: $Enums.ingredient_photo_upload_state
+    state: ingredient_photo_upload_state
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
@@ -8218,7 +10716,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | $Enums.ingredient_photo_upload_state
+    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | ingredient_photo_upload_state
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -8231,7 +10729,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | $Enums.ingredient_photo_upload_state
+    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | ingredient_photo_upload_state
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -8243,7 +10741,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
-    state: $Enums.ingredient_photo_upload_state
+    state: ingredient_photo_upload_state
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
@@ -8253,7 +10751,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | $Enums.ingredient_photo_upload_state
+    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | ingredient_photo_upload_state
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -8264,10 +10762,87 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | $Enums.ingredient_photo_upload_state
+    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | ingredient_photo_upload_state
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type JobsCreateInput = {
+    id: string
+    state: jobs_state
+    target_id?: string | null
+    type: string
+    created_at: Date | string
+    updated_at: Date | string
+    error?: NullableJsonNullValueInput | InputJsonValue
+    result?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type JobsUncheckedCreateInput = {
+    id: string
+    state: jobs_state
+    target_id?: string | null
+    type: string
+    created_at: Date | string
+    updated_at: Date | string
+    error?: NullableJsonNullValueInput | InputJsonValue
+    result?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type JobsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    state?: Enumjobs_stateFieldUpdateOperationsInput | jobs_state
+    target_id?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    error?: NullableJsonNullValueInput | InputJsonValue
+    result?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type JobsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    state?: Enumjobs_stateFieldUpdateOperationsInput | jobs_state
+    target_id?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    error?: NullableJsonNullValueInput | InputJsonValue
+    result?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type JobsCreateManyInput = {
+    id: string
+    state: jobs_state
+    target_id?: string | null
+    type: string
+    created_at: Date | string
+    updated_at: Date | string
+    error?: NullableJsonNullValueInput | InputJsonValue
+    result?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type JobsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    state?: Enumjobs_stateFieldUpdateOperationsInput | jobs_state
+    target_id?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    error?: NullableJsonNullValueInput | InputJsonValue
+    result?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type JobsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    state?: Enumjobs_stateFieldUpdateOperationsInput | jobs_state
+    target_id?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    error?: NullableJsonNullValueInput | InputJsonValue
+    result?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type Recipe_ingredientsCreateInput = {
@@ -8275,7 +10850,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing: string
     extracted_name: string
     embedding: string
+    grocery_section: grocery_section
     recipes: RecipesCreateNestedOneWithoutRecipe_ingredientsInput
+    shopping_list?: Shopping_listCreateNestedManyWithoutRecipe_ingredientsInput
   }
 
   export type Recipe_ingredientsUncheckedCreateInput = {
@@ -8283,7 +10860,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing: string
     extracted_name: string
     embedding: string
+    grocery_section: grocery_section
     recipe_id: string
+    shopping_list?: Shopping_listUncheckedCreateNestedManyWithoutRecipe_ingredientsInput
   }
 
   export type Recipe_ingredientsUpdateInput = {
@@ -8291,7 +10870,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: StringFieldUpdateOperationsInput | string
     extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
     recipes?: RecipesUpdateOneRequiredWithoutRecipe_ingredientsNestedInput
+    shopping_list?: Shopping_listUpdateManyWithoutRecipe_ingredientsNestedInput
   }
 
   export type Recipe_ingredientsUncheckedUpdateInput = {
@@ -8299,7 +10880,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: StringFieldUpdateOperationsInput | string
     extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
     recipe_id?: StringFieldUpdateOperationsInput | string
+    shopping_list?: Shopping_listUncheckedUpdateManyWithoutRecipe_ingredientsNestedInput
   }
 
   export type Recipe_ingredientsCreateManyInput = {
@@ -8307,6 +10890,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing: string
     extracted_name: string
     embedding: string
+    grocery_section: grocery_section
     recipe_id: string
   }
 
@@ -8315,6 +10899,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: StringFieldUpdateOperationsInput | string
     extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
   }
 
   export type Recipe_ingredientsUncheckedUpdateManyInput = {
@@ -8322,6 +10907,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: StringFieldUpdateOperationsInput | string
     extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
     recipe_id?: StringFieldUpdateOperationsInput | string
   }
 
@@ -8334,6 +10920,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     updated_at: Date | string
     recipe_ingredients?: Recipe_ingredientsCreateNestedManyWithoutRecipesInput
     users: UsersCreateNestedOneWithoutRecipesInput
+    shopping_list?: Shopping_listCreateNestedManyWithoutRecipesInput
   }
 
   export type RecipesUncheckedCreateInput = {
@@ -8345,6 +10932,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     created_at: Date | string
     updated_at: Date | string
     recipe_ingredients?: Recipe_ingredientsUncheckedCreateNestedManyWithoutRecipesInput
+    shopping_list?: Shopping_listUncheckedCreateNestedManyWithoutRecipesInput
   }
 
   export type RecipesUpdateInput = {
@@ -8356,6 +10944,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     recipe_ingredients?: Recipe_ingredientsUpdateManyWithoutRecipesNestedInput
     users?: UsersUpdateOneRequiredWithoutRecipesNestedInput
+    shopping_list?: Shopping_listUpdateManyWithoutRecipesNestedInput
   }
 
   export type RecipesUncheckedUpdateInput = {
@@ -8367,6 +10956,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     recipe_ingredients?: Recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput
+    shopping_list?: Shopping_listUncheckedUpdateManyWithoutRecipesNestedInput
   }
 
   export type RecipesCreateManyInput = {
@@ -8396,6 +10986,60 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type Shopping_listCreateInput = {
+    id: string
+    purchased: boolean
+    created_at: Date | string
+    recipes: RecipesCreateNestedOneWithoutShopping_listInput
+    recipe_ingredients: Recipe_ingredientsCreateNestedOneWithoutShopping_listInput
+  }
+
+  export type Shopping_listUncheckedCreateInput = {
+    id: string
+    recipe_id: string
+    recipe_ingredient_id: string
+    purchased: boolean
+    created_at: Date | string
+  }
+
+  export type Shopping_listUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    purchased?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    recipes?: RecipesUpdateOneRequiredWithoutShopping_listNestedInput
+    recipe_ingredients?: Recipe_ingredientsUpdateOneRequiredWithoutShopping_listNestedInput
+  }
+
+  export type Shopping_listUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    recipe_id?: StringFieldUpdateOperationsInput | string
+    recipe_ingredient_id?: StringFieldUpdateOperationsInput | string
+    purchased?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type Shopping_listCreateManyInput = {
+    id: string
+    recipe_id: string
+    recipe_ingredient_id: string
+    purchased: boolean
+    created_at: Date | string
+  }
+
+  export type Shopping_listUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    purchased?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type Shopping_listUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    recipe_id?: StringFieldUpdateOperationsInput | string
+    recipe_ingredient_id?: StringFieldUpdateOperationsInput | string
+    purchased?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UsersCreateInput = {
@@ -8454,8 +11098,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type UuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -8466,8 +11110,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -8481,8 +11125,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    in?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel>
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -8498,7 +11142,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type JsonNullableFilterBase<$PrismaModel = never> = {
     equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
+    path?: Array<string>
     string_contains?: string | StringFieldRefInput<$PrismaModel>
     string_starts_with?: string | StringFieldRefInput<$PrismaModel>
     string_ends_with?: string | StringFieldRefInput<$PrismaModel>
@@ -8552,8 +11196,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type UuidWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -8567,8 +11211,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -8585,8 +11229,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    in?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel>
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -8605,7 +11249,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
     equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
+    path?: Array<string>
     string_contains?: string | StringFieldRefInput<$PrismaModel>
     string_starts_with?: string | StringFieldRefInput<$PrismaModel>
     string_ends_with?: string | StringFieldRefInput<$PrismaModel>
@@ -8628,16 +11272,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Enumingredients_tracking_typeNullableFilter<$PrismaModel = never> = {
-    equals?: $Enums.ingredients_tracking_type | Enumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    in?: $Enums.ingredients_tracking_type[] | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    notIn?: $Enums.ingredients_tracking_type[] | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel> | $Enums.ingredients_tracking_type | null
+    equals?: ingredients_tracking_type | Enumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<ingredients_tracking_type> | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<ingredients_tracking_type> | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel> | ingredients_tracking_type | null
   }
 
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    in?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel>
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -8652,8 +11296,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type UuidNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -8743,10 +11387,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Enumingredients_tracking_typeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ingredients_tracking_type | Enumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    in?: $Enums.ingredients_tracking_type[] | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    notIn?: $Enums.ingredients_tracking_type[] | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumingredients_tracking_typeNullableWithAggregatesFilter<$PrismaModel> | $Enums.ingredients_tracking_type | null
+    equals?: ingredients_tracking_type | Enumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<ingredients_tracking_type> | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<ingredients_tracking_type> | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumingredients_tracking_typeNullableWithAggregatesFilter<$PrismaModel> | ingredients_tracking_type | null
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel>
     _max?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel>
@@ -8754,8 +11398,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    in?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel>
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -8778,8 +11422,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type UuidNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -8793,8 +11437,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type DateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel> | null
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -8803,16 +11447,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Enumingredient_photo_upload_stateFilter<$PrismaModel = never> = {
-    equals?: $Enums.ingredient_photo_upload_state | Enumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    in?: $Enums.ingredient_photo_upload_state[] | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ingredient_photo_upload_state[] | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    not?: NestedEnumingredient_photo_upload_stateFilter<$PrismaModel> | $Enums.ingredient_photo_upload_state
+    equals?: ingredient_photo_upload_state | Enumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
+    in?: Enumerable<ingredient_photo_upload_state> | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<ingredient_photo_upload_state> | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
+    not?: NestedEnumingredient_photo_upload_stateFilter<$PrismaModel> | ingredient_photo_upload_state
   }
 
   export type FloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel> | null
     lt?: number | FloatFieldRefInput<$PrismaModel>
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
@@ -8822,8 +11466,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type StringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -8890,8 +11534,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel> | null
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -8903,10 +11547,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Enumingredient_photo_upload_stateWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ingredient_photo_upload_state | Enumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    in?: $Enums.ingredient_photo_upload_state[] | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ingredient_photo_upload_state[] | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    not?: NestedEnumingredient_photo_upload_stateWithAggregatesFilter<$PrismaModel> | $Enums.ingredient_photo_upload_state
+    equals?: ingredient_photo_upload_state | Enumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
+    in?: Enumerable<ingredient_photo_upload_state> | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<ingredient_photo_upload_state> | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
+    not?: NestedEnumingredient_photo_upload_stateWithAggregatesFilter<$PrismaModel> | ingredient_photo_upload_state
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumingredient_photo_upload_stateFilter<$PrismaModel>
     _max?: NestedEnumingredient_photo_upload_stateFilter<$PrismaModel>
@@ -8914,8 +11558,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel> | null
     lt?: number | FloatFieldRefInput<$PrismaModel>
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
@@ -8930,8 +11574,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -8946,9 +11590,72 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type Enumjobs_stateFilter<$PrismaModel = never> = {
+    equals?: jobs_state | Enumjobs_stateFieldRefInput<$PrismaModel>
+    in?: Enumerable<jobs_state> | ListEnumjobs_stateFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<jobs_state> | ListEnumjobs_stateFieldRefInput<$PrismaModel>
+    not?: NestedEnumjobs_stateFilter<$PrismaModel> | jobs_state
+  }
+
+  export type JobsCountOrderByAggregateInput = {
+    id?: SortOrder
+    state?: SortOrder
+    target_id?: SortOrder
+    type?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    error?: SortOrder
+    result?: SortOrder
+  }
+
+  export type JobsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    state?: SortOrder
+    target_id?: SortOrder
+    type?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type JobsMinOrderByAggregateInput = {
+    id?: SortOrder
+    state?: SortOrder
+    target_id?: SortOrder
+    type?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type Enumjobs_stateWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: jobs_state | Enumjobs_stateFieldRefInput<$PrismaModel>
+    in?: Enumerable<jobs_state> | ListEnumjobs_stateFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<jobs_state> | ListEnumjobs_stateFieldRefInput<$PrismaModel>
+    not?: NestedEnumjobs_stateWithAggregatesFilter<$PrismaModel> | jobs_state
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumjobs_stateFilter<$PrismaModel>
+    _max?: NestedEnumjobs_stateFilter<$PrismaModel>
+  }
+
+  export type Enumgrocery_sectionFilter<$PrismaModel = never> = {
+    equals?: grocery_section | Enumgrocery_sectionFieldRefInput<$PrismaModel>
+    in?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
+    not?: NestedEnumgrocery_sectionFilter<$PrismaModel> | grocery_section
+  }
+
   export type RecipesRelationFilter = {
     is?: RecipesWhereInput
     isNot?: RecipesWhereInput
+  }
+
+  export type Shopping_listListRelationFilter = {
+    every?: Shopping_listWhereInput
+    some?: Shopping_listWhereInput
+    none?: Shopping_listWhereInput
+  }
+
+  export type Shopping_listOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type Recipe_ingredientsCountOrderByAggregateInput = {
@@ -8956,6 +11663,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: SortOrder
     extracted_name?: SortOrder
     embedding?: SortOrder
+    grocery_section?: SortOrder
     recipe_id?: SortOrder
   }
 
@@ -8964,6 +11672,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: SortOrder
     extracted_name?: SortOrder
     embedding?: SortOrder
+    grocery_section?: SortOrder
     recipe_id?: SortOrder
   }
 
@@ -8972,7 +11681,18 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: SortOrder
     extracted_name?: SortOrder
     embedding?: SortOrder
+    grocery_section?: SortOrder
     recipe_id?: SortOrder
+  }
+
+  export type Enumgrocery_sectionWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: grocery_section | Enumgrocery_sectionFieldRefInput<$PrismaModel>
+    in?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
+    not?: NestedEnumgrocery_sectionWithAggregatesFilter<$PrismaModel> | grocery_section
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumgrocery_sectionFilter<$PrismaModel>
+    _max?: NestedEnumgrocery_sectionFilter<$PrismaModel>
   }
 
   export type Recipe_ingredientsListRelationFilter = {
@@ -9013,6 +11733,35 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+  }
+
+  export type Recipe_ingredientsRelationFilter = {
+    is?: Recipe_ingredientsWhereInput
+    isNot?: Recipe_ingredientsWhereInput
+  }
+
+  export type Shopping_listCountOrderByAggregateInput = {
+    id?: SortOrder
+    recipe_id?: SortOrder
+    recipe_ingredient_id?: SortOrder
+    purchased?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type Shopping_listMaxOrderByAggregateInput = {
+    id?: SortOrder
+    recipe_id?: SortOrder
+    recipe_ingredient_id?: SortOrder
+    purchased?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type Shopping_listMinOrderByAggregateInput = {
+    id?: SortOrder
+    recipe_id?: SortOrder
+    recipe_ingredient_id?: SortOrder
+    purchased?: SortOrder
+    created_at?: SortOrder
   }
 
   export type Ingredients_photo_uploadsListRelationFilter = {
@@ -9090,10 +11839,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Ingredient_eventsCreateNestedManyWithoutIngredientsInput = {
-    create?: XOR<Ingredient_eventsCreateWithoutIngredientsInput, Ingredient_eventsUncheckedCreateWithoutIngredientsInput> | Ingredient_eventsCreateWithoutIngredientsInput[] | Ingredient_eventsUncheckedCreateWithoutIngredientsInput[]
-    connectOrCreate?: Ingredient_eventsCreateOrConnectWithoutIngredientsInput | Ingredient_eventsCreateOrConnectWithoutIngredientsInput[]
+    create?: XOR<Enumerable<Ingredient_eventsCreateWithoutIngredientsInput>, Enumerable<Ingredient_eventsUncheckedCreateWithoutIngredientsInput>>
+    connectOrCreate?: Enumerable<Ingredient_eventsCreateOrConnectWithoutIngredientsInput>
     createMany?: Ingredient_eventsCreateManyIngredientsInputEnvelope
-    connect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    connect?: Enumerable<Ingredient_eventsWhereUniqueInput>
   }
 
   export type Ingredients_photo_uploadsCreateNestedOneWithoutIngredientsInput = {
@@ -9103,10 +11852,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Ingredient_eventsUncheckedCreateNestedManyWithoutIngredientsInput = {
-    create?: XOR<Ingredient_eventsCreateWithoutIngredientsInput, Ingredient_eventsUncheckedCreateWithoutIngredientsInput> | Ingredient_eventsCreateWithoutIngredientsInput[] | Ingredient_eventsUncheckedCreateWithoutIngredientsInput[]
-    connectOrCreate?: Ingredient_eventsCreateOrConnectWithoutIngredientsInput | Ingredient_eventsCreateOrConnectWithoutIngredientsInput[]
+    create?: XOR<Enumerable<Ingredient_eventsCreateWithoutIngredientsInput>, Enumerable<Ingredient_eventsUncheckedCreateWithoutIngredientsInput>>
+    connectOrCreate?: Enumerable<Ingredient_eventsCreateOrConnectWithoutIngredientsInput>
     createMany?: Ingredient_eventsCreateManyIngredientsInputEnvelope
-    connect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    connect?: Enumerable<Ingredient_eventsWhereUniqueInput>
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -9114,7 +11863,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type NullableEnumingredients_tracking_typeFieldUpdateOperationsInput = {
-    set?: $Enums.ingredients_tracking_type | null
+    set?: ingredients_tracking_type | null
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -9130,17 +11879,17 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Ingredient_eventsUpdateManyWithoutIngredientsNestedInput = {
-    create?: XOR<Ingredient_eventsCreateWithoutIngredientsInput, Ingredient_eventsUncheckedCreateWithoutIngredientsInput> | Ingredient_eventsCreateWithoutIngredientsInput[] | Ingredient_eventsUncheckedCreateWithoutIngredientsInput[]
-    connectOrCreate?: Ingredient_eventsCreateOrConnectWithoutIngredientsInput | Ingredient_eventsCreateOrConnectWithoutIngredientsInput[]
-    upsert?: Ingredient_eventsUpsertWithWhereUniqueWithoutIngredientsInput | Ingredient_eventsUpsertWithWhereUniqueWithoutIngredientsInput[]
+    create?: XOR<Enumerable<Ingredient_eventsCreateWithoutIngredientsInput>, Enumerable<Ingredient_eventsUncheckedCreateWithoutIngredientsInput>>
+    connectOrCreate?: Enumerable<Ingredient_eventsCreateOrConnectWithoutIngredientsInput>
+    upsert?: Enumerable<Ingredient_eventsUpsertWithWhereUniqueWithoutIngredientsInput>
     createMany?: Ingredient_eventsCreateManyIngredientsInputEnvelope
-    set?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
-    disconnect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
-    delete?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
-    connect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
-    update?: Ingredient_eventsUpdateWithWhereUniqueWithoutIngredientsInput | Ingredient_eventsUpdateWithWhereUniqueWithoutIngredientsInput[]
-    updateMany?: Ingredient_eventsUpdateManyWithWhereWithoutIngredientsInput | Ingredient_eventsUpdateManyWithWhereWithoutIngredientsInput[]
-    deleteMany?: Ingredient_eventsScalarWhereInput | Ingredient_eventsScalarWhereInput[]
+    set?: Enumerable<Ingredient_eventsWhereUniqueInput>
+    disconnect?: Enumerable<Ingredient_eventsWhereUniqueInput>
+    delete?: Enumerable<Ingredient_eventsWhereUniqueInput>
+    connect?: Enumerable<Ingredient_eventsWhereUniqueInput>
+    update?: Enumerable<Ingredient_eventsUpdateWithWhereUniqueWithoutIngredientsInput>
+    updateMany?: Enumerable<Ingredient_eventsUpdateManyWithWhereWithoutIngredientsInput>
+    deleteMany?: Enumerable<Ingredient_eventsScalarWhereInput>
   }
 
   export type Ingredients_photo_uploadsUpdateOneWithoutIngredientsNestedInput = {
@@ -9158,24 +11907,24 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Ingredient_eventsUncheckedUpdateManyWithoutIngredientsNestedInput = {
-    create?: XOR<Ingredient_eventsCreateWithoutIngredientsInput, Ingredient_eventsUncheckedCreateWithoutIngredientsInput> | Ingredient_eventsCreateWithoutIngredientsInput[] | Ingredient_eventsUncheckedCreateWithoutIngredientsInput[]
-    connectOrCreate?: Ingredient_eventsCreateOrConnectWithoutIngredientsInput | Ingredient_eventsCreateOrConnectWithoutIngredientsInput[]
-    upsert?: Ingredient_eventsUpsertWithWhereUniqueWithoutIngredientsInput | Ingredient_eventsUpsertWithWhereUniqueWithoutIngredientsInput[]
+    create?: XOR<Enumerable<Ingredient_eventsCreateWithoutIngredientsInput>, Enumerable<Ingredient_eventsUncheckedCreateWithoutIngredientsInput>>
+    connectOrCreate?: Enumerable<Ingredient_eventsCreateOrConnectWithoutIngredientsInput>
+    upsert?: Enumerable<Ingredient_eventsUpsertWithWhereUniqueWithoutIngredientsInput>
     createMany?: Ingredient_eventsCreateManyIngredientsInputEnvelope
-    set?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
-    disconnect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
-    delete?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
-    connect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
-    update?: Ingredient_eventsUpdateWithWhereUniqueWithoutIngredientsInput | Ingredient_eventsUpdateWithWhereUniqueWithoutIngredientsInput[]
-    updateMany?: Ingredient_eventsUpdateManyWithWhereWithoutIngredientsInput | Ingredient_eventsUpdateManyWithWhereWithoutIngredientsInput[]
-    deleteMany?: Ingredient_eventsScalarWhereInput | Ingredient_eventsScalarWhereInput[]
+    set?: Enumerable<Ingredient_eventsWhereUniqueInput>
+    disconnect?: Enumerable<Ingredient_eventsWhereUniqueInput>
+    delete?: Enumerable<Ingredient_eventsWhereUniqueInput>
+    connect?: Enumerable<Ingredient_eventsWhereUniqueInput>
+    update?: Enumerable<Ingredient_eventsUpdateWithWhereUniqueWithoutIngredientsInput>
+    updateMany?: Enumerable<Ingredient_eventsUpdateManyWithWhereWithoutIngredientsInput>
+    deleteMany?: Enumerable<Ingredient_eventsScalarWhereInput>
   }
 
   export type IngredientsCreateNestedManyWithoutIngredients_photo_uploadsInput = {
-    create?: XOR<IngredientsCreateWithoutIngredients_photo_uploadsInput, IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput> | IngredientsCreateWithoutIngredients_photo_uploadsInput[] | IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput[]
-    connectOrCreate?: IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput | IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput[]
+    create?: XOR<Enumerable<IngredientsCreateWithoutIngredients_photo_uploadsInput>, Enumerable<IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput>>
+    connectOrCreate?: Enumerable<IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput>
     createMany?: IngredientsCreateManyIngredients_photo_uploadsInputEnvelope
-    connect?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
+    connect?: Enumerable<IngredientsWhereUniqueInput>
   }
 
   export type UsersCreateNestedOneWithoutIngredients_photo_uploadsInput = {
@@ -9185,10 +11934,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type IngredientsUncheckedCreateNestedManyWithoutIngredients_photo_uploadsInput = {
-    create?: XOR<IngredientsCreateWithoutIngredients_photo_uploadsInput, IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput> | IngredientsCreateWithoutIngredients_photo_uploadsInput[] | IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput[]
-    connectOrCreate?: IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput | IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput[]
+    create?: XOR<Enumerable<IngredientsCreateWithoutIngredients_photo_uploadsInput>, Enumerable<IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput>>
+    connectOrCreate?: Enumerable<IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput>
     createMany?: IngredientsCreateManyIngredients_photo_uploadsInputEnvelope
-    connect?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
+    connect?: Enumerable<IngredientsWhereUniqueInput>
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -9196,7 +11945,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Enumingredient_photo_upload_stateFieldUpdateOperationsInput = {
-    set?: $Enums.ingredient_photo_upload_state
+    set?: ingredient_photo_upload_state
   }
 
   export type NullableFloatFieldUpdateOperationsInput = {
@@ -9208,17 +11957,17 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type IngredientsUpdateManyWithoutIngredients_photo_uploadsNestedInput = {
-    create?: XOR<IngredientsCreateWithoutIngredients_photo_uploadsInput, IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput> | IngredientsCreateWithoutIngredients_photo_uploadsInput[] | IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput[]
-    connectOrCreate?: IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput | IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput[]
-    upsert?: IngredientsUpsertWithWhereUniqueWithoutIngredients_photo_uploadsInput | IngredientsUpsertWithWhereUniqueWithoutIngredients_photo_uploadsInput[]
+    create?: XOR<Enumerable<IngredientsCreateWithoutIngredients_photo_uploadsInput>, Enumerable<IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput>>
+    connectOrCreate?: Enumerable<IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput>
+    upsert?: Enumerable<IngredientsUpsertWithWhereUniqueWithoutIngredients_photo_uploadsInput>
     createMany?: IngredientsCreateManyIngredients_photo_uploadsInputEnvelope
-    set?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
-    disconnect?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
-    delete?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
-    connect?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
-    update?: IngredientsUpdateWithWhereUniqueWithoutIngredients_photo_uploadsInput | IngredientsUpdateWithWhereUniqueWithoutIngredients_photo_uploadsInput[]
-    updateMany?: IngredientsUpdateManyWithWhereWithoutIngredients_photo_uploadsInput | IngredientsUpdateManyWithWhereWithoutIngredients_photo_uploadsInput[]
-    deleteMany?: IngredientsScalarWhereInput | IngredientsScalarWhereInput[]
+    set?: Enumerable<IngredientsWhereUniqueInput>
+    disconnect?: Enumerable<IngredientsWhereUniqueInput>
+    delete?: Enumerable<IngredientsWhereUniqueInput>
+    connect?: Enumerable<IngredientsWhereUniqueInput>
+    update?: Enumerable<IngredientsUpdateWithWhereUniqueWithoutIngredients_photo_uploadsInput>
+    updateMany?: Enumerable<IngredientsUpdateManyWithWhereWithoutIngredients_photo_uploadsInput>
+    deleteMany?: Enumerable<IngredientsScalarWhereInput>
   }
 
   export type UsersUpdateOneRequiredWithoutIngredients_photo_uploadsNestedInput = {
@@ -9230,23 +11979,45 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type IngredientsUncheckedUpdateManyWithoutIngredients_photo_uploadsNestedInput = {
-    create?: XOR<IngredientsCreateWithoutIngredients_photo_uploadsInput, IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput> | IngredientsCreateWithoutIngredients_photo_uploadsInput[] | IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput[]
-    connectOrCreate?: IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput | IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput[]
-    upsert?: IngredientsUpsertWithWhereUniqueWithoutIngredients_photo_uploadsInput | IngredientsUpsertWithWhereUniqueWithoutIngredients_photo_uploadsInput[]
+    create?: XOR<Enumerable<IngredientsCreateWithoutIngredients_photo_uploadsInput>, Enumerable<IngredientsUncheckedCreateWithoutIngredients_photo_uploadsInput>>
+    connectOrCreate?: Enumerable<IngredientsCreateOrConnectWithoutIngredients_photo_uploadsInput>
+    upsert?: Enumerable<IngredientsUpsertWithWhereUniqueWithoutIngredients_photo_uploadsInput>
     createMany?: IngredientsCreateManyIngredients_photo_uploadsInputEnvelope
-    set?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
-    disconnect?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
-    delete?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
-    connect?: IngredientsWhereUniqueInput | IngredientsWhereUniqueInput[]
-    update?: IngredientsUpdateWithWhereUniqueWithoutIngredients_photo_uploadsInput | IngredientsUpdateWithWhereUniqueWithoutIngredients_photo_uploadsInput[]
-    updateMany?: IngredientsUpdateManyWithWhereWithoutIngredients_photo_uploadsInput | IngredientsUpdateManyWithWhereWithoutIngredients_photo_uploadsInput[]
-    deleteMany?: IngredientsScalarWhereInput | IngredientsScalarWhereInput[]
+    set?: Enumerable<IngredientsWhereUniqueInput>
+    disconnect?: Enumerable<IngredientsWhereUniqueInput>
+    delete?: Enumerable<IngredientsWhereUniqueInput>
+    connect?: Enumerable<IngredientsWhereUniqueInput>
+    update?: Enumerable<IngredientsUpdateWithWhereUniqueWithoutIngredients_photo_uploadsInput>
+    updateMany?: Enumerable<IngredientsUpdateManyWithWhereWithoutIngredients_photo_uploadsInput>
+    deleteMany?: Enumerable<IngredientsScalarWhereInput>
+  }
+
+  export type Enumjobs_stateFieldUpdateOperationsInput = {
+    set?: jobs_state
   }
 
   export type RecipesCreateNestedOneWithoutRecipe_ingredientsInput = {
     create?: XOR<RecipesCreateWithoutRecipe_ingredientsInput, RecipesUncheckedCreateWithoutRecipe_ingredientsInput>
     connectOrCreate?: RecipesCreateOrConnectWithoutRecipe_ingredientsInput
     connect?: RecipesWhereUniqueInput
+  }
+
+  export type Shopping_listCreateNestedManyWithoutRecipe_ingredientsInput = {
+    create?: XOR<Enumerable<Shopping_listCreateWithoutRecipe_ingredientsInput>, Enumerable<Shopping_listUncheckedCreateWithoutRecipe_ingredientsInput>>
+    connectOrCreate?: Enumerable<Shopping_listCreateOrConnectWithoutRecipe_ingredientsInput>
+    createMany?: Shopping_listCreateManyRecipe_ingredientsInputEnvelope
+    connect?: Enumerable<Shopping_listWhereUniqueInput>
+  }
+
+  export type Shopping_listUncheckedCreateNestedManyWithoutRecipe_ingredientsInput = {
+    create?: XOR<Enumerable<Shopping_listCreateWithoutRecipe_ingredientsInput>, Enumerable<Shopping_listUncheckedCreateWithoutRecipe_ingredientsInput>>
+    connectOrCreate?: Enumerable<Shopping_listCreateOrConnectWithoutRecipe_ingredientsInput>
+    createMany?: Shopping_listCreateManyRecipe_ingredientsInputEnvelope
+    connect?: Enumerable<Shopping_listWhereUniqueInput>
+  }
+
+  export type Enumgrocery_sectionFieldUpdateOperationsInput = {
+    set?: grocery_section
   }
 
   export type RecipesUpdateOneRequiredWithoutRecipe_ingredientsNestedInput = {
@@ -9257,11 +12028,39 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     update?: XOR<XOR<RecipesUpdateToOneWithWhereWithoutRecipe_ingredientsInput, RecipesUpdateWithoutRecipe_ingredientsInput>, RecipesUncheckedUpdateWithoutRecipe_ingredientsInput>
   }
 
+  export type Shopping_listUpdateManyWithoutRecipe_ingredientsNestedInput = {
+    create?: XOR<Enumerable<Shopping_listCreateWithoutRecipe_ingredientsInput>, Enumerable<Shopping_listUncheckedCreateWithoutRecipe_ingredientsInput>>
+    connectOrCreate?: Enumerable<Shopping_listCreateOrConnectWithoutRecipe_ingredientsInput>
+    upsert?: Enumerable<Shopping_listUpsertWithWhereUniqueWithoutRecipe_ingredientsInput>
+    createMany?: Shopping_listCreateManyRecipe_ingredientsInputEnvelope
+    set?: Enumerable<Shopping_listWhereUniqueInput>
+    disconnect?: Enumerable<Shopping_listWhereUniqueInput>
+    delete?: Enumerable<Shopping_listWhereUniqueInput>
+    connect?: Enumerable<Shopping_listWhereUniqueInput>
+    update?: Enumerable<Shopping_listUpdateWithWhereUniqueWithoutRecipe_ingredientsInput>
+    updateMany?: Enumerable<Shopping_listUpdateManyWithWhereWithoutRecipe_ingredientsInput>
+    deleteMany?: Enumerable<Shopping_listScalarWhereInput>
+  }
+
+  export type Shopping_listUncheckedUpdateManyWithoutRecipe_ingredientsNestedInput = {
+    create?: XOR<Enumerable<Shopping_listCreateWithoutRecipe_ingredientsInput>, Enumerable<Shopping_listUncheckedCreateWithoutRecipe_ingredientsInput>>
+    connectOrCreate?: Enumerable<Shopping_listCreateOrConnectWithoutRecipe_ingredientsInput>
+    upsert?: Enumerable<Shopping_listUpsertWithWhereUniqueWithoutRecipe_ingredientsInput>
+    createMany?: Shopping_listCreateManyRecipe_ingredientsInputEnvelope
+    set?: Enumerable<Shopping_listWhereUniqueInput>
+    disconnect?: Enumerable<Shopping_listWhereUniqueInput>
+    delete?: Enumerable<Shopping_listWhereUniqueInput>
+    connect?: Enumerable<Shopping_listWhereUniqueInput>
+    update?: Enumerable<Shopping_listUpdateWithWhereUniqueWithoutRecipe_ingredientsInput>
+    updateMany?: Enumerable<Shopping_listUpdateManyWithWhereWithoutRecipe_ingredientsInput>
+    deleteMany?: Enumerable<Shopping_listScalarWhereInput>
+  }
+
   export type Recipe_ingredientsCreateNestedManyWithoutRecipesInput = {
-    create?: XOR<Recipe_ingredientsCreateWithoutRecipesInput, Recipe_ingredientsUncheckedCreateWithoutRecipesInput> | Recipe_ingredientsCreateWithoutRecipesInput[] | Recipe_ingredientsUncheckedCreateWithoutRecipesInput[]
-    connectOrCreate?: Recipe_ingredientsCreateOrConnectWithoutRecipesInput | Recipe_ingredientsCreateOrConnectWithoutRecipesInput[]
+    create?: XOR<Enumerable<Recipe_ingredientsCreateWithoutRecipesInput>, Enumerable<Recipe_ingredientsUncheckedCreateWithoutRecipesInput>>
+    connectOrCreate?: Enumerable<Recipe_ingredientsCreateOrConnectWithoutRecipesInput>
     createMany?: Recipe_ingredientsCreateManyRecipesInputEnvelope
-    connect?: Recipe_ingredientsWhereUniqueInput | Recipe_ingredientsWhereUniqueInput[]
+    connect?: Enumerable<Recipe_ingredientsWhereUniqueInput>
   }
 
   export type UsersCreateNestedOneWithoutRecipesInput = {
@@ -9270,25 +12069,39 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     connect?: UsersWhereUniqueInput
   }
 
+  export type Shopping_listCreateNestedManyWithoutRecipesInput = {
+    create?: XOR<Enumerable<Shopping_listCreateWithoutRecipesInput>, Enumerable<Shopping_listUncheckedCreateWithoutRecipesInput>>
+    connectOrCreate?: Enumerable<Shopping_listCreateOrConnectWithoutRecipesInput>
+    createMany?: Shopping_listCreateManyRecipesInputEnvelope
+    connect?: Enumerable<Shopping_listWhereUniqueInput>
+  }
+
   export type Recipe_ingredientsUncheckedCreateNestedManyWithoutRecipesInput = {
-    create?: XOR<Recipe_ingredientsCreateWithoutRecipesInput, Recipe_ingredientsUncheckedCreateWithoutRecipesInput> | Recipe_ingredientsCreateWithoutRecipesInput[] | Recipe_ingredientsUncheckedCreateWithoutRecipesInput[]
-    connectOrCreate?: Recipe_ingredientsCreateOrConnectWithoutRecipesInput | Recipe_ingredientsCreateOrConnectWithoutRecipesInput[]
+    create?: XOR<Enumerable<Recipe_ingredientsCreateWithoutRecipesInput>, Enumerable<Recipe_ingredientsUncheckedCreateWithoutRecipesInput>>
+    connectOrCreate?: Enumerable<Recipe_ingredientsCreateOrConnectWithoutRecipesInput>
     createMany?: Recipe_ingredientsCreateManyRecipesInputEnvelope
-    connect?: Recipe_ingredientsWhereUniqueInput | Recipe_ingredientsWhereUniqueInput[]
+    connect?: Enumerable<Recipe_ingredientsWhereUniqueInput>
+  }
+
+  export type Shopping_listUncheckedCreateNestedManyWithoutRecipesInput = {
+    create?: XOR<Enumerable<Shopping_listCreateWithoutRecipesInput>, Enumerable<Shopping_listUncheckedCreateWithoutRecipesInput>>
+    connectOrCreate?: Enumerable<Shopping_listCreateOrConnectWithoutRecipesInput>
+    createMany?: Shopping_listCreateManyRecipesInputEnvelope
+    connect?: Enumerable<Shopping_listWhereUniqueInput>
   }
 
   export type Recipe_ingredientsUpdateManyWithoutRecipesNestedInput = {
-    create?: XOR<Recipe_ingredientsCreateWithoutRecipesInput, Recipe_ingredientsUncheckedCreateWithoutRecipesInput> | Recipe_ingredientsCreateWithoutRecipesInput[] | Recipe_ingredientsUncheckedCreateWithoutRecipesInput[]
-    connectOrCreate?: Recipe_ingredientsCreateOrConnectWithoutRecipesInput | Recipe_ingredientsCreateOrConnectWithoutRecipesInput[]
-    upsert?: Recipe_ingredientsUpsertWithWhereUniqueWithoutRecipesInput | Recipe_ingredientsUpsertWithWhereUniqueWithoutRecipesInput[]
+    create?: XOR<Enumerable<Recipe_ingredientsCreateWithoutRecipesInput>, Enumerable<Recipe_ingredientsUncheckedCreateWithoutRecipesInput>>
+    connectOrCreate?: Enumerable<Recipe_ingredientsCreateOrConnectWithoutRecipesInput>
+    upsert?: Enumerable<Recipe_ingredientsUpsertWithWhereUniqueWithoutRecipesInput>
     createMany?: Recipe_ingredientsCreateManyRecipesInputEnvelope
-    set?: Recipe_ingredientsWhereUniqueInput | Recipe_ingredientsWhereUniqueInput[]
-    disconnect?: Recipe_ingredientsWhereUniqueInput | Recipe_ingredientsWhereUniqueInput[]
-    delete?: Recipe_ingredientsWhereUniqueInput | Recipe_ingredientsWhereUniqueInput[]
-    connect?: Recipe_ingredientsWhereUniqueInput | Recipe_ingredientsWhereUniqueInput[]
-    update?: Recipe_ingredientsUpdateWithWhereUniqueWithoutRecipesInput | Recipe_ingredientsUpdateWithWhereUniqueWithoutRecipesInput[]
-    updateMany?: Recipe_ingredientsUpdateManyWithWhereWithoutRecipesInput | Recipe_ingredientsUpdateManyWithWhereWithoutRecipesInput[]
-    deleteMany?: Recipe_ingredientsScalarWhereInput | Recipe_ingredientsScalarWhereInput[]
+    set?: Enumerable<Recipe_ingredientsWhereUniqueInput>
+    disconnect?: Enumerable<Recipe_ingredientsWhereUniqueInput>
+    delete?: Enumerable<Recipe_ingredientsWhereUniqueInput>
+    connect?: Enumerable<Recipe_ingredientsWhereUniqueInput>
+    update?: Enumerable<Recipe_ingredientsUpdateWithWhereUniqueWithoutRecipesInput>
+    updateMany?: Enumerable<Recipe_ingredientsUpdateManyWithWhereWithoutRecipesInput>
+    deleteMany?: Enumerable<Recipe_ingredientsScalarWhereInput>
   }
 
   export type UsersUpdateOneRequiredWithoutRecipesNestedInput = {
@@ -9299,150 +12112,206 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     update?: XOR<XOR<UsersUpdateToOneWithWhereWithoutRecipesInput, UsersUpdateWithoutRecipesInput>, UsersUncheckedUpdateWithoutRecipesInput>
   }
 
+  export type Shopping_listUpdateManyWithoutRecipesNestedInput = {
+    create?: XOR<Enumerable<Shopping_listCreateWithoutRecipesInput>, Enumerable<Shopping_listUncheckedCreateWithoutRecipesInput>>
+    connectOrCreate?: Enumerable<Shopping_listCreateOrConnectWithoutRecipesInput>
+    upsert?: Enumerable<Shopping_listUpsertWithWhereUniqueWithoutRecipesInput>
+    createMany?: Shopping_listCreateManyRecipesInputEnvelope
+    set?: Enumerable<Shopping_listWhereUniqueInput>
+    disconnect?: Enumerable<Shopping_listWhereUniqueInput>
+    delete?: Enumerable<Shopping_listWhereUniqueInput>
+    connect?: Enumerable<Shopping_listWhereUniqueInput>
+    update?: Enumerable<Shopping_listUpdateWithWhereUniqueWithoutRecipesInput>
+    updateMany?: Enumerable<Shopping_listUpdateManyWithWhereWithoutRecipesInput>
+    deleteMany?: Enumerable<Shopping_listScalarWhereInput>
+  }
+
   export type Recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput = {
-    create?: XOR<Recipe_ingredientsCreateWithoutRecipesInput, Recipe_ingredientsUncheckedCreateWithoutRecipesInput> | Recipe_ingredientsCreateWithoutRecipesInput[] | Recipe_ingredientsUncheckedCreateWithoutRecipesInput[]
-    connectOrCreate?: Recipe_ingredientsCreateOrConnectWithoutRecipesInput | Recipe_ingredientsCreateOrConnectWithoutRecipesInput[]
-    upsert?: Recipe_ingredientsUpsertWithWhereUniqueWithoutRecipesInput | Recipe_ingredientsUpsertWithWhereUniqueWithoutRecipesInput[]
+    create?: XOR<Enumerable<Recipe_ingredientsCreateWithoutRecipesInput>, Enumerable<Recipe_ingredientsUncheckedCreateWithoutRecipesInput>>
+    connectOrCreate?: Enumerable<Recipe_ingredientsCreateOrConnectWithoutRecipesInput>
+    upsert?: Enumerable<Recipe_ingredientsUpsertWithWhereUniqueWithoutRecipesInput>
     createMany?: Recipe_ingredientsCreateManyRecipesInputEnvelope
-    set?: Recipe_ingredientsWhereUniqueInput | Recipe_ingredientsWhereUniqueInput[]
-    disconnect?: Recipe_ingredientsWhereUniqueInput | Recipe_ingredientsWhereUniqueInput[]
-    delete?: Recipe_ingredientsWhereUniqueInput | Recipe_ingredientsWhereUniqueInput[]
-    connect?: Recipe_ingredientsWhereUniqueInput | Recipe_ingredientsWhereUniqueInput[]
-    update?: Recipe_ingredientsUpdateWithWhereUniqueWithoutRecipesInput | Recipe_ingredientsUpdateWithWhereUniqueWithoutRecipesInput[]
-    updateMany?: Recipe_ingredientsUpdateManyWithWhereWithoutRecipesInput | Recipe_ingredientsUpdateManyWithWhereWithoutRecipesInput[]
-    deleteMany?: Recipe_ingredientsScalarWhereInput | Recipe_ingredientsScalarWhereInput[]
+    set?: Enumerable<Recipe_ingredientsWhereUniqueInput>
+    disconnect?: Enumerable<Recipe_ingredientsWhereUniqueInput>
+    delete?: Enumerable<Recipe_ingredientsWhereUniqueInput>
+    connect?: Enumerable<Recipe_ingredientsWhereUniqueInput>
+    update?: Enumerable<Recipe_ingredientsUpdateWithWhereUniqueWithoutRecipesInput>
+    updateMany?: Enumerable<Recipe_ingredientsUpdateManyWithWhereWithoutRecipesInput>
+    deleteMany?: Enumerable<Recipe_ingredientsScalarWhereInput>
+  }
+
+  export type Shopping_listUncheckedUpdateManyWithoutRecipesNestedInput = {
+    create?: XOR<Enumerable<Shopping_listCreateWithoutRecipesInput>, Enumerable<Shopping_listUncheckedCreateWithoutRecipesInput>>
+    connectOrCreate?: Enumerable<Shopping_listCreateOrConnectWithoutRecipesInput>
+    upsert?: Enumerable<Shopping_listUpsertWithWhereUniqueWithoutRecipesInput>
+    createMany?: Shopping_listCreateManyRecipesInputEnvelope
+    set?: Enumerable<Shopping_listWhereUniqueInput>
+    disconnect?: Enumerable<Shopping_listWhereUniqueInput>
+    delete?: Enumerable<Shopping_listWhereUniqueInput>
+    connect?: Enumerable<Shopping_listWhereUniqueInput>
+    update?: Enumerable<Shopping_listUpdateWithWhereUniqueWithoutRecipesInput>
+    updateMany?: Enumerable<Shopping_listUpdateManyWithWhereWithoutRecipesInput>
+    deleteMany?: Enumerable<Shopping_listScalarWhereInput>
+  }
+
+  export type RecipesCreateNestedOneWithoutShopping_listInput = {
+    create?: XOR<RecipesCreateWithoutShopping_listInput, RecipesUncheckedCreateWithoutShopping_listInput>
+    connectOrCreate?: RecipesCreateOrConnectWithoutShopping_listInput
+    connect?: RecipesWhereUniqueInput
+  }
+
+  export type Recipe_ingredientsCreateNestedOneWithoutShopping_listInput = {
+    create?: XOR<Recipe_ingredientsCreateWithoutShopping_listInput, Recipe_ingredientsUncheckedCreateWithoutShopping_listInput>
+    connectOrCreate?: Recipe_ingredientsCreateOrConnectWithoutShopping_listInput
+    connect?: Recipe_ingredientsWhereUniqueInput
+  }
+
+  export type RecipesUpdateOneRequiredWithoutShopping_listNestedInput = {
+    create?: XOR<RecipesCreateWithoutShopping_listInput, RecipesUncheckedCreateWithoutShopping_listInput>
+    connectOrCreate?: RecipesCreateOrConnectWithoutShopping_listInput
+    upsert?: RecipesUpsertWithoutShopping_listInput
+    connect?: RecipesWhereUniqueInput
+    update?: XOR<XOR<RecipesUpdateToOneWithWhereWithoutShopping_listInput, RecipesUpdateWithoutShopping_listInput>, RecipesUncheckedUpdateWithoutShopping_listInput>
+  }
+
+  export type Recipe_ingredientsUpdateOneRequiredWithoutShopping_listNestedInput = {
+    create?: XOR<Recipe_ingredientsCreateWithoutShopping_listInput, Recipe_ingredientsUncheckedCreateWithoutShopping_listInput>
+    connectOrCreate?: Recipe_ingredientsCreateOrConnectWithoutShopping_listInput
+    upsert?: Recipe_ingredientsUpsertWithoutShopping_listInput
+    connect?: Recipe_ingredientsWhereUniqueInput
+    update?: XOR<XOR<Recipe_ingredientsUpdateToOneWithWhereWithoutShopping_listInput, Recipe_ingredientsUpdateWithoutShopping_listInput>, Recipe_ingredientsUncheckedUpdateWithoutShopping_listInput>
   }
 
   export type Ingredient_eventsCreateNestedManyWithoutUsersInput = {
-    create?: XOR<Ingredient_eventsCreateWithoutUsersInput, Ingredient_eventsUncheckedCreateWithoutUsersInput> | Ingredient_eventsCreateWithoutUsersInput[] | Ingredient_eventsUncheckedCreateWithoutUsersInput[]
-    connectOrCreate?: Ingredient_eventsCreateOrConnectWithoutUsersInput | Ingredient_eventsCreateOrConnectWithoutUsersInput[]
+    create?: XOR<Enumerable<Ingredient_eventsCreateWithoutUsersInput>, Enumerable<Ingredient_eventsUncheckedCreateWithoutUsersInput>>
+    connectOrCreate?: Enumerable<Ingredient_eventsCreateOrConnectWithoutUsersInput>
     createMany?: Ingredient_eventsCreateManyUsersInputEnvelope
-    connect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    connect?: Enumerable<Ingredient_eventsWhereUniqueInput>
   }
 
   export type Ingredients_photo_uploadsCreateNestedManyWithoutUsersInput = {
-    create?: XOR<Ingredients_photo_uploadsCreateWithoutUsersInput, Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput> | Ingredients_photo_uploadsCreateWithoutUsersInput[] | Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput[]
-    connectOrCreate?: Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput | Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput[]
+    create?: XOR<Enumerable<Ingredients_photo_uploadsCreateWithoutUsersInput>, Enumerable<Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput>>
+    connectOrCreate?: Enumerable<Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput>
     createMany?: Ingredients_photo_uploadsCreateManyUsersInputEnvelope
-    connect?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
+    connect?: Enumerable<Ingredients_photo_uploadsWhereUniqueInput>
   }
 
   export type RecipesCreateNestedManyWithoutUsersInput = {
-    create?: XOR<RecipesCreateWithoutUsersInput, RecipesUncheckedCreateWithoutUsersInput> | RecipesCreateWithoutUsersInput[] | RecipesUncheckedCreateWithoutUsersInput[]
-    connectOrCreate?: RecipesCreateOrConnectWithoutUsersInput | RecipesCreateOrConnectWithoutUsersInput[]
+    create?: XOR<Enumerable<RecipesCreateWithoutUsersInput>, Enumerable<RecipesUncheckedCreateWithoutUsersInput>>
+    connectOrCreate?: Enumerable<RecipesCreateOrConnectWithoutUsersInput>
     createMany?: RecipesCreateManyUsersInputEnvelope
-    connect?: RecipesWhereUniqueInput | RecipesWhereUniqueInput[]
+    connect?: Enumerable<RecipesWhereUniqueInput>
   }
 
   export type Ingredient_eventsUncheckedCreateNestedManyWithoutUsersInput = {
-    create?: XOR<Ingredient_eventsCreateWithoutUsersInput, Ingredient_eventsUncheckedCreateWithoutUsersInput> | Ingredient_eventsCreateWithoutUsersInput[] | Ingredient_eventsUncheckedCreateWithoutUsersInput[]
-    connectOrCreate?: Ingredient_eventsCreateOrConnectWithoutUsersInput | Ingredient_eventsCreateOrConnectWithoutUsersInput[]
+    create?: XOR<Enumerable<Ingredient_eventsCreateWithoutUsersInput>, Enumerable<Ingredient_eventsUncheckedCreateWithoutUsersInput>>
+    connectOrCreate?: Enumerable<Ingredient_eventsCreateOrConnectWithoutUsersInput>
     createMany?: Ingredient_eventsCreateManyUsersInputEnvelope
-    connect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
+    connect?: Enumerable<Ingredient_eventsWhereUniqueInput>
   }
 
   export type Ingredients_photo_uploadsUncheckedCreateNestedManyWithoutUsersInput = {
-    create?: XOR<Ingredients_photo_uploadsCreateWithoutUsersInput, Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput> | Ingredients_photo_uploadsCreateWithoutUsersInput[] | Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput[]
-    connectOrCreate?: Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput | Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput[]
+    create?: XOR<Enumerable<Ingredients_photo_uploadsCreateWithoutUsersInput>, Enumerable<Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput>>
+    connectOrCreate?: Enumerable<Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput>
     createMany?: Ingredients_photo_uploadsCreateManyUsersInputEnvelope
-    connect?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
+    connect?: Enumerable<Ingredients_photo_uploadsWhereUniqueInput>
   }
 
   export type RecipesUncheckedCreateNestedManyWithoutUsersInput = {
-    create?: XOR<RecipesCreateWithoutUsersInput, RecipesUncheckedCreateWithoutUsersInput> | RecipesCreateWithoutUsersInput[] | RecipesUncheckedCreateWithoutUsersInput[]
-    connectOrCreate?: RecipesCreateOrConnectWithoutUsersInput | RecipesCreateOrConnectWithoutUsersInput[]
+    create?: XOR<Enumerable<RecipesCreateWithoutUsersInput>, Enumerable<RecipesUncheckedCreateWithoutUsersInput>>
+    connectOrCreate?: Enumerable<RecipesCreateOrConnectWithoutUsersInput>
     createMany?: RecipesCreateManyUsersInputEnvelope
-    connect?: RecipesWhereUniqueInput | RecipesWhereUniqueInput[]
+    connect?: Enumerable<RecipesWhereUniqueInput>
   }
 
   export type Ingredient_eventsUpdateManyWithoutUsersNestedInput = {
-    create?: XOR<Ingredient_eventsCreateWithoutUsersInput, Ingredient_eventsUncheckedCreateWithoutUsersInput> | Ingredient_eventsCreateWithoutUsersInput[] | Ingredient_eventsUncheckedCreateWithoutUsersInput[]
-    connectOrCreate?: Ingredient_eventsCreateOrConnectWithoutUsersInput | Ingredient_eventsCreateOrConnectWithoutUsersInput[]
-    upsert?: Ingredient_eventsUpsertWithWhereUniqueWithoutUsersInput | Ingredient_eventsUpsertWithWhereUniqueWithoutUsersInput[]
+    create?: XOR<Enumerable<Ingredient_eventsCreateWithoutUsersInput>, Enumerable<Ingredient_eventsUncheckedCreateWithoutUsersInput>>
+    connectOrCreate?: Enumerable<Ingredient_eventsCreateOrConnectWithoutUsersInput>
+    upsert?: Enumerable<Ingredient_eventsUpsertWithWhereUniqueWithoutUsersInput>
     createMany?: Ingredient_eventsCreateManyUsersInputEnvelope
-    set?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
-    disconnect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
-    delete?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
-    connect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
-    update?: Ingredient_eventsUpdateWithWhereUniqueWithoutUsersInput | Ingredient_eventsUpdateWithWhereUniqueWithoutUsersInput[]
-    updateMany?: Ingredient_eventsUpdateManyWithWhereWithoutUsersInput | Ingredient_eventsUpdateManyWithWhereWithoutUsersInput[]
-    deleteMany?: Ingredient_eventsScalarWhereInput | Ingredient_eventsScalarWhereInput[]
+    set?: Enumerable<Ingredient_eventsWhereUniqueInput>
+    disconnect?: Enumerable<Ingredient_eventsWhereUniqueInput>
+    delete?: Enumerable<Ingredient_eventsWhereUniqueInput>
+    connect?: Enumerable<Ingredient_eventsWhereUniqueInput>
+    update?: Enumerable<Ingredient_eventsUpdateWithWhereUniqueWithoutUsersInput>
+    updateMany?: Enumerable<Ingredient_eventsUpdateManyWithWhereWithoutUsersInput>
+    deleteMany?: Enumerable<Ingredient_eventsScalarWhereInput>
   }
 
   export type Ingredients_photo_uploadsUpdateManyWithoutUsersNestedInput = {
-    create?: XOR<Ingredients_photo_uploadsCreateWithoutUsersInput, Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput> | Ingredients_photo_uploadsCreateWithoutUsersInput[] | Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput[]
-    connectOrCreate?: Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput | Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput[]
-    upsert?: Ingredients_photo_uploadsUpsertWithWhereUniqueWithoutUsersInput | Ingredients_photo_uploadsUpsertWithWhereUniqueWithoutUsersInput[]
+    create?: XOR<Enumerable<Ingredients_photo_uploadsCreateWithoutUsersInput>, Enumerable<Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput>>
+    connectOrCreate?: Enumerable<Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput>
+    upsert?: Enumerable<Ingredients_photo_uploadsUpsertWithWhereUniqueWithoutUsersInput>
     createMany?: Ingredients_photo_uploadsCreateManyUsersInputEnvelope
-    set?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
-    disconnect?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
-    delete?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
-    connect?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
-    update?: Ingredients_photo_uploadsUpdateWithWhereUniqueWithoutUsersInput | Ingredients_photo_uploadsUpdateWithWhereUniqueWithoutUsersInput[]
-    updateMany?: Ingredients_photo_uploadsUpdateManyWithWhereWithoutUsersInput | Ingredients_photo_uploadsUpdateManyWithWhereWithoutUsersInput[]
-    deleteMany?: Ingredients_photo_uploadsScalarWhereInput | Ingredients_photo_uploadsScalarWhereInput[]
+    set?: Enumerable<Ingredients_photo_uploadsWhereUniqueInput>
+    disconnect?: Enumerable<Ingredients_photo_uploadsWhereUniqueInput>
+    delete?: Enumerable<Ingredients_photo_uploadsWhereUniqueInput>
+    connect?: Enumerable<Ingredients_photo_uploadsWhereUniqueInput>
+    update?: Enumerable<Ingredients_photo_uploadsUpdateWithWhereUniqueWithoutUsersInput>
+    updateMany?: Enumerable<Ingredients_photo_uploadsUpdateManyWithWhereWithoutUsersInput>
+    deleteMany?: Enumerable<Ingredients_photo_uploadsScalarWhereInput>
   }
 
   export type RecipesUpdateManyWithoutUsersNestedInput = {
-    create?: XOR<RecipesCreateWithoutUsersInput, RecipesUncheckedCreateWithoutUsersInput> | RecipesCreateWithoutUsersInput[] | RecipesUncheckedCreateWithoutUsersInput[]
-    connectOrCreate?: RecipesCreateOrConnectWithoutUsersInput | RecipesCreateOrConnectWithoutUsersInput[]
-    upsert?: RecipesUpsertWithWhereUniqueWithoutUsersInput | RecipesUpsertWithWhereUniqueWithoutUsersInput[]
+    create?: XOR<Enumerable<RecipesCreateWithoutUsersInput>, Enumerable<RecipesUncheckedCreateWithoutUsersInput>>
+    connectOrCreate?: Enumerable<RecipesCreateOrConnectWithoutUsersInput>
+    upsert?: Enumerable<RecipesUpsertWithWhereUniqueWithoutUsersInput>
     createMany?: RecipesCreateManyUsersInputEnvelope
-    set?: RecipesWhereUniqueInput | RecipesWhereUniqueInput[]
-    disconnect?: RecipesWhereUniqueInput | RecipesWhereUniqueInput[]
-    delete?: RecipesWhereUniqueInput | RecipesWhereUniqueInput[]
-    connect?: RecipesWhereUniqueInput | RecipesWhereUniqueInput[]
-    update?: RecipesUpdateWithWhereUniqueWithoutUsersInput | RecipesUpdateWithWhereUniqueWithoutUsersInput[]
-    updateMany?: RecipesUpdateManyWithWhereWithoutUsersInput | RecipesUpdateManyWithWhereWithoutUsersInput[]
-    deleteMany?: RecipesScalarWhereInput | RecipesScalarWhereInput[]
+    set?: Enumerable<RecipesWhereUniqueInput>
+    disconnect?: Enumerable<RecipesWhereUniqueInput>
+    delete?: Enumerable<RecipesWhereUniqueInput>
+    connect?: Enumerable<RecipesWhereUniqueInput>
+    update?: Enumerable<RecipesUpdateWithWhereUniqueWithoutUsersInput>
+    updateMany?: Enumerable<RecipesUpdateManyWithWhereWithoutUsersInput>
+    deleteMany?: Enumerable<RecipesScalarWhereInput>
   }
 
   export type Ingredient_eventsUncheckedUpdateManyWithoutUsersNestedInput = {
-    create?: XOR<Ingredient_eventsCreateWithoutUsersInput, Ingredient_eventsUncheckedCreateWithoutUsersInput> | Ingredient_eventsCreateWithoutUsersInput[] | Ingredient_eventsUncheckedCreateWithoutUsersInput[]
-    connectOrCreate?: Ingredient_eventsCreateOrConnectWithoutUsersInput | Ingredient_eventsCreateOrConnectWithoutUsersInput[]
-    upsert?: Ingredient_eventsUpsertWithWhereUniqueWithoutUsersInput | Ingredient_eventsUpsertWithWhereUniqueWithoutUsersInput[]
+    create?: XOR<Enumerable<Ingredient_eventsCreateWithoutUsersInput>, Enumerable<Ingredient_eventsUncheckedCreateWithoutUsersInput>>
+    connectOrCreate?: Enumerable<Ingredient_eventsCreateOrConnectWithoutUsersInput>
+    upsert?: Enumerable<Ingredient_eventsUpsertWithWhereUniqueWithoutUsersInput>
     createMany?: Ingredient_eventsCreateManyUsersInputEnvelope
-    set?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
-    disconnect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
-    delete?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
-    connect?: Ingredient_eventsWhereUniqueInput | Ingredient_eventsWhereUniqueInput[]
-    update?: Ingredient_eventsUpdateWithWhereUniqueWithoutUsersInput | Ingredient_eventsUpdateWithWhereUniqueWithoutUsersInput[]
-    updateMany?: Ingredient_eventsUpdateManyWithWhereWithoutUsersInput | Ingredient_eventsUpdateManyWithWhereWithoutUsersInput[]
-    deleteMany?: Ingredient_eventsScalarWhereInput | Ingredient_eventsScalarWhereInput[]
+    set?: Enumerable<Ingredient_eventsWhereUniqueInput>
+    disconnect?: Enumerable<Ingredient_eventsWhereUniqueInput>
+    delete?: Enumerable<Ingredient_eventsWhereUniqueInput>
+    connect?: Enumerable<Ingredient_eventsWhereUniqueInput>
+    update?: Enumerable<Ingredient_eventsUpdateWithWhereUniqueWithoutUsersInput>
+    updateMany?: Enumerable<Ingredient_eventsUpdateManyWithWhereWithoutUsersInput>
+    deleteMany?: Enumerable<Ingredient_eventsScalarWhereInput>
   }
 
   export type Ingredients_photo_uploadsUncheckedUpdateManyWithoutUsersNestedInput = {
-    create?: XOR<Ingredients_photo_uploadsCreateWithoutUsersInput, Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput> | Ingredients_photo_uploadsCreateWithoutUsersInput[] | Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput[]
-    connectOrCreate?: Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput | Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput[]
-    upsert?: Ingredients_photo_uploadsUpsertWithWhereUniqueWithoutUsersInput | Ingredients_photo_uploadsUpsertWithWhereUniqueWithoutUsersInput[]
+    create?: XOR<Enumerable<Ingredients_photo_uploadsCreateWithoutUsersInput>, Enumerable<Ingredients_photo_uploadsUncheckedCreateWithoutUsersInput>>
+    connectOrCreate?: Enumerable<Ingredients_photo_uploadsCreateOrConnectWithoutUsersInput>
+    upsert?: Enumerable<Ingredients_photo_uploadsUpsertWithWhereUniqueWithoutUsersInput>
     createMany?: Ingredients_photo_uploadsCreateManyUsersInputEnvelope
-    set?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
-    disconnect?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
-    delete?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
-    connect?: Ingredients_photo_uploadsWhereUniqueInput | Ingredients_photo_uploadsWhereUniqueInput[]
-    update?: Ingredients_photo_uploadsUpdateWithWhereUniqueWithoutUsersInput | Ingredients_photo_uploadsUpdateWithWhereUniqueWithoutUsersInput[]
-    updateMany?: Ingredients_photo_uploadsUpdateManyWithWhereWithoutUsersInput | Ingredients_photo_uploadsUpdateManyWithWhereWithoutUsersInput[]
-    deleteMany?: Ingredients_photo_uploadsScalarWhereInput | Ingredients_photo_uploadsScalarWhereInput[]
+    set?: Enumerable<Ingredients_photo_uploadsWhereUniqueInput>
+    disconnect?: Enumerable<Ingredients_photo_uploadsWhereUniqueInput>
+    delete?: Enumerable<Ingredients_photo_uploadsWhereUniqueInput>
+    connect?: Enumerable<Ingredients_photo_uploadsWhereUniqueInput>
+    update?: Enumerable<Ingredients_photo_uploadsUpdateWithWhereUniqueWithoutUsersInput>
+    updateMany?: Enumerable<Ingredients_photo_uploadsUpdateManyWithWhereWithoutUsersInput>
+    deleteMany?: Enumerable<Ingredients_photo_uploadsScalarWhereInput>
   }
 
   export type RecipesUncheckedUpdateManyWithoutUsersNestedInput = {
-    create?: XOR<RecipesCreateWithoutUsersInput, RecipesUncheckedCreateWithoutUsersInput> | RecipesCreateWithoutUsersInput[] | RecipesUncheckedCreateWithoutUsersInput[]
-    connectOrCreate?: RecipesCreateOrConnectWithoutUsersInput | RecipesCreateOrConnectWithoutUsersInput[]
-    upsert?: RecipesUpsertWithWhereUniqueWithoutUsersInput | RecipesUpsertWithWhereUniqueWithoutUsersInput[]
+    create?: XOR<Enumerable<RecipesCreateWithoutUsersInput>, Enumerable<RecipesUncheckedCreateWithoutUsersInput>>
+    connectOrCreate?: Enumerable<RecipesCreateOrConnectWithoutUsersInput>
+    upsert?: Enumerable<RecipesUpsertWithWhereUniqueWithoutUsersInput>
     createMany?: RecipesCreateManyUsersInputEnvelope
-    set?: RecipesWhereUniqueInput | RecipesWhereUniqueInput[]
-    disconnect?: RecipesWhereUniqueInput | RecipesWhereUniqueInput[]
-    delete?: RecipesWhereUniqueInput | RecipesWhereUniqueInput[]
-    connect?: RecipesWhereUniqueInput | RecipesWhereUniqueInput[]
-    update?: RecipesUpdateWithWhereUniqueWithoutUsersInput | RecipesUpdateWithWhereUniqueWithoutUsersInput[]
-    updateMany?: RecipesUpdateManyWithWhereWithoutUsersInput | RecipesUpdateManyWithWhereWithoutUsersInput[]
-    deleteMany?: RecipesScalarWhereInput | RecipesScalarWhereInput[]
+    set?: Enumerable<RecipesWhereUniqueInput>
+    disconnect?: Enumerable<RecipesWhereUniqueInput>
+    delete?: Enumerable<RecipesWhereUniqueInput>
+    connect?: Enumerable<RecipesWhereUniqueInput>
+    update?: Enumerable<RecipesUpdateWithWhereUniqueWithoutUsersInput>
+    updateMany?: Enumerable<RecipesUpdateManyWithWhereWithoutUsersInput>
+    deleteMany?: Enumerable<RecipesScalarWhereInput>
   }
 
   export type NestedUuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -9452,8 +12321,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -9466,8 +12335,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    in?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel>
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -9477,8 +12346,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NestedUuidWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -9491,8 +12360,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    in?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel>
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -9502,8 +12371,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -9519,8 +12388,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    in?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel>
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -9533,8 +12402,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NestedIntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel> | null
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -9550,7 +12419,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
     equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
+    path?: Array<string>
     string_contains?: string | StringFieldRefInput<$PrismaModel>
     string_starts_with?: string | StringFieldRefInput<$PrismaModel>
     string_ends_with?: string | StringFieldRefInput<$PrismaModel>
@@ -9570,10 +12439,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel = never> = {
-    equals?: $Enums.ingredients_tracking_type | Enumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    in?: $Enums.ingredients_tracking_type[] | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    notIn?: $Enums.ingredients_tracking_type[] | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel> | $Enums.ingredients_tracking_type | null
+    equals?: ingredients_tracking_type | Enumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<ingredients_tracking_type> | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<ingredients_tracking_type> | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel> | ingredients_tracking_type | null
   }
 
   export type NestedBoolNullableFilter<$PrismaModel = never> = {
@@ -9583,8 +12452,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NestedUuidNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -9601,10 +12470,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type NestedEnumingredients_tracking_typeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ingredients_tracking_type | Enumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    in?: $Enums.ingredients_tracking_type[] | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    notIn?: $Enums.ingredients_tracking_type[] | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumingredients_tracking_typeNullableWithAggregatesFilter<$PrismaModel> | $Enums.ingredients_tracking_type | null
+    equals?: ingredients_tracking_type | Enumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<ingredients_tracking_type> | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<ingredients_tracking_type> | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumingredients_tracking_typeNullableWithAggregatesFilter<$PrismaModel> | ingredients_tracking_type | null
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel>
     _max?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel>
@@ -9612,8 +12481,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    in?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel>
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -9628,8 +12497,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NestedFloatFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    in?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel>
     lt?: number | FloatFieldRefInput<$PrismaModel>
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
@@ -9647,8 +12516,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NestedUuidNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -9661,8 +12530,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -9675,8 +12544,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel> | null
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -9685,16 +12554,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type NestedEnumingredient_photo_upload_stateFilter<$PrismaModel = never> = {
-    equals?: $Enums.ingredient_photo_upload_state | Enumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    in?: $Enums.ingredient_photo_upload_state[] | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ingredient_photo_upload_state[] | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    not?: NestedEnumingredient_photo_upload_stateFilter<$PrismaModel> | $Enums.ingredient_photo_upload_state
+    equals?: ingredient_photo_upload_state | Enumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
+    in?: Enumerable<ingredient_photo_upload_state> | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<ingredient_photo_upload_state> | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
+    not?: NestedEnumingredient_photo_upload_stateFilter<$PrismaModel> | ingredient_photo_upload_state
   }
 
   export type NestedFloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel> | null
     lt?: number | FloatFieldRefInput<$PrismaModel>
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
@@ -9704,8 +12573,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel> | null
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -9717,10 +12586,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type NestedEnumingredient_photo_upload_stateWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ingredient_photo_upload_state | Enumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    in?: $Enums.ingredient_photo_upload_state[] | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ingredient_photo_upload_state[] | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    not?: NestedEnumingredient_photo_upload_stateWithAggregatesFilter<$PrismaModel> | $Enums.ingredient_photo_upload_state
+    equals?: ingredient_photo_upload_state | Enumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
+    in?: Enumerable<ingredient_photo_upload_state> | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<ingredient_photo_upload_state> | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
+    not?: NestedEnumingredient_photo_upload_stateWithAggregatesFilter<$PrismaModel> | ingredient_photo_upload_state
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumingredient_photo_upload_stateFilter<$PrismaModel>
     _max?: NestedEnumingredient_photo_upload_stateFilter<$PrismaModel>
@@ -9728,8 +12597,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel> | null
     lt?: number | FloatFieldRefInput<$PrismaModel>
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
@@ -9744,8 +12613,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -9759,13 +12628,47 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumjobs_stateFilter<$PrismaModel = never> = {
+    equals?: jobs_state | Enumjobs_stateFieldRefInput<$PrismaModel>
+    in?: Enumerable<jobs_state> | ListEnumjobs_stateFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<jobs_state> | ListEnumjobs_stateFieldRefInput<$PrismaModel>
+    not?: NestedEnumjobs_stateFilter<$PrismaModel> | jobs_state
+  }
+
+  export type NestedEnumjobs_stateWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: jobs_state | Enumjobs_stateFieldRefInput<$PrismaModel>
+    in?: Enumerable<jobs_state> | ListEnumjobs_stateFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<jobs_state> | ListEnumjobs_stateFieldRefInput<$PrismaModel>
+    not?: NestedEnumjobs_stateWithAggregatesFilter<$PrismaModel> | jobs_state
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumjobs_stateFilter<$PrismaModel>
+    _max?: NestedEnumjobs_stateFilter<$PrismaModel>
+  }
+
+  export type NestedEnumgrocery_sectionFilter<$PrismaModel = never> = {
+    equals?: grocery_section | Enumgrocery_sectionFieldRefInput<$PrismaModel>
+    in?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
+    not?: NestedEnumgrocery_sectionFilter<$PrismaModel> | grocery_section
+  }
+
+  export type NestedEnumgrocery_sectionWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: grocery_section | Enumgrocery_sectionFieldRefInput<$PrismaModel>
+    in?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
+    not?: NestedEnumgrocery_sectionWithAggregatesFilter<$PrismaModel> | grocery_section
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumgrocery_sectionFilter<$PrismaModel>
+    _max?: NestedEnumgrocery_sectionFilter<$PrismaModel>
+  }
+
   export type IngredientsCreateWithoutIngredient_eventsInput = {
     id: string
     name: string
     description: string
     is_reviewed: boolean
     embedding: string
-    tracking_type?: $Enums.ingredients_tracking_type | null
+    tracking_type?: ingredients_tracking_type | null
     fill_level: number
     count: number
     shelf_life_months: number
@@ -9780,7 +12683,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     is_reviewed: boolean
     embedding: string
-    tracking_type?: $Enums.ingredients_tracking_type | null
+    tracking_type?: ingredients_tracking_type | null
     fill_level: number
     count: number
     shelf_life_months: number
@@ -9832,7 +12735,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
-    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
@@ -9847,7 +12750,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
-    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
@@ -9905,7 +12808,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Ingredient_eventsCreateManyIngredientsInputEnvelope = {
-    data: Ingredient_eventsCreateManyIngredientsInput | Ingredient_eventsCreateManyIngredientsInput[]
+    data: Enumerable<Ingredient_eventsCreateManyIngredientsInput>
     skipDuplicates?: boolean
   }
 
@@ -9913,7 +12816,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
-    state: $Enums.ingredient_photo_upload_state
+    state: ingredient_photo_upload_state
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
@@ -9925,7 +12828,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
-    state: $Enums.ingredient_photo_upload_state
+    state: ingredient_photo_upload_state
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
@@ -9953,9 +12856,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Ingredient_eventsScalarWhereInput = {
-    AND?: Ingredient_eventsScalarWhereInput | Ingredient_eventsScalarWhereInput[]
-    OR?: Ingredient_eventsScalarWhereInput[]
-    NOT?: Ingredient_eventsScalarWhereInput | Ingredient_eventsScalarWhereInput[]
+    AND?: Enumerable<Ingredient_eventsScalarWhereInput>
+    OR?: Enumerable<Ingredient_eventsScalarWhereInput>
+    NOT?: Enumerable<Ingredient_eventsScalarWhereInput>
     id?: UuidFilter<"Ingredient_events"> | string
     ingredient_id?: UuidFilter<"Ingredient_events"> | string
     user_id?: StringFilter<"Ingredient_events"> | string
@@ -9979,7 +12882,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | $Enums.ingredient_photo_upload_state
+    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | ingredient_photo_upload_state
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9991,7 +12894,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | $Enums.ingredient_photo_upload_state
+    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | ingredient_photo_upload_state
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10003,7 +12906,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     is_reviewed: boolean
     embedding: string
-    tracking_type?: $Enums.ingredients_tracking_type | null
+    tracking_type?: ingredients_tracking_type | null
     fill_level: number
     count: number
     shelf_life_months: number
@@ -10018,7 +12921,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     is_reviewed: boolean
     embedding: string
-    tracking_type?: $Enums.ingredients_tracking_type | null
+    tracking_type?: ingredients_tracking_type | null
     fill_level: number
     count: number
     shelf_life_months: number
@@ -10033,7 +12936,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type IngredientsCreateManyIngredients_photo_uploadsInputEnvelope = {
-    data: IngredientsCreateManyIngredients_photo_uploadsInput | IngredientsCreateManyIngredients_photo_uploadsInput[]
+    data: Enumerable<IngredientsCreateManyIngredients_photo_uploadsInput>
     skipDuplicates?: boolean
   }
 
@@ -10075,15 +12978,15 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type IngredientsScalarWhereInput = {
-    AND?: IngredientsScalarWhereInput | IngredientsScalarWhereInput[]
-    OR?: IngredientsScalarWhereInput[]
-    NOT?: IngredientsScalarWhereInput | IngredientsScalarWhereInput[]
+    AND?: Enumerable<IngredientsScalarWhereInput>
+    OR?: Enumerable<IngredientsScalarWhereInput>
+    NOT?: Enumerable<IngredientsScalarWhereInput>
     id?: UuidFilter<"Ingredients"> | string
     name?: StringFilter<"Ingredients"> | string
     description?: StringFilter<"Ingredients"> | string
     is_reviewed?: BoolFilter<"Ingredients"> | boolean
     embedding?: StringFilter<"Ingredients"> | string
-    tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | $Enums.ingredients_tracking_type | null
+    tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | ingredients_tracking_type | null
     fill_level?: IntFilter<"Ingredients"> | number
     count?: IntFilter<"Ingredients"> | number
     shelf_life_months?: IntFilter<"Ingredients"> | number
@@ -10127,6 +13030,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     created_at: Date | string
     updated_at: Date | string
     users: UsersCreateNestedOneWithoutRecipesInput
+    shopping_list?: Shopping_listCreateNestedManyWithoutRecipesInput
   }
 
   export type RecipesUncheckedCreateWithoutRecipe_ingredientsInput = {
@@ -10137,11 +13041,36 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id: string
     created_at: Date | string
     updated_at: Date | string
+    shopping_list?: Shopping_listUncheckedCreateNestedManyWithoutRecipesInput
   }
 
   export type RecipesCreateOrConnectWithoutRecipe_ingredientsInput = {
     where: RecipesWhereUniqueInput
     create: XOR<RecipesCreateWithoutRecipe_ingredientsInput, RecipesUncheckedCreateWithoutRecipe_ingredientsInput>
+  }
+
+  export type Shopping_listCreateWithoutRecipe_ingredientsInput = {
+    id: string
+    purchased: boolean
+    created_at: Date | string
+    recipes: RecipesCreateNestedOneWithoutShopping_listInput
+  }
+
+  export type Shopping_listUncheckedCreateWithoutRecipe_ingredientsInput = {
+    id: string
+    recipe_id: string
+    purchased: boolean
+    created_at: Date | string
+  }
+
+  export type Shopping_listCreateOrConnectWithoutRecipe_ingredientsInput = {
+    where: Shopping_listWhereUniqueInput
+    create: XOR<Shopping_listCreateWithoutRecipe_ingredientsInput, Shopping_listUncheckedCreateWithoutRecipe_ingredientsInput>
+  }
+
+  export type Shopping_listCreateManyRecipe_ingredientsInputEnvelope = {
+    data: Enumerable<Shopping_listCreateManyRecipe_ingredientsInput>
+    skipDuplicates?: boolean
   }
 
   export type RecipesUpsertWithoutRecipe_ingredientsInput = {
@@ -10163,6 +13092,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UsersUpdateOneRequiredWithoutRecipesNestedInput
+    shopping_list?: Shopping_listUpdateManyWithoutRecipesNestedInput
   }
 
   export type RecipesUncheckedUpdateWithoutRecipe_ingredientsInput = {
@@ -10173,6 +13103,34 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    shopping_list?: Shopping_listUncheckedUpdateManyWithoutRecipesNestedInput
+  }
+
+  export type Shopping_listUpsertWithWhereUniqueWithoutRecipe_ingredientsInput = {
+    where: Shopping_listWhereUniqueInput
+    update: XOR<Shopping_listUpdateWithoutRecipe_ingredientsInput, Shopping_listUncheckedUpdateWithoutRecipe_ingredientsInput>
+    create: XOR<Shopping_listCreateWithoutRecipe_ingredientsInput, Shopping_listUncheckedCreateWithoutRecipe_ingredientsInput>
+  }
+
+  export type Shopping_listUpdateWithWhereUniqueWithoutRecipe_ingredientsInput = {
+    where: Shopping_listWhereUniqueInput
+    data: XOR<Shopping_listUpdateWithoutRecipe_ingredientsInput, Shopping_listUncheckedUpdateWithoutRecipe_ingredientsInput>
+  }
+
+  export type Shopping_listUpdateManyWithWhereWithoutRecipe_ingredientsInput = {
+    where: Shopping_listScalarWhereInput
+    data: XOR<Shopping_listUpdateManyMutationInput, Shopping_listUncheckedUpdateManyWithoutRecipe_ingredientsInput>
+  }
+
+  export type Shopping_listScalarWhereInput = {
+    AND?: Enumerable<Shopping_listScalarWhereInput>
+    OR?: Enumerable<Shopping_listScalarWhereInput>
+    NOT?: Enumerable<Shopping_listScalarWhereInput>
+    id?: UuidFilter<"Shopping_list"> | string
+    recipe_id?: UuidFilter<"Shopping_list"> | string
+    recipe_ingredient_id?: UuidFilter<"Shopping_list"> | string
+    purchased?: BoolFilter<"Shopping_list"> | boolean
+    created_at?: DateTimeFilter<"Shopping_list"> | Date | string
   }
 
   export type Recipe_ingredientsCreateWithoutRecipesInput = {
@@ -10180,6 +13138,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing: string
     extracted_name: string
     embedding: string
+    grocery_section: grocery_section
+    shopping_list?: Shopping_listCreateNestedManyWithoutRecipe_ingredientsInput
   }
 
   export type Recipe_ingredientsUncheckedCreateWithoutRecipesInput = {
@@ -10187,6 +13147,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing: string
     extracted_name: string
     embedding: string
+    grocery_section: grocery_section
+    shopping_list?: Shopping_listUncheckedCreateNestedManyWithoutRecipe_ingredientsInput
   }
 
   export type Recipe_ingredientsCreateOrConnectWithoutRecipesInput = {
@@ -10195,7 +13157,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Recipe_ingredientsCreateManyRecipesInputEnvelope = {
-    data: Recipe_ingredientsCreateManyRecipesInput | Recipe_ingredientsCreateManyRecipesInput[]
+    data: Enumerable<Recipe_ingredientsCreateManyRecipesInput>
     skipDuplicates?: boolean
   }
 
@@ -10220,6 +13182,30 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     create: XOR<UsersCreateWithoutRecipesInput, UsersUncheckedCreateWithoutRecipesInput>
   }
 
+  export type Shopping_listCreateWithoutRecipesInput = {
+    id: string
+    purchased: boolean
+    created_at: Date | string
+    recipe_ingredients: Recipe_ingredientsCreateNestedOneWithoutShopping_listInput
+  }
+
+  export type Shopping_listUncheckedCreateWithoutRecipesInput = {
+    id: string
+    recipe_ingredient_id: string
+    purchased: boolean
+    created_at: Date | string
+  }
+
+  export type Shopping_listCreateOrConnectWithoutRecipesInput = {
+    where: Shopping_listWhereUniqueInput
+    create: XOR<Shopping_listCreateWithoutRecipesInput, Shopping_listUncheckedCreateWithoutRecipesInput>
+  }
+
+  export type Shopping_listCreateManyRecipesInputEnvelope = {
+    data: Enumerable<Shopping_listCreateManyRecipesInput>
+    skipDuplicates?: boolean
+  }
+
   export type Recipe_ingredientsUpsertWithWhereUniqueWithoutRecipesInput = {
     where: Recipe_ingredientsWhereUniqueInput
     update: XOR<Recipe_ingredientsUpdateWithoutRecipesInput, Recipe_ingredientsUncheckedUpdateWithoutRecipesInput>
@@ -10237,13 +13223,14 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Recipe_ingredientsScalarWhereInput = {
-    AND?: Recipe_ingredientsScalarWhereInput | Recipe_ingredientsScalarWhereInput[]
-    OR?: Recipe_ingredientsScalarWhereInput[]
-    NOT?: Recipe_ingredientsScalarWhereInput | Recipe_ingredientsScalarWhereInput[]
+    AND?: Enumerable<Recipe_ingredientsScalarWhereInput>
+    OR?: Enumerable<Recipe_ingredientsScalarWhereInput>
+    NOT?: Enumerable<Recipe_ingredientsScalarWhereInput>
     id?: UuidFilter<"Recipe_ingredients"> | string
     listing?: StringFilter<"Recipe_ingredients"> | string
     extracted_name?: StringFilter<"Recipe_ingredients"> | string
     embedding?: StringFilter<"Recipe_ingredients"> | string
+    grocery_section?: Enumgrocery_sectionFilter<"Recipe_ingredients"> | grocery_section
     recipe_id?: UuidFilter<"Recipe_ingredients"> | string
   }
 
@@ -10274,6 +13261,134 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     ingredients_photo_uploads?: Ingredients_photo_uploadsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
+  export type Shopping_listUpsertWithWhereUniqueWithoutRecipesInput = {
+    where: Shopping_listWhereUniqueInput
+    update: XOR<Shopping_listUpdateWithoutRecipesInput, Shopping_listUncheckedUpdateWithoutRecipesInput>
+    create: XOR<Shopping_listCreateWithoutRecipesInput, Shopping_listUncheckedCreateWithoutRecipesInput>
+  }
+
+  export type Shopping_listUpdateWithWhereUniqueWithoutRecipesInput = {
+    where: Shopping_listWhereUniqueInput
+    data: XOR<Shopping_listUpdateWithoutRecipesInput, Shopping_listUncheckedUpdateWithoutRecipesInput>
+  }
+
+  export type Shopping_listUpdateManyWithWhereWithoutRecipesInput = {
+    where: Shopping_listScalarWhereInput
+    data: XOR<Shopping_listUpdateManyMutationInput, Shopping_listUncheckedUpdateManyWithoutRecipesInput>
+  }
+
+  export type RecipesCreateWithoutShopping_listInput = {
+    id: string
+    name: string
+    description: string
+    url: string
+    created_at: Date | string
+    updated_at: Date | string
+    recipe_ingredients?: Recipe_ingredientsCreateNestedManyWithoutRecipesInput
+    users: UsersCreateNestedOneWithoutRecipesInput
+  }
+
+  export type RecipesUncheckedCreateWithoutShopping_listInput = {
+    id: string
+    name: string
+    description: string
+    url: string
+    user_id: string
+    created_at: Date | string
+    updated_at: Date | string
+    recipe_ingredients?: Recipe_ingredientsUncheckedCreateNestedManyWithoutRecipesInput
+  }
+
+  export type RecipesCreateOrConnectWithoutShopping_listInput = {
+    where: RecipesWhereUniqueInput
+    create: XOR<RecipesCreateWithoutShopping_listInput, RecipesUncheckedCreateWithoutShopping_listInput>
+  }
+
+  export type Recipe_ingredientsCreateWithoutShopping_listInput = {
+    id: string
+    listing: string
+    extracted_name: string
+    embedding: string
+    grocery_section: grocery_section
+    recipes: RecipesCreateNestedOneWithoutRecipe_ingredientsInput
+  }
+
+  export type Recipe_ingredientsUncheckedCreateWithoutShopping_listInput = {
+    id: string
+    listing: string
+    extracted_name: string
+    embedding: string
+    grocery_section: grocery_section
+    recipe_id: string
+  }
+
+  export type Recipe_ingredientsCreateOrConnectWithoutShopping_listInput = {
+    where: Recipe_ingredientsWhereUniqueInput
+    create: XOR<Recipe_ingredientsCreateWithoutShopping_listInput, Recipe_ingredientsUncheckedCreateWithoutShopping_listInput>
+  }
+
+  export type RecipesUpsertWithoutShopping_listInput = {
+    update: XOR<RecipesUpdateWithoutShopping_listInput, RecipesUncheckedUpdateWithoutShopping_listInput>
+    create: XOR<RecipesCreateWithoutShopping_listInput, RecipesUncheckedCreateWithoutShopping_listInput>
+    where?: RecipesWhereInput
+  }
+
+  export type RecipesUpdateToOneWithWhereWithoutShopping_listInput = {
+    where?: RecipesWhereInput
+    data: XOR<RecipesUpdateWithoutShopping_listInput, RecipesUncheckedUpdateWithoutShopping_listInput>
+  }
+
+  export type RecipesUpdateWithoutShopping_listInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    recipe_ingredients?: Recipe_ingredientsUpdateManyWithoutRecipesNestedInput
+    users?: UsersUpdateOneRequiredWithoutRecipesNestedInput
+  }
+
+  export type RecipesUncheckedUpdateWithoutShopping_listInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    recipe_ingredients?: Recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput
+  }
+
+  export type Recipe_ingredientsUpsertWithoutShopping_listInput = {
+    update: XOR<Recipe_ingredientsUpdateWithoutShopping_listInput, Recipe_ingredientsUncheckedUpdateWithoutShopping_listInput>
+    create: XOR<Recipe_ingredientsCreateWithoutShopping_listInput, Recipe_ingredientsUncheckedCreateWithoutShopping_listInput>
+    where?: Recipe_ingredientsWhereInput
+  }
+
+  export type Recipe_ingredientsUpdateToOneWithWhereWithoutShopping_listInput = {
+    where?: Recipe_ingredientsWhereInput
+    data: XOR<Recipe_ingredientsUpdateWithoutShopping_listInput, Recipe_ingredientsUncheckedUpdateWithoutShopping_listInput>
+  }
+
+  export type Recipe_ingredientsUpdateWithoutShopping_listInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    listing?: StringFieldUpdateOperationsInput | string
+    extracted_name?: StringFieldUpdateOperationsInput | string
+    embedding?: StringFieldUpdateOperationsInput | string
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
+    recipes?: RecipesUpdateOneRequiredWithoutRecipe_ingredientsNestedInput
+  }
+
+  export type Recipe_ingredientsUncheckedUpdateWithoutShopping_listInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    listing?: StringFieldUpdateOperationsInput | string
+    extracted_name?: StringFieldUpdateOperationsInput | string
+    embedding?: StringFieldUpdateOperationsInput | string
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
+    recipe_id?: StringFieldUpdateOperationsInput | string
+  }
+
   export type Ingredient_eventsCreateWithoutUsersInput = {
     id: string
     timestamp: Date | string
@@ -10296,7 +13411,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Ingredient_eventsCreateManyUsersInputEnvelope = {
-    data: Ingredient_eventsCreateManyUsersInput | Ingredient_eventsCreateManyUsersInput[]
+    data: Enumerable<Ingredient_eventsCreateManyUsersInput>
     skipDuplicates?: boolean
   }
 
@@ -10304,7 +13419,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
-    state: $Enums.ingredient_photo_upload_state
+    state: ingredient_photo_upload_state
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
@@ -10315,7 +13430,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
-    state: $Enums.ingredient_photo_upload_state
+    state: ingredient_photo_upload_state
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
@@ -10328,7 +13443,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Ingredients_photo_uploadsCreateManyUsersInputEnvelope = {
-    data: Ingredients_photo_uploadsCreateManyUsersInput | Ingredients_photo_uploadsCreateManyUsersInput[]
+    data: Enumerable<Ingredients_photo_uploadsCreateManyUsersInput>
     skipDuplicates?: boolean
   }
 
@@ -10340,6 +13455,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     created_at: Date | string
     updated_at: Date | string
     recipe_ingredients?: Recipe_ingredientsCreateNestedManyWithoutRecipesInput
+    shopping_list?: Shopping_listCreateNestedManyWithoutRecipesInput
   }
 
   export type RecipesUncheckedCreateWithoutUsersInput = {
@@ -10350,6 +13466,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     created_at: Date | string
     updated_at: Date | string
     recipe_ingredients?: Recipe_ingredientsUncheckedCreateNestedManyWithoutRecipesInput
+    shopping_list?: Shopping_listUncheckedCreateNestedManyWithoutRecipesInput
   }
 
   export type RecipesCreateOrConnectWithoutUsersInput = {
@@ -10358,7 +13475,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type RecipesCreateManyUsersInputEnvelope = {
-    data: RecipesCreateManyUsersInput | RecipesCreateManyUsersInput[]
+    data: Enumerable<RecipesCreateManyUsersInput>
     skipDuplicates?: boolean
   }
 
@@ -10395,14 +13512,14 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Ingredients_photo_uploadsScalarWhereInput = {
-    AND?: Ingredients_photo_uploadsScalarWhereInput | Ingredients_photo_uploadsScalarWhereInput[]
-    OR?: Ingredients_photo_uploadsScalarWhereInput[]
-    NOT?: Ingredients_photo_uploadsScalarWhereInput | Ingredients_photo_uploadsScalarWhereInput[]
+    AND?: Enumerable<Ingredients_photo_uploadsScalarWhereInput>
+    OR?: Enumerable<Ingredients_photo_uploadsScalarWhereInput>
+    NOT?: Enumerable<Ingredients_photo_uploadsScalarWhereInput>
     id?: UuidFilter<"Ingredients_photo_uploads"> | string
     user_id?: StringFilter<"Ingredients_photo_uploads"> | string
     created_at?: DateTimeFilter<"Ingredients_photo_uploads"> | Date | string
     uploaded_at?: DateTimeNullableFilter<"Ingredients_photo_uploads"> | Date | string | null
-    state?: Enumingredient_photo_upload_stateFilter<"Ingredients_photo_uploads"> | $Enums.ingredient_photo_upload_state
+    state?: Enumingredient_photo_upload_stateFilter<"Ingredients_photo_uploads"> | ingredient_photo_upload_state
     upload_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
     ai_processing_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
     photo_url?: StringNullableFilter<"Ingredients_photo_uploads"> | string | null
@@ -10425,9 +13542,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type RecipesScalarWhereInput = {
-    AND?: RecipesScalarWhereInput | RecipesScalarWhereInput[]
-    OR?: RecipesScalarWhereInput[]
-    NOT?: RecipesScalarWhereInput | RecipesScalarWhereInput[]
+    AND?: Enumerable<RecipesScalarWhereInput>
+    OR?: Enumerable<RecipesScalarWhereInput>
+    NOT?: Enumerable<RecipesScalarWhereInput>
     id?: UuidFilter<"Recipes"> | string
     name?: StringFilter<"Recipes"> | string
     description?: StringFilter<"Recipes"> | string
@@ -10475,7 +13592,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description: string
     is_reviewed: boolean
     embedding: string
-    tracking_type?: $Enums.ingredients_tracking_type | null
+    tracking_type?: ingredients_tracking_type | null
     fill_level: number
     count: number
     shelf_life_months: number
@@ -10489,7 +13606,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
-    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
@@ -10504,7 +13621,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
-    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
@@ -10519,7 +13636,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: StringFieldUpdateOperationsInput | string
     is_reviewed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: StringFieldUpdateOperationsInput | string
-    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | $Enums.ingredients_tracking_type | null
+    tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
     shelf_life_months?: IntFieldUpdateOperationsInput | number
@@ -10527,11 +13644,47 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
 
+  export type Shopping_listCreateManyRecipe_ingredientsInput = {
+    id: string
+    recipe_id: string
+    purchased: boolean
+    created_at: Date | string
+  }
+
+  export type Shopping_listUpdateWithoutRecipe_ingredientsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    purchased?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    recipes?: RecipesUpdateOneRequiredWithoutShopping_listNestedInput
+  }
+
+  export type Shopping_listUncheckedUpdateWithoutRecipe_ingredientsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    recipe_id?: StringFieldUpdateOperationsInput | string
+    purchased?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type Shopping_listUncheckedUpdateManyWithoutRecipe_ingredientsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    recipe_id?: StringFieldUpdateOperationsInput | string
+    purchased?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type Recipe_ingredientsCreateManyRecipesInput = {
     id: string
     listing: string
     extracted_name: string
     embedding: string
+    grocery_section: grocery_section
+  }
+
+  export type Shopping_listCreateManyRecipesInput = {
+    id: string
+    recipe_ingredient_id: string
+    purchased: boolean
+    created_at: Date | string
   }
 
   export type Recipe_ingredientsUpdateWithoutRecipesInput = {
@@ -10539,6 +13692,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: StringFieldUpdateOperationsInput | string
     extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
+    shopping_list?: Shopping_listUpdateManyWithoutRecipe_ingredientsNestedInput
   }
 
   export type Recipe_ingredientsUncheckedUpdateWithoutRecipesInput = {
@@ -10546,6 +13701,8 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: StringFieldUpdateOperationsInput | string
     extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
+    shopping_list?: Shopping_listUncheckedUpdateManyWithoutRecipe_ingredientsNestedInput
   }
 
   export type Recipe_ingredientsUncheckedUpdateManyWithoutRecipesInput = {
@@ -10553,6 +13710,28 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: StringFieldUpdateOperationsInput | string
     extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
+  }
+
+  export type Shopping_listUpdateWithoutRecipesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    purchased?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    recipe_ingredients?: Recipe_ingredientsUpdateOneRequiredWithoutShopping_listNestedInput
+  }
+
+  export type Shopping_listUncheckedUpdateWithoutRecipesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    recipe_ingredient_id?: StringFieldUpdateOperationsInput | string
+    purchased?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type Shopping_listUncheckedUpdateManyWithoutRecipesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    recipe_ingredient_id?: StringFieldUpdateOperationsInput | string
+    purchased?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type Ingredient_eventsCreateManyUsersInput = {
@@ -10567,7 +13746,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id: string
     created_at: Date | string
     uploaded_at?: Date | string | null
-    state: $Enums.ingredient_photo_upload_state
+    state: ingredient_photo_upload_state
     upload_duration_sec?: number | null
     ai_processing_duration_sec?: number | null
     photo_url?: string | null
@@ -10610,7 +13789,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | $Enums.ingredient_photo_upload_state
+    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | ingredient_photo_upload_state
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10621,7 +13800,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | $Enums.ingredient_photo_upload_state
+    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | ingredient_photo_upload_state
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10632,7 +13811,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | $Enums.ingredient_photo_upload_state
+    state?: Enumingredient_photo_upload_stateFieldUpdateOperationsInput | ingredient_photo_upload_state
     upload_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     ai_processing_duration_sec?: NullableFloatFieldUpdateOperationsInput | number | null
     photo_url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10646,6 +13825,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     recipe_ingredients?: Recipe_ingredientsUpdateManyWithoutRecipesNestedInput
+    shopping_list?: Shopping_listUpdateManyWithoutRecipesNestedInput
   }
 
   export type RecipesUncheckedUpdateWithoutUsersInput = {
@@ -10656,6 +13836,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     recipe_ingredients?: Recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput
+    shopping_list?: Shopping_listUncheckedUpdateManyWithoutRecipesNestedInput
   }
 
   export type RecipesUncheckedUpdateManyWithoutUsersInput = {
@@ -10668,50 +13849,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
 
-
-  /**
-   * Aliases for legacy arg types
-   */
-    /**
-     * @deprecated Use IngredientsCountOutputTypeDefaultArgs instead
-     */
-    export type IngredientsCountOutputTypeArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = IngredientsCountOutputTypeDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use Ingredients_photo_uploadsCountOutputTypeDefaultArgs instead
-     */
-    export type Ingredients_photo_uploadsCountOutputTypeArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = Ingredients_photo_uploadsCountOutputTypeDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use RecipesCountOutputTypeDefaultArgs instead
-     */
-    export type RecipesCountOutputTypeArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = RecipesCountOutputTypeDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use UsersCountOutputTypeDefaultArgs instead
-     */
-    export type UsersCountOutputTypeArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = UsersCountOutputTypeDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use Ingredient_eventsDefaultArgs instead
-     */
-    export type Ingredient_eventsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = Ingredient_eventsDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use IngredientsDefaultArgs instead
-     */
-    export type IngredientsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = IngredientsDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use Ingredients_photo_uploadsDefaultArgs instead
-     */
-    export type Ingredients_photo_uploadsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = Ingredients_photo_uploadsDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use Recipe_ingredientsDefaultArgs instead
-     */
-    export type Recipe_ingredientsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = Recipe_ingredientsDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use RecipesDefaultArgs instead
-     */
-    export type RecipesArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = RecipesDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use UsersDefaultArgs instead
-     */
-    export type UsersArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = UsersDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany
