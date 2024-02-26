@@ -150,7 +150,7 @@ export default function ShoppingCart() {
 
   return (
     <Flex direction="column" gap="6">
-      <Heading>Shopping Cart</Heading>
+      <Heading>Shopping List</Heading>
       <Text as="label" size="2">
         <Flex gap="2">
           <Switch

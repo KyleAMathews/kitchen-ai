@@ -9,7 +9,6 @@ import {
   ScrollArea,
   Text,
   Em,
-  Badge,
   Box,
   Button,
   Dialog,
@@ -30,7 +29,59 @@ import { useElectric } from "../context"
 import { useUser } from "@clerk/clerk-react"
 import { cosineSimilarity, createJob } from "../util"
 import { UpdateIcon, LightningBoltIcon } from "@radix-ui/react-icons"
-import { FiShoppingCart } from "react-icons/fi"
+import * as Toast from "@radix-ui/react-toast"
+
+function AddIngredientsToShoppingListButton({
+  possibleMatches,
+  checked,
+  recipe,
+}) {
+  const [open, setOpen] = useState(false)
+  const { db } = useElectric()!
+
+  return (
+    <Toast.Provider swipeDirection="right">
+      <Button
+        onClick={async () => {
+          setOpen(false)
+          const createObjects = Object.keys(possibleMatches)
+            .map((ingredient_id: string) => {
+              if (
+                checked[ingredient_id] === false ||
+                (typeof checked[ingredient_id] === `undefined` &&
+                  possibleMatches[ingredient_id] === null)
+              ) {
+                const ingredient: Recipe_ingredients =
+                  recipe.recipe_ingredients.find((i) => i.id === ingredient_id)
+                return {
+                  id: genUUID(),
+                  recipe_id: ingredient.recipe_id,
+                  recipe_ingredient_id: ingredient.id,
+                  purchased: false,
+                  created_at: new Date(),
+                }
+              }
+            })
+            .filter((i) => i)
+          await db.shopping_list.createMany({
+            data: createObjects,
+          })
+          setOpen(true)
+        }}
+      >
+        Add items to Shopping List
+      </Button>
+      <Toast.Root className="ToastRoot" open={open} onOpenChange={setOpen}>
+        <Toast.Title className="ToastTitle">
+          <Flex p="4">
+            <Text>Ingredients added to shopping list</Text>
+          </Flex>
+        </Toast.Title>
+      </Toast.Root>
+      <Toast.Viewport className="ToastViewport" />
+    </Toast.Provider>
+  )
+}
 
 function generateDateMonthsAgo(monthsAgo) {
   const currentDate = new Date() // Get the current date
@@ -45,7 +96,13 @@ function generateDateMonthsAgo(monthsAgo) {
   return `${year}/${month}` // Return the formatted date string
 }
 
-function Working({ isWorking, style }: { isWorking: boolean }) {
+function Working({
+  isWorking,
+  style,
+}: {
+  isWorking: boolean
+  style: React.CSSProperties
+}) {
   if (isWorking) {
     return (
       <UpdateIcon style={style} height="14" width="14" className="icon-spin" />
@@ -60,6 +117,11 @@ function AlreadyHaveIngredient({
   setChecked,
   checked,
   possibleMatches,
+}: {
+  ingredient: Recipe_ingredients
+  setChecked: (val: boolean) => void
+  checked: boolean
+  possibleMatches: Recipe_ingredients[]
 }) {
   const { db } = useElectric()!
   const { results: liveJobs } = useLiveQuery(
@@ -71,7 +133,6 @@ function AlreadyHaveIngredient({
     })
   )
   const jobs = liveJobs || []
-  console.log(ingredient.extracted_name, { jobs })
   return (
     <Flex direction="column" gap="2" position="relative">
       <Text as="label" size="2">
@@ -116,7 +177,6 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
   const [type, setType] = useState(`fill_level`)
   const [open, setOpen] = useState(false)
   const [fillDate, setFillDate] = useState(generateDateMonthsAgo(3))
-  const [jobPromise, setJobPromise] = useState(null)
   const { db } = useElectric()!
 
   return (
@@ -156,26 +216,23 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
                     throw new Error(`Network response was not ok`)
                   }
                   const data = await response.json()
-                  try {
-                    const newIngredient = await db.ingredients.create({
-                      data: {
-                        id: uuid(),
-                        name: formProps.name,
-                        fill_level: parseInt(formProps.fill_level, 10) || 0,
-                        embedding: JSON.stringify(data.embedding),
-                        tracking_type: type,
-                        fill_date: fillDate,
-                        count: parseInt(formProps?.count, 10) || 0,
-                        is_ground: data.is_ground,
-                        description: data.description,
-                        is_reviewed: true,
-                        shelf_life_months: data.shelf_life_months,
-                      },
-                    })
-                    console.log({ newIngredient })
-                  } catch (e) {
-                    throw e
-                  }
+
+                  const newIngredient = await db.ingredients.create({
+                    data: {
+                      id: uuid(),
+                      name: formProps.name,
+                      fill_level: parseInt(formProps.fill_level, 10) || 0,
+                      embedding: JSON.stringify(data.embedding),
+                      tracking_type: type,
+                      fill_date: fillDate,
+                      count: parseInt(formProps?.count, 10) || 0,
+                      is_ground: data.is_ground,
+                      description: data.description,
+                      is_reviewed: true,
+                      shelf_life_months: data.shelf_life_months,
+                    },
+                  })
+                  console.log({ newIngredient })
 
                   return response
                 },
@@ -379,6 +436,16 @@ export default function RecipeDetail() {
       return [ri.id, possibleMatch]
     })
   )
+  const neededIngredients = Object.keys(possibleMatches).filter(
+    (ingredient_id) => {
+      return (
+        checked[ingredient_id] === false ||
+        (typeof checked[ingredient_id] === `undefined` &&
+          possibleMatches[ingredient_id] === null)
+      )
+    }
+  )
+  console.log({ neededIngredients, shopping_list })
 
   return (
     <Flex direction="column" gap="5">
@@ -406,65 +473,38 @@ export default function RecipeDetail() {
             <Em>Review ingredients Kitchen.ai thinks you need to buy</Em>
           </Text>
         </Flex>
-        {Object.keys(possibleMatches).map((ingredient_id: string) => {
-          if (
-            checked[ingredient_id] === false ||
-            (typeof checked[ingredient_id] === `undefined` &&
-              possibleMatches[ingredient_id] === null)
-          ) {
-            const ingredient: Recipe_ingredients =
-              recipe.recipe_ingredients.find((i) => i.id === ingredient_id)
-            return (
-              <Text
-                as="label"
-                size="2"
-                style={{ position: `relative`, paddingRight: 12 }}
-              >
-                <Flex gap="2">
-                  <Checkbox
-                    checked={false}
-                    onClick={() => {
-                      setChecked({ ...checked, [ingredient_id]: true })
-                    }}
-                  />
-                  {` `}
-                  {ingredient.listing}
-                  {` `}
-                </Flex>
-              </Text>
-            )
-          }
+        {neededIngredients.map((ingredient_id: string) => {
+          const ingredient: Recipe_ingredients = recipe.recipe_ingredients.find(
+            (i) => i.id === ingredient_id
+          )
+          return (
+            <Text
+              as="label"
+              size="2"
+              style={{
+                position: `relative`,
+                paddingRight: 12,
+              }}
+            >
+              <Flex gap="2">
+                <Checkbox
+                  checked={false}
+                  onClick={() => {
+                    setChecked({ ...checked, [ingredient_id]: true })
+                  }}
+                />
+                {` `}
+                {ingredient.listing}
+                {` `}
+              </Flex>
+            </Text>
+          )
         })}
-        <Button
-          onClick={() => {
-            const createObjects = Object.keys(possibleMatches)
-              .map((ingredient_id: string) => {
-                if (
-                  checked[ingredient_id] === false ||
-                  (typeof checked[ingredient_id] === `undefined` &&
-                    possibleMatches[ingredient_id] === null)
-                ) {
-                  const ingredient: Recipe_ingredients =
-                    recipe.recipe_ingredients.find(
-                      (i) => i.id === ingredient_id
-                    )
-                  return {
-                    id: genUUID(),
-                    recipe_id: ingredient.recipe_id,
-                    recipe_ingredient_id: ingredient.id,
-                    purchased: false,
-                    created_at: new Date(),
-                  }
-                }
-              })
-              .filter((i) => i)
-            db.shopping_list.createMany({
-              data: createObjects,
-            })
-          }}
-        >
-          Add items to Shopping List
-        </Button>
+        <AddIngredientsToShoppingListButton
+          possibleMatches={possibleMatches}
+          recipe={recipe}
+          checked={checked}
+        />
       </Flex>
       <Flex direction="column" gap="4">
         <Heading size="3">Already Have</Heading>
