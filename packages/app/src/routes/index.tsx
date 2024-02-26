@@ -37,6 +37,132 @@ import {
 import { useLiveQuery } from "electric-sql/react"
 import { useElectric } from "../context"
 import FileUploadToS3 from "../upload-to-s3"
+import TimeAgo from "javascript-time-ago"
+
+// English.
+import en from "javascript-time-ago/locale/en"
+
+TimeAgo.addDefaultLocale(en)
+
+// Create formatter (English).
+const timeAgo = new TimeAgo(`en-US`)
+
+function IngredientsView({ ingredients_needing_review, ingredients, photos }) {
+  const navigate = useNavigate()
+  return (
+    <Flex direction="column" gap="6">
+      <Flex direction="column" gap="4">
+        <Heading>
+          Ingredients{` `}
+          <Link to="/upload-photos">
+            <PlusCircledIcon />
+          </Link>
+        </Heading>
+        {photos && photos.length > 0 && (
+          <Button variant="soft">
+            <Link
+              to="/review"
+              style={{ textDecoration: `none`, color: `inherit` }}
+            >
+              Review{` `}
+              {ingredients_needing_review.length}
+              {` `}
+              new ingredients{` `}
+              <ArrowRightIcon
+                width="16"
+                height="16"
+                style={{ position: `relative`, top: 1 }}
+              />
+            </Link>
+          </Button>
+        )}
+      </Flex>
+
+      <Flex direction="column" gap="5">
+        {ingredients.map((ingredient, i: number) => {
+          // Get expired date string
+          const expiredDate = new Date(ingredient.fill_date)
+          expiredDate.setMonth(
+            expiredDate.getMonth() + ingredient.shelf_life_months
+          )
+
+          // See if expire date is less than 2 months away
+          const threeMonthsFromNow = new Date() // Copy current date to a new variable
+          threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3)
+          const isExpired = threeMonthsFromNow > expiredDate
+
+          const isRunningLow =
+            ingredient.tracking_type === `fill_level`
+              ? ingredient.fill_level < 33
+              : ingredient.count < 2
+
+          if (ingredient.is_reviewed) {
+            console.log({ ingredient })
+            return (
+              <React.Fragment key={ingredient.id}>
+                <Flex
+                  key={ingredient.id}
+                  gap="5"
+                  style={{ cursor: `pointer` }}
+                  align="center"
+                  onClick={() => {
+                    navigate(`/ingredients/${ingredient.id}`)
+                  }}
+                >
+                  <Flex gap="2" direction="column">
+                    <Heading size="3" weight="medium">
+                      {ingredient.tracking_type === `count` &&
+                        `(` + ingredient.count + `) `}
+                      {ingredient.name}
+                    </Heading>
+                    <Text size="2" color="gray">
+                      Expires {timeAgo.format(new Date(expiredDate))}
+                    </Text>
+                  </Flex>
+                  <Flex direction="column" gap="1" ml="auto">
+                    {ingredient.tracking_type === `fill_level` && (
+                      <Box style={{ minWidth: 100 }}>
+                        <Slider
+                          variant="soft"
+                          className="no-thumb"
+                          value={[ingredient.fill_level]}
+                        />
+                      </Box>
+                    )}
+                    {isRunningLow && (
+                      <Box>
+                        <Badge color="crimson" variant="solid">
+                          Running Low
+                        </Badge>
+                      </Box>
+                    )}
+                    {isExpired && (
+                      <Box>
+                        <Badge color="crimson" variant="solid">
+                          Replace soon
+                        </Badge>
+                      </Box>
+                    )}
+                  </Flex>
+                  <Flex align="center">
+                    <CaretRightIcon height="20" width="20" />
+                  </Flex>
+                </Flex>
+                {i !== ingredients.length - 1 && (
+                  <Separator
+                    key={ingredient.id + `-seperator`}
+                    orientation="horizontal"
+                    size="4"
+                  />
+                )}
+              </React.Fragment>
+            )
+          }
+        })}
+      </Flex>
+    </Flex>
+  )
+}
 
 function BlankSlate() {
   return (
@@ -72,7 +198,6 @@ function BlankSlate() {
 
 const queries = ({ db, search }: { db: Electric[`db`]; search: string }) => {
   const queryStr = `%${search || ``}%`
-  console.log(`insie`, { search, queryStr })
   return {
     photos: db.ingredients_photo_uploads.liveMany({
       where: {
@@ -90,7 +215,9 @@ const queries = ({ db, search }: { db: Electric[`db`]; search: string }) => {
     ingredients: db.liveRawQuery({
       sql: `SELECT * from ingredients
       WHERE name LIKE ?
-      ORDER BY name COLLATE NOCASE asc`,
+      ORDER BY name COLLATE NOCASE asc
+      LIMIT 3
+      `,
       args: [queryStr],
     }),
     recipes: db.recipes.liveMany({
@@ -106,7 +233,6 @@ Index.queries = queries
 export default function Index() {
   const { db } = useElectric()!
   const location = useLocation()
-  const navigate = useNavigate()
   const [search, setSearchParams] = useSearchParams()
   const q = new URLSearchParams(search).get(`q`)
 
@@ -130,151 +256,70 @@ export default function Index() {
       ) : (
         <>
           <Flex direction="column" gap="6">
+            <Heading>My Kitchen</Heading>
+            <form>
+              <TextField.Root>
+                <TextField.Slot>
+                  <MagnifyingGlassIcon height="16" width="16" />
+                </TextField.Slot>
+                <TextField.Input
+                  placeholder="Search Kitchen"
+                  type="search"
+                  autoComplete="false"
+                  name="q"
+                  value={q || ``}
+                  onChange={(event) => {
+                    const formData = new FormData(event.currentTarget.form)
+                    const updates = Object.fromEntries(formData)
+                    setSearchParams({ q: updates.q }, { replace: true })
+                  }}
+                />
+              </TextField.Root>
+            </form>
+            <IngredientsView
+              ingredients_needing_review={ingredients_needing_review}
+              ingredients={ingredients}
+              photos={photos}
+            />
             <Flex direction="column" gap="6">
-              <Flex direction="column" gap="4">
-                <Heading>
-                  Recipes{` `}
-                  <Link to="/recipes">
-                    <PlusCircledIcon />
-                  </Link>
-                </Heading>
-                {recipes && recipes.length > 0 && (
-                  <Flex direction="column" gap="4">
-                    {recipes.map((recipe) => {
-                      return (
-                        <RadixLink asChild>
-                          <Link to={`/recipes/${recipe.id}`}>
-                            - {recipe.name}
-                          </Link>
-                        </RadixLink>
-                      )
-                    })}
-                  </Flex>
-                )}
-              </Flex>
-            </Flex>
-            <Flex direction="column" gap="6">
-              <Flex direction="column" gap="4">
-                <Heading>
-                  Ingredients({ingredients.length}){` `}
-                  <Link to="/upload-photos">
-                    <PlusCircledIcon />
-                  </Link>
-                </Heading>
-                {photos && photos.length > 0 && (
-                  <Button variant="soft">
-                    <Link
-                      to="/review"
-                      style={{ textDecoration: `none`, color: `inherit` }}
-                    >
-                      Review{` `}
-                      {ingredients_needing_review.length}
-                      {` `}
-                      new ingredients{` `}
-                      <ArrowRightIcon
-                        width="16"
-                        height="16"
-                        style={{ position: `relative`, top: 1 }}
-                      />
-                    </Link>
-                  </Button>
-                )}
-              </Flex>
-
-              <form>
-                <TextField.Root>
-                  <TextField.Slot>
-                    <MagnifyingGlassIcon height="16" width="16" />
-                  </TextField.Slot>
-                  <TextField.Input
-                    placeholder="Search ingredients"
-                    type="search"
-                    autoComplete="false"
-                    name="q"
-                    value={q || ``}
-                    onChange={(event) => {
-                      const formData = new FormData(event.currentTarget.form)
-                      const updates = Object.fromEntries(formData)
-                      setSearchParams({ q: updates.q }, { replace: true })
-                    }}
-                  />
-                </TextField.Root>
-              </form>
-
-              <Flex direction="column" gap="5">
-                {ingredients.map((ingredient, i: number) => {
-                  // Get expired date string
-                  const expiredDate = new Date(ingredient.fill_date)
-                  expiredDate.setMonth(
-                    expiredDate.getMonth() + ingredient.shelf_life_months
-                  )
-                  const expireDateStr = expiredDate
-                    .toLocaleDateString(`en-US`, {
-                      year: `2-digit`,
-                      month: `short`,
-                    })
-                    .split(` `)
-                    .join(` ’`)
-
-                  // See if expire date is less than 2 months away
-                  const threeMonthsFromNow = new Date() // Copy current date to a new variable
-                  threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3)
-                  const isExpired = threeMonthsFromNow > expiredDate
-
-                  if (ingredient.is_reviewed) {
+              <Heading>
+                Recipes{` `}
+                <Link to="/recipes">
+                  <PlusCircledIcon />
+                </Link>
+              </Heading>
+              {recipes && recipes.length > 0 && (
+                <Flex direction="column" gap="5">
+                  {recipes.map((recipe, i) => {
                     return (
-                      <React.Fragment key={ingredient.id}>
-                        <Flex
-                          key={ingredient.id}
-                          gap="5"
-                          style={{ cursor: `pointer` }}
-                          onClick={() => {
-                            navigate(`/ingredients/${ingredient.id}`)
-                          }}
-                        >
-                          <Flex gap="2" direction="column">
-                            <Text>{ingredient.name}</Text>
-                            <Text size="1" color="gray">
-                              Exp: {expireDateStr}
-                            </Text>
-                          </Flex>
-                          <Flex>
-                            <Slider
-                              className="no-thumb"
-                              orientation="vertical"
-                              value={[ingredient.fill_level]}
-                            />
-                          </Flex>
-                          {ingredient.fill_level < 33 && (
-                            <Box>
-                              <Badge color="crimson" variant="solid">
-                                Running Low
-                              </Badge>
-                            </Box>
-                          )}
-                          {isExpired && (
-                            <Box>
-                              <Badge color="crimson" variant="solid">
-                                Replace soon
-                              </Badge>
-                            </Box>
-                          )}
-                          <Flex align="center" ml="auto">
-                            <CaretRightIcon height="20" width="20" />
-                          </Flex>
+                      <>
+                        <Flex direction="column" gap="3">
+                          <Heading size="3" weight="medium">
+                            <Link
+                              to={`/recipes/${recipe.id}`}
+                              style={{
+                                color: `inherit`,
+                                textDecoration: `none`,
+                              }}
+                            >
+                              {recipe.name}
+                            </Link>
+                          </Heading>
+                          <Text color="gray" size="2">
+                            Added {timeAgo.format(recipe.created_at)}
+                          </Text>
                         </Flex>
-                        {i !== ingredients.length - 1 && (
-                          <Separator
-                            key={ingredient.id + `-seperator`}
-                            orientation="horizontal"
-                            size="4"
-                          />
-                        )}
-                      </React.Fragment>
+                        {recipes.length - 1 !== i && <Separator size="4" />}
+                      </>
                     )
-                  }
-                })}
-              </Flex>
+                  })}
+                </Flex>
+              )}
+              <RadixLink asChild>
+                <Link to="/recipes">
+                  Browse all <ArrowRightIcon />
+                </Link>
+              </RadixLink>
             </Flex>
           </Flex>
         </>

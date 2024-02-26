@@ -111,7 +111,12 @@ function EditCountLevel({ ingredient }: { ingredient: Ingredients }) {
   )
 }
 
-function EditFillLevel() {
+function EditFillLevel({ ingredient }) {
+  const {
+    user: { id: user_id },
+  } = useUser()
+  const { db } = useElectric()!
+  const [didYouFillUp, setDidYouFillUp] = useState<boolean>(false)
   return (
     <>
       <Flex direction="column" gap="3">
@@ -264,9 +269,6 @@ const diffInMonths = (date1, date2) => {
 export default function IngredientDetail() {
   const location = useLocation()
   const { db } = useElectric()!
-  const {
-    user: { id: user_id },
-  } = useUser()
 
   const {
     ingredient,
@@ -275,9 +277,6 @@ export default function IngredientDetail() {
     location.pathname + location.search
   )
 
-  console.log({ ingredient })
-
-  const [didYouFillUp, setDidYouFillUp] = useState<boolean>(false)
   // Get expired date string
   const expiredDate = new Date(ingredient.fill_date)
   expiredDate.setMonth(expiredDate.getMonth() + ingredient.shelf_life_months)
@@ -294,19 +293,27 @@ export default function IngredientDetail() {
       <Flex>
         <Text>{ingredient.description}</Text>
       </Flex>
+      <Button
+        variant="outline"
+        onClick={() => {
+          console.log(`wait for trello`)
+        }}
+      >
+        Add to shopping list
+      </Button>
       <Flex>
         <Text>Expires: {expireDateStr}</Text>
       </Flex>
       {ingredient.tracking_type === `count` ? (
         <EditCountLevel ingredient={ingredient} />
       ) : (
-        <EditFillLevel />
+        <EditFillLevel ingredient={ingredient} />
       )}
       {events.length > 0 && (
         <Flex direction="column" gap="3">
           <Heading size="4">Timeline</Heading>
           {events.map((event) => {
-            return <Text>{generateEventText(event)}</Text>
+            return <Text key={event.id}>{generateEventText(event)}</Text>
           })}
         </Flex>
       )}

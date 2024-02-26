@@ -44,6 +44,7 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "javascript-time-ago": "^2.5.9",
     "lodash": "^4.17.21",
     "mustache": "^4.2.0",
     "pg": "^8.11.3",
