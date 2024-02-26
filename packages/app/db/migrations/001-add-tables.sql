@@ -28,7 +28,6 @@ CREATE TABLE ingredients (
     count INTEGER NOT NULL,
     shelf_life_months INTEGER NOT NULL,
     fill_date TEXT  NOT NULL, /* YYYY/MM */
-    is_ground BOOLEAN,
     ingredients_photo_uploads_id UUID,
     FOREIGN KEY (ingredients_photo_uploads_id) REFERENCES ingredients_photo_uploads(id)
 );

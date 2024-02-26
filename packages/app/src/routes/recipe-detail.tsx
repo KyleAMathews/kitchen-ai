@@ -201,7 +201,7 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
                 target_id: ingredient.id,
                 type: `Transform recipe ingredient to kitchen ingredient`,
                 fetchFn: async () => {
-                  // Make LLM call to get description, embedding, shelf_life_months, is_ground
+                  // Make LLM call to get description, embedding, shelf_life_months
                   const response = await fetch(
                     `https://7vxq1y2eu2.execute-api.us-east-1.amazonaws.com/ingredients`,
                     {
@@ -226,7 +226,6 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
                       tracking_type: type,
                       fill_date: fillDate,
                       count: parseInt(formProps?.count, 10) || 0,
-                      is_ground: data.is_ground,
                       description: data.description,
                       is_reviewed: true,
                       shelf_life_months: data.shelf_life_months,

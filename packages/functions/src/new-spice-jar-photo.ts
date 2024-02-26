@@ -54,10 +54,8 @@ export const main: S3Handler = async (event) => {
     const SpiceJarSchema = z.array(
       z.object({
         name: z.string().describe(
-          `name of spice. Don't include "ground" in the name as we capture that in
-          the is_ground boolean so "Nutmeg Ground" should just be "Nutmeg" but do 
-          capture other descriptive adjectives e.g. if it's "whole" or "seeds" or 
-          "flakes".Do capture other adjectives (other than ground) e.g. color.
+          `name of spice. Capture descriptive adjectives e.g. if it's "whole" or "seeds" or
+          "flakes" or the color.
           Always put adjectives first e.g. yellow in "yellow mustard seed" should be
          first not e.g. "mustard seed yellow"`
         ),
@@ -74,11 +72,6 @@ export const main: S3Handler = async (event) => {
           .max(100)
           .describe(
             `how full roughly is the jar of spices? From 0-100% (as an integer)`
-          ),
-        is_ground: z
-          .boolean()
-          .describe(
-            `is the spice ground (or crushed into small flakes) or still whole (larger pieces counts)?`
           ),
         shelf_life_months: z
           .number()
@@ -210,8 +203,8 @@ export const main: S3Handler = async (event) => {
         ingredients.map((ingredient) => {
           const ingredientInsertQuery = {
             name: `ingredient-insert-query`,
-            text: `INSERT INTO ingredients (id, name, description, is_reviewed, tracking_type, count, fill_level, embedding, fill_date, is_ground, shelf_life_months, ingredients_photo_uploads_id)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);`,
+            text: `INSERT INTO ingredients (id, name, description, is_reviewed, tracking_type, count, fill_level, embedding, fill_date, shelf_life_months, ingredients_photo_uploads_id)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);`,
             values: [
               randomUUID(),
               ingredient.name,
@@ -222,7 +215,6 @@ export const main: S3Handler = async (event) => {
               ingredient.fill_level,
               JSON.stringify(ingredient.embedding),
               generateDateMonthsAgo(18),
-              ingredient.is_ground,
               ingredient.shelf_life_months,
               uuid,
             ],

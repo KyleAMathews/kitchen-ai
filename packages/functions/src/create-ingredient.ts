@@ -47,11 +47,6 @@ export const handler: APIGatewayProxyHandler = async (event) => {
             .describe(
               `how long does this spice or herb last until it looses flavor? If it's a ground spice/herb return 12 or if it's whole or a full leaf, return 24. Otherwise make your best guess.`
             ),
-          is_ground: z
-            .boolean()
-            .describe(
-              `If the ingredient is a spice or herb — is it ground (or crushed into small flakes) or still whole (larger pieces counts)? If the question is irrelevant to this type of ingredient, just return false `
-            ),
         }),
       },
     ]
