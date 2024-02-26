@@ -79,86 +79,90 @@ function IngredientsView({ ingredients_needing_review, ingredients, photos }) {
       </Flex>
 
       <Flex direction="column" gap="5">
-        {ingredients.map((ingredient, i: number) => {
-          // Get expired date string
-          const expiredDate = new Date(ingredient.fill_date)
-          expiredDate.setMonth(
-            expiredDate.getMonth() + ingredient.shelf_life_months
-          )
-
-          // See if expire date is less than 2 months away
-          const threeMonthsFromNow = new Date() // Copy current date to a new variable
-          threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3)
-          const isExpired = threeMonthsFromNow > expiredDate
-
-          const isRunningLow =
-            ingredient.tracking_type === `fill_level`
-              ? ingredient.fill_level < 33
-              : ingredient.count < 2
-
-          if (ingredient.is_reviewed) {
-            console.log({ ingredient })
-            return (
-              <React.Fragment key={ingredient.id}>
-                <Flex
-                  key={ingredient.id}
-                  gap="5"
-                  style={{ cursor: `pointer` }}
-                  align="center"
-                  onClick={() => {
-                    navigate(`/ingredients/${ingredient.id}`)
-                  }}
-                >
-                  <Flex gap="2" direction="column">
-                    <Heading size="3" weight="medium">
-                      {ingredient.tracking_type === `count` &&
-                        `(` + ingredient.count + `) `}
-                      {ingredient.name}
-                    </Heading>
-                    <Text size="2" color="gray">
-                      Expires {timeAgo.format(new Date(expiredDate))}
-                    </Text>
-                  </Flex>
-                  <Flex direction="column" gap="1" ml="auto">
-                    {ingredient.tracking_type === `fill_level` && (
-                      <Box style={{ minWidth: 100 }}>
-                        <Slider
-                          variant="soft"
-                          className="no-thumb"
-                          value={[ingredient.fill_level]}
-                        />
-                      </Box>
-                    )}
-                    {isRunningLow && (
-                      <Box>
-                        <Badge color="crimson" variant="solid">
-                          Running Low
-                        </Badge>
-                      </Box>
-                    )}
-                    {isExpired && (
-                      <Box>
-                        <Badge color="crimson" variant="solid">
-                          Replace soon
-                        </Badge>
-                      </Box>
-                    )}
-                  </Flex>
-                  <Flex align="center">
-                    <CaretRightIcon height="20" width="20" />
-                  </Flex>
-                </Flex>
-                {i !== ingredients.length - 1 && (
-                  <Separator
-                    key={ingredient.id + `-seperator`}
-                    orientation="horizontal"
-                    size="4"
-                  />
-                )}
-              </React.Fragment>
+        {ingredients.length > 0 ? (
+          ingredients.map((ingredient, i: number) => {
+            // Get expired date string
+            const expiredDate = new Date(ingredient.fill_date)
+            expiredDate.setMonth(
+              expiredDate.getMonth() + ingredient.shelf_life_months
             )
-          }
-        })}
+
+            // See if expire date is less than 2 months away
+            const threeMonthsFromNow = new Date() // Copy current date to a new variable
+            threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3)
+            const isExpired = threeMonthsFromNow > expiredDate
+
+            const isRunningLow =
+              ingredient.tracking_type === `fill_level`
+                ? ingredient.fill_level < 33
+                : ingredient.count < 2
+
+            if (ingredient.is_reviewed) {
+              console.log({ ingredient })
+              return (
+                <React.Fragment key={ingredient.id}>
+                  <Flex
+                    key={ingredient.id}
+                    gap="5"
+                    style={{ cursor: `pointer` }}
+                    align="center"
+                    onClick={() => {
+                      navigate(`/ingredients/${ingredient.id}`)
+                    }}
+                  >
+                    <Flex gap="2" direction="column">
+                      <Heading size="3" weight="medium">
+                        {ingredient.tracking_type === `count` &&
+                          `(` + ingredient.count + `) `}
+                        {ingredient.name}
+                      </Heading>
+                      <Text size="2" color="gray">
+                        Expires {timeAgo.format(new Date(expiredDate))}
+                      </Text>
+                    </Flex>
+                    <Flex direction="column" gap="1" ml="auto">
+                      {ingredient.tracking_type === `fill_level` && (
+                        <Box style={{ minWidth: 100 }}>
+                          <Slider
+                            variant="soft"
+                            className="no-thumb"
+                            value={[ingredient.fill_level]}
+                          />
+                        </Box>
+                      )}
+                      {isRunningLow && (
+                        <Box>
+                          <Badge color="crimson" variant="solid">
+                            Running Low
+                          </Badge>
+                        </Box>
+                      )}
+                      {isExpired && (
+                        <Box>
+                          <Badge color="crimson" variant="solid">
+                            Replace soon
+                          </Badge>
+                        </Box>
+                      )}
+                    </Flex>
+                    <Flex align="center">
+                      <CaretRightIcon height="20" width="20" />
+                    </Flex>
+                  </Flex>
+                  {i !== ingredients.length - 1 && (
+                    <Separator
+                      key={ingredient.id + `-seperator`}
+                      orientation="horizontal"
+                      size="4"
+                    />
+                  )}
+                </React.Fragment>
+              )
+            }
+          })
+        ) : (
+          <Text>No results</Text>
+        )}
       </Flex>
     </Flex>
   )
@@ -212,6 +216,9 @@ const queries = ({ db, search }: { db: Electric[`db`]; search: string }) => {
         is_reviewed: false,
       },
     }),
+    ingredientsCount: db.liveRawQuery({
+      sql: `SELECT count(*) as count from ingredients where is_reviewed = true`,
+    }),
     ingredients: db.liveRawQuery({
       sql: `SELECT * from ingredients
       WHERE name LIKE ?
@@ -221,6 +228,11 @@ const queries = ({ db, search }: { db: Electric[`db`]; search: string }) => {
       args: [queryStr],
     }),
     recipes: db.recipes.liveMany({
+      where: {
+        name: {
+          contains: queryStr,
+        },
+      },
       orderBy: {
         updated_at: `asc`,
       },
@@ -239,19 +251,27 @@ export default function Index() {
   const {
     photos,
     ingredients,
+    ingredientsCount,
     ingredients_needing_review,
     recipes,
   }: {
     ingredients: Ingredients[]
+    ingredientsCount: any[]
     photos: Ingredients_photo_uploads[]
     ingredients_needing_review: Ingredients[]
     recipes: Recipes[]
   } = useElectricData(location.pathname + location.search)
-  console.log({ ingredients, photos, ingredients_needing_review, recipes })
+  console.log({
+    ingredients,
+    ingredientsCount,
+    photos,
+    ingredients_needing_review,
+    recipes,
+  })
 
   return (
     <>
-      {ingredients.length === 0 ? (
+      {ingredientsCount[0].count === 0 ? (
         <BlankSlate />
       ) : (
         <>
@@ -288,7 +308,7 @@ export default function Index() {
                   <PlusCircledIcon />
                 </Link>
               </Heading>
-              {recipes && recipes.length > 0 && (
+              {recipes && recipes.length > 0 ? (
                 <Flex direction="column" gap="5">
                   {recipes.map((recipe, i) => {
                     return (
@@ -314,6 +334,8 @@ export default function Index() {
                     )
                   })}
                 </Flex>
+              ) : (
+                <Text>No results</Text>
               )}
               <RadixLink asChild>
                 <Link to="/recipes">
