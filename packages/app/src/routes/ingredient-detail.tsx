@@ -15,6 +15,7 @@ import {
   Separator,
   Slider,
   Badge,
+  TextField,
 } from "@radix-ui/themes"
 import { isString } from "lodash"
 import { genUUID } from "electric-sql/util"
@@ -71,47 +72,48 @@ const queries = ({ db, id }: { db: Electric[`db`]; id: string }) => {
   }
 }
 
-IngredientDetail.queries = queries
-
-const diffInMonths = (date1, date2) => {
-  const yearDiff = date2.getFullYear() - date1.getFullYear()
-  const monthDiff = date2.getMonth() - date1.getMonth()
-  return yearDiff * 12 + monthDiff
-}
-export default function IngredientDetail() {
-  const location = useLocation()
+function EditCountLevel({ ingredient }: { ingredient: Ingredients }) {
+  const [focused, setFocused] = useState(false)
   const { db } = useElectric()!
-  const {
-    user: { id: user_id },
-  } = useUser()
 
-  const {
-    ingredient,
-    events,
-  }: { ingredient: Ingredients; events: Ingredient_events } = useElectricData(
-    location.pathname + location.search
-  )
-
-  const [didYouFillUp, setDidYouFillUp] = useState<boolean>(false)
-  // Get expired date string
-  const expiredDate = new Date(ingredient.fill_date)
-  expiredDate.setMonth(expiredDate.getMonth() + ingredient.shelf_life_months)
-  const expireDateStr = expiredDate
-    .toLocaleDateString(`en-US`, {
-      year: `2-digit`,
-      month: `short`,
-    })
-    .split(` `)
-    .join(` ’`)
   return (
-    <Flex direction="column" gap="6">
-      <Heading>{ingredient.name}</Heading>
-      <Flex>
-        <Text>{ingredient.description}</Text>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        const target = e.target as HTMLFormElement
+        const formData = new FormData(target)
+        const formProps = Object.fromEntries(formData)
+        console.log({ formProps })
+        db.ingredients.update({
+          data: {
+            count: parseInt(formProps.count, 10),
+          },
+          where: {
+            id: ingredient.id,
+          },
+        })
+        setFocused(false)
+      }}
+    >
+      <Flex direction="column" gap="2">
+        <Text size="2" as="label">
+          Count
+        </Text>
+        <TextField.Input
+          type="number"
+          name="count"
+          defaultValue={ingredient.count}
+          onFocus={() => setFocused(true)}
+        />
+        {focused && <Button>Save</Button>}
       </Flex>
-      <Flex>
-        <Text>Expires: {expireDateStr}</Text>
-      </Flex>
+    </form>
+  )
+}
+
+function EditFillLevel() {
+  return (
+    <>
       <Flex direction="column" gap="3">
         <Text size="2" weight="bold">
           Fill Level
@@ -247,6 +249,58 @@ export default function IngredientDetail() {
             Confirm
           </Button>
         </Flex>
+      )}
+    </>
+  )
+}
+
+IngredientDetail.queries = queries
+
+const diffInMonths = (date1, date2) => {
+  const yearDiff = date2.getFullYear() - date1.getFullYear()
+  const monthDiff = date2.getMonth() - date1.getMonth()
+  return yearDiff * 12 + monthDiff
+}
+export default function IngredientDetail() {
+  const location = useLocation()
+  const { db } = useElectric()!
+  const {
+    user: { id: user_id },
+  } = useUser()
+
+  const {
+    ingredient,
+    events,
+  }: { ingredient: Ingredients; events: Ingredient_events } = useElectricData(
+    location.pathname + location.search
+  )
+
+  console.log({ ingredient })
+
+  const [didYouFillUp, setDidYouFillUp] = useState<boolean>(false)
+  // Get expired date string
+  const expiredDate = new Date(ingredient.fill_date)
+  expiredDate.setMonth(expiredDate.getMonth() + ingredient.shelf_life_months)
+  const expireDateStr = expiredDate
+    .toLocaleDateString(`en-US`, {
+      year: `2-digit`,
+      month: `short`,
+    })
+    .split(` `)
+    .join(` ’`)
+  return (
+    <Flex direction="column" gap="6">
+      <Heading>{ingredient.name}</Heading>
+      <Flex>
+        <Text>{ingredient.description}</Text>
+      </Flex>
+      <Flex>
+        <Text>Expires: {expireDateStr}</Text>
+      </Flex>
+      {ingredient.tracking_type === `count` ? (
+        <EditCountLevel ingredient={ingredient} />
+      ) : (
+        <EditFillLevel />
       )}
       {events.length > 0 && (
         <Flex direction="column" gap="3">
