@@ -27,6 +27,7 @@ import Index from "./routes/index"
 import Review from "./routes/review"
 import AddIngredients from "./routes/add-ingredients"
 import Recipes from "./routes/recipes"
+import RecipesNew from "./routes/recipe-new"
 import IngredientDetail from "./routes/ingredient-detail"
 import RecipeDetail from "./routes/recipe-detail"
 import ShoppingCart from "./routes/shopping-cart"
@@ -176,6 +177,10 @@ const router = createBrowserRouter([
 
               return null
             },
+          },
+          {
+            path: `/recipes/new`,
+            element: <RecipesNew />,
           },
           {
             path: `/recipes/:id`,

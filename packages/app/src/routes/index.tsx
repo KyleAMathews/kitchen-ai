@@ -37,6 +37,7 @@ import {
 import { useLiveQuery } from "electric-sql/react"
 import { useElectric } from "../context"
 import FileUploadToS3 from "../upload-to-s3"
+import RecipeCard from "../components/recipe-card"
 import TimeAgo from "javascript-time-ago"
 
 // English.
@@ -229,13 +230,23 @@ const queries = ({ db, search }: { db: Electric[`db`]; search: string }) => {
     }),
     recipes: db.recipes.liveMany({
       where: {
-        name: {
-          contains: queryStr,
-        },
+        OR: [
+          {
+            name: {
+              contains: queryStr,
+            },
+          },
+          {
+            description: {
+              contains: queryStr,
+            },
+          },
+        ],
       },
       orderBy: {
-        updated_at: `asc`,
+        updated_at: `desc`,
       },
+      take: 3,
     }),
   }
 }
@@ -304,7 +315,7 @@ export default function Index() {
             <Flex direction="column" gap="6">
               <Heading>
                 Recipes{` `}
-                <Link to="/recipes">
+                <Link to="/recipes/new">
                   <PlusCircledIcon />
                 </Link>
               </Heading>
@@ -313,22 +324,7 @@ export default function Index() {
                   {recipes.map((recipe, i) => {
                     return (
                       <>
-                        <Flex direction="column" gap="3">
-                          <Heading size="3" weight="medium">
-                            <Link
-                              to={`/recipes/${recipe.id}`}
-                              style={{
-                                color: `inherit`,
-                                textDecoration: `none`,
-                              }}
-                            >
-                              {recipe.name}
-                            </Link>
-                          </Heading>
-                          <Text color="gray" size="2">
-                            Added {timeAgo.format(recipe.created_at)}
-                          </Text>
-                        </Flex>
+                        <RecipeCard recipe={recipe} />
                         {recipes.length - 1 !== i && <Separator size="4" />}
                       </>
                     )

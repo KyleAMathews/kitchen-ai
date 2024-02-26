@@ -9,16 +9,14 @@ import { useUser } from "@clerk/clerk-react"
 import {
   Flex,
   Heading,
-  Box,
   Text,
   Button,
-  Separator,
   Slider,
-  Badge,
   TextField,
 } from "@radix-ui/themes"
 import { isString } from "lodash"
 import { genUUID } from "electric-sql/util"
+
 function formatDate(date) {
   const year = date.getFullYear() // Gets the year (4 digits)
   const month = date.getMonth() + 1 // Gets month, +1 because getMonth() is zero-based
