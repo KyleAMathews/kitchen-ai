@@ -460,7 +460,7 @@ export default function RecipeDetail() {
               JSON.parse(ri.embedding),
               JSON.parse(ri2.embedding)
             )
-            if (distance > 0.65) {
+            if (distance > 0.73) {
               return { distance, ...ri2 }
             } else {
               return false
