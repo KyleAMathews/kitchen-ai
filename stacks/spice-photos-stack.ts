@@ -2,6 +2,8 @@ import { StackContext, Bucket, Api, Config } from "sst/constructs"
 
 export function SpiceJarPhotos({ stack }: StackContext) {
   const OPENAI_KEY_SECRET = new Config.Secret(stack, `OPENAI_KEY`)
+  const TRELLO_TOKEN = new Config.Secret(stack, `TRELLO_TOKEN`)
+  const TRELLO_KEY = new Config.Secret(stack, `TRELLO_KEY`)
 
   const ingredientBucket = new Bucket(stack, `SpiceJarPhotosBucket`, {
     notifications: {
@@ -54,12 +56,19 @@ export function SpiceJarPhotos({ stack }: StackContext) {
           timeout: 125,
         },
       },
+      "POST /create-shopping-list": {
+        function: {
+          handler: `packages/functions/src/create-shopping-list.handler`,
+          timeout: 125,
+        },
+      },
     },
   })
   api.bind([ingredientBucket, recipesPhotoBucket])
   api.bindToRoute(`POST /recipes`, [OPENAI_KEY_SECRET])
   api.bindToRoute(`POST /ingredients`, [OPENAI_KEY_SECRET])
   api.bindToRoute(`POST /create-embedding`, [OPENAI_KEY_SECRET])
+  api.bindToRoute(`POST /create-shopping-list`, [TRELLO_KEY, TRELLO_TOKEN])
 
   stack.addOutputs({
     ApiEndpoint: api.url,

@@ -75,19 +75,42 @@ function AddIngredientsToShoppingListButton({
                 const ingredient: Recipe_ingredients =
                   recipe.recipe_ingredients.find((i) => i.id === ingredient_id)
                 return {
-                  id: genUUID(),
-                  recipe_id: ingredient.recipe_id,
-                  recipe_ingredient_id: ingredient.id,
-                  purchased: false,
-                  created_at: new Date(),
+                  ingredient: ingredient.listing,
+                  section: ingredient.grocery_section,
                 }
               }
             })
             .filter((i) => i)
-          await db.shopping_list.createMany({
-            data: createObjects,
-          })
+          console.log({ createObjects })
+          const cardDescription = {
+            cardName: getFirstDayOfWeekDate(),
+            url: recipe.url,
+            checklists: mapValues(
+              groupBy(createObjects, (o) => o.section),
+              (sectionVals) => sectionVals.map((s) => s.ingredient)
+            ),
+          }
+          console.log({ cardDescription })
+          // await db.shopping_list.createMany({
+          // data: createObjects,
+          // })
+          const response = await fetch(
+            `https://7vxq1y2eu2.execute-api.us-east-1.amazonaws.com/create-shopping-list`,
+            {
+              method: `POST`,
+              headers: {
+                "Content-Type": `application/json`,
+              },
+              body: JSON.stringify(cardDescription),
+            }
+          )
+          if (!response.ok) {
+            console.loj(`Network response was not ok`)
+          }
+          const data = await response.json()
+          console.log(`response`, data)
           setOpen(true)
+          setWorking(false)
         }}
       >
         Add items to Shopping List
