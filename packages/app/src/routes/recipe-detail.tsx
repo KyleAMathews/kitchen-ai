@@ -117,6 +117,14 @@ function AddIngredientsToShoppingListButton({
           console.log(`response`, data)
           setOpen(true)
           setWorking(false)
+          db.recipes.update({
+            data: {
+              updated_at: new Date(),
+            },
+            where: {
+              id: recipe.id,
+            },
+          })
         }}
       >
         Add items to Shopping List
