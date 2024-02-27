@@ -1,10 +1,5 @@
-import {
-  useLocation,
-  Link,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom"
 import * as React from "react"
+import { useLocation, Link, useSearchParams } from "react-router-dom"
 import measuringCupImg from "../../static/measuring-cup.png"
 import threeSpices from "../../static/3-spices.jpg"
 import {
@@ -17,37 +12,22 @@ import { useElectricData } from "electric-query"
 import {
   Flex,
   Heading,
-  Box,
   Link as RadixLink,
   Text,
   Button,
   Separator,
-  Slider,
-  Badge,
   TextField,
-  Container,
 } from "@radix-ui/themes"
 import {
   MagnifyingGlassIcon,
   PlusCircledIcon,
   PlusIcon,
   ArrowRightIcon,
-  CaretRightIcon,
 } from "@radix-ui/react-icons"
-import { useLiveQuery } from "electric-sql/react"
 import { useElectric } from "../context"
 import FileUploadToS3 from "../upload-to-s3"
 import RecipeCard from "../components/recipe-card"
-import TimeAgo from "javascript-time-ago"
-import { isRunningLow, isExpiredSoon } from "../util"
-
-// English.
-import en from "javascript-time-ago/locale/en"
-
-TimeAgo.addDefaultLocale(en)
-
-// Create formatter (English).
-const timeAgo = new TimeAgo(`en-US`)
+import IngredientCard from "../components/ingredient-card"
 
 function IngredientsView({
   ingredients_needing_review,
@@ -57,18 +37,12 @@ function IngredientsView({
   search,
 }) {
   console.log({ search })
-  const navigate = useNavigate()
   return (
     <Flex direction="column" gap="6">
       <Flex direction="column" gap="4">
         <Heading>
           Ingredients{` `}({ingredientsCount})
         </Heading>
-        <RadixLink asChild>
-          <Link to="/ingredients">
-            See all <ArrowRightIcon />
-          </Link>
-        </RadixLink>
         {photos && photos.length > 0 && (
           <Button variant="soft">
             <Link
@@ -96,54 +70,7 @@ function IngredientsView({
               console.log({ ingredient })
               return (
                 <React.Fragment key={ingredient.id}>
-                  <Flex
-                    key={ingredient.id}
-                    gap="5"
-                    style={{ cursor: `pointer` }}
-                    align="center"
-                    onClick={() => {
-                      navigate(`/ingredients/${ingredient.id}`)
-                    }}
-                  >
-                    <Flex gap="2" direction="column">
-                      <Heading size="3" weight="medium">
-                        {ingredient.name}
-                        {ingredient.tracking_type === `count` &&
-                          ` (` + ingredient.count + `)`}
-                      </Heading>
-                      <Text size="2" color="gray">
-                        Expires {timeAgo.format(new Date(expiredDate))}
-                      </Text>
-                    </Flex>
-                    <Flex direction="column" gap="1" ml="auto">
-                      {ingredient.tracking_type === `fill_level` && (
-                        <Box style={{ minWidth: 100 }}>
-                          <Slider
-                            variant="soft"
-                            className="no-thumb"
-                            value={[ingredient.fill_level]}
-                          />
-                        </Box>
-                      )}
-                      {isRunningLow(ingredient) && (
-                        <Box>
-                          <Badge color="crimson" variant="solid">
-                            Running Low
-                          </Badge>
-                        </Box>
-                      )}
-                      {isExpiredSoon(ingredient) && (
-                        <Box>
-                          <Badge color="crimson" variant="solid">
-                            Replace soon
-                          </Badge>
-                        </Box>
-                      )}
-                    </Flex>
-                    <Flex align="center">
-                      <CaretRightIcon height="20" width="20" />
-                    </Flex>
-                  </Flex>
+                  <IngredientCard ingredient={ingredient} />
                   {i !== ingredients.length - 1 && (
                     <Separator
                       key={ingredient.id + `-seperator`}
@@ -157,6 +84,11 @@ function IngredientsView({
           })}
         </Flex>
       )}
+      <RadixLink asChild>
+        <Link to="/ingredients">
+          See all <ArrowRightIcon />
+        </Link>
+      </RadixLink>
     </Flex>
   )
 }

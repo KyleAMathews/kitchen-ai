@@ -29,6 +29,8 @@ CREATE TABLE ingredients (
     shelf_life_months INTEGER NOT NULL,
     fill_date TEXT  NOT NULL, /* YYYY/MM */
     ingredients_photo_uploads_id UUID,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
     FOREIGN KEY (ingredients_photo_uploads_id) REFERENCES ingredients_photo_uploads(id)
 );
 

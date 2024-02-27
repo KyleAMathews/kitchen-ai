@@ -31,6 +31,7 @@ import RecipesNew from "./routes/recipe-new"
 import IngredientDetail from "./routes/ingredient-detail"
 import RecipeDetail from "./routes/recipe-detail"
 import ShoppingCart from "./routes/shopping-cart"
+import IngredientsList from "./routes/ingredients"
 
 const router = createBrowserRouter([
   {
@@ -76,6 +77,38 @@ const router = createBrowserRouter([
                     }),
               })
               console.log(`after loader`)
+
+              return null
+            },
+          },
+          {
+            path: `/ingredients`,
+            element: <IngredientsList />,
+            loader: async (props) => {
+              const url = new URL(props.request.url)
+              const key = url.pathname + url.search
+              await electricSqlLoader<Electric>({
+                key,
+                shapes: ({ db }) => [
+                  {
+                    shape: db.ingredients.sync({
+                      include: { ingredients_photo_uploads: true },
+                    }),
+                    isReady: async () => {
+                      const result = await db.rawQuery({
+                        sql: `select id from ingredients`,
+                      })
+
+                      console.log({ result, boolean: !!result })
+                      return !!result
+                    },
+                  },
+                ],
+                queries: ({ db }) =>
+                  IngredientsList.queries({
+                    db,
+                  }),
+              })
 
               return null
             },
