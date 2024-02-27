@@ -183,6 +183,7 @@ function AlreadyHaveIngredient({
     })
   )
   const jobs = liveJobs || []
+  const matchedIngred = possibleMatches[ingredient.id] as Ingredients
   return (
     <Flex direction="column" gap="2" position="relative">
       <Text as="label" size="2">
@@ -202,30 +203,32 @@ function AlreadyHaveIngredient({
           />
         </Flex>
       </Text>
-      {jobs.length === 0 && !possibleMatches[ingredient.id] && (
+      {jobs.length === 0 && !matchedIngred && (
         <AddIngredient ingredient={ingredient} />
       )}
-      {possibleMatches[ingredient.id] && (
+      {matchedIngred && (
         <Box pl="5" asChild>
           <Text color="gray" size="1">
             matches:{` `}"
             <Link
-              to={`/ingredients/${possibleMatches[ingredient.id].id}`}
+              to={`/ingredients/${matchedIngred.id}`}
               style={{ color: `var(--teal-a11)`, textDecoration: `none` }}
             >
-              {possibleMatches[ingredient.id].name}
+              {matchedIngred.name}
+              {matchedIngred.tracking_type === `count` &&
+                ` (${matchedIngred.count})`}
             </Link>
             "{` `}
           </Text>
         </Box>
       )}
       <Flex gap="1" pl="5">
-        {isRunningLow(possibleMatches[ingredient.id]) && (
+        {isRunningLow(matchedIngred) && (
           <Badge color="crimson" variant="solid" size="1">
             Running Low
           </Badge>
         )}
-        {isExpiredSoon(possibleMatches[ingredient.id]) && (
+        {isExpiredSoon(matchedIngred) && (
           <Badge color="crimson" variant="solid" size="1">
             Replace soon
           </Badge>
