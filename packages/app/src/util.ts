@@ -1,4 +1,4 @@
-import { Electric, Jobs } from "../generated/client"
+import { Electric, Ingredients } from "./generated/client"
 
 // Function to calculate cosine similarity between two embeddings
 export function cosineSimilarity(vec1: number[], vec2: number[]): number {
@@ -82,4 +82,18 @@ export async function createJob({
         },
       })
     })
+}
+
+export function isRunningLow(ingredient: Ingredients): boolean {
+  return ingredient.tracking_type === `fill_level`
+    ? ingredient.fill_level < 33
+    : ingredient.count < 2
+}
+
+export function isExpiredSoon(ingredient: Ingredients): boolean {
+  const expiredDate = new Date(ingredient.fill_date)
+  expiredDate.setMonth(expiredDate.getMonth() + ingredient.shelf_life_months)
+  const threeMonthsFromNow = new Date() // Copy current date to a new variable
+  threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3)
+  return threeMonthsFromNow > expiredDate
 }

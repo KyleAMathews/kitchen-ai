@@ -39,6 +39,7 @@ import { useElectric } from "../context"
 import FileUploadToS3 from "../upload-to-s3"
 import RecipeCard from "../components/recipe-card"
 import TimeAgo from "javascript-time-ago"
+import { isRunningLow, isExpiredSoon } from "../util"
 
 // English.
 import en from "javascript-time-ago/locale/en"
@@ -91,22 +92,6 @@ function IngredientsView({
       {search?.length > 0 && ingredients.length > 0 && (
         <Flex direction="column" gap="5">
           {ingredients.map((ingredient, i: number) => {
-            // Get expired date string
-            const expiredDate = new Date(ingredient.fill_date)
-            expiredDate.setMonth(
-              expiredDate.getMonth() + ingredient.shelf_life_months
-            )
-
-            // See if expire date is less than 2 months away
-            const threeMonthsFromNow = new Date() // Copy current date to a new variable
-            threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3)
-            const isExpired = threeMonthsFromNow > expiredDate
-
-            const isRunningLow =
-              ingredient.tracking_type === `fill_level`
-                ? ingredient.fill_level < 33
-                : ingredient.count < 2
-
             if (ingredient.is_reviewed) {
               console.log({ ingredient })
               return (
@@ -140,14 +125,14 @@ function IngredientsView({
                           />
                         </Box>
                       )}
-                      {isRunningLow && (
+                      {isRunningLow(ingredient) && (
                         <Box>
                           <Badge color="crimson" variant="solid">
                             Running Low
                           </Badge>
                         </Box>
                       )}
-                      {isExpired && (
+                      {isExpiredSoon(ingredient) && (
                         <Box>
                           <Badge color="crimson" variant="solid">
                             Replace soon

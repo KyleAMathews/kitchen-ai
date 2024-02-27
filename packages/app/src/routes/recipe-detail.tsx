@@ -8,6 +8,7 @@ import {
   Checkbox,
   ScrollArea,
   Text,
+  Badge,
   Em,
   Box,
   Button,
@@ -27,7 +28,12 @@ import {
 import { genUUID, uuid } from "electric-sql/util"
 import { useElectric } from "../context"
 import { useUser } from "@clerk/clerk-react"
-import { cosineSimilarity, createJob } from "../util"
+import {
+  cosineSimilarity,
+  createJob,
+  isExpiredSoon,
+  isRunningLow,
+} from "../util"
 import { UpdateIcon } from "@radix-ui/react-icons"
 import * as Toast from "@radix-ui/react-toast"
 import { groupBy, mapValues } from "lodash"
@@ -209,10 +215,22 @@ function AlreadyHaveIngredient({
             >
               {possibleMatches[ingredient.id].name}
             </Link>
-            "
+            "{` `}
           </Text>
         </Box>
       )}
+      <Flex gap="1" pl="5">
+        {isRunningLow(possibleMatches[ingredient.id]) && (
+          <Badge color="crimson" variant="solid" size="1">
+            Running Low
+          </Badge>
+        )}
+        {isExpiredSoon(possibleMatches[ingredient.id]) && (
+          <Badge color="crimson" variant="solid" size="1">
+            Replace soon
+          </Badge>
+        )}
+      </Flex>
     </Flex>
   )
 }
