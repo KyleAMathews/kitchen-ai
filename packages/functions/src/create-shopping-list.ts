@@ -113,7 +113,6 @@ const createOrUpdateCardWithChecklists = async (listId, cardDetails) => {
   if (!card) {
     card = await createCard(listId, cardName, url)
   } else {
-    console.log({ card })
     card = await updateCard(card.id, { desc: card.desc + `\n- ${url}` })
   }
 
@@ -126,8 +125,6 @@ const createOrUpdateCardWithChecklists = async (listId, cardDetails) => {
     }
     await updateChecklistItems(checklist.id, items)
   }
-
-  console.log(`Card and checklists updated successfully.`)
 }
 
 const cardSchema = z.object({
@@ -142,8 +139,6 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     const cardDetails = cardSchema.parse(JSON.parse(event.body))
     console.log(cardDetails)
     await createOrUpdateCardWithChecklists(listId, cardDetails)
-
-    console.log(`Done`)
 
     return {
       statusCode: 200,
