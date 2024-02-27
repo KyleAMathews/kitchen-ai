@@ -54,33 +54,33 @@ export default function Root() {
               Kitchen.ai <Working />
             </Link>
           </Heading>
-          {count && (
-            <Link
-              to="/shopping-cart"
-              style={{
-                textDecoration: `inherit`,
-                color: `inherit`,
-                paddingLeft: 8,
-                height: 12,
-                top: -6,
-                position: `relative`,
-              }}
-            >
-              <FiShoppingCart style={{ width: `14`, height: `14` }} />
-              <Text
-                size="1"
+          <Flex ml="auto">
+            {count && (
+              <Link
+                to="/shopping-cart"
                 style={{
-                  paddingLeft: 2,
-                  display: `inline-block`,
+                  textDecoration: `inherit`,
+                  color: `inherit`,
+                  paddingRight: 8,
+                  height: 12,
+                  top: -6,
                   position: `relative`,
-                  top: -2,
                 }}
               >
-                ({count})
-              </Text>
-            </Link>
-          )}
-          <Flex ml="auto">
+                <FiShoppingCart style={{ width: `14`, height: `14` }} />
+                <Text
+                  size="1"
+                  style={{
+                    paddingLeft: 2,
+                    display: `inline-block`,
+                    position: `relative`,
+                    top: -2,
+                  }}
+                >
+                  ({count})
+                </Text>
+              </Link>
+            )}
             <SignedIn>
               <UserButton afterSignOutUrl="/sign-in" />
             </SignedIn>

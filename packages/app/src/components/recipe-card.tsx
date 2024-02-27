@@ -31,7 +31,7 @@ export default function RecipeCard({ recipe }) {
         </Link>
       </Heading>
       <Text color="gray" size="2">
-        Added {timeAgo.format(recipe.created_at)}
+        Updated {timeAgo.format(recipe.created_at)}
       </Text>
     </Flex>
   )

@@ -28,22 +28,43 @@ import { genUUID, uuid } from "electric-sql/util"
 import { useElectric } from "../context"
 import { useUser } from "@clerk/clerk-react"
 import { cosineSimilarity, createJob } from "../util"
-import { UpdateIcon, LightningBoltIcon } from "@radix-ui/react-icons"
+import { UpdateIcon } from "@radix-ui/react-icons"
 import * as Toast from "@radix-ui/react-toast"
+import { groupBy, mapValues } from "lodash"
+
+function getFirstDayOfWeekDate() {
+  const today = new Date() // Current date and time
+  const dayOfWeek = today.getDay() // Day of the week, 0 for Sunday, 1 for Monday, etc.
+  const firstDayOfWeek = new Date(today) // Clone today's date
+
+  // Subtract the day of the week from the current date to get to the first day of the week
+  firstDayOfWeek.setDate(today.getDate() - dayOfWeek)
+
+  // Format the date as "YYYY/MM/DD"
+  const year = firstDayOfWeek.getFullYear()
+  // getMonth() returns 0-11; adding 1 to get 1-12 and padStart to ensure two digits
+  const month = (firstDayOfWeek.getMonth() + 1).toString().padStart(2, `0`)
+  const day = firstDayOfWeek.getDate().toString().padStart(2, `0`)
+
+  return `Shopping ${year}/${month}/${day}`
+}
 
 function AddIngredientsToShoppingListButton({
   possibleMatches,
   checked,
   recipe,
 }) {
+  const [working, setWorking] = useState(false)
   const [open, setOpen] = useState(false)
   const { db } = useElectric()!
 
   return (
     <Toast.Provider swipeDirection="right">
       <Button
+        disabled={working}
         onClick={async () => {
           setOpen(false)
+          setWorking(true)
           const createObjects = Object.keys(possibleMatches)
             .map((ingredient_id: string) => {
               if (
@@ -158,10 +179,10 @@ function AlreadyHaveIngredient({
       {possibleMatches[ingredient.id] && (
         <Box pl="5" asChild>
           <Text color="gray" size="1">
-            <LightningBoltIcon height="10" width="10" /> matches:{` `}"
+            matches:{` `}"
             <Link
               to={`/ingredients/${possibleMatches[ingredient.id].id}`}
-              style={{ color: `inherit`, textDecoration: `none` }}
+              style={{ color: `var(--teal-a11)`, textDecoration: `none` }}
             >
               {possibleMatches[ingredient.id].name}
             </Link>
@@ -183,11 +204,11 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
     <Box pl="5">
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Trigger>
-          <Button size="1">Save Ingredient</Button>
+          <Button size="1">Add Ingredient</Button>
         </Dialog.Trigger>
 
         <Dialog.Content style={{ maxWidth: 450 }}>
-          <Dialog.Title>Save Ingredient</Dialog.Title>
+          <Dialog.Title>Add Ingredient</Dialog.Title>
           <form
             onSubmit={async (event) => {
               event.preventDefault()
@@ -458,7 +479,11 @@ export default function RecipeDetail() {
             {recipe.url}
           </a>
         </RadixLink>
-        <ScrollArea scrollbars="vertical" style={{ maxHeight: 180 }}>
+        <ScrollArea
+          scrollbars="vertical"
+          style={{ maxHeight: 180 }}
+          type="auto"
+        >
           <Text>{recipe.description}</Text>
         </ScrollArea>
       </Flex>

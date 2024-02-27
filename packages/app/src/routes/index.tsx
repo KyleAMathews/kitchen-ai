@@ -48,17 +48,26 @@ TimeAgo.addDefaultLocale(en)
 // Create formatter (English).
 const timeAgo = new TimeAgo(`en-US`)
 
-function IngredientsView({ ingredients_needing_review, ingredients, photos }) {
+function IngredientsView({
+  ingredients_needing_review,
+  ingredientsCount,
+  ingredients,
+  photos,
+  search,
+}) {
+  console.log({ search })
   const navigate = useNavigate()
   return (
     <Flex direction="column" gap="6">
       <Flex direction="column" gap="4">
         <Heading>
-          Ingredients{` `}
-          <Link to="/upload-photos">
-            <PlusCircledIcon />
-          </Link>
+          Ingredients{` `}({ingredientsCount})
         </Heading>
+        <RadixLink asChild>
+          <Link to="/ingredients">
+            See all <ArrowRightIcon />
+          </Link>
+        </RadixLink>
         {photos && photos.length > 0 && (
           <Button variant="soft">
             <Link
@@ -79,9 +88,9 @@ function IngredientsView({ ingredients_needing_review, ingredients, photos }) {
         )}
       </Flex>
 
-      <Flex direction="column" gap="5">
-        {ingredients.length > 0 ? (
-          ingredients.map((ingredient, i: number) => {
+      {search?.length > 0 && ingredients.length > 0 && (
+        <Flex direction="column" gap="5">
+          {ingredients.map((ingredient, i: number) => {
             // Get expired date string
             const expiredDate = new Date(ingredient.fill_date)
             expiredDate.setMonth(
@@ -113,9 +122,9 @@ function IngredientsView({ ingredients_needing_review, ingredients, photos }) {
                   >
                     <Flex gap="2" direction="column">
                       <Heading size="3" weight="medium">
-                        {ingredient.tracking_type === `count` &&
-                          `(` + ingredient.count + `) `}
                         {ingredient.name}
+                        {ingredient.tracking_type === `count` &&
+                          ` (` + ingredient.count + `)`}
                       </Heading>
                       <Text size="2" color="gray">
                         Expires {timeAgo.format(new Date(expiredDate))}
@@ -160,11 +169,9 @@ function IngredientsView({ ingredients_needing_review, ingredients, photos }) {
                 </React.Fragment>
               )
             }
-          })
-        ) : (
-          <Text>No results</Text>
-        )}
-      </Flex>
+          })}
+        </Flex>
+      )}
     </Flex>
   )
 }
@@ -228,6 +235,9 @@ const queries = ({ db, search }: { db: Electric[`db`]; search: string }) => {
       `,
       args: [queryStr],
     }),
+    recipesCount: db.liveRawQuery({
+      sql: `SELECT count(*) as count from recipes`,
+    }),
     recipes: db.recipes.liveMany({
       where: {
         OR: [
@@ -264,12 +274,14 @@ export default function Index() {
     ingredients,
     ingredientsCount,
     ingredients_needing_review,
+    recipesCount,
     recipes,
   }: {
     ingredients: Ingredients[]
     ingredientsCount: any[]
     photos: Ingredients_photo_uploads[]
     ingredients_needing_review: Ingredients[]
+    recipesCount: any[]
     recipes: Recipes[]
   } = useElectricData(location.pathname + location.search)
   console.log({
@@ -278,6 +290,7 @@ export default function Index() {
     photos,
     ingredients_needing_review,
     recipes,
+    recipesCount,
   })
 
   return (
@@ -307,14 +320,14 @@ export default function Index() {
                 />
               </TextField.Root>
             </form>
-            <IngredientsView
-              ingredients_needing_review={ingredients_needing_review}
-              ingredients={ingredients}
-              photos={photos}
-            />
             <Flex direction="column" gap="6">
               <Heading>
-                Recipes{` `}
+                <Link
+                  to="/recipes"
+                  style={{ color: `inherit`, textDecoration: `none` }}
+                >
+                  Recipes{` `}({recipesCount[0].count}){` `}
+                </Link>
                 <Link to="/recipes/new">
                   <PlusCircledIcon />
                 </Link>
@@ -339,6 +352,13 @@ export default function Index() {
                 </Link>
               </RadixLink>
             </Flex>
+            <IngredientsView
+              ingredientsCount={ingredientsCount[0].count}
+              ingredients_needing_review={ingredients_needing_review}
+              ingredients={ingredients}
+              photos={photos}
+              search={q}
+            />
           </Flex>
         </>
       )}
