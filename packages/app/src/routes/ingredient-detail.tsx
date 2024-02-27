@@ -45,6 +45,13 @@ function generateEventText(event) {
   ) {
     action = `used some`
   }
+  if (key === `count`) {
+    if (event.from_values.count > event.to_values.count) {
+      action = `used some`
+    } else {
+      action = `bought more`
+    }
+  }
 
   return `${formatDate(event.timestamp)}: ${event.users.name} ${action}`
 }
@@ -73,6 +80,9 @@ const queries = ({ db, id }: { db: Electric[`db`]; id: string }) => {
 function EditCountLevel({ ingredient }: { ingredient: Ingredients }) {
   const [focused, setFocused] = useState(false)
   const { db } = useElectric()!
+  const {
+    user: { id: user_id },
+  } = useUser()
 
   return (
     <form
@@ -82,12 +92,23 @@ function EditCountLevel({ ingredient }: { ingredient: Ingredients }) {
         const formData = new FormData(target)
         const formProps = Object.fromEntries(formData)
         console.log({ formProps })
+        const newCount = parseInt(formProps.count, 10)
         db.ingredients.update({
           data: {
-            count: parseInt(formProps.count, 10),
+            count: newCount,
           },
           where: {
             id: ingredient.id,
+          },
+        })
+        db.ingredient_events.create({
+          data: {
+            id: genUUID(),
+            ingredient_id: ingredient.id,
+            timestamp: new Date(),
+            from_values: { count: ingredient.count },
+            to_values: { count: newCount },
+            user_id,
           },
         })
         setFocused(false)
