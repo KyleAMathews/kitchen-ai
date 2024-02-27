@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useUser } from "@clerk/clerk-react"
 import { useElectric } from "../context"
 import {
@@ -8,21 +9,39 @@ import {
   TextArea,
   Button,
 } from "@radix-ui/themes"
+import { UpdateIcon } from "@radix-ui/react-icons"
 import { genUUID } from "electric-sql/util"
 import { Electric, Recipes } from "../generated/client"
+
+function Working({
+  isWorking,
+  style,
+}: {
+  isWorking: boolean
+  style: React.CSSProperties
+}) {
+  if (isWorking) {
+    return (
+      <UpdateIcon style={style} height="14" width="14" className="icon-spin" />
+    )
+  } else {
+    return null
+  }
+}
 
 const handleSubmit = async (
   e: React.FormEvent<HTMLFormElement>,
   db: Electric[`db`],
-  user_id: string
+  user_id: string,
+  setWorking: Function
 ) => {
+  setWorking(true)
   e.preventDefault()
   const id = genUUID()
 
   const target = e.target as HTMLFormElement
   const formData = new FormData(target)
   const formProps = { ...Object.fromEntries(formData), id }
-  console.log({ formProps })
 
   const newRecipe = await db.recipes.create({
     data: {
@@ -35,7 +54,6 @@ const handleSubmit = async (
       url: formProps.url,
     },
   })
-  console.log({ newRecipe })
 
   try {
     const response = await fetch(
@@ -60,10 +78,14 @@ const handleSubmit = async (
       },
     })
     console.error(`Submission failed`, error)
+  } finally {
+    setWorking(false)
+    target.reset()
   }
 }
 
 export default function RecipeNew() {
+  const [working, setWorking] = useState(false)
   const { db } = useElectric()!
   const {
     user: { id: user_id },
@@ -71,8 +93,10 @@ export default function RecipeNew() {
 
   return (
     <Flex direction="column" gap="5">
-      <Heading size="4">Add New Recipe</Heading>
-      <form onSubmit={(e) => handleSubmit(e, db, user_id)}>
+      <Heading size="4">
+        Add New Recipe <Working isWorking={working} />
+      </Heading>
+      <form onSubmit={(e) => handleSubmit(e, db, user_id, setWorking)}>
         <Flex direction="column" gap="4">
           <Flex direction="column" gap="2">
             <Text as="label">URL</Text>
@@ -85,7 +109,7 @@ export default function RecipeNew() {
             </Text>
             <TextArea name="pasted" />
           </Flex>
-          <Button>Add Recipe</Button>
+          <Button disabled={working}>Add Recipe</Button>
         </Flex>
       </form>
     </Flex>
