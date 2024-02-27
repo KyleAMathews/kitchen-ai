@@ -53,16 +53,13 @@ export type Ingredients = {
    * @zod.number.int().gte(-2147483648).lte(2147483647)
    */
   count: number
-  /**
-   * @zod.number.int().gte(-2147483648).lte(2147483647)
-   */
-  shelf_life_months: number
-  fill_date: string
-  is_ground: boolean | null
+  expiration_date: Date
   /**
    * @zod.string.uuid()
    */
   ingredients_photo_uploads_id: string | null
+  created_at: Date
+  updated_at: Date
 }
 
 /**
@@ -2386,13 +2383,11 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type IngredientsAvgAggregateOutputType = {
     fill_level: number | null
     count: number | null
-    shelf_life_months: number | null
   }
 
   export type IngredientsSumAggregateOutputType = {
     fill_level: number | null
     count: number | null
-    shelf_life_months: number | null
   }
 
   export type IngredientsMinAggregateOutputType = {
@@ -2404,10 +2399,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type: ingredients_tracking_type | null
     fill_level: number | null
     count: number | null
-    shelf_life_months: number | null
-    fill_date: string | null
-    is_ground: boolean | null
+    expiration_date: Date | null
     ingredients_photo_uploads_id: string | null
+    created_at: Date | null
+    updated_at: Date | null
   }
 
   export type IngredientsMaxAggregateOutputType = {
@@ -2419,10 +2414,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type: ingredients_tracking_type | null
     fill_level: number | null
     count: number | null
-    shelf_life_months: number | null
-    fill_date: string | null
-    is_ground: boolean | null
+    expiration_date: Date | null
     ingredients_photo_uploads_id: string | null
+    created_at: Date | null
+    updated_at: Date | null
   }
 
   export type IngredientsCountAggregateOutputType = {
@@ -2434,10 +2429,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type: number
     fill_level: number
     count: number
-    shelf_life_months: number
-    fill_date: number
-    is_ground: number
+    expiration_date: number
     ingredients_photo_uploads_id: number
+    created_at: number
+    updated_at: number
     _all: number
   }
 
@@ -2445,13 +2440,11 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type IngredientsAvgAggregateInputType = {
     fill_level?: true
     count?: true
-    shelf_life_months?: true
   }
 
   export type IngredientsSumAggregateInputType = {
     fill_level?: true
     count?: true
-    shelf_life_months?: true
   }
 
   export type IngredientsMinAggregateInputType = {
@@ -2463,10 +2456,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: true
     fill_level?: true
     count?: true
-    shelf_life_months?: true
-    fill_date?: true
-    is_ground?: true
+    expiration_date?: true
     ingredients_photo_uploads_id?: true
+    created_at?: true
+    updated_at?: true
   }
 
   export type IngredientsMaxAggregateInputType = {
@@ -2478,10 +2471,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: true
     fill_level?: true
     count?: true
-    shelf_life_months?: true
-    fill_date?: true
-    is_ground?: true
+    expiration_date?: true
     ingredients_photo_uploads_id?: true
+    created_at?: true
+    updated_at?: true
   }
 
   export type IngredientsCountAggregateInputType = {
@@ -2493,10 +2486,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: true
     fill_level?: true
     count?: true
-    shelf_life_months?: true
-    fill_date?: true
-    is_ground?: true
+    expiration_date?: true
     ingredients_photo_uploads_id?: true
+    created_at?: true
+    updated_at?: true
     _all?: true
   }
 
@@ -2601,10 +2594,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type: ingredients_tracking_type | null
     fill_level: number
     count: number
-    shelf_life_months: number
-    fill_date: string
-    is_ground: boolean | null
+    expiration_date: Date
     ingredients_photo_uploads_id: string | null
+    created_at: Date
+    updated_at: Date
     _count: IngredientsCountAggregateOutputType | null
     _avg: IngredientsAvgAggregateOutputType | null
     _sum: IngredientsSumAggregateOutputType | null
@@ -2635,10 +2628,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: boolean
     fill_level?: boolean
     count?: boolean
-    shelf_life_months?: boolean
-    fill_date?: boolean
-    is_ground?: boolean
+    expiration_date?: boolean
     ingredients_photo_uploads_id?: boolean
+    created_at?: boolean
+    updated_at?: boolean
     ingredient_events?: boolean | Ingredients$ingredient_eventsArgs
     ingredients_photo_uploads?: boolean | Ingredients$ingredients_photo_uploadsArgs
     _count?: boolean | IngredientsCountOutputTypeArgs
@@ -9719,10 +9712,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type: 'tracking_type',
     fill_level: 'fill_level',
     count: 'count',
-    shelf_life_months: 'shelf_life_months',
-    fill_date: 'fill_date',
-    is_ground: 'is_ground',
-    ingredients_photo_uploads_id: 'ingredients_photo_uploads_id'
+    expiration_date: 'expiration_date',
+    ingredients_photo_uploads_id: 'ingredients_photo_uploads_id',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
   };
 
   export type IngredientsScalarFieldEnum = (typeof IngredientsScalarFieldEnum)[keyof typeof IngredientsScalarFieldEnum]
@@ -10051,10 +10044,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | ingredients_tracking_type | null
     fill_level?: IntFilter<"Ingredients"> | number
     count?: IntFilter<"Ingredients"> | number
-    shelf_life_months?: IntFilter<"Ingredients"> | number
-    fill_date?: StringFilter<"Ingredients"> | string
-    is_ground?: BoolNullableFilter<"Ingredients"> | boolean | null
+    expiration_date?: DateTimeFilter<"Ingredients"> | Date | string
     ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
+    created_at?: DateTimeFilter<"Ingredients"> | Date | string
+    updated_at?: DateTimeFilter<"Ingredients"> | Date | string
     ingredient_events?: Ingredient_eventsListRelationFilter
     ingredients_photo_uploads?: XOR<Ingredients_photo_uploadsNullableRelationFilter, Ingredients_photo_uploadsWhereInput> | null
   }
@@ -10068,10 +10061,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: SortOrderInput | SortOrder
     fill_level?: SortOrder
     count?: SortOrder
-    shelf_life_months?: SortOrder
-    fill_date?: SortOrder
-    is_ground?: SortOrderInput | SortOrder
+    expiration_date?: SortOrder
     ingredients_photo_uploads_id?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
     ingredient_events?: Ingredient_eventsOrderByRelationAggregateInput
     ingredients_photo_uploads?: Ingredients_photo_uploadsOrderByWithRelationInput
   }
@@ -10088,10 +10081,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | ingredients_tracking_type | null
     fill_level?: IntFilter<"Ingredients"> | number
     count?: IntFilter<"Ingredients"> | number
-    shelf_life_months?: IntFilter<"Ingredients"> | number
-    fill_date?: StringFilter<"Ingredients"> | string
-    is_ground?: BoolNullableFilter<"Ingredients"> | boolean | null
+    expiration_date?: DateTimeFilter<"Ingredients"> | Date | string
     ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
+    created_at?: DateTimeFilter<"Ingredients"> | Date | string
+    updated_at?: DateTimeFilter<"Ingredients"> | Date | string
     ingredient_events?: Ingredient_eventsListRelationFilter
     ingredients_photo_uploads?: XOR<Ingredients_photo_uploadsNullableRelationFilter, Ingredients_photo_uploadsWhereInput> | null
   }, "id">
@@ -10105,10 +10098,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: SortOrderInput | SortOrder
     fill_level?: SortOrder
     count?: SortOrder
-    shelf_life_months?: SortOrder
-    fill_date?: SortOrder
-    is_ground?: SortOrderInput | SortOrder
+    expiration_date?: SortOrder
     ingredients_photo_uploads_id?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
     _count?: IngredientsCountOrderByAggregateInput
     _avg?: IngredientsAvgOrderByAggregateInput
     _max?: IngredientsMaxOrderByAggregateInput
@@ -10128,10 +10121,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: Enumingredients_tracking_typeNullableWithAggregatesFilter<"Ingredients"> | ingredients_tracking_type | null
     fill_level?: IntWithAggregatesFilter<"Ingredients"> | number
     count?: IntWithAggregatesFilter<"Ingredients"> | number
-    shelf_life_months?: IntWithAggregatesFilter<"Ingredients"> | number
-    fill_date?: StringWithAggregatesFilter<"Ingredients"> | string
-    is_ground?: BoolNullableWithAggregatesFilter<"Ingredients"> | boolean | null
+    expiration_date?: DateTimeWithAggregatesFilter<"Ingredients"> | Date | string
     ingredients_photo_uploads_id?: UuidNullableWithAggregatesFilter<"Ingredients"> | string | null
+    created_at?: DateTimeWithAggregatesFilter<"Ingredients"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"Ingredients"> | Date | string
   }
 
   export type Ingredients_photo_uploadsWhereInput = {
@@ -10589,9 +10582,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: ingredients_tracking_type | null
     fill_level: number
     count: number
-    shelf_life_months: number
-    fill_date: string
-    is_ground?: boolean | null
+    expiration_date: Date | string
+    created_at: Date | string
+    updated_at: Date | string
     ingredient_events?: Ingredient_eventsCreateNestedManyWithoutIngredientsInput
     ingredients_photo_uploads?: Ingredients_photo_uploadsCreateNestedOneWithoutIngredientsInput
   }
@@ -10605,10 +10598,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: ingredients_tracking_type | null
     fill_level: number
     count: number
-    shelf_life_months: number
-    fill_date: string
-    is_ground?: boolean | null
+    expiration_date: Date | string
     ingredients_photo_uploads_id?: string | null
+    created_at: Date | string
+    updated_at: Date | string
     ingredient_events?: Ingredient_eventsUncheckedCreateNestedManyWithoutIngredientsInput
   }
 
@@ -10621,9 +10614,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
-    shelf_life_months?: IntFieldUpdateOperationsInput | number
-    fill_date?: StringFieldUpdateOperationsInput | string
-    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     ingredient_events?: Ingredient_eventsUpdateManyWithoutIngredientsNestedInput
     ingredients_photo_uploads?: Ingredients_photo_uploadsUpdateOneWithoutIngredientsNestedInput
   }
@@ -10637,10 +10630,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
-    shelf_life_months?: IntFieldUpdateOperationsInput | number
-    fill_date?: StringFieldUpdateOperationsInput | string
-    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
     ingredients_photo_uploads_id?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     ingredient_events?: Ingredient_eventsUncheckedUpdateManyWithoutIngredientsNestedInput
   }
 
@@ -10653,10 +10646,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: ingredients_tracking_type | null
     fill_level: number
     count: number
-    shelf_life_months: number
-    fill_date: string
-    is_ground?: boolean | null
+    expiration_date: Date | string
     ingredients_photo_uploads_id?: string | null
+    created_at: Date | string
+    updated_at: Date | string
   }
 
   export type IngredientsUpdateManyMutationInput = {
@@ -10668,9 +10661,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
-    shelf_life_months?: IntFieldUpdateOperationsInput | number
-    fill_date?: StringFieldUpdateOperationsInput | string
-    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IngredientsUncheckedUpdateManyInput = {
@@ -10682,10 +10675,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
-    shelf_life_months?: IntFieldUpdateOperationsInput | number
-    fill_date?: StringFieldUpdateOperationsInput | string
-    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
     ingredients_photo_uploads_id?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type Ingredients_photo_uploadsCreateInput = {
@@ -11289,11 +11282,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
-  export type BoolNullableFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
-  }
-
   export type UuidNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
@@ -11330,16 +11318,15 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: SortOrder
     fill_level?: SortOrder
     count?: SortOrder
-    shelf_life_months?: SortOrder
-    fill_date?: SortOrder
-    is_ground?: SortOrder
+    expiration_date?: SortOrder
     ingredients_photo_uploads_id?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
   }
 
   export type IngredientsAvgOrderByAggregateInput = {
     fill_level?: SortOrder
     count?: SortOrder
-    shelf_life_months?: SortOrder
   }
 
   export type IngredientsMaxOrderByAggregateInput = {
@@ -11351,10 +11338,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: SortOrder
     fill_level?: SortOrder
     count?: SortOrder
-    shelf_life_months?: SortOrder
-    fill_date?: SortOrder
-    is_ground?: SortOrder
+    expiration_date?: SortOrder
     ingredients_photo_uploads_id?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
   }
 
   export type IngredientsMinOrderByAggregateInput = {
@@ -11366,16 +11353,15 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: SortOrder
     fill_level?: SortOrder
     count?: SortOrder
-    shelf_life_months?: SortOrder
-    fill_date?: SortOrder
-    is_ground?: SortOrder
+    expiration_date?: SortOrder
     ingredients_photo_uploads_id?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
   }
 
   export type IngredientsSumOrderByAggregateInput = {
     fill_level?: SortOrder
     count?: SortOrder
-    shelf_life_months?: SortOrder
   }
 
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -11410,14 +11396,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedBoolNullableFilter<$PrismaModel>
-    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type UuidNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -11872,10 +11850,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type NullableBoolFieldUpdateOperationsInput = {
-    set?: boolean | null
   }
 
   export type Ingredient_eventsUpdateManyWithoutIngredientsNestedInput = {
@@ -12445,11 +12419,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     not?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel> | ingredients_tracking_type | null
   }
 
-  export type NestedBoolNullableFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
-  }
-
   export type NestedUuidNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
@@ -12504,14 +12473,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
-  }
-
-  export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedBoolNullableFilter<$PrismaModel>
-    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type NestedUuidNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -12671,9 +12632,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: ingredients_tracking_type | null
     fill_level: number
     count: number
-    shelf_life_months: number
-    fill_date: string
-    is_ground?: boolean | null
+    expiration_date: Date | string
+    created_at: Date | string
+    updated_at: Date | string
     ingredients_photo_uploads?: Ingredients_photo_uploadsCreateNestedOneWithoutIngredientsInput
   }
 
@@ -12686,10 +12647,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: ingredients_tracking_type | null
     fill_level: number
     count: number
-    shelf_life_months: number
-    fill_date: string
-    is_ground?: boolean | null
+    expiration_date: Date | string
     ingredients_photo_uploads_id?: string | null
+    created_at: Date | string
+    updated_at: Date | string
   }
 
   export type IngredientsCreateOrConnectWithoutIngredient_eventsInput = {
@@ -12738,9 +12699,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
-    shelf_life_months?: IntFieldUpdateOperationsInput | number
-    fill_date?: StringFieldUpdateOperationsInput | string
-    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     ingredients_photo_uploads?: Ingredients_photo_uploadsUpdateOneWithoutIngredientsNestedInput
   }
 
@@ -12753,10 +12714,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
-    shelf_life_months?: IntFieldUpdateOperationsInput | number
-    fill_date?: StringFieldUpdateOperationsInput | string
-    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
     ingredients_photo_uploads_id?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UsersUpsertWithoutIngredient_eventsInput = {
@@ -12909,9 +12870,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: ingredients_tracking_type | null
     fill_level: number
     count: number
-    shelf_life_months: number
-    fill_date: string
-    is_ground?: boolean | null
+    expiration_date: Date | string
+    created_at: Date | string
+    updated_at: Date | string
     ingredient_events?: Ingredient_eventsCreateNestedManyWithoutIngredientsInput
   }
 
@@ -12924,9 +12885,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: ingredients_tracking_type | null
     fill_level: number
     count: number
-    shelf_life_months: number
-    fill_date: string
-    is_ground?: boolean | null
+    expiration_date: Date | string
+    created_at: Date | string
+    updated_at: Date | string
     ingredient_events?: Ingredient_eventsUncheckedCreateNestedManyWithoutIngredientsInput
   }
 
@@ -12989,10 +12950,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | ingredients_tracking_type | null
     fill_level?: IntFilter<"Ingredients"> | number
     count?: IntFilter<"Ingredients"> | number
-    shelf_life_months?: IntFilter<"Ingredients"> | number
-    fill_date?: StringFilter<"Ingredients"> | string
-    is_ground?: BoolNullableFilter<"Ingredients"> | boolean | null
+    expiration_date?: DateTimeFilter<"Ingredients"> | Date | string
     ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
+    created_at?: DateTimeFilter<"Ingredients"> | Date | string
+    updated_at?: DateTimeFilter<"Ingredients"> | Date | string
   }
 
   export type UsersUpsertWithoutIngredients_photo_uploadsInput = {
@@ -13595,9 +13556,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: ingredients_tracking_type | null
     fill_level: number
     count: number
-    shelf_life_months: number
-    fill_date: string
-    is_ground?: boolean | null
+    expiration_date: Date | string
+    created_at: Date | string
+    updated_at: Date | string
   }
 
   export type IngredientsUpdateWithoutIngredients_photo_uploadsInput = {
@@ -13609,9 +13570,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
-    shelf_life_months?: IntFieldUpdateOperationsInput | number
-    fill_date?: StringFieldUpdateOperationsInput | string
-    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     ingredient_events?: Ingredient_eventsUpdateManyWithoutIngredientsNestedInput
   }
 
@@ -13624,9 +13585,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
-    shelf_life_months?: IntFieldUpdateOperationsInput | number
-    fill_date?: StringFieldUpdateOperationsInput | string
-    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     ingredient_events?: Ingredient_eventsUncheckedUpdateManyWithoutIngredientsNestedInput
   }
 
@@ -13639,9 +13600,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
     count?: IntFieldUpdateOperationsInput | number
-    shelf_life_months?: IntFieldUpdateOperationsInput | number
-    fill_date?: StringFieldUpdateOperationsInput | string
-    is_ground?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type Shopping_listCreateManyRecipe_ingredientsInput = {

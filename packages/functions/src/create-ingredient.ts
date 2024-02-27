@@ -42,11 +42,6 @@ export const handler: APIGatewayProxyHandler = async (event) => {
             .describe(
               `Short one sentence description of the ingredient and what kind of cuisines it's used with.`
             ),
-          shelf_life_months: z
-            .number()
-            .describe(
-              `how long does this spice or herb last until it looses flavor? If it's a ground spice/herb return 12 or if it's whole or a full leaf, return 24. Otherwise make your best guess.`
-            ),
         }),
       },
     ]

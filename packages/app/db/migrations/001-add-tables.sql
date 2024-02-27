@@ -26,8 +26,7 @@ CREATE TABLE ingredients (
     tracking_type ingredients_tracking_type,
     fill_level INTEGER NOT NULL,
     count INTEGER NOT NULL,
-    shelf_life_months INTEGER NOT NULL,
-    fill_date TEXT  NOT NULL, /* YYYY/MM */
+    expiration_date TIMESTAMP WITH TIME ZONE NOT NULL,
     ingredients_photo_uploads_id UUID,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL,

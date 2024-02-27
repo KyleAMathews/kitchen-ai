@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useLocation, useNavigate, Link } from "react-router-dom"
 import { useElectric } from "../context"
 import { Electric } from "../generated/client"
@@ -8,37 +9,17 @@ import {
   Heading,
   Box,
   Text,
-  Link as RadixLink,
   Separator,
   Slider,
   Button,
   Badge,
-  TextField,
 } from "@radix-ui/themes"
 import { cosineSimilarity } from "../util"
-
-const diffInMonths = (date1, date2) => {
-  const yearDiff = date2.getFullYear() - date1.getFullYear()
-  const monthDiff = date2.getMonth() - date1.getMonth()
-  return yearDiff * 12 + monthDiff
-}
-
-function generateDateMonthsAgo(monthsAgo) {
-  const currentDate = new Date() // Get the current date
-  currentDate.setMonth(currentDate.getMonth() - monthsAgo) // Subtract the specified number of months
-
-  const year = currentDate.getFullYear() // Get the year
-  let month = currentDate.getMonth() + 1 // Get the month (add 1 because getMonth() returns 0-11)
-
-  // Ensure month is in 'MM' format
-  month = month < 10 ? `0${month}` : month
-
-  return `${year}/${month}` // Return the formatted date string
-}
+import ExpirationDateEdit from "../components/expiration-date-edit"
 
 function ReviewSpice({ spice, allIngredients }) {
+  const [expirationDate, setExpirationDate] = useState(spice.expiration_date)
   const { db } = useElectric()!
-  const age_months = diffInMonths(new Date(spice.fill_date), new Date())
 
   // Check if there's any ingredients that we've probably uploaded before.
   const similarIngredient = allIngredients
@@ -116,38 +97,20 @@ function ReviewSpice({ spice, allIngredients }) {
             </Flex>
           </Flex>
         </Flex>
-        <Flex direction="column" gap="2">
-          <Text size="1" weight="bold">
-            Estimate purchase date
-          </Text>
-          <Flex direction="column" gap="1">
-            <Slider
-              defaultValue={[100 - age_months * 2]}
-              step={2}
-              onValueCommit={(val) => {
-                const noZeroVal = val[0] === 0 ? 0.1 : val[0]
-                const newAge = Math.round(50 - noZeroVal / 2)
-                const newFillDate = generateDateMonthsAgo(newAge)
-                db.ingredients.update({
-                  data: {
-                    fill_date: newFillDate,
-                  },
-                  where: {
-                    id: spice.id,
-                  },
-                })
-              }}
-            />
-            <Flex justify="between">
-              <Text size="1" color="gray">
-                4 years ago
-              </Text>
-              <Text size="1" color="gray">
-                new
-              </Text>
-            </Flex>
-          </Flex>
-        </Flex>
+        <ExpirationDateEdit
+          expirationDate={expirationDate}
+          onValueChange={setExpirationDate}
+          onValueCommit={(newDate: Date) => {
+            db.ingredients.update({
+              data: {
+                expiration_date: newDate,
+              },
+              where: {
+                id: spice.id,
+              },
+            })
+          }}
+        />
       </Flex>
     </Flex>
   )

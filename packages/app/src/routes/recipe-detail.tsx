@@ -34,6 +34,7 @@ import {
   isExpiredSoon,
   isRunningLow,
 } from "../util"
+import ExpirationDateEdit from "../components/expiration-date-edit"
 import { UpdateIcon } from "@radix-ui/react-icons"
 import * as Toast from "@radix-ui/react-toast"
 import { groupBy, mapValues } from "lodash"
@@ -87,7 +88,6 @@ function AddIngredientsToShoppingListButton({
               }
             })
             .filter((i) => i)
-          console.log({ createObjects })
           const cardDescription = {
             cardName: getFirstDayOfWeekDate(),
             url: recipe.url,
@@ -96,10 +96,6 @@ function AddIngredientsToShoppingListButton({
               (sectionVals) => sectionVals.map((s) => s.ingredient)
             ),
           }
-          console.log({ cardDescription })
-          // await db.shopping_list.createMany({
-          // data: createObjects,
-          // })
           const response = await fetch(
             `https://7vxq1y2eu2.execute-api.us-east-1.amazonaws.com/create-shopping-list`,
             {
@@ -215,33 +211,35 @@ function AlreadyHaveIngredient({
         <AddIngredient ingredient={ingredient} />
       )}
       {matchedIngred && (
-        <Box pl="5" asChild>
-          <Text color="gray" size="1">
-            matches:{` `}"
-            <Link
-              to={`/ingredients/${matchedIngred.id}`}
-              style={{ color: `var(--teal-a11)`, textDecoration: `none` }}
-            >
-              {matchedIngred.name}
-              {matchedIngred.tracking_type === `count` &&
-                ` (${matchedIngred.count})`}
-            </Link>
-            "{` `}
-          </Text>
-        </Box>
+        <>
+          <Box pl="5" asChild>
+            <Text color="gray" size="1">
+              matches:{` `}"
+              <Link
+                to={`/ingredients/${matchedIngred.id}`}
+                style={{ color: `var(--teal-a11)`, textDecoration: `none` }}
+              >
+                {matchedIngred.name}
+                {matchedIngred.tracking_type === `count` &&
+                  ` (${matchedIngred.count})`}
+              </Link>
+              "{` `}
+            </Text>
+          </Box>
+          <Flex gap="1" pl="5">
+            {isRunningLow(matchedIngred) && (
+              <Badge color="crimson" variant="solid" size="1">
+                Running Low
+              </Badge>
+            )}
+            {isExpiredSoon(matchedIngred) && (
+              <Badge color="crimson" variant="solid" size="1">
+                Replace soon
+              </Badge>
+            )}
+          </Flex>
+        </>
       )}
-      <Flex gap="1" pl="5">
-        {isRunningLow(matchedIngred) && (
-          <Badge color="crimson" variant="solid" size="1">
-            Running Low
-          </Badge>
-        )}
-        {isExpiredSoon(matchedIngred) && (
-          <Badge color="crimson" variant="solid" size="1">
-            Replace soon
-          </Badge>
-        )}
-      </Flex>
     </Flex>
   )
 }
@@ -249,7 +247,7 @@ function AlreadyHaveIngredient({
 function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
   const [type, setType] = useState(`fill_level`)
   const [open, setOpen] = useState(false)
-  const [fillDate, setFillDate] = useState(generateDateMonthsAgo(3))
+  const [expirationDate, setExpirationDate] = useState(new Date())
   const { db } = useElectric()!
 
   return (
@@ -274,7 +272,7 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
                 target_id: ingredient.id,
                 type: `Transform recipe ingredient to kitchen ingredient`,
                 fetchFn: async () => {
-                  // Make LLM call to get description, embedding, shelf_life_months
+                  // Make LLM call to get description, embedding
                   const response = await fetch(
                     `https://7vxq1y2eu2.execute-api.us-east-1.amazonaws.com/ingredients`,
                     {
@@ -297,14 +295,14 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
                       fill_level: parseInt(formProps.fill_level, 10) || 0,
                       embedding: JSON.stringify(data.embedding),
                       tracking_type: type,
-                      fill_date: fillDate,
                       count: parseInt(formProps?.count, 10) || 0,
+                      expiration_date: expirationDate,
                       description: data.description,
                       is_reviewed: true,
-                      shelf_life_months: data.shelf_life_months,
+                      created_at: new Date(),
+                      updated_at: new Date(),
                     },
                   })
-                  console.log({ newIngredient })
 
                   return response
                 },
@@ -388,37 +386,10 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
                   </Flex>
                 </label>
               )}
-              <Flex direction="column" gap="2">
-                <Text size="1" weight="bold">
-                  Estimate purchase date{` `}
-                  {fillDate !== `` && (
-                    <span style={{ color: `var(--gray-a9)` }}>
-                      ({fillDate})
-                    </span>
-                  )}
-                </Text>
-                <Flex direction="column" gap="1">
-                  <Slider
-                    defaultValue={[100 - 12]}
-                    name="purchase_date"
-                    step={2}
-                    onValueCommit={(val) => {
-                      const noZeroVal = val[0] === 0 ? 0.1 : val[0]
-                      const newAge = Math.round(50 - noZeroVal / 2)
-                      const newFillDate = generateDateMonthsAgo(newAge)
-                      setFillDate(newFillDate)
-                    }}
-                  />
-                  <Flex justify="between">
-                    <Text size="1" color="gray">
-                      4 years ago
-                    </Text>
-                    <Text size="1" color="gray">
-                      new
-                    </Text>
-                  </Flex>
-                </Flex>
-              </Flex>
+              <ExpirationDateEdit
+                onValueChange={setExpirationDate}
+                expirationDate={expirationDate}
+              />
             </Flex>
 
             <Flex gap="3" mt="4" justify="end">
@@ -517,7 +488,6 @@ export default function RecipeDetail() {
       )
     }
   )
-  console.log({ neededIngredients, shopping_list })
 
   return (
     <Flex direction="column" gap="5">
@@ -584,9 +554,10 @@ export default function RecipeDetail() {
       </Flex>
       <Flex direction="column" gap="4">
         <Heading size="3">Already Have</Heading>
-        {Object.values(possibleMatches).filter((i) => i).length === 0 && (
-          <Text size="2">No matching ingredients</Text>
-        )}
+        {checked.length === 0 &&
+          Object.values(possibleMatches).filter((i) => i).length === 0 && (
+            <Text size="2">No matching ingredients</Text>
+          )}
         {Object.keys(possibleMatches).map((ingredient_id: string) => {
           if (
             checked[ingredient_id] === true ||

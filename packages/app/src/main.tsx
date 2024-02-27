@@ -67,6 +67,15 @@ const router = createBrowserRouter([
                         sql: `select id from ingredients_photo_uploads limit 1`,
                       })),
                   },
+                  {
+                    shape: db.recipes.sync({
+                      include: { recipe_ingredients: true, users: true },
+                    }),
+                    isReady: async () =>
+                      !!(await db.rawQuery({
+                        sql: `select id from recipes limit 1`,
+                      })),
+                  },
                 ],
                 queries:
                   ({ db }) =>

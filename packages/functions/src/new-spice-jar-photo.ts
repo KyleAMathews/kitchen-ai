@@ -73,11 +73,6 @@ export const main: S3Handler = async (event) => {
           .describe(
             `how full roughly is the jar of spices? From 0-100% (as an integer)`
           ),
-        shelf_life_months: z
-          .number()
-          .describe(
-            `how long does this spice or herb last until it looses flavor? If it's a ground spice/herb return 12 or if it's whole, return 24. Otherwise make your best guess.`
-          ),
       })
     )
     const jsonSchema = zodToJsonSchema(SpiceJarSchema)
@@ -203,20 +198,23 @@ export const main: S3Handler = async (event) => {
         ingredients.map((ingredient) => {
           const ingredientInsertQuery = {
             name: `ingredient-insert-query`,
-            text: `INSERT INTO ingredients (id, name, description, is_reviewed, tracking_type, count, fill_level, embedding, fill_date, shelf_life_months, ingredients_photo_uploads_id)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);`,
+            text: `INSERT INTO ingredients
+            (id, name, description, is_reviewed, tracking_type, fill_level, expiration_date,
+             count, embedding, ingredients_photo_uploads_id, created_at, updated_at)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);`,
             values: [
               randomUUID(),
               ingredient.name,
               ingredient.description,
               false,
               `fill_level`,
-              0,
               ingredient.fill_level,
+              new Date(),
+              0,
               JSON.stringify(ingredient.embedding),
-              generateDateMonthsAgo(18),
-              ingredient.shelf_life_months,
               uuid,
+              new Date(),
+              new Date(),
             ],
           }
 

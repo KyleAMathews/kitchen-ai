@@ -23,6 +23,7 @@ import {
   PlusCircledIcon,
   PlusIcon,
   ArrowRightIcon,
+  CameraIcon,
 } from "@radix-ui/react-icons"
 import { useElectric } from "../context"
 import FileUploadToS3 from "../upload-to-s3"
@@ -36,12 +37,14 @@ function IngredientsView({
   photos,
   search,
 }) {
-  console.log({ search })
   return (
     <Flex direction="column" gap="6">
       <Flex direction="column" gap="4">
         <Heading>
-          Ingredients{` `}({ingredientsCount})
+          Ingredients{` `}({ingredientsCount}){` `}
+          <Link to="/upload-photos">
+            <CameraIcon />
+          </Link>
         </Heading>
         {photos && photos.length > 0 && (
           <Button variant="soft">
@@ -67,7 +70,6 @@ function IngredientsView({
         <Flex direction="column" gap="5">
           {ingredients.map((ingredient, i: number) => {
             if (ingredient.is_reviewed) {
-              console.log({ ingredient })
               return (
                 <React.Fragment key={ingredient.id}>
                   <IngredientCard ingredient={ingredient} />
@@ -249,25 +251,31 @@ export default function Index() {
                   <PlusCircledIcon />
                 </Link>
               </Heading>
-              {recipes && recipes.length > 0 ? (
-                <Flex direction="column" gap="5">
-                  {recipes.map((recipe, i) => {
-                    return (
-                      <>
-                        <RecipeCard recipe={recipe} />
-                        {recipes.length - 1 !== i && <Separator size="4" />}
-                      </>
-                    )
-                  })}
-                </Flex>
+              {recipesCount[0].count > 0 ? (
+                <>
+                  {recipes && recipes.length > 0 ? (
+                    <Flex direction="column" gap="5">
+                      {recipes.map((recipe, i) => {
+                        return (
+                          <>
+                            <RecipeCard recipe={recipe} />
+                            {recipes.length - 1 !== i && <Separator size="4" />}
+                          </>
+                        )
+                      })}
+                    </Flex>
+                  ) : (
+                    <Text>No results</Text>
+                  )}
+                  <RadixLink asChild>
+                    <Link to="/recipes">
+                      Browse all <ArrowRightIcon />
+                    </Link>
+                  </RadixLink>
+                </>
               ) : (
-                <Text>No results</Text>
+                <Text>Add your first recipe!</Text>
               )}
-              <RadixLink asChild>
-                <Link to="/recipes">
-                  Browse all <ArrowRightIcon />
-                </Link>
-              </RadixLink>
             </Flex>
             <IngredientsView
               ingredientsCount={ingredientsCount[0].count}

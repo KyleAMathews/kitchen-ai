@@ -22,8 +22,7 @@ const timeAgo = new TimeAgo(`en-US`)
 
 export default function IngredientCard({ ingredient }: Ingredients) {
   const navigate = useNavigate()
-  const expiredDate = new Date(ingredient.fill_date)
-  expiredDate.setMonth(expiredDate.getMonth() + ingredient.shelf_life_months)
+  const expiredDate = new Date(ingredient.expiration_date)
   return (
     <Flex
       key={ingredient.id}

@@ -297,8 +297,7 @@ export default function IngredientDetail() {
   )
 
   // Get expired date string
-  const expiredDate = new Date(ingredient.fill_date)
-  expiredDate.setMonth(expiredDate.getMonth() + ingredient.shelf_life_months)
+  const expiredDate = new Date(ingredient.expiration_date)
   const expireDateStr = expiredDate
     .toLocaleDateString(`en-US`, {
       year: `2-digit`,
