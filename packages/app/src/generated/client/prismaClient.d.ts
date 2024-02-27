@@ -49,6 +49,7 @@ export type Ingredients = {
    * @zod.number.int().gte(-2147483648).lte(2147483647)
    */
   fill_level: number
+  grocery_section: grocery_section
   /**
    * @zod.number.int().gte(-2147483648).lte(2147483647)
    */
@@ -190,6 +191,24 @@ export const ingredients_tracking_type: {
 export type ingredients_tracking_type = (typeof ingredients_tracking_type)[keyof typeof ingredients_tracking_type]
 
 
+export const grocery_section: {
+  Produce: 'Produce',
+  Deli: 'Deli',
+  Bakery: 'Bakery',
+  Meat_Seafood: 'Meat_Seafood',
+  Dairy_Eggs: 'Dairy_Eggs',
+  Dry__Goods: 'Dry__Goods',
+  Canned__Foods: 'Canned__Foods',
+  Spices_Herbs: 'Spices_Herbs',
+  Beverages: 'Beverages',
+  Frozen__Foods: 'Frozen__Foods',
+  Oil_Vinegar: 'Oil_Vinegar',
+  Other__Aisles: 'Other__Aisles'
+};
+
+export type grocery_section = (typeof grocery_section)[keyof typeof grocery_section]
+
+
 export const ingredient_photo_upload_state: {
   uploading: 'uploading',
   ai_processing: 'ai_processing',
@@ -207,24 +226,6 @@ export const jobs_state: {
 };
 
 export type jobs_state = (typeof jobs_state)[keyof typeof jobs_state]
-
-
-export const grocery_section: {
-  Produce: 'Produce',
-  Deli: 'Deli',
-  Bakery: 'Bakery',
-  Meat_Seafood: 'Meat_Seafood',
-  Dairy_Eggs: 'Dairy_Eggs',
-  Dry_Goods: 'Dry_Goods',
-  Canned_Foods: 'Canned_Foods',
-  Spices_Herbs: 'Spices_Herbs',
-  Snacks: 'Snacks',
-  Beverages: 'Beverages',
-  Frozen_Foods: 'Frozen_Foods',
-  Other_Aisles: 'Other_Aisles'
-};
-
-export type grocery_section = (typeof grocery_section)[keyof typeof grocery_section]
 
 
 /**
@@ -2398,6 +2399,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding: string | null
     tracking_type: ingredients_tracking_type | null
     fill_level: number | null
+    grocery_section: grocery_section | null
     count: number | null
     expiration_date: Date | null
     ingredients_photo_uploads_id: string | null
@@ -2413,6 +2415,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding: string | null
     tracking_type: ingredients_tracking_type | null
     fill_level: number | null
+    grocery_section: grocery_section | null
     count: number | null
     expiration_date: Date | null
     ingredients_photo_uploads_id: string | null
@@ -2428,6 +2431,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding: number
     tracking_type: number
     fill_level: number
+    grocery_section: number
     count: number
     expiration_date: number
     ingredients_photo_uploads_id: number
@@ -2455,6 +2459,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: true
     tracking_type?: true
     fill_level?: true
+    grocery_section?: true
     count?: true
     expiration_date?: true
     ingredients_photo_uploads_id?: true
@@ -2470,6 +2475,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: true
     tracking_type?: true
     fill_level?: true
+    grocery_section?: true
     count?: true
     expiration_date?: true
     ingredients_photo_uploads_id?: true
@@ -2485,6 +2491,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: true
     tracking_type?: true
     fill_level?: true
+    grocery_section?: true
     count?: true
     expiration_date?: true
     ingredients_photo_uploads_id?: true
@@ -2593,6 +2600,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding: string
     tracking_type: ingredients_tracking_type | null
     fill_level: number
+    grocery_section: grocery_section
     count: number
     expiration_date: Date
     ingredients_photo_uploads_id: string | null
@@ -2627,6 +2635,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: boolean
     tracking_type?: boolean
     fill_level?: boolean
+    grocery_section?: boolean
     count?: boolean
     expiration_date?: boolean
     ingredients_photo_uploads_id?: boolean
@@ -9711,6 +9720,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding: 'embedding',
     tracking_type: 'tracking_type',
     fill_level: 'fill_level',
+    grocery_section: 'grocery_section',
     count: 'count',
     expiration_date: 'expiration_date',
     ingredients_photo_uploads_id: 'ingredients_photo_uploads_id',
@@ -9911,6 +9921,20 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
   /**
+   * Reference to a field of type 'grocery_section'
+   */
+  export type Enumgrocery_sectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'grocery_section'>
+    
+
+
+  /**
+   * Reference to a field of type 'grocery_section[]'
+   */
+  export type ListEnumgrocery_sectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'grocery_section[]'>
+    
+
+
+  /**
    * Reference to a field of type 'ingredient_photo_upload_state'
    */
   export type Enumingredient_photo_upload_stateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ingredient_photo_upload_state'>
@@ -9949,20 +9973,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    * Reference to a field of type 'jobs_state[]'
    */
   export type ListEnumjobs_stateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'jobs_state[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'grocery_section'
-   */
-  export type Enumgrocery_sectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'grocery_section'>
-    
-
-
-  /**
-   * Reference to a field of type 'grocery_section[]'
-   */
-  export type ListEnumgrocery_sectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'grocery_section[]'>
     
   /**
    * Deep Input Types
@@ -10043,6 +10053,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: StringFilter<"Ingredients"> | string
     tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | ingredients_tracking_type | null
     fill_level?: IntFilter<"Ingredients"> | number
+    grocery_section?: Enumgrocery_sectionFilter<"Ingredients"> | grocery_section
     count?: IntFilter<"Ingredients"> | number
     expiration_date?: DateTimeFilter<"Ingredients"> | Date | string
     ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
@@ -10060,6 +10071,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: SortOrder
     tracking_type?: SortOrderInput | SortOrder
     fill_level?: SortOrder
+    grocery_section?: SortOrder
     count?: SortOrder
     expiration_date?: SortOrder
     ingredients_photo_uploads_id?: SortOrderInput | SortOrder
@@ -10080,6 +10092,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: StringFilter<"Ingredients"> | string
     tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | ingredients_tracking_type | null
     fill_level?: IntFilter<"Ingredients"> | number
+    grocery_section?: Enumgrocery_sectionFilter<"Ingredients"> | grocery_section
     count?: IntFilter<"Ingredients"> | number
     expiration_date?: DateTimeFilter<"Ingredients"> | Date | string
     ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
@@ -10097,6 +10110,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: SortOrder
     tracking_type?: SortOrderInput | SortOrder
     fill_level?: SortOrder
+    grocery_section?: SortOrder
     count?: SortOrder
     expiration_date?: SortOrder
     ingredients_photo_uploads_id?: SortOrderInput | SortOrder
@@ -10120,6 +10134,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: StringWithAggregatesFilter<"Ingredients"> | string
     tracking_type?: Enumingredients_tracking_typeNullableWithAggregatesFilter<"Ingredients"> | ingredients_tracking_type | null
     fill_level?: IntWithAggregatesFilter<"Ingredients"> | number
+    grocery_section?: Enumgrocery_sectionWithAggregatesFilter<"Ingredients"> | grocery_section
     count?: IntWithAggregatesFilter<"Ingredients"> | number
     expiration_date?: DateTimeWithAggregatesFilter<"Ingredients"> | Date | string
     ingredients_photo_uploads_id?: UuidNullableWithAggregatesFilter<"Ingredients"> | string | null
@@ -10581,6 +10596,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding: string
     tracking_type?: ingredients_tracking_type | null
     fill_level: number
+    grocery_section: grocery_section
     count: number
     expiration_date: Date | string
     created_at: Date | string
@@ -10597,6 +10613,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding: string
     tracking_type?: ingredients_tracking_type | null
     fill_level: number
+    grocery_section: grocery_section
     count: number
     expiration_date: Date | string
     ingredients_photo_uploads_id?: string | null
@@ -10613,6 +10630,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: StringFieldUpdateOperationsInput | string
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
     count?: IntFieldUpdateOperationsInput | number
     expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10629,6 +10647,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: StringFieldUpdateOperationsInput | string
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
     count?: IntFieldUpdateOperationsInput | number
     expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
     ingredients_photo_uploads_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10645,6 +10664,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding: string
     tracking_type?: ingredients_tracking_type | null
     fill_level: number
+    grocery_section: grocery_section
     count: number
     expiration_date: Date | string
     ingredients_photo_uploads_id?: string | null
@@ -10660,6 +10680,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: StringFieldUpdateOperationsInput | string
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
     count?: IntFieldUpdateOperationsInput | number
     expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10674,6 +10695,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: StringFieldUpdateOperationsInput | string
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
     count?: IntFieldUpdateOperationsInput | number
     expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
     ingredients_photo_uploads_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11282,6 +11304,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type Enumgrocery_sectionFilter<$PrismaModel = never> = {
+    equals?: grocery_section | Enumgrocery_sectionFieldRefInput<$PrismaModel>
+    in?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
+    not?: NestedEnumgrocery_sectionFilter<$PrismaModel> | grocery_section
+  }
+
   export type UuidNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
@@ -11317,6 +11346,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: SortOrder
     tracking_type?: SortOrder
     fill_level?: SortOrder
+    grocery_section?: SortOrder
     count?: SortOrder
     expiration_date?: SortOrder
     ingredients_photo_uploads_id?: SortOrder
@@ -11337,6 +11367,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: SortOrder
     tracking_type?: SortOrder
     fill_level?: SortOrder
+    grocery_section?: SortOrder
     count?: SortOrder
     expiration_date?: SortOrder
     ingredients_photo_uploads_id?: SortOrder
@@ -11352,6 +11383,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: SortOrder
     tracking_type?: SortOrder
     fill_level?: SortOrder
+    grocery_section?: SortOrder
     count?: SortOrder
     expiration_date?: SortOrder
     ingredients_photo_uploads_id?: SortOrder
@@ -11396,6 +11428,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type Enumgrocery_sectionWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: grocery_section | Enumgrocery_sectionFieldRefInput<$PrismaModel>
+    in?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
+    not?: NestedEnumgrocery_sectionWithAggregatesFilter<$PrismaModel> | grocery_section
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumgrocery_sectionFilter<$PrismaModel>
+    _max?: NestedEnumgrocery_sectionFilter<$PrismaModel>
   }
 
   export type UuidNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -11614,13 +11656,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _max?: NestedEnumjobs_stateFilter<$PrismaModel>
   }
 
-  export type Enumgrocery_sectionFilter<$PrismaModel = never> = {
-    equals?: grocery_section | Enumgrocery_sectionFieldRefInput<$PrismaModel>
-    in?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
-    not?: NestedEnumgrocery_sectionFilter<$PrismaModel> | grocery_section
-  }
-
   export type RecipesRelationFilter = {
     is?: RecipesWhereInput
     isNot?: RecipesWhereInput
@@ -11661,16 +11696,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: SortOrder
     grocery_section?: SortOrder
     recipe_id?: SortOrder
-  }
-
-  export type Enumgrocery_sectionWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: grocery_section | Enumgrocery_sectionFieldRefInput<$PrismaModel>
-    in?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
-    not?: NestedEnumgrocery_sectionWithAggregatesFilter<$PrismaModel> | grocery_section
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumgrocery_sectionFilter<$PrismaModel>
-    _max?: NestedEnumgrocery_sectionFilter<$PrismaModel>
   }
 
   export type Recipe_ingredientsListRelationFilter = {
@@ -11852,6 +11877,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     divide?: number
   }
 
+  export type Enumgrocery_sectionFieldUpdateOperationsInput = {
+    set?: grocery_section
+  }
+
   export type Ingredient_eventsUpdateManyWithoutIngredientsNestedInput = {
     create?: XOR<Enumerable<Ingredient_eventsCreateWithoutIngredientsInput>, Enumerable<Ingredient_eventsUncheckedCreateWithoutIngredientsInput>>
     connectOrCreate?: Enumerable<Ingredient_eventsCreateOrConnectWithoutIngredientsInput>
@@ -11988,10 +12017,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     connectOrCreate?: Enumerable<Shopping_listCreateOrConnectWithoutRecipe_ingredientsInput>
     createMany?: Shopping_listCreateManyRecipe_ingredientsInputEnvelope
     connect?: Enumerable<Shopping_listWhereUniqueInput>
-  }
-
-  export type Enumgrocery_sectionFieldUpdateOperationsInput = {
-    set?: grocery_section
   }
 
   export type RecipesUpdateOneRequiredWithoutRecipe_ingredientsNestedInput = {
@@ -12419,6 +12444,13 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     not?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel> | ingredients_tracking_type | null
   }
 
+  export type NestedEnumgrocery_sectionFilter<$PrismaModel = never> = {
+    equals?: grocery_section | Enumgrocery_sectionFieldRefInput<$PrismaModel>
+    in?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
+    not?: NestedEnumgrocery_sectionFilter<$PrismaModel> | grocery_section
+  }
+
   export type NestedUuidNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
@@ -12473,6 +12505,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedEnumgrocery_sectionWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: grocery_section | Enumgrocery_sectionFieldRefInput<$PrismaModel>
+    in?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
+    notIn?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
+    not?: NestedEnumgrocery_sectionWithAggregatesFilter<$PrismaModel> | grocery_section
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumgrocery_sectionFilter<$PrismaModel>
+    _max?: NestedEnumgrocery_sectionFilter<$PrismaModel>
   }
 
   export type NestedUuidNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -12606,23 +12648,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     _max?: NestedEnumjobs_stateFilter<$PrismaModel>
   }
 
-  export type NestedEnumgrocery_sectionFilter<$PrismaModel = never> = {
-    equals?: grocery_section | Enumgrocery_sectionFieldRefInput<$PrismaModel>
-    in?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
-    not?: NestedEnumgrocery_sectionFilter<$PrismaModel> | grocery_section
-  }
-
-  export type NestedEnumgrocery_sectionWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: grocery_section | Enumgrocery_sectionFieldRefInput<$PrismaModel>
-    in?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
-    not?: NestedEnumgrocery_sectionWithAggregatesFilter<$PrismaModel> | grocery_section
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumgrocery_sectionFilter<$PrismaModel>
-    _max?: NestedEnumgrocery_sectionFilter<$PrismaModel>
-  }
-
   export type IngredientsCreateWithoutIngredient_eventsInput = {
     id: string
     name: string
@@ -12631,6 +12656,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding: string
     tracking_type?: ingredients_tracking_type | null
     fill_level: number
+    grocery_section: grocery_section
     count: number
     expiration_date: Date | string
     created_at: Date | string
@@ -12646,6 +12672,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding: string
     tracking_type?: ingredients_tracking_type | null
     fill_level: number
+    grocery_section: grocery_section
     count: number
     expiration_date: Date | string
     ingredients_photo_uploads_id?: string | null
@@ -12698,6 +12725,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: StringFieldUpdateOperationsInput | string
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
     count?: IntFieldUpdateOperationsInput | number
     expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12713,6 +12741,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: StringFieldUpdateOperationsInput | string
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
     count?: IntFieldUpdateOperationsInput | number
     expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
     ingredients_photo_uploads_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12869,6 +12898,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding: string
     tracking_type?: ingredients_tracking_type | null
     fill_level: number
+    grocery_section: grocery_section
     count: number
     expiration_date: Date | string
     created_at: Date | string
@@ -12884,6 +12914,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding: string
     tracking_type?: ingredients_tracking_type | null
     fill_level: number
+    grocery_section: grocery_section
     count: number
     expiration_date: Date | string
     created_at: Date | string
@@ -12949,6 +12980,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: StringFilter<"Ingredients"> | string
     tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | ingredients_tracking_type | null
     fill_level?: IntFilter<"Ingredients"> | number
+    grocery_section?: Enumgrocery_sectionFilter<"Ingredients"> | grocery_section
     count?: IntFilter<"Ingredients"> | number
     expiration_date?: DateTimeFilter<"Ingredients"> | Date | string
     ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
@@ -13555,6 +13587,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding: string
     tracking_type?: ingredients_tracking_type | null
     fill_level: number
+    grocery_section: grocery_section
     count: number
     expiration_date: Date | string
     created_at: Date | string
@@ -13569,6 +13602,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: StringFieldUpdateOperationsInput | string
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
     count?: IntFieldUpdateOperationsInput | number
     expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13584,6 +13618,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: StringFieldUpdateOperationsInput | string
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
     count?: IntFieldUpdateOperationsInput | number
     expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13599,6 +13634,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: StringFieldUpdateOperationsInput | string
     tracking_type?: NullableEnumingredients_tracking_typeFieldUpdateOperationsInput | ingredients_tracking_type | null
     fill_level?: IntFieldUpdateOperationsInput | number
+    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
     count?: IntFieldUpdateOperationsInput | number
     expiration_date?: DateTimeFieldUpdateOperationsInput | Date | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string

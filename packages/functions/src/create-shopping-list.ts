@@ -112,14 +112,15 @@ const createOrUpdateCardWithChecklists = async (listId, cardDetails) => {
   let card = await findCardByName(listId, cardName)
   if (!card) {
     card = await createCard(listId, cardName, url)
-  } else {
+  } else if (url) {
     card = await updateCard(card.id, { desc: card.desc + `\n- ${url}` })
   }
 
   for (const [checklistTitle, items] of Object.entries(checklists)) {
-    let checklist = await findChecklistOnCard(card.id, checklistTitle)
+    const title = checklistTitle.replace(`__`, ` `).replace(`_`, `/`)
+    let checklist = await findChecklistOnCard(card.id, title)
     if (!checklist) {
-      checklist = await createChecklist(card.id, checklistTitle)
+      checklist = await createChecklist(card.id, title)
     } else {
       // Optionally, clear existing items here if needed
     }
@@ -127,9 +128,30 @@ const createOrUpdateCardWithChecklists = async (listId, cardDetails) => {
   }
 }
 
+function getFirstDayOfWeekDate() {
+  const today = new Date() // Current date and time
+  const dayOfWeek = today.getDay() // Day of the week, 0 for Sunday, 1 for Monday, etc.
+  const firstDayOfWeek = new Date(today) // Clone today's date
+
+  // Subtract the day of the week from the current date to get to the first day of the week
+  firstDayOfWeek.setDate(today.getDate() - dayOfWeek)
+
+  // Format the date as "YYYY/MM/DD"
+  const year = firstDayOfWeek.getFullYear()
+  // getMonth() returns 0-11; adding 1 to get 1-12 and padStart to ensure two digits
+  const month = (firstDayOfWeek.getMonth() + 1).toString().padStart(2, `0`)
+  const day = firstDayOfWeek.getDate().toString().padStart(2, `0`)
+
+  return `Shopping ${year}/${month}/${day}`
+}
+
 const cardSchema = z.object({
-  cardName: z.string().min(10).startsWith(`Shopping`),
-  url: z.string().min(1),
+  cardName: z
+    .string()
+    .min(10)
+    .startsWith(`Shopping`)
+    .default(getFirstDayOfWeekDate()),
+  url: z.string().min(1).optional(),
   checklists: z.record(z.string(), z.array(z.string().min(3))),
 })
 

@@ -66,6 +66,24 @@ export const main: S3Handler = async (event) => {
           for x,y,z types of dishes.
           `
         ),
+        grocery_section: z
+          .enum([
+            `Produce`,
+            `Deli`,
+            `Bakery`,
+            `Meat_Seafood`,
+            `Dairy_Eggs`,
+            `Dry__Goods`,
+            `Canned__Foods`,
+            `Spices_Herbs`,
+            `Beverages`,
+            `Frozen__Foods`,
+            `Oil_Vinegar`,
+            `Other__Aisles`,
+          ])
+          .describe(
+            `The section of a US grocery store that someone is most likely to find this ingredient. You can only pick from options within this list. Any other option will be rejected. If you don't like the options, just pick 'Other Aisles'`
+          ),
         fill_level: z
           .number()
           .min(0)
@@ -199,15 +217,16 @@ export const main: S3Handler = async (event) => {
           const ingredientInsertQuery = {
             name: `ingredient-insert-query`,
             text: `INSERT INTO ingredients
-            (id, name, description, is_reviewed, tracking_type, fill_level, expiration_date,
+            (id, name, description, is_reviewed, tracking_type, grocery_section, fill_level, expiration_date,
              count, embedding, ingredients_photo_uploads_id, created_at, updated_at)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);`,
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13);`,
             values: [
               randomUUID(),
               ingredient.name,
               ingredient.description,
               false,
               `fill_level`,
+              ingredient.grocery_section,
               ingredient.fill_level,
               new Date(),
               0,

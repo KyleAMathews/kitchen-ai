@@ -42,6 +42,24 @@ export const handler: APIGatewayProxyHandler = async (event) => {
             .describe(
               `Short one sentence description of the ingredient and what kind of cuisines it's used with.`
             ),
+          grocery_section: z
+            .enum([
+              `Produce`,
+              `Deli`,
+              `Bakery`,
+              `Meat_Seafood`,
+              `Dairy_Eggs`,
+              `Dry__Goods`,
+              `Canned__Foods`,
+              `Spices_Herbs`,
+              `Beverages`,
+              `Frozen__Foods`,
+              `Oil_Vinegar`,
+              `Other__Aisles`,
+            ])
+            .describe(
+              `The section of a US grocery store that someone is most likely to find this ingredient. You can only pick from options within this list. Any other option will be rejected. If you don't like the options, just pick 'Other Aisles'`
+            ),
         }),
       },
     ]

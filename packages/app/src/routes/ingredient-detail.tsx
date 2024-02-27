@@ -96,6 +96,7 @@ function EditCountLevel({ ingredient }: { ingredient: Ingredients }) {
         db.ingredients.update({
           data: {
             count: newCount,
+            updated_at: new Date(),
           },
           where: {
             id: ingredient.id,
@@ -150,6 +151,7 @@ function EditFillLevel({ ingredient }) {
               db.ingredients.update({
                 data: {
                   fill_level: newFillLevel,
+                  updated_at: new Date(),
                 },
                 where: {
                   id: ingredient.id,
@@ -251,6 +253,7 @@ function EditFillLevel({ ingredient }) {
               await db.ingredients.update({
                 data: {
                   fill_date: newDateStr,
+                  updated_at: new Date(),
                 },
                 where: {
                   id: ingredient.id,
@@ -286,6 +289,7 @@ const diffInMonths = (date1, date2) => {
   return yearDiff * 12 + monthDiff
 }
 export default function IngredientDetail() {
+  const [working, setWorking] = useState(false)
   const location = useLocation()
   const { db } = useElectric()!
 
@@ -296,6 +300,7 @@ export default function IngredientDetail() {
     location.pathname + location.search
   )
 
+  console.log({ ingredient })
   // Get expired date string
   const expiredDate = new Date(ingredient.expiration_date)
   const expireDateStr = expiredDate
@@ -313,8 +318,39 @@ export default function IngredientDetail() {
       </Flex>
       <Button
         variant="outline"
-        onClick={() => {
-          console.log(`wait for trello`)
+        disabled={working}
+        onClick={async () => {
+          setWorking(true)
+          const cardDescription = {
+            checklists: {
+              [ingredient.grocery_section]: [ingredient.name],
+            },
+          }
+          const response = await fetch(
+            `https://7vxq1y2eu2.execute-api.us-east-1.amazonaws.com/create-shopping-list`,
+            {
+              method: `POST`,
+              headers: {
+                "Content-Type": `application/json`,
+              },
+              body: JSON.stringify(cardDescription),
+            }
+          )
+          if (!response.ok) {
+            console.log(`Network response was not ok`)
+          } else {
+            const data = await response.json()
+            console.log(`response`, data)
+            setWorking(false)
+            db.ingredients.update({
+              data: {
+                updated_at: new Date(),
+              },
+              where: {
+                id: ingredient.id,
+              },
+            })
+          }
         }}
       >
         Add to shopping list

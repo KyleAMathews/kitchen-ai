@@ -73,14 +73,14 @@ function StoreMode({ groupedByStoreSection }) {
   return (
     <>
       {Object.keys(groupedByStoreSection).map((sectionKey) => {
-        let section: string = ``
-        if (sectionKey === `Dry_Goods`) {
-          section = `Dry Goods`
-        } else if (sectionKey === `Canned_Foods`) {
-          section = `Canned Foods`
-        } else {
-          section = sectionKey.split(`_`).join(` / `)
-        }
+        const section = sectionKey.replace(`__`, ` `).replace(`_`, `/`)
+        // if (sectionKey === `Dry_Goods`) {
+        // section = `Dry Goods`
+        // } else if (sectionKey === `Canned_Foods`) {
+        // section = `Canned Foods`
+        // } else {
+        // section = sectionKey.split(`_`).join(` / `)
+        // }
         const ingredientsToBuy = groupedByStoreSection[sectionKey].map(
           (ri) => ri.recipe_ingredients
         ) as Recipe_ingredients[]

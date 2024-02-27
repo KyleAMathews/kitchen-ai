@@ -6,7 +6,7 @@ import { Heading, Flex, Link as RadixLink, Separator } from "@radix-ui/themes"
 
 const queries = ({ db }: { db: Electric[`db`] }) => {
   return {
-    ingredients: db.ingredients.liveMany({ orderBy: { name: `asc` } }),
+    ingredients: db.ingredients.liveMany({ orderBy: { updated_at: `desc` } }),
   }
 }
 

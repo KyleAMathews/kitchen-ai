@@ -39,23 +39,6 @@ import { UpdateIcon } from "@radix-ui/react-icons"
 import * as Toast from "@radix-ui/react-toast"
 import { groupBy, mapValues } from "lodash"
 
-function getFirstDayOfWeekDate() {
-  const today = new Date() // Current date and time
-  const dayOfWeek = today.getDay() // Day of the week, 0 for Sunday, 1 for Monday, etc.
-  const firstDayOfWeek = new Date(today) // Clone today's date
-
-  // Subtract the day of the week from the current date to get to the first day of the week
-  firstDayOfWeek.setDate(today.getDate() - dayOfWeek)
-
-  // Format the date as "YYYY/MM/DD"
-  const year = firstDayOfWeek.getFullYear()
-  // getMonth() returns 0-11; adding 1 to get 1-12 and padStart to ensure two digits
-  const month = (firstDayOfWeek.getMonth() + 1).toString().padStart(2, `0`)
-  const day = firstDayOfWeek.getDate().toString().padStart(2, `0`)
-
-  return `Shopping ${year}/${month}/${day}`
-}
-
 function AddIngredientsToShoppingListButton({
   possibleMatches,
   checked,
@@ -89,7 +72,6 @@ function AddIngredientsToShoppingListButton({
             })
             .filter((i) => i)
           const cardDescription = {
-            cardName: getFirstDayOfWeekDate(),
             url: recipe.url,
             checklists: mapValues(
               groupBy(createObjects, (o) => o.section),
@@ -107,7 +89,7 @@ function AddIngredientsToShoppingListButton({
             }
           )
           if (!response.ok) {
-            console.loj(`Network response was not ok`)
+            console.log(`Network response was not ok`)
           }
           const data = await response.json()
           console.log(`response`, data)
@@ -296,6 +278,7 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
                       embedding: JSON.stringify(data.embedding),
                       tracking_type: type,
                       count: parseInt(formProps?.count, 10) || 0,
+                      grocery_section: data.grocery_section,
                       expiration_date: expirationDate,
                       description: data.description,
                       is_reviewed: true,

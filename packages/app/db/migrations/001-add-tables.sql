@@ -16,6 +16,21 @@ CREATE TABLE ingredients_photo_uploads (
     photo_url TEXT
 );
 
+CREATE TYPE grocery_section AS ENUM (
+    'Produce',
+    'Deli',
+    'Bakery',
+    'Meat_Seafood',
+    'Dairy_Eggs',
+    'Dry__Goods',
+    'Canned__Foods',
+    'Spices_Herbs',
+    'Beverages',
+    'Frozen__Foods',
+    'Oil_Vinegar',
+    'Other__Aisles'
+);
+
 CREATE TYPE ingredients_tracking_type AS ENUM ('fill_level', 'count');
 CREATE TABLE ingredients (
     id UUID PRIMARY KEY,
@@ -25,6 +40,7 @@ CREATE TABLE ingredients (
     embedding TEXT NOT NULL,
     tracking_type ingredients_tracking_type,
     fill_level INTEGER NOT NULL,
+    grocery_section grocery_section NOT NULL,
     count INTEGER NOT NULL,
     expiration_date TIMESTAMP WITH TIME ZONE NOT NULL,
     ingredients_photo_uploads_id UUID,
@@ -53,20 +69,6 @@ CREATE TABLE recipes (
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE TYPE grocery_section AS ENUM (
-    'Produce',
-    'Deli',
-    'Bakery',
-    'Meat_Seafood',
-    'Dairy_Eggs',
-    'Dry_Goods',
-    'Canned_Foods',
-    'Spices_Herbs',
-    'Snacks',
-    'Beverages',
-    'Frozen_Foods',
-    'Other_Aisles'
-);
 CREATE TABLE recipe_ingredients (
     id UUID PRIMARY KEY,
     listing TEXT NOT NULL,

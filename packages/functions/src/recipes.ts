@@ -63,16 +63,16 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                   `Bakery`,
                   `Meat_Seafood`,
                   `Dairy_Eggs`,
-                  `Dry_Goods`,
-                  `Canned_Foods`,
-                  `Snacks`,
+                  `Dry__Goods`,
+                  `Canned__Foods`,
                   `Spices_Herbs`,
                   `Beverages`,
-                  `Frozen_Foods`,
-                  `Other_Aisles`,
+                  `Frozen__Foods`,
+                  `Oil_Vinegar`,
+                  `Other__Aisles`,
                 ])
                 .describe(
-                  `The section of a US grocery store that someone is most likely to find this ingredient. You can only pick from options within this list. Any other option will be rejected. If you don't like the options, just pick Other_Aisles`
+                  `The section of a US grocery store that someone is most likely to find this ingredient. You can only pick from options within this list. Any other option will be rejected. If you don't like the options, just pick 'Other Aisles'`
                 ),
             })
           ),
