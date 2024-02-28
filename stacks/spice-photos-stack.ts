@@ -35,12 +35,6 @@ export function SpiceJarPhotos({ stack }: StackContext) {
           timeout: 125,
         },
       },
-      "POST /create-embedding": {
-        function: {
-          handler: `packages/functions/src/create-embedding.handler`,
-          timeout: 125,
-        },
-      },
       "POST /create-shopping-list": {
         function: {
           handler: `packages/functions/src/create-shopping-list.handler`,
@@ -52,7 +46,6 @@ export function SpiceJarPhotos({ stack }: StackContext) {
   api.bind([ingredientBucket])
   api.bindToRoute(`POST /recipes`, [OPENAI_KEY_SECRET])
   api.bindToRoute(`POST /ingredients`, [OPENAI_KEY_SECRET])
-  api.bindToRoute(`POST /create-embedding`, [OPENAI_KEY_SECRET])
   api.bindToRoute(`POST /create-shopping-list`, [TRELLO_KEY, TRELLO_TOKEN])
 
   stack.addOutputs({
