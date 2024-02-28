@@ -20,21 +20,6 @@ export function SpiceJarPhotos({ stack }: StackContext) {
   // Allow the notification functions to access the bucket
   ingredientBucket.attachPermissions([ingredientBucket])
 
-  const recipesPhotoBucket = new Bucket(stack, `RecipesPhotoBucket`, {
-    notifications: {
-      newSpicePhotos: {
-        function: {
-          handler: `packages/functions/src/new-recipe-photo.main`,
-          bind: [OPENAI_KEY_SECRET],
-        },
-        events: [`object_created`],
-      },
-    },
-  })
-
-  // Allow the notification functions to access the bucket
-  recipesPhotoBucket.attachPermissions([recipesPhotoBucket])
-
   const api = new Api(stack, `api`, {
     routes: {
       "GET /": `packages/functions/src/lambda.handler`,
@@ -64,7 +49,7 @@ export function SpiceJarPhotos({ stack }: StackContext) {
       },
     },
   })
-  api.bind([ingredientBucket, recipesPhotoBucket])
+  api.bind([ingredientBucket])
   api.bindToRoute(`POST /recipes`, [OPENAI_KEY_SECRET])
   api.bindToRoute(`POST /ingredients`, [OPENAI_KEY_SECRET])
   api.bindToRoute(`POST /create-embedding`, [OPENAI_KEY_SECRET])
@@ -73,6 +58,5 @@ export function SpiceJarPhotos({ stack }: StackContext) {
   stack.addOutputs({
     ApiEndpoint: api.url,
     SpiceJarPhotosBucket: ingredientBucket.bucketName,
-    RecipesPhotoBucket: recipesPhotoBucket.bucketName,
   })
 }
