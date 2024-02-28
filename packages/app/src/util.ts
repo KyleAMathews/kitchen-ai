@@ -92,7 +92,7 @@ export function isRunningLow(ingredient: Ingredients): boolean {
 
 export function isExpiredSoon(ingredient: Ingredients): boolean {
   const expiredDate = new Date(ingredient.expiration_date)
-  const threeMonthsFromNow = new Date()
-  threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3)
-  return threeMonthsFromNow > expiredDate
+  const oneMonthFromNow = new Date()
+  oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1)
+  return oneMonthFromNow > expiredDate
 }

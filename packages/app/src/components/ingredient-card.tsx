@@ -55,15 +55,15 @@ export default function IngredientCard({ ingredient }: Ingredients) {
         )}
         {isRunningLow(ingredient) && (
           <Box>
-            <Badge color="crimson" variant="solid">
+            <Badge color="crimson" variant="soft">
               Running Low
             </Badge>
           </Box>
         )}
         {isExpiredSoon(ingredient) && (
           <Box>
-            <Badge color="crimson" variant="solid">
-              Replace soon
+            <Badge color="orange" variant="soft">
+              Expired
             </Badge>
           </Box>
         )}

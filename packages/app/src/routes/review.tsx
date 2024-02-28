@@ -69,9 +69,7 @@ function ReviewSpice({ spice, allIngredients }) {
       </Flex>
       <Flex direction="column" gap="5" width="100%" grow="1">
         <Flex direction="column" gap="2">
-          <Text size="1" weight="bold">
-            Fill Level
-          </Text>
+          <Text size="1">Fill Level</Text>
           <Flex direction="column" gap="1">
             <Slider
               defaultValue={[spice.fill_level]}

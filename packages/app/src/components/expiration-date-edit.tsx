@@ -1,5 +1,5 @@
 import { InfoCircledIcon } from "@radix-ui/react-icons"
-import { Flex, Text, Popover, Slider } from "@radix-ui/themes"
+import { Flex, Code, Text, Popover, Slider } from "@radix-ui/themes"
 
 const diffInMonths = (date1, date2) => {
   const yearDiff = date2.getFullYear() - date1.getFullYear()
@@ -26,14 +26,14 @@ export default function ExpirationDateEdit({
   const months_until_expiration = diffInMonths(new Date(), expirationDate)
   return (
     <Flex direction="column" gap="2">
-      <Text size="1" weight="bold">
+      <Text size="1" style={{ height: 10 }}>
         Expiration date{` `}
         <Popover.Root>
           <Popover.Trigger>
             <InfoCircledIcon
-              height="12"
-              width="12"
-              style={{ position: `relative`, top: 1 }}
+              height="10"
+              width="10"
+              style={{ height: 10, position: `relative`, top: 1 }}
             />
           </Popover.Trigger>
           <Popover.Content style={{ width: 300, height: 70 }}>
@@ -44,41 +44,41 @@ export default function ExpirationDateEdit({
             </Text>
           </Popover.Content>
         </Popover.Root>
-        {` `}({expirationDate.getFullYear()}/
-        {expirationDate.toLocaleString(`default`, {
-          month: `2-digit`,
-        })}
-        )
+        {` `}
+        <Code style={{ float: `right` }}>
+          {expirationDate.getFullYear()}/
+          {expirationDate.toLocaleString(`default`, {
+            month: `2-digit`,
+          })}
+        </Code>
       </Text>
-      <Flex direction="column" gap="1">
-        <Slider
-          defaultValue={[33 + months_until_expiration * 2]}
-          step={2}
-          onValueChange={(val) => {
-            const noZeroVal = val[0] === 0 ? 0.1 : val[0]
-            const newAge = Math.round((noZeroVal - 33) / 2)
-            const newDate = generateDateMonthsAgo(newAge)
-            if (typeof onValueChange === `function`) {
-              onValueChange(newDate)
-            }
-          }}
-          onValueCommit={(val) => {
-            const noZeroVal = val[0] === 0 ? 0.1 : val[0]
-            const newAge = Math.round((noZeroVal - 33) / 2)
-            const newDate = generateDateMonthsAgo(newAge)
-            if (typeof onValueCommit === `function`) {
-              onValueCommit(newDate)
-            }
-          }}
-        />
-        <Flex justify="between">
-          <Text size="1" color="gray">
-            {new Date().getFullYear() - 1}
-          </Text>
-          <Text size="1" color="gray">
-            {new Date().getFullYear() + 3}
-          </Text>
-        </Flex>
+      <Slider
+        defaultValue={[33 + months_until_expiration * 2]}
+        step={2}
+        onValueChange={(val) => {
+          const noZeroVal = val[0] === 0 ? 0.1 : val[0]
+          const newAge = Math.round((noZeroVal - 33) / 2)
+          const newDate = generateDateMonthsAgo(newAge)
+          if (typeof onValueChange === `function`) {
+            onValueChange(newDate)
+          }
+        }}
+        onValueCommit={(val) => {
+          const noZeroVal = val[0] === 0 ? 0.1 : val[0]
+          const newAge = Math.round((noZeroVal - 33) / 2)
+          const newDate = generateDateMonthsAgo(newAge)
+          if (typeof onValueCommit === `function`) {
+            onValueCommit(newDate)
+          }
+        }}
+      />
+      <Flex justify="between">
+        <Text size="1" color="gray">
+          {new Date().getFullYear() - 1}
+        </Text>
+        <Text size="1" color="gray">
+          {new Date().getFullYear() + 3}
+        </Text>
       </Flex>
     </Flex>
   )

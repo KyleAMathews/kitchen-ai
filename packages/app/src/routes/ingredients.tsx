@@ -22,24 +22,26 @@ export default function IngredientsList() {
     ingredients,
   })
   return (
-    <Flex direction="column" gap="5">
+    <Flex direction="column" gap="7">
       <Heading>Ingredients ({ingredients.length})</Heading>
-      {ingredients.map((ingredient, i: number) => {
-        if (ingredient.is_reviewed) {
-          return (
-            <React.Fragment key={ingredient.id}>
-              <IngredientCard ingredient={ingredient} />
-              {i !== ingredients.length - 1 && (
-                <Separator
-                  key={ingredient.id + `-seperator`}
-                  orientation="horizontal"
-                  size="4"
-                />
-              )}
-            </React.Fragment>
-          )
-        }
-      })}
+      <Flex direction="column" gap="4">
+        {ingredients.map((ingredient, i: number) => {
+          if (ingredient.is_reviewed) {
+            return (
+              <React.Fragment key={ingredient.id}>
+                <IngredientCard ingredient={ingredient} />
+                {i !== ingredients.length - 1 && (
+                  <Separator
+                    key={ingredient.id + `-seperator`}
+                    orientation="horizontal"
+                    size="4"
+                  />
+                )}
+              </React.Fragment>
+            )
+          }
+        })}
+      </Flex>
     </Flex>
   )
 }

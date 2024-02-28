@@ -210,13 +210,13 @@ function AlreadyHaveIngredient({
           </Box>
           <Flex gap="1" pl="5">
             {isRunningLow(matchedIngred) && (
-              <Badge color="crimson" variant="solid" size="1">
+              <Badge color="crimson" variant="soft" size="1">
                 Running Low
               </Badge>
             )}
             {isExpiredSoon(matchedIngred) && (
-              <Badge color="crimson" variant="solid" size="1">
-                Replace soon
+              <Badge color="orange" variant="soft" size="1">
+                Expired
               </Badge>
             )}
           </Flex>
@@ -236,7 +236,9 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
     <Box pl="5">
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Trigger>
-          <Button size="1">Add Ingredient</Button>
+          <Button variant="outline" size="1">
+            Add to Kitchen.ai
+          </Button>
         </Dialog.Trigger>
 
         <Dialog.Content style={{ maxWidth: 450 }}>
@@ -295,11 +297,9 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
               setOpen(false)
             }}
           >
-            <Flex direction="column" gap="4">
+            <Flex direction="column" gap="5">
               <label>
-                <Text size="1" weight="bold">
-                  Ingredient Name
-                </Text>
+                <Text size="1">Ingredient Name</Text>
                 <TextField.Input
                   name="name"
                   defaultValue={ingredient.extracted_name}
@@ -307,38 +307,40 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
                 />
               </label>
               <label>
-                <Text size="1" as="div" weight="bold">
-                  Track ingredient by fill level (0-100%) or by count (e.g.
-                  number of cans)
-                </Text>
+                <Flex direction="column" gap="3">
+                  <Text size="2" as="p">
+                    Track ingredient by "fill level" or by "count"
+                  </Text>
+                  <Box py="1">
+                    <RadioGroup.Root
+                      value={type}
+                      name="tracking_type"
+                      onValueChange={(value) => {
+                        setType(value)
+                      }}
+                    >
+                      <Flex gap="2" direction="column">
+                        <Text as="label" size="2">
+                          <Flex gap="2">
+                            <RadioGroup.Item value="fill_level" />
+                            {` `}
+                            Fill Level (0-100%)
+                          </Flex>
+                        </Text>
+                        <Text as="label" size="2">
+                          <Flex gap="2">
+                            <RadioGroup.Item value="count" /> Count (e.g. number
+                            of cans)
+                          </Flex>
+                        </Text>
+                      </Flex>
+                    </RadioGroup.Root>
+                  </Box>
+                </Flex>
               </label>
-              <Box py="1">
-                <RadioGroup.Root
-                  value={type}
-                  name="tracking_type"
-                  onValueChange={(value) => {
-                    setType(value)
-                  }}
-                >
-                  <Flex gap="2" direction="column">
-                    <Text as="label" size="2">
-                      <Flex gap="2">
-                        <RadioGroup.Item value="fill_level" />
-                        {` `}
-                        Fill Level
-                      </Flex>
-                    </Text>
-                    <Text as="label" size="2">
-                      <Flex gap="2">
-                        <RadioGroup.Item value="count" /> Count
-                      </Flex>
-                    </Text>
-                  </Flex>
-                </RadioGroup.Root>
-              </Box>
               {type === `count` ? (
                 <label>
-                  <Text as="div" size="2" mb="1">
+                  <Text as="div" size="1" mb="1">
                     Count
                   </Text>
                   <TextField.Input
@@ -350,9 +352,7 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
               ) : (
                 <label>
                   <Flex direction="column" gap="2">
-                    <Text size="1" weight="bold">
-                      Fill Level
-                    </Text>
+                    <Text size="1">Fill Level</Text>
                     <Slider
                       defaultValue={[0]}
                       name="fill_level"
@@ -474,30 +474,26 @@ export default function RecipeDetail() {
 
   return (
     <Flex direction="column" gap="5">
+      <RadixLink asChild size="2">
+        <Link to="/recipes">{`<`} All Recipes</Link>
+      </RadixLink>
       <Flex direction="column" gap="3">
-        <RadixLink asChild>
-          <Link to="/recipes">{`<`} All Recipes</Link>
-        </RadixLink>
         <Heading>{recipe.name}</Heading>
-        <RadixLink size="1" asChild>
+        <RadixLink size="2" asChild>
           <a target="_blank" href={recipe.url}>
             {recipe.url}
           </a>
         </RadixLink>
-        <ScrollArea
-          scrollbars="vertical"
-          style={{ maxHeight: 180 }}
-          type="auto"
-        >
-          <Text>{recipe.description}</Text>
-        </ScrollArea>
       </Flex>
-      <Flex direction="column" gap="4">
+      <ScrollArea scrollbars="vertical" style={{ maxHeight: 180 }} type="auto">
+        <Text>{recipe.description}</Text>
+      </ScrollArea>
+      <Flex direction="column" gap="4" mt="2">
         <Flex direction="column" gap="2">
-          <Heading size="5" mb="2">
+          <Heading size="4" mb="2">
             Ingredients
           </Heading>
-          <Heading size="3">Needed</Heading>
+          <Heading size="2">Needed</Heading>
           <Text size="1">
             <Em>Review ingredients Kitchen.ai thinks you need to buy</Em>
           </Text>
@@ -536,7 +532,7 @@ export default function RecipeDetail() {
         />
       </Flex>
       <Flex direction="column" gap="4">
-        <Heading size="3">Already Have</Heading>
+        <Heading size="2">Already Have</Heading>
         {checked.length === 0 &&
           Object.values(possibleMatches).filter((i) => i).length === 0 && (
             <Text size="2">No matching ingredients</Text>

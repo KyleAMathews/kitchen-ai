@@ -16,6 +16,7 @@ import {
 } from "@radix-ui/themes"
 import { isString } from "lodash"
 import { genUUID } from "electric-sql/util"
+import ExpirationDateEdit from "../components/expiration-date-edit"
 
 function formatDate(date) {
   const year = date.getFullYear() // Gets the year (4 digits)
@@ -43,11 +44,11 @@ function generateEventText(event) {
         ? JSON.parse(event.to_values).fill_level
         : event.to_values.fill_level)
   ) {
-    action = `used some`
+    action = `used this`
   }
   if (key === `count`) {
     if (event.from_values.count > event.to_values.count) {
-      action = `used some`
+      action = `used this`
     } else {
       action = `bought more`
     }
@@ -136,147 +137,87 @@ function EditFillLevel({ ingredient }) {
     user: { id: user_id },
   } = useUser()
   const { db } = useElectric()!
-  const [didYouFillUp, setDidYouFillUp] = useState<boolean>(false)
   return (
     <>
-      <Flex direction="column" gap="3">
-        <Text size="2" weight="bold">
-          Fill Level
-        </Text>
-        <Flex direction="column" gap="1">
-          <Slider
-            defaultValue={[ingredient.fill_level]}
-            onValueCommit={async (val) => {
-              const newFillLevel = val[0] as number
-              db.ingredients.update({
-                data: {
-                  fill_level: newFillLevel,
-                  updated_at: new Date(),
-                },
-                where: {
-                  id: ingredient.id,
-                },
-              })
-              const halfHourAgo = new Date()
-              halfHourAgo.setMinutes(halfHourAgo.getMinutes() - 30)
+      <Flex direction="column" gap="2">
+        <Text size="1">Fill Level</Text>
+        <Slider
+          defaultValue={[ingredient.fill_level]}
+          onValueCommit={async (val) => {
+            const newFillLevel = val[0] as number
+            db.ingredients.update({
+              data: {
+                fill_level: newFillLevel,
+                updated_at: new Date(),
+              },
+              where: {
+                id: ingredient.id,
+              },
+            })
+            const halfHourAgo = new Date()
+            halfHourAgo.setMinutes(halfHourAgo.getMinutes() - 30)
 
-              const recentEvents = await db.ingredient_events.findMany({
-                where: {
-                  ingredient_id: ingredient.id,
-                  timestamp: {
-                    gte: halfHourAgo,
+            const recentEvents = await db.ingredient_events.findMany({
+              where: {
+                ingredient_id: ingredient.id,
+                timestamp: {
+                  gte: halfHourAgo,
+                },
+              },
+            })
+
+            const recentEvent = recentEvents.find(
+              (e) => Object.keys(e.from_values)[0] === `fill_level`
+            )
+            console.log({ recentEvent })
+
+            let didGoUp = false
+
+            if (recentEvent) {
+              if (recentEvent.from_values.fill_level < newFillLevel) {
+                didGoUp = true
+                db.ingredient_events.delete({
+                  where: {
+                    id: recentEvent?.id,
                   },
-                },
-              })
-
-              const recentEvent = recentEvents.find(
-                (e) => Object.keys(e.from_values)[0] === `fill_level`
-              )
-              console.log({ recentEvent })
-
-              let didGoUp = false
-
-              if (recentEvent) {
-                if (recentEvent.from_values.fill_level < newFillLevel) {
-                  didGoUp = true
-                  db.ingredient_events.delete({
-                    where: {
-                      id: recentEvent?.id,
-                    },
-                  })
-                } else {
-                  db.ingredient_events.update({
-                    data: {
-                      to_values: { fill_level: newFillLevel },
-                    },
-                    where: {
-                      id: recentEvent?.id,
-                    },
-                  })
-                }
+                })
               } else {
-                if (ingredient.fill_level < newFillLevel) {
-                  didGoUp = true
-                } else {
-                  db.ingredient_events.create({
-                    data: {
-                      id: genUUID(),
-                      ingredient_id: ingredient.id,
-                      timestamp: new Date(),
-                      from_values: { fill_level: ingredient.fill_level },
-                      to_values: { fill_level: newFillLevel },
-                      user_id,
-                    },
-                  })
-                }
+                db.ingredient_events.update({
+                  data: {
+                    to_values: { fill_level: newFillLevel },
+                  },
+                  where: {
+                    id: recentEvent?.id,
+                  },
+                })
               }
-
-              setDidYouFillUp(didGoUp)
-            }}
-          />
-          <Flex justify="between">
-            <Text size="1" color="gray">
-              0%
-            </Text>
-            <Text size="1" color="gray">
-              100%
-            </Text>
-          </Flex>
+            } else {
+              if (ingredient.fill_level < newFillLevel) {
+                didGoUp = true
+              } else {
+                db.ingredient_events.create({
+                  data: {
+                    id: genUUID(),
+                    ingredient_id: ingredient.id,
+                    timestamp: new Date(),
+                    from_values: { fill_level: ingredient.fill_level },
+                    to_values: { fill_level: newFillLevel },
+                    user_id,
+                  },
+                })
+              }
+            }
+          }}
+        />
+        <Flex justify="between">
+          <Text size="1" color="gray">
+            0%
+          </Text>
+          <Text size="1" color="gray">
+            100%
+          </Text>
         </Flex>
       </Flex>
-      {didYouFillUp && (
-        <Flex
-          direction="column"
-          size="2"
-          p="5"
-          gap="3"
-          style={{
-            background: `var(--gray-a2)`,
-            borderRadius: `var(--radius-3)`,
-          }}
-        >
-          <Text>
-            It looks like you just bought some new <em>{ingredient.name}</em>?
-            Confirm and we'll reset the expiration date. If not, just move the
-            Fill Level back down to where it was.
-          </Text>
-          <Button
-            onClick={async () => {
-              const newDate = new Date()
-              const year = newDate.getFullYear() // Get the year
-              let month = newDate.getMonth() + 1 // Get the month (add 1 because getMonth() returns 0-11)
-
-              // Ensure month is in 'MM' format
-              month = month < 10 ? `0${month}` : month
-
-              const newDateStr = `${year}/${month}`
-              await db.ingredients.update({
-                data: {
-                  fill_date: newDateStr,
-                  updated_at: new Date(),
-                },
-                where: {
-                  id: ingredient.id,
-                },
-              })
-              await db.ingredient_events.create({
-                data: {
-                  id: genUUID(),
-                  ingredient_id: ingredient.id,
-                  timestamp: new Date(),
-                  from_values: { fill_date: ingredient.fill_date },
-                  to_values: { fill_date: newDateStr },
-                  user_id,
-                },
-              })
-
-              setDidYouFillUp(false)
-            }}
-          >
-            Confirm
-          </Button>
-        </Flex>
-      )}
     </>
   )
 }
@@ -298,6 +239,9 @@ export default function IngredientDetail() {
     events,
   }: { ingredient: Ingredients; events: Ingredient_events } = useElectricData(
     location.pathname + location.search
+  )
+  const [expirationDate, setExpirationDate] = useState(
+    ingredient.expiration_date
   )
 
   console.log({ ingredient })
@@ -355,14 +299,25 @@ export default function IngredientDetail() {
       >
         Add to shopping list
       </Button>
-      <Flex>
-        <Text>Expires: {expireDateStr}</Text>
-      </Flex>
       {ingredient.tracking_type === `count` ? (
         <EditCountLevel ingredient={ingredient} />
       ) : (
         <EditFillLevel ingredient={ingredient} />
       )}
+      <ExpirationDateEdit
+        expirationDate={expirationDate}
+        onValueChange={setExpirationDate}
+        onValueCommit={(newDate: Date) => {
+          db.ingredients.update({
+            data: {
+              expiration_date: newDate,
+            },
+            where: {
+              id: spice.id,
+            },
+          })
+        }}
+      />
       {events.length > 0 && (
         <Flex direction="column" gap="3">
           <Heading size="4">Timeline</Heading>

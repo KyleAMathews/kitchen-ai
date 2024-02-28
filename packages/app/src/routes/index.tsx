@@ -41,9 +41,23 @@ function IngredientsView({
     <Flex direction="column" gap="6">
       <Flex direction="column" gap="4">
         <Heading>
-          Ingredients{` `}({ingredientsCount}){` `}
-          <Link to="/upload-photos">
-            <CameraIcon />
+          <Link
+            to="/ingredients"
+            style={{ color: `inherit`, textDecoration: `none` }}
+          >
+            Ingredients{` `}({ingredientsCount}){` `}
+          </Link>
+          <Link
+            to="/upload-photos"
+            style={{
+              height: 20,
+              display: `inline-block`,
+              position: `relative`,
+              top: 3,
+              left: 4,
+            }}
+          >
+            <CameraIcon height="20" width="20" />
           </Link>
         </Heading>
         {photos && photos.length > 0 && (
@@ -67,7 +81,7 @@ function IngredientsView({
       </Flex>
 
       {search?.length > 0 && ingredients.length > 0 && (
-        <Flex direction="column" gap="5">
+        <Flex direction="column" gap="4">
           {ingredients.map((ingredient, i: number) => {
             if (ingredient.is_reviewed) {
               return (
@@ -239,51 +253,73 @@ export default function Index() {
                 />
               </TextField.Root>
             </form>
-            <Flex direction="column" gap="6">
-              <Heading>
-                <Link
-                  to="/recipes"
-                  style={{ color: `inherit`, textDecoration: `none` }}
-                >
-                  Recipes{` `}({recipesCount[0].count}){` `}
-                </Link>
-                <Link to="/recipes/new">
-                  <PlusCircledIcon />
-                </Link>
-              </Heading>
-              {recipesCount[0].count > 0 ? (
-                <>
-                  {recipes && recipes.length > 0 ? (
-                    <Flex direction="column" gap="5">
-                      {recipes.map((recipe, i) => {
-                        return (
-                          <>
-                            <RecipeCard recipe={recipe} />
-                            {recipes.length - 1 !== i && <Separator size="4" />}
-                          </>
-                        )
-                      })}
-                    </Flex>
-                  ) : (
-                    <Text>No results</Text>
-                  )}
-                  <RadixLink asChild>
-                    <Link to="/recipes">
-                      Browse all <ArrowRightIcon />
-                    </Link>
-                  </RadixLink>
-                </>
-              ) : (
-                <Text>Add your first recipe!</Text>
-              )}
+            <Flex direction="column" gap="7">
+              <Flex direction="column" gap="6">
+                <Heading>
+                  <Link
+                    to="/recipes"
+                    style={{
+                      color: `inherit`,
+                      textDecoration: `none`,
+                      height: 20,
+                      display: `inline-block`,
+                    }}
+                  >
+                    Recipes{` `}({recipesCount[0].count}){` `}
+                  </Link>
+                  <Link
+                    to="/recipes/new"
+                    style={{
+                      height: 20,
+                      display: `inline-block`,
+                      position: `relative`,
+                      top: 3,
+                      left: 8,
+                    }}
+                  >
+                    <PlusCircledIcon
+                      height="20"
+                      width="20"
+                      style={{ height: 20 }}
+                    />
+                  </Link>
+                </Heading>
+                {recipesCount[0].count > 0 ? (
+                  <>
+                    {recipes && recipes.length > 0 ? (
+                      <Flex direction="column" gap="4">
+                        {recipes.map((recipe, i) => {
+                          return (
+                            <>
+                              <RecipeCard recipe={recipe} />
+                              {recipes.length - 1 !== i && (
+                                <Separator size="4" />
+                              )}
+                            </>
+                          )
+                        })}
+                      </Flex>
+                    ) : (
+                      <Text>No results</Text>
+                    )}
+                    <RadixLink asChild>
+                      <Link to="/recipes">
+                        Browse all <ArrowRightIcon />
+                      </Link>
+                    </RadixLink>
+                  </>
+                ) : (
+                  <Text>Add your first recipe!</Text>
+                )}
+              </Flex>
+              <IngredientsView
+                ingredientsCount={ingredientsCount[0].count}
+                ingredients_needing_review={ingredients_needing_review}
+                ingredients={ingredients}
+                photos={photos}
+                search={q}
+              />
             </Flex>
-            <IngredientsView
-              ingredientsCount={ingredientsCount[0].count}
-              ingredients_needing_review={ingredients_needing_review}
-              ingredients={ingredients}
-              photos={photos}
-              search={q}
-            />
           </Flex>
         </>
       )}
