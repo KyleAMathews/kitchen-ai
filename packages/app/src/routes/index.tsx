@@ -226,9 +226,11 @@ export default function Index() {
     recipesCount,
   })
 
+  const countIngredients = (ingredientsCount && ingredientsCount[0].count) || 0
+
   return (
     <>
-      {ingredientsCount[0].count === 0 ? (
+      {countIngredients === 0 ? (
         <BlankSlate />
       ) : (
         <>
@@ -313,7 +315,7 @@ export default function Index() {
                 )}
               </Flex>
               <IngredientsView
-                ingredientsCount={ingredientsCount[0].count}
+                ingredientsCount={countIngredients || 0}
                 ingredients_needing_review={ingredients_needing_review}
                 ingredients={ingredients}
                 photos={photos}

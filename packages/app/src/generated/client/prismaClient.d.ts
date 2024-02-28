@@ -145,27 +145,6 @@ export type Recipes = {
 }
 
 /**
- * Model Shopping_list
- * 
- */
-export type Shopping_list = {
-  /**
-   * @zod.string.uuid()
-   */
-  id: string
-  /**
-   * @zod.string.uuid()
-   */
-  recipe_id: string
-  /**
-   * @zod.string.uuid()
-   */
-  recipe_ingredient_id: string
-  purchased: boolean
-  created_at: Date
-}
-
-/**
  * Model Users
  * 
  */
@@ -404,16 +383,6 @@ export class PrismaClient<
     * ```
     */
   get recipes(): Prisma.RecipesDelegate<GlobalReject>;
-
-  /**
-   * `prisma.shopping_list`: Exposes CRUD operations for the **Shopping_list** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Shopping_lists
-    * const shopping_lists = await prisma.shopping_list.findMany()
-    * ```
-    */
-  get shopping_list(): Prisma.Shopping_listDelegate<GlobalReject>;
 
   /**
    * `prisma.users`: Exposes CRUD operations for the **Users** model.
@@ -914,7 +883,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     Jobs: 'Jobs',
     Recipe_ingredients: 'Recipe_ingredients',
     Recipes: 'Recipes',
-    Shopping_list: 'Shopping_list',
     Users: 'Users'
   };
 
@@ -1185,70 +1153,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
   /**
-   * Count Type Recipe_ingredientsCountOutputType
-   */
-
-
-  export type Recipe_ingredientsCountOutputType = {
-    shopping_list: number
-  }
-
-  export type Recipe_ingredientsCountOutputTypeSelect = {
-    shopping_list?: boolean | Recipe_ingredientsCountOutputTypeCountShopping_listArgs
-  }
-
-  export type Recipe_ingredientsCountOutputTypeGetPayload<S extends boolean | null | undefined | Recipe_ingredientsCountOutputTypeArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? Recipe_ingredientsCountOutputType :
-    S extends undefined ? never :
-    S extends { include: any } & (Recipe_ingredientsCountOutputTypeArgs)
-    ? Recipe_ingredientsCountOutputType 
-    : S extends { select: any } & (Recipe_ingredientsCountOutputTypeArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-    P extends keyof Recipe_ingredientsCountOutputType ? Recipe_ingredientsCountOutputType[P] : never
-  } 
-      : Recipe_ingredientsCountOutputType
-
-
-
-
-  // Custom InputTypes
-
-  /**
-   * Recipe_ingredientsCountOutputType without action
-   */
-  export type Recipe_ingredientsCountOutputTypeArgs = {
-    /**
-     * Select specific fields to fetch from the Recipe_ingredientsCountOutputType
-     * 
-    **/
-    select?: Recipe_ingredientsCountOutputTypeSelect | null
-  }
-
-
-  /**
-   * Recipe_ingredientsCountOutputType without action
-   */
-  export type Recipe_ingredientsCountOutputTypeCountShopping_listArgs = {
-    where?: Shopping_listWhereInput
-  }
-
-
-
-  /**
    * Count Type RecipesCountOutputType
    */
 
 
   export type RecipesCountOutputType = {
     recipe_ingredients: number
-    shopping_list: number
   }
 
   export type RecipesCountOutputTypeSelect = {
     recipe_ingredients?: boolean | RecipesCountOutputTypeCountRecipe_ingredientsArgs
-    shopping_list?: boolean | RecipesCountOutputTypeCountShopping_listArgs
   }
 
   export type RecipesCountOutputTypeGetPayload<S extends boolean | null | undefined | RecipesCountOutputTypeArgs> =
@@ -1286,14 +1200,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    */
   export type RecipesCountOutputTypeCountRecipe_ingredientsArgs = {
     where?: Recipe_ingredientsWhereInput
-  }
-
-
-  /**
-   * RecipesCountOutputType without action
-   */
-  export type RecipesCountOutputTypeCountShopping_listArgs = {
-    where?: Shopping_listWhereInput
   }
 
 
@@ -5717,15 +5623,11 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     grocery_section?: boolean
     recipe_id?: boolean
     recipes?: boolean | RecipesArgs
-    shopping_list?: boolean | Recipe_ingredients$shopping_listArgs
-    _count?: boolean | Recipe_ingredientsCountOutputTypeArgs
   }
 
 
   export type Recipe_ingredientsInclude = {
     recipes?: boolean | RecipesArgs
-    shopping_list?: boolean | Recipe_ingredients$shopping_listArgs
-    _count?: boolean | Recipe_ingredientsCountOutputTypeArgs
   } 
 
   export type Recipe_ingredientsGetPayload<S extends boolean | null | undefined | Recipe_ingredientsArgs> =
@@ -5735,16 +5637,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     S extends { include: any } & (Recipe_ingredientsArgs | Recipe_ingredientsFindManyArgs)
     ? Recipe_ingredients  & {
     [P in TruthyKeys<S['include']>]:
-        P extends 'recipes' ? RecipesGetPayload<S['include'][P]> :
-        P extends 'shopping_list' ? Array < Shopping_listGetPayload<S['include'][P]>>  :
-        P extends '_count' ? Recipe_ingredientsCountOutputTypeGetPayload<S['include'][P]> :  never
+        P extends 'recipes' ? RecipesGetPayload<S['include'][P]> :  never
   } 
     : S extends { select: any } & (Recipe_ingredientsArgs | Recipe_ingredientsFindManyArgs)
       ? {
     [P in TruthyKeys<S['select']>]:
-        P extends 'recipes' ? RecipesGetPayload<S['select'][P]> :
-        P extends 'shopping_list' ? Array < Shopping_listGetPayload<S['select'][P]>>  :
-        P extends '_count' ? Recipe_ingredientsCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Recipe_ingredients ? Recipe_ingredients[P] : never
+        P extends 'recipes' ? RecipesGetPayload<S['select'][P]> :  P extends keyof Recipe_ingredients ? Recipe_ingredients[P] : never
   } 
       : Recipe_ingredients
 
@@ -6119,8 +6017,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
     recipes<T extends RecipesArgs= {}>(args?: Subset<T, RecipesArgs>): Prisma__RecipesClient<RecipesGetPayload<T> | Null>;
-
-    shopping_list<T extends Recipe_ingredients$shopping_listArgs= {}>(args?: Subset<T, Recipe_ingredients$shopping_listArgs>): PrismaPromise<Array<Shopping_listGetPayload<T>>| Null>;
 
     private get _document();
     /**
@@ -6526,29 +6422,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
   /**
-   * Recipe_ingredients.shopping_list
-   */
-  export type Recipe_ingredients$shopping_listArgs = {
-    /**
-     * Select specific fields to fetch from the Shopping_list
-     * 
-    **/
-    select?: Shopping_listSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: Shopping_listInclude | null
-    where?: Shopping_listWhereInput
-    orderBy?: Enumerable<Shopping_listOrderByWithRelationInput>
-    cursor?: Shopping_listWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: Enumerable<Shopping_listScalarFieldEnum>
-  }
-
-
-  /**
    * Recipe_ingredients without action
    */
   export type Recipe_ingredientsArgs = {
@@ -6755,7 +6628,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     updated_at?: boolean
     recipe_ingredients?: boolean | Recipes$recipe_ingredientsArgs
     users?: boolean | UsersArgs
-    shopping_list?: boolean | Recipes$shopping_listArgs
     _count?: boolean | RecipesCountOutputTypeArgs
   }
 
@@ -6763,7 +6635,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type RecipesInclude = {
     recipe_ingredients?: boolean | Recipes$recipe_ingredientsArgs
     users?: boolean | UsersArgs
-    shopping_list?: boolean | Recipes$shopping_listArgs
     _count?: boolean | RecipesCountOutputTypeArgs
   } 
 
@@ -6776,7 +6647,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     [P in TruthyKeys<S['include']>]:
         P extends 'recipe_ingredients' ? Array < Recipe_ingredientsGetPayload<S['include'][P]>>  :
         P extends 'users' ? UsersGetPayload<S['include'][P]> :
-        P extends 'shopping_list' ? Array < Shopping_listGetPayload<S['include'][P]>>  :
         P extends '_count' ? RecipesCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : S extends { select: any } & (RecipesArgs | RecipesFindManyArgs)
@@ -6784,7 +6654,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     [P in TruthyKeys<S['select']>]:
         P extends 'recipe_ingredients' ? Array < Recipe_ingredientsGetPayload<S['select'][P]>>  :
         P extends 'users' ? UsersGetPayload<S['select'][P]> :
-        P extends 'shopping_list' ? Array < Shopping_listGetPayload<S['select'][P]>>  :
         P extends '_count' ? RecipesCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Recipes ? Recipes[P] : never
   } 
       : Recipes
@@ -7162,8 +7031,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     recipe_ingredients<T extends Recipes$recipe_ingredientsArgs= {}>(args?: Subset<T, Recipes$recipe_ingredientsArgs>): PrismaPromise<Array<Recipe_ingredientsGetPayload<T>>| Null>;
 
     users<T extends UsersArgs= {}>(args?: Subset<T, UsersArgs>): Prisma__UsersClient<UsersGetPayload<T> | Null>;
-
-    shopping_list<T extends Recipes$shopping_listArgs= {}>(args?: Subset<T, Recipes$shopping_listArgs>): PrismaPromise<Array<Shopping_listGetPayload<T>>| Null>;
 
     private get _document();
     /**
@@ -7592,29 +7459,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
 
   /**
-   * Recipes.shopping_list
-   */
-  export type Recipes$shopping_listArgs = {
-    /**
-     * Select specific fields to fetch from the Shopping_list
-     * 
-    **/
-    select?: Shopping_listSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: Shopping_listInclude | null
-    where?: Shopping_listWhereInput
-    orderBy?: Enumerable<Shopping_listOrderByWithRelationInput>
-    cursor?: Shopping_listWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: Enumerable<Shopping_listScalarFieldEnum>
-  }
-
-
-  /**
    * Recipes without action
    */
   export type RecipesArgs = {
@@ -7628,1000 +7472,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * 
     **/
     include?: RecipesInclude | null
-  }
-
-
-
-  /**
-   * Model Shopping_list
-   */
-
-
-  export type AggregateShopping_list = {
-    _count: Shopping_listCountAggregateOutputType | null
-    _min: Shopping_listMinAggregateOutputType | null
-    _max: Shopping_listMaxAggregateOutputType | null
-  }
-
-  export type Shopping_listMinAggregateOutputType = {
-    id: string | null
-    recipe_id: string | null
-    recipe_ingredient_id: string | null
-    purchased: boolean | null
-    created_at: Date | null
-  }
-
-  export type Shopping_listMaxAggregateOutputType = {
-    id: string | null
-    recipe_id: string | null
-    recipe_ingredient_id: string | null
-    purchased: boolean | null
-    created_at: Date | null
-  }
-
-  export type Shopping_listCountAggregateOutputType = {
-    id: number
-    recipe_id: number
-    recipe_ingredient_id: number
-    purchased: number
-    created_at: number
-    _all: number
-  }
-
-
-  export type Shopping_listMinAggregateInputType = {
-    id?: true
-    recipe_id?: true
-    recipe_ingredient_id?: true
-    purchased?: true
-    created_at?: true
-  }
-
-  export type Shopping_listMaxAggregateInputType = {
-    id?: true
-    recipe_id?: true
-    recipe_ingredient_id?: true
-    purchased?: true
-    created_at?: true
-  }
-
-  export type Shopping_listCountAggregateInputType = {
-    id?: true
-    recipe_id?: true
-    recipe_ingredient_id?: true
-    purchased?: true
-    created_at?: true
-    _all?: true
-  }
-
-  export type Shopping_listAggregateArgs = {
-    /**
-     * Filter which Shopping_list to aggregate.
-     * 
-    **/
-    where?: Shopping_listWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Shopping_lists to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<Shopping_listOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     * 
-    **/
-    cursor?: Shopping_listWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Shopping_lists from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Shopping_lists.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned Shopping_lists
-    **/
-    _count?: true | Shopping_listCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: Shopping_listMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: Shopping_listMaxAggregateInputType
-  }
-
-  export type GetShopping_listAggregateType<T extends Shopping_listAggregateArgs> = {
-        [P in keyof T & keyof AggregateShopping_list]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateShopping_list[P]>
-      : GetScalarType<T[P], AggregateShopping_list[P]>
-  }
-
-
-
-
-  export type Shopping_listGroupByArgs = {
-    where?: Shopping_listWhereInput
-    orderBy?: Enumerable<Shopping_listOrderByWithAggregationInput>
-    by: Array<Shopping_listScalarFieldEnum>
-    having?: Shopping_listScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: Shopping_listCountAggregateInputType | true
-    _min?: Shopping_listMinAggregateInputType
-    _max?: Shopping_listMaxAggregateInputType
-  }
-
-
-  export type Shopping_listGroupByOutputType = {
-    id: string
-    recipe_id: string
-    recipe_ingredient_id: string
-    purchased: boolean
-    created_at: Date
-    _count: Shopping_listCountAggregateOutputType | null
-    _min: Shopping_listMinAggregateOutputType | null
-    _max: Shopping_listMaxAggregateOutputType | null
-  }
-
-  type GetShopping_listGroupByPayload<T extends Shopping_listGroupByArgs> = PrismaPromise<
-    Array<
-      PickArray<Shopping_listGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof Shopping_listGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], Shopping_listGroupByOutputType[P]>
-            : GetScalarType<T[P], Shopping_listGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type Shopping_listSelect = {
-    id?: boolean
-    recipe_id?: boolean
-    recipe_ingredient_id?: boolean
-    purchased?: boolean
-    created_at?: boolean
-    recipes?: boolean | RecipesArgs
-    recipe_ingredients?: boolean | Recipe_ingredientsArgs
-  }
-
-
-  export type Shopping_listInclude = {
-    recipes?: boolean | RecipesArgs
-    recipe_ingredients?: boolean | Recipe_ingredientsArgs
-  } 
-
-  export type Shopping_listGetPayload<S extends boolean | null | undefined | Shopping_listArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? Shopping_list :
-    S extends undefined ? never :
-    S extends { include: any } & (Shopping_listArgs | Shopping_listFindManyArgs)
-    ? Shopping_list  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'recipes' ? RecipesGetPayload<S['include'][P]> :
-        P extends 'recipe_ingredients' ? Recipe_ingredientsGetPayload<S['include'][P]> :  never
-  } 
-    : S extends { select: any } & (Shopping_listArgs | Shopping_listFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'recipes' ? RecipesGetPayload<S['select'][P]> :
-        P extends 'recipe_ingredients' ? Recipe_ingredientsGetPayload<S['select'][P]> :  P extends keyof Shopping_list ? Shopping_list[P] : never
-  } 
-      : Shopping_list
-
-
-  type Shopping_listCountArgs = Merge<
-    Omit<Shopping_listFindManyArgs, 'select' | 'include'> & {
-      select?: Shopping_listCountAggregateInputType | true
-    }
-  >
-
-  export interface Shopping_listDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-    /**
-     * Find zero or one Shopping_list that matches the filter.
-     * @param {Shopping_listFindUniqueArgs} args - Arguments to find a Shopping_list
-     * @example
-     * // Get one Shopping_list
-     * const shopping_list = await prisma.shopping_list.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUnique<T extends Shopping_listFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, Shopping_listFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Shopping_list'> extends True ? Prisma__Shopping_listClient<Shopping_listGetPayload<T>> : Prisma__Shopping_listClient<Shopping_listGetPayload<T> | null, null>
-
-    /**
-     * Find one Shopping_list that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {Shopping_listFindUniqueOrThrowArgs} args - Arguments to find a Shopping_list
-     * @example
-     * // Get one Shopping_list
-     * const shopping_list = await prisma.shopping_list.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends Shopping_listFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, Shopping_listFindUniqueOrThrowArgs>
-    ): Prisma__Shopping_listClient<Shopping_listGetPayload<T>>
-
-    /**
-     * Find the first Shopping_list that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {Shopping_listFindFirstArgs} args - Arguments to find a Shopping_list
-     * @example
-     * // Get one Shopping_list
-     * const shopping_list = await prisma.shopping_list.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirst<T extends Shopping_listFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, Shopping_listFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Shopping_list'> extends True ? Prisma__Shopping_listClient<Shopping_listGetPayload<T>> : Prisma__Shopping_listClient<Shopping_listGetPayload<T> | null, null>
-
-    /**
-     * Find the first Shopping_list that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {Shopping_listFindFirstOrThrowArgs} args - Arguments to find a Shopping_list
-     * @example
-     * // Get one Shopping_list
-     * const shopping_list = await prisma.shopping_list.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends Shopping_listFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, Shopping_listFindFirstOrThrowArgs>
-    ): Prisma__Shopping_listClient<Shopping_listGetPayload<T>>
-
-    /**
-     * Find zero or more Shopping_lists that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {Shopping_listFindManyArgs=} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Shopping_lists
-     * const shopping_lists = await prisma.shopping_list.findMany()
-     * 
-     * // Get first 10 Shopping_lists
-     * const shopping_lists = await prisma.shopping_list.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const shopping_listWithIdOnly = await prisma.shopping_list.findMany({ select: { id: true } })
-     * 
-    **/
-    findMany<T extends Shopping_listFindManyArgs>(
-      args?: SelectSubset<T, Shopping_listFindManyArgs>
-    ): PrismaPromise<Array<Shopping_listGetPayload<T>>>
-
-    /**
-     * Create a Shopping_list.
-     * @param {Shopping_listCreateArgs} args - Arguments to create a Shopping_list.
-     * @example
-     * // Create one Shopping_list
-     * const Shopping_list = await prisma.shopping_list.create({
-     *   data: {
-     *     // ... data to create a Shopping_list
-     *   }
-     * })
-     * 
-    **/
-    create<T extends Shopping_listCreateArgs>(
-      args: SelectSubset<T, Shopping_listCreateArgs>
-    ): Prisma__Shopping_listClient<Shopping_listGetPayload<T>>
-
-    /**
-     * Create many Shopping_lists.
-     *     @param {Shopping_listCreateManyArgs} args - Arguments to create many Shopping_lists.
-     *     @example
-     *     // Create many Shopping_lists
-     *     const shopping_list = await prisma.shopping_list.createMany({
-     *       data: {
-     *         // ... provide data here
-     *       }
-     *     })
-     *     
-    **/
-    createMany<T extends Shopping_listCreateManyArgs>(
-      args?: SelectSubset<T, Shopping_listCreateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a Shopping_list.
-     * @param {Shopping_listDeleteArgs} args - Arguments to delete one Shopping_list.
-     * @example
-     * // Delete one Shopping_list
-     * const Shopping_list = await prisma.shopping_list.delete({
-     *   where: {
-     *     // ... filter to delete one Shopping_list
-     *   }
-     * })
-     * 
-    **/
-    delete<T extends Shopping_listDeleteArgs>(
-      args: SelectSubset<T, Shopping_listDeleteArgs>
-    ): Prisma__Shopping_listClient<Shopping_listGetPayload<T>>
-
-    /**
-     * Update one Shopping_list.
-     * @param {Shopping_listUpdateArgs} args - Arguments to update one Shopping_list.
-     * @example
-     * // Update one Shopping_list
-     * const shopping_list = await prisma.shopping_list.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    update<T extends Shopping_listUpdateArgs>(
-      args: SelectSubset<T, Shopping_listUpdateArgs>
-    ): Prisma__Shopping_listClient<Shopping_listGetPayload<T>>
-
-    /**
-     * Delete zero or more Shopping_lists.
-     * @param {Shopping_listDeleteManyArgs} args - Arguments to filter Shopping_lists to delete.
-     * @example
-     * // Delete a few Shopping_lists
-     * const { count } = await prisma.shopping_list.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-    **/
-    deleteMany<T extends Shopping_listDeleteManyArgs>(
-      args?: SelectSubset<T, Shopping_listDeleteManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Shopping_lists.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {Shopping_listUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Shopping_lists
-     * const shopping_list = await prisma.shopping_list.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    updateMany<T extends Shopping_listUpdateManyArgs>(
-      args: SelectSubset<T, Shopping_listUpdateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one Shopping_list.
-     * @param {Shopping_listUpsertArgs} args - Arguments to update or create a Shopping_list.
-     * @example
-     * // Update or create a Shopping_list
-     * const shopping_list = await prisma.shopping_list.upsert({
-     *   create: {
-     *     // ... data to create a Shopping_list
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Shopping_list we want to update
-     *   }
-     * })
-    **/
-    upsert<T extends Shopping_listUpsertArgs>(
-      args: SelectSubset<T, Shopping_listUpsertArgs>
-    ): Prisma__Shopping_listClient<Shopping_listGetPayload<T>>
-
-    /**
-     * Count the number of Shopping_lists.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {Shopping_listCountArgs} args - Arguments to filter Shopping_lists to count.
-     * @example
-     * // Count the number of Shopping_lists
-     * const count = await prisma.shopping_list.count({
-     *   where: {
-     *     // ... the filter for the Shopping_lists we want to count
-     *   }
-     * })
-    **/
-    count<T extends Shopping_listCountArgs>(
-      args?: Subset<T, Shopping_listCountArgs>,
-    ): PrismaPromise<
-      T extends _Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], Shopping_listCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Shopping_list.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {Shopping_listAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends Shopping_listAggregateArgs>(args: Subset<T, Shopping_listAggregateArgs>): PrismaPromise<GetShopping_listAggregateType<T>>
-
-    /**
-     * Group by Shopping_list.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {Shopping_listGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends Shopping_listGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: Shopping_listGroupByArgs['orderBy'] }
-        : { orderBy?: Shopping_listGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends TupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, Shopping_listGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetShopping_listGroupByPayload<T> : PrismaPromise<InputErrors>
-
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for Shopping_list.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export class Prisma__Shopping_listClient<T, Null = never> implements PrismaPromise<T> {
-    [prisma]: true;
-    private readonly _dmmf;
-    private readonly _fetcher;
-    private readonly _queryType;
-    private readonly _rootField;
-    private readonly _clientMethod;
-    private readonly _args;
-    private readonly _dataPath;
-    private readonly _errorFormat;
-    private readonly _measurePerformance?;
-    private _isList;
-    private _callsite;
-    private _requestPromise?;
-    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
-
-    recipes<T extends RecipesArgs= {}>(args?: Subset<T, RecipesArgs>): Prisma__RecipesClient<RecipesGetPayload<T> | Null>;
-
-    recipe_ingredients<T extends Recipe_ingredientsArgs= {}>(args?: Subset<T, Recipe_ingredientsArgs>): Prisma__Recipe_ingredientsClient<Recipe_ingredientsGetPayload<T> | Null>;
-
-    private get _document();
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
-  }
-
-
-
-  // Custom InputTypes
-
-  /**
-   * Shopping_list base type for findUnique actions
-   */
-  export type Shopping_listFindUniqueArgsBase = {
-    /**
-     * Select specific fields to fetch from the Shopping_list
-     * 
-    **/
-    select?: Shopping_listSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: Shopping_listInclude | null
-    /**
-     * Filter, which Shopping_list to fetch.
-     * 
-    **/
-    where: Shopping_listWhereUniqueInput
-  }
-
-  /**
-   * Shopping_list findUnique
-   */
-  export interface Shopping_listFindUniqueArgs extends Shopping_listFindUniqueArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * Shopping_list findUniqueOrThrow
-   */
-  export type Shopping_listFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the Shopping_list
-     * 
-    **/
-    select?: Shopping_listSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: Shopping_listInclude | null
-    /**
-     * Filter, which Shopping_list to fetch.
-     * 
-    **/
-    where: Shopping_listWhereUniqueInput
-  }
-
-
-  /**
-   * Shopping_list base type for findFirst actions
-   */
-  export type Shopping_listFindFirstArgsBase = {
-    /**
-     * Select specific fields to fetch from the Shopping_list
-     * 
-    **/
-    select?: Shopping_listSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: Shopping_listInclude | null
-    /**
-     * Filter, which Shopping_list to fetch.
-     * 
-    **/
-    where?: Shopping_listWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Shopping_lists to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<Shopping_listOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Shopping_lists.
-     * 
-    **/
-    cursor?: Shopping_listWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Shopping_lists from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Shopping_lists.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Shopping_lists.
-     * 
-    **/
-    distinct?: Enumerable<Shopping_listScalarFieldEnum>
-  }
-
-  /**
-   * Shopping_list findFirst
-   */
-  export interface Shopping_listFindFirstArgs extends Shopping_listFindFirstArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * Shopping_list findFirstOrThrow
-   */
-  export type Shopping_listFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the Shopping_list
-     * 
-    **/
-    select?: Shopping_listSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: Shopping_listInclude | null
-    /**
-     * Filter, which Shopping_list to fetch.
-     * 
-    **/
-    where?: Shopping_listWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Shopping_lists to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<Shopping_listOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Shopping_lists.
-     * 
-    **/
-    cursor?: Shopping_listWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Shopping_lists from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Shopping_lists.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Shopping_lists.
-     * 
-    **/
-    distinct?: Enumerable<Shopping_listScalarFieldEnum>
-  }
-
-
-  /**
-   * Shopping_list findMany
-   */
-  export type Shopping_listFindManyArgs = {
-    /**
-     * Select specific fields to fetch from the Shopping_list
-     * 
-    **/
-    select?: Shopping_listSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: Shopping_listInclude | null
-    /**
-     * Filter, which Shopping_lists to fetch.
-     * 
-    **/
-    where?: Shopping_listWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Shopping_lists to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<Shopping_listOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing Shopping_lists.
-     * 
-    **/
-    cursor?: Shopping_listWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Shopping_lists from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Shopping_lists.
-     * 
-    **/
-    skip?: number
-    distinct?: Enumerable<Shopping_listScalarFieldEnum>
-  }
-
-
-  /**
-   * Shopping_list create
-   */
-  export type Shopping_listCreateArgs = {
-    /**
-     * Select specific fields to fetch from the Shopping_list
-     * 
-    **/
-    select?: Shopping_listSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: Shopping_listInclude | null
-    /**
-     * The data needed to create a Shopping_list.
-     * 
-    **/
-    data: XOR<Shopping_listCreateInput, Shopping_listUncheckedCreateInput>
-  }
-
-
-  /**
-   * Shopping_list createMany
-   */
-  export type Shopping_listCreateManyArgs = {
-    /**
-     * The data used to create many Shopping_lists.
-     * 
-    **/
-    data: Enumerable<Shopping_listCreateManyInput>
-    skipDuplicates?: boolean
-  }
-
-
-  /**
-   * Shopping_list update
-   */
-  export type Shopping_listUpdateArgs = {
-    /**
-     * Select specific fields to fetch from the Shopping_list
-     * 
-    **/
-    select?: Shopping_listSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: Shopping_listInclude | null
-    /**
-     * The data needed to update a Shopping_list.
-     * 
-    **/
-    data: XOR<Shopping_listUpdateInput, Shopping_listUncheckedUpdateInput>
-    /**
-     * Choose, which Shopping_list to update.
-     * 
-    **/
-    where: Shopping_listWhereUniqueInput
-  }
-
-
-  /**
-   * Shopping_list updateMany
-   */
-  export type Shopping_listUpdateManyArgs = {
-    /**
-     * The data used to update Shopping_lists.
-     * 
-    **/
-    data: XOR<Shopping_listUpdateManyMutationInput, Shopping_listUncheckedUpdateManyInput>
-    /**
-     * Filter which Shopping_lists to update
-     * 
-    **/
-    where?: Shopping_listWhereInput
-  }
-
-
-  /**
-   * Shopping_list upsert
-   */
-  export type Shopping_listUpsertArgs = {
-    /**
-     * Select specific fields to fetch from the Shopping_list
-     * 
-    **/
-    select?: Shopping_listSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: Shopping_listInclude | null
-    /**
-     * The filter to search for the Shopping_list to update in case it exists.
-     * 
-    **/
-    where: Shopping_listWhereUniqueInput
-    /**
-     * In case the Shopping_list found by the `where` argument doesn't exist, create a new Shopping_list with this data.
-     * 
-    **/
-    create: XOR<Shopping_listCreateInput, Shopping_listUncheckedCreateInput>
-    /**
-     * In case the Shopping_list was found with the provided `where` argument, update it with this data.
-     * 
-    **/
-    update: XOR<Shopping_listUpdateInput, Shopping_listUncheckedUpdateInput>
-  }
-
-
-  /**
-   * Shopping_list delete
-   */
-  export type Shopping_listDeleteArgs = {
-    /**
-     * Select specific fields to fetch from the Shopping_list
-     * 
-    **/
-    select?: Shopping_listSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: Shopping_listInclude | null
-    /**
-     * Filter which Shopping_list to delete.
-     * 
-    **/
-    where: Shopping_listWhereUniqueInput
-  }
-
-
-  /**
-   * Shopping_list deleteMany
-   */
-  export type Shopping_listDeleteManyArgs = {
-    /**
-     * Filter which Shopping_lists to delete
-     * 
-    **/
-    where?: Shopping_listWhereInput
-  }
-
-
-  /**
-   * Shopping_list without action
-   */
-  export type Shopping_listArgs = {
-    /**
-     * Select specific fields to fetch from the Shopping_list
-     * 
-    **/
-    select?: Shopping_listSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: Shopping_listInclude | null
   }
 
 
@@ -9784,17 +8634,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type RecipesScalarFieldEnum = (typeof RecipesScalarFieldEnum)[keyof typeof RecipesScalarFieldEnum]
 
 
-  export const Shopping_listScalarFieldEnum: {
-    id: 'id',
-    recipe_id: 'recipe_id',
-    recipe_ingredient_id: 'recipe_ingredient_id',
-    purchased: 'purchased',
-    created_at: 'created_at'
-  };
-
-  export type Shopping_listScalarFieldEnum = (typeof Shopping_listScalarFieldEnum)[keyof typeof Shopping_listScalarFieldEnum]
-
-
   export const UsersScalarFieldEnum: {
     id: 'id',
     name: 'name',
@@ -10295,7 +9134,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     grocery_section?: Enumgrocery_sectionFilter<"Recipe_ingredients"> | grocery_section
     recipe_id?: UuidFilter<"Recipe_ingredients"> | string
     recipes?: XOR<RecipesRelationFilter, RecipesWhereInput>
-    shopping_list?: Shopping_listListRelationFilter
   }
 
   export type Recipe_ingredientsOrderByWithRelationInput = {
@@ -10306,7 +9144,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     grocery_section?: SortOrder
     recipe_id?: SortOrder
     recipes?: RecipesOrderByWithRelationInput
-    shopping_list?: Shopping_listOrderByRelationAggregateInput
   }
 
   export type Recipe_ingredientsWhereUniqueInput = Prisma.AtLeast<{
@@ -10320,7 +9157,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     grocery_section?: Enumgrocery_sectionFilter<"Recipe_ingredients"> | grocery_section
     recipe_id?: UuidFilter<"Recipe_ingredients"> | string
     recipes?: XOR<RecipesRelationFilter, RecipesWhereInput>
-    shopping_list?: Shopping_listListRelationFilter
   }, "id">
 
   export type Recipe_ingredientsOrderByWithAggregationInput = {
@@ -10360,7 +9196,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     updated_at?: DateTimeFilter<"Recipes"> | Date | string
     recipe_ingredients?: Recipe_ingredientsListRelationFilter
     users?: XOR<UsersRelationFilter, UsersWhereInput>
-    shopping_list?: Shopping_listListRelationFilter
   }
 
   export type RecipesOrderByWithRelationInput = {
@@ -10373,7 +9208,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     updated_at?: SortOrder
     recipe_ingredients?: Recipe_ingredientsOrderByRelationAggregateInput
     users?: UsersOrderByWithRelationInput
-    shopping_list?: Shopping_listOrderByRelationAggregateInput
   }
 
   export type RecipesWhereUniqueInput = Prisma.AtLeast<{
@@ -10389,7 +9223,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     updated_at?: DateTimeFilter<"Recipes"> | Date | string
     recipe_ingredients?: Recipe_ingredientsListRelationFilter
     users?: XOR<UsersRelationFilter, UsersWhereInput>
-    shopping_list?: Shopping_listListRelationFilter
   }, "id">
 
   export type RecipesOrderByWithAggregationInput = {
@@ -10416,64 +9249,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id?: StringWithAggregatesFilter<"Recipes"> | string
     created_at?: DateTimeWithAggregatesFilter<"Recipes"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"Recipes"> | Date | string
-  }
-
-  export type Shopping_listWhereInput = {
-    AND?: Enumerable<Shopping_listWhereInput>
-    OR?: Enumerable<Shopping_listWhereInput>
-    NOT?: Enumerable<Shopping_listWhereInput>
-    id?: UuidFilter<"Shopping_list"> | string
-    recipe_id?: UuidFilter<"Shopping_list"> | string
-    recipe_ingredient_id?: UuidFilter<"Shopping_list"> | string
-    purchased?: BoolFilter<"Shopping_list"> | boolean
-    created_at?: DateTimeFilter<"Shopping_list"> | Date | string
-    recipes?: XOR<RecipesRelationFilter, RecipesWhereInput>
-    recipe_ingredients?: XOR<Recipe_ingredientsRelationFilter, Recipe_ingredientsWhereInput>
-  }
-
-  export type Shopping_listOrderByWithRelationInput = {
-    id?: SortOrder
-    recipe_id?: SortOrder
-    recipe_ingredient_id?: SortOrder
-    purchased?: SortOrder
-    created_at?: SortOrder
-    recipes?: RecipesOrderByWithRelationInput
-    recipe_ingredients?: Recipe_ingredientsOrderByWithRelationInput
-  }
-
-  export type Shopping_listWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    AND?: Enumerable<Shopping_listWhereInput>
-    OR?: Enumerable<Shopping_listWhereInput>
-    NOT?: Enumerable<Shopping_listWhereInput>
-    recipe_id?: UuidFilter<"Shopping_list"> | string
-    recipe_ingredient_id?: UuidFilter<"Shopping_list"> | string
-    purchased?: BoolFilter<"Shopping_list"> | boolean
-    created_at?: DateTimeFilter<"Shopping_list"> | Date | string
-    recipes?: XOR<RecipesRelationFilter, RecipesWhereInput>
-    recipe_ingredients?: XOR<Recipe_ingredientsRelationFilter, Recipe_ingredientsWhereInput>
-  }, "id">
-
-  export type Shopping_listOrderByWithAggregationInput = {
-    id?: SortOrder
-    recipe_id?: SortOrder
-    recipe_ingredient_id?: SortOrder
-    purchased?: SortOrder
-    created_at?: SortOrder
-    _count?: Shopping_listCountOrderByAggregateInput
-    _max?: Shopping_listMaxOrderByAggregateInput
-    _min?: Shopping_listMinOrderByAggregateInput
-  }
-
-  export type Shopping_listScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<Shopping_listScalarWhereWithAggregatesInput>
-    OR?: Enumerable<Shopping_listScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<Shopping_listScalarWhereWithAggregatesInput>
-    id?: UuidWithAggregatesFilter<"Shopping_list"> | string
-    recipe_id?: UuidWithAggregatesFilter<"Shopping_list"> | string
-    recipe_ingredient_id?: UuidWithAggregatesFilter<"Shopping_list"> | string
-    purchased?: BoolWithAggregatesFilter<"Shopping_list"> | boolean
-    created_at?: DateTimeWithAggregatesFilter<"Shopping_list"> | Date | string
   }
 
   export type UsersWhereInput = {
@@ -10867,7 +9642,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding: string
     grocery_section: grocery_section
     recipes: RecipesCreateNestedOneWithoutRecipe_ingredientsInput
-    shopping_list?: Shopping_listCreateNestedManyWithoutRecipe_ingredientsInput
   }
 
   export type Recipe_ingredientsUncheckedCreateInput = {
@@ -10877,7 +9651,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding: string
     grocery_section: grocery_section
     recipe_id: string
-    shopping_list?: Shopping_listUncheckedCreateNestedManyWithoutRecipe_ingredientsInput
   }
 
   export type Recipe_ingredientsUpdateInput = {
@@ -10887,7 +9660,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: StringFieldUpdateOperationsInput | string
     grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
     recipes?: RecipesUpdateOneRequiredWithoutRecipe_ingredientsNestedInput
-    shopping_list?: Shopping_listUpdateManyWithoutRecipe_ingredientsNestedInput
   }
 
   export type Recipe_ingredientsUncheckedUpdateInput = {
@@ -10897,7 +9669,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: StringFieldUpdateOperationsInput | string
     grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
     recipe_id?: StringFieldUpdateOperationsInput | string
-    shopping_list?: Shopping_listUncheckedUpdateManyWithoutRecipe_ingredientsNestedInput
   }
 
   export type Recipe_ingredientsCreateManyInput = {
@@ -10935,7 +9706,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     updated_at: Date | string
     recipe_ingredients?: Recipe_ingredientsCreateNestedManyWithoutRecipesInput
     users: UsersCreateNestedOneWithoutRecipesInput
-    shopping_list?: Shopping_listCreateNestedManyWithoutRecipesInput
   }
 
   export type RecipesUncheckedCreateInput = {
@@ -10947,7 +9717,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     created_at: Date | string
     updated_at: Date | string
     recipe_ingredients?: Recipe_ingredientsUncheckedCreateNestedManyWithoutRecipesInput
-    shopping_list?: Shopping_listUncheckedCreateNestedManyWithoutRecipesInput
   }
 
   export type RecipesUpdateInput = {
@@ -10959,7 +9728,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     recipe_ingredients?: Recipe_ingredientsUpdateManyWithoutRecipesNestedInput
     users?: UsersUpdateOneRequiredWithoutRecipesNestedInput
-    shopping_list?: Shopping_listUpdateManyWithoutRecipesNestedInput
   }
 
   export type RecipesUncheckedUpdateInput = {
@@ -10971,7 +9739,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     recipe_ingredients?: Recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput
-    shopping_list?: Shopping_listUncheckedUpdateManyWithoutRecipesNestedInput
   }
 
   export type RecipesCreateManyInput = {
@@ -11001,60 +9768,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type Shopping_listCreateInput = {
-    id: string
-    purchased: boolean
-    created_at: Date | string
-    recipes: RecipesCreateNestedOneWithoutShopping_listInput
-    recipe_ingredients: Recipe_ingredientsCreateNestedOneWithoutShopping_listInput
-  }
-
-  export type Shopping_listUncheckedCreateInput = {
-    id: string
-    recipe_id: string
-    recipe_ingredient_id: string
-    purchased: boolean
-    created_at: Date | string
-  }
-
-  export type Shopping_listUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    purchased?: BoolFieldUpdateOperationsInput | boolean
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    recipes?: RecipesUpdateOneRequiredWithoutShopping_listNestedInput
-    recipe_ingredients?: Recipe_ingredientsUpdateOneRequiredWithoutShopping_listNestedInput
-  }
-
-  export type Shopping_listUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    recipe_id?: StringFieldUpdateOperationsInput | string
-    recipe_ingredient_id?: StringFieldUpdateOperationsInput | string
-    purchased?: BoolFieldUpdateOperationsInput | boolean
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type Shopping_listCreateManyInput = {
-    id: string
-    recipe_id: string
-    recipe_ingredient_id: string
-    purchased: boolean
-    created_at: Date | string
-  }
-
-  export type Shopping_listUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    purchased?: BoolFieldUpdateOperationsInput | boolean
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type Shopping_listUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    recipe_id?: StringFieldUpdateOperationsInput | string
-    recipe_ingredient_id?: StringFieldUpdateOperationsInput | string
-    purchased?: BoolFieldUpdateOperationsInput | boolean
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UsersCreateInput = {
@@ -11661,16 +10374,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     isNot?: RecipesWhereInput
   }
 
-  export type Shopping_listListRelationFilter = {
-    every?: Shopping_listWhereInput
-    some?: Shopping_listWhereInput
-    none?: Shopping_listWhereInput
-  }
-
-  export type Shopping_listOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
   export type Recipe_ingredientsCountOrderByAggregateInput = {
     id?: SortOrder
     listing?: SortOrder
@@ -11736,35 +10439,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
-  }
-
-  export type Recipe_ingredientsRelationFilter = {
-    is?: Recipe_ingredientsWhereInput
-    isNot?: Recipe_ingredientsWhereInput
-  }
-
-  export type Shopping_listCountOrderByAggregateInput = {
-    id?: SortOrder
-    recipe_id?: SortOrder
-    recipe_ingredient_id?: SortOrder
-    purchased?: SortOrder
-    created_at?: SortOrder
-  }
-
-  export type Shopping_listMaxOrderByAggregateInput = {
-    id?: SortOrder
-    recipe_id?: SortOrder
-    recipe_ingredient_id?: SortOrder
-    purchased?: SortOrder
-    created_at?: SortOrder
-  }
-
-  export type Shopping_listMinOrderByAggregateInput = {
-    id?: SortOrder
-    recipe_id?: SortOrder
-    recipe_ingredient_id?: SortOrder
-    purchased?: SortOrder
-    created_at?: SortOrder
   }
 
   export type Ingredients_photo_uploadsListRelationFilter = {
@@ -12005,54 +10679,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     connect?: RecipesWhereUniqueInput
   }
 
-  export type Shopping_listCreateNestedManyWithoutRecipe_ingredientsInput = {
-    create?: XOR<Enumerable<Shopping_listCreateWithoutRecipe_ingredientsInput>, Enumerable<Shopping_listUncheckedCreateWithoutRecipe_ingredientsInput>>
-    connectOrCreate?: Enumerable<Shopping_listCreateOrConnectWithoutRecipe_ingredientsInput>
-    createMany?: Shopping_listCreateManyRecipe_ingredientsInputEnvelope
-    connect?: Enumerable<Shopping_listWhereUniqueInput>
-  }
-
-  export type Shopping_listUncheckedCreateNestedManyWithoutRecipe_ingredientsInput = {
-    create?: XOR<Enumerable<Shopping_listCreateWithoutRecipe_ingredientsInput>, Enumerable<Shopping_listUncheckedCreateWithoutRecipe_ingredientsInput>>
-    connectOrCreate?: Enumerable<Shopping_listCreateOrConnectWithoutRecipe_ingredientsInput>
-    createMany?: Shopping_listCreateManyRecipe_ingredientsInputEnvelope
-    connect?: Enumerable<Shopping_listWhereUniqueInput>
-  }
-
   export type RecipesUpdateOneRequiredWithoutRecipe_ingredientsNestedInput = {
     create?: XOR<RecipesCreateWithoutRecipe_ingredientsInput, RecipesUncheckedCreateWithoutRecipe_ingredientsInput>
     connectOrCreate?: RecipesCreateOrConnectWithoutRecipe_ingredientsInput
     upsert?: RecipesUpsertWithoutRecipe_ingredientsInput
     connect?: RecipesWhereUniqueInput
     update?: XOR<XOR<RecipesUpdateToOneWithWhereWithoutRecipe_ingredientsInput, RecipesUpdateWithoutRecipe_ingredientsInput>, RecipesUncheckedUpdateWithoutRecipe_ingredientsInput>
-  }
-
-  export type Shopping_listUpdateManyWithoutRecipe_ingredientsNestedInput = {
-    create?: XOR<Enumerable<Shopping_listCreateWithoutRecipe_ingredientsInput>, Enumerable<Shopping_listUncheckedCreateWithoutRecipe_ingredientsInput>>
-    connectOrCreate?: Enumerable<Shopping_listCreateOrConnectWithoutRecipe_ingredientsInput>
-    upsert?: Enumerable<Shopping_listUpsertWithWhereUniqueWithoutRecipe_ingredientsInput>
-    createMany?: Shopping_listCreateManyRecipe_ingredientsInputEnvelope
-    set?: Enumerable<Shopping_listWhereUniqueInput>
-    disconnect?: Enumerable<Shopping_listWhereUniqueInput>
-    delete?: Enumerable<Shopping_listWhereUniqueInput>
-    connect?: Enumerable<Shopping_listWhereUniqueInput>
-    update?: Enumerable<Shopping_listUpdateWithWhereUniqueWithoutRecipe_ingredientsInput>
-    updateMany?: Enumerable<Shopping_listUpdateManyWithWhereWithoutRecipe_ingredientsInput>
-    deleteMany?: Enumerable<Shopping_listScalarWhereInput>
-  }
-
-  export type Shopping_listUncheckedUpdateManyWithoutRecipe_ingredientsNestedInput = {
-    create?: XOR<Enumerable<Shopping_listCreateWithoutRecipe_ingredientsInput>, Enumerable<Shopping_listUncheckedCreateWithoutRecipe_ingredientsInput>>
-    connectOrCreate?: Enumerable<Shopping_listCreateOrConnectWithoutRecipe_ingredientsInput>
-    upsert?: Enumerable<Shopping_listUpsertWithWhereUniqueWithoutRecipe_ingredientsInput>
-    createMany?: Shopping_listCreateManyRecipe_ingredientsInputEnvelope
-    set?: Enumerable<Shopping_listWhereUniqueInput>
-    disconnect?: Enumerable<Shopping_listWhereUniqueInput>
-    delete?: Enumerable<Shopping_listWhereUniqueInput>
-    connect?: Enumerable<Shopping_listWhereUniqueInput>
-    update?: Enumerable<Shopping_listUpdateWithWhereUniqueWithoutRecipe_ingredientsInput>
-    updateMany?: Enumerable<Shopping_listUpdateManyWithWhereWithoutRecipe_ingredientsInput>
-    deleteMany?: Enumerable<Shopping_listScalarWhereInput>
   }
 
   export type Recipe_ingredientsCreateNestedManyWithoutRecipesInput = {
@@ -12068,25 +10700,11 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     connect?: UsersWhereUniqueInput
   }
 
-  export type Shopping_listCreateNestedManyWithoutRecipesInput = {
-    create?: XOR<Enumerable<Shopping_listCreateWithoutRecipesInput>, Enumerable<Shopping_listUncheckedCreateWithoutRecipesInput>>
-    connectOrCreate?: Enumerable<Shopping_listCreateOrConnectWithoutRecipesInput>
-    createMany?: Shopping_listCreateManyRecipesInputEnvelope
-    connect?: Enumerable<Shopping_listWhereUniqueInput>
-  }
-
   export type Recipe_ingredientsUncheckedCreateNestedManyWithoutRecipesInput = {
     create?: XOR<Enumerable<Recipe_ingredientsCreateWithoutRecipesInput>, Enumerable<Recipe_ingredientsUncheckedCreateWithoutRecipesInput>>
     connectOrCreate?: Enumerable<Recipe_ingredientsCreateOrConnectWithoutRecipesInput>
     createMany?: Recipe_ingredientsCreateManyRecipesInputEnvelope
     connect?: Enumerable<Recipe_ingredientsWhereUniqueInput>
-  }
-
-  export type Shopping_listUncheckedCreateNestedManyWithoutRecipesInput = {
-    create?: XOR<Enumerable<Shopping_listCreateWithoutRecipesInput>, Enumerable<Shopping_listUncheckedCreateWithoutRecipesInput>>
-    connectOrCreate?: Enumerable<Shopping_listCreateOrConnectWithoutRecipesInput>
-    createMany?: Shopping_listCreateManyRecipesInputEnvelope
-    connect?: Enumerable<Shopping_listWhereUniqueInput>
   }
 
   export type Recipe_ingredientsUpdateManyWithoutRecipesNestedInput = {
@@ -12111,20 +10729,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     update?: XOR<XOR<UsersUpdateToOneWithWhereWithoutRecipesInput, UsersUpdateWithoutRecipesInput>, UsersUncheckedUpdateWithoutRecipesInput>
   }
 
-  export type Shopping_listUpdateManyWithoutRecipesNestedInput = {
-    create?: XOR<Enumerable<Shopping_listCreateWithoutRecipesInput>, Enumerable<Shopping_listUncheckedCreateWithoutRecipesInput>>
-    connectOrCreate?: Enumerable<Shopping_listCreateOrConnectWithoutRecipesInput>
-    upsert?: Enumerable<Shopping_listUpsertWithWhereUniqueWithoutRecipesInput>
-    createMany?: Shopping_listCreateManyRecipesInputEnvelope
-    set?: Enumerable<Shopping_listWhereUniqueInput>
-    disconnect?: Enumerable<Shopping_listWhereUniqueInput>
-    delete?: Enumerable<Shopping_listWhereUniqueInput>
-    connect?: Enumerable<Shopping_listWhereUniqueInput>
-    update?: Enumerable<Shopping_listUpdateWithWhereUniqueWithoutRecipesInput>
-    updateMany?: Enumerable<Shopping_listUpdateManyWithWhereWithoutRecipesInput>
-    deleteMany?: Enumerable<Shopping_listScalarWhereInput>
-  }
-
   export type Recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput = {
     create?: XOR<Enumerable<Recipe_ingredientsCreateWithoutRecipesInput>, Enumerable<Recipe_ingredientsUncheckedCreateWithoutRecipesInput>>
     connectOrCreate?: Enumerable<Recipe_ingredientsCreateOrConnectWithoutRecipesInput>
@@ -12137,48 +10741,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     update?: Enumerable<Recipe_ingredientsUpdateWithWhereUniqueWithoutRecipesInput>
     updateMany?: Enumerable<Recipe_ingredientsUpdateManyWithWhereWithoutRecipesInput>
     deleteMany?: Enumerable<Recipe_ingredientsScalarWhereInput>
-  }
-
-  export type Shopping_listUncheckedUpdateManyWithoutRecipesNestedInput = {
-    create?: XOR<Enumerable<Shopping_listCreateWithoutRecipesInput>, Enumerable<Shopping_listUncheckedCreateWithoutRecipesInput>>
-    connectOrCreate?: Enumerable<Shopping_listCreateOrConnectWithoutRecipesInput>
-    upsert?: Enumerable<Shopping_listUpsertWithWhereUniqueWithoutRecipesInput>
-    createMany?: Shopping_listCreateManyRecipesInputEnvelope
-    set?: Enumerable<Shopping_listWhereUniqueInput>
-    disconnect?: Enumerable<Shopping_listWhereUniqueInput>
-    delete?: Enumerable<Shopping_listWhereUniqueInput>
-    connect?: Enumerable<Shopping_listWhereUniqueInput>
-    update?: Enumerable<Shopping_listUpdateWithWhereUniqueWithoutRecipesInput>
-    updateMany?: Enumerable<Shopping_listUpdateManyWithWhereWithoutRecipesInput>
-    deleteMany?: Enumerable<Shopping_listScalarWhereInput>
-  }
-
-  export type RecipesCreateNestedOneWithoutShopping_listInput = {
-    create?: XOR<RecipesCreateWithoutShopping_listInput, RecipesUncheckedCreateWithoutShopping_listInput>
-    connectOrCreate?: RecipesCreateOrConnectWithoutShopping_listInput
-    connect?: RecipesWhereUniqueInput
-  }
-
-  export type Recipe_ingredientsCreateNestedOneWithoutShopping_listInput = {
-    create?: XOR<Recipe_ingredientsCreateWithoutShopping_listInput, Recipe_ingredientsUncheckedCreateWithoutShopping_listInput>
-    connectOrCreate?: Recipe_ingredientsCreateOrConnectWithoutShopping_listInput
-    connect?: Recipe_ingredientsWhereUniqueInput
-  }
-
-  export type RecipesUpdateOneRequiredWithoutShopping_listNestedInput = {
-    create?: XOR<RecipesCreateWithoutShopping_listInput, RecipesUncheckedCreateWithoutShopping_listInput>
-    connectOrCreate?: RecipesCreateOrConnectWithoutShopping_listInput
-    upsert?: RecipesUpsertWithoutShopping_listInput
-    connect?: RecipesWhereUniqueInput
-    update?: XOR<XOR<RecipesUpdateToOneWithWhereWithoutShopping_listInput, RecipesUpdateWithoutShopping_listInput>, RecipesUncheckedUpdateWithoutShopping_listInput>
-  }
-
-  export type Recipe_ingredientsUpdateOneRequiredWithoutShopping_listNestedInput = {
-    create?: XOR<Recipe_ingredientsCreateWithoutShopping_listInput, Recipe_ingredientsUncheckedCreateWithoutShopping_listInput>
-    connectOrCreate?: Recipe_ingredientsCreateOrConnectWithoutShopping_listInput
-    upsert?: Recipe_ingredientsUpsertWithoutShopping_listInput
-    connect?: Recipe_ingredientsWhereUniqueInput
-    update?: XOR<XOR<Recipe_ingredientsUpdateToOneWithWhereWithoutShopping_listInput, Recipe_ingredientsUpdateWithoutShopping_listInput>, Recipe_ingredientsUncheckedUpdateWithoutShopping_listInput>
   }
 
   export type Ingredient_eventsCreateNestedManyWithoutUsersInput = {
@@ -13023,7 +11585,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     created_at: Date | string
     updated_at: Date | string
     users: UsersCreateNestedOneWithoutRecipesInput
-    shopping_list?: Shopping_listCreateNestedManyWithoutRecipesInput
   }
 
   export type RecipesUncheckedCreateWithoutRecipe_ingredientsInput = {
@@ -13034,36 +11595,11 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id: string
     created_at: Date | string
     updated_at: Date | string
-    shopping_list?: Shopping_listUncheckedCreateNestedManyWithoutRecipesInput
   }
 
   export type RecipesCreateOrConnectWithoutRecipe_ingredientsInput = {
     where: RecipesWhereUniqueInput
     create: XOR<RecipesCreateWithoutRecipe_ingredientsInput, RecipesUncheckedCreateWithoutRecipe_ingredientsInput>
-  }
-
-  export type Shopping_listCreateWithoutRecipe_ingredientsInput = {
-    id: string
-    purchased: boolean
-    created_at: Date | string
-    recipes: RecipesCreateNestedOneWithoutShopping_listInput
-  }
-
-  export type Shopping_listUncheckedCreateWithoutRecipe_ingredientsInput = {
-    id: string
-    recipe_id: string
-    purchased: boolean
-    created_at: Date | string
-  }
-
-  export type Shopping_listCreateOrConnectWithoutRecipe_ingredientsInput = {
-    where: Shopping_listWhereUniqueInput
-    create: XOR<Shopping_listCreateWithoutRecipe_ingredientsInput, Shopping_listUncheckedCreateWithoutRecipe_ingredientsInput>
-  }
-
-  export type Shopping_listCreateManyRecipe_ingredientsInputEnvelope = {
-    data: Enumerable<Shopping_listCreateManyRecipe_ingredientsInput>
-    skipDuplicates?: boolean
   }
 
   export type RecipesUpsertWithoutRecipe_ingredientsInput = {
@@ -13085,7 +11621,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UsersUpdateOneRequiredWithoutRecipesNestedInput
-    shopping_list?: Shopping_listUpdateManyWithoutRecipesNestedInput
   }
 
   export type RecipesUncheckedUpdateWithoutRecipe_ingredientsInput = {
@@ -13096,34 +11631,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     user_id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    shopping_list?: Shopping_listUncheckedUpdateManyWithoutRecipesNestedInput
-  }
-
-  export type Shopping_listUpsertWithWhereUniqueWithoutRecipe_ingredientsInput = {
-    where: Shopping_listWhereUniqueInput
-    update: XOR<Shopping_listUpdateWithoutRecipe_ingredientsInput, Shopping_listUncheckedUpdateWithoutRecipe_ingredientsInput>
-    create: XOR<Shopping_listCreateWithoutRecipe_ingredientsInput, Shopping_listUncheckedCreateWithoutRecipe_ingredientsInput>
-  }
-
-  export type Shopping_listUpdateWithWhereUniqueWithoutRecipe_ingredientsInput = {
-    where: Shopping_listWhereUniqueInput
-    data: XOR<Shopping_listUpdateWithoutRecipe_ingredientsInput, Shopping_listUncheckedUpdateWithoutRecipe_ingredientsInput>
-  }
-
-  export type Shopping_listUpdateManyWithWhereWithoutRecipe_ingredientsInput = {
-    where: Shopping_listScalarWhereInput
-    data: XOR<Shopping_listUpdateManyMutationInput, Shopping_listUncheckedUpdateManyWithoutRecipe_ingredientsInput>
-  }
-
-  export type Shopping_listScalarWhereInput = {
-    AND?: Enumerable<Shopping_listScalarWhereInput>
-    OR?: Enumerable<Shopping_listScalarWhereInput>
-    NOT?: Enumerable<Shopping_listScalarWhereInput>
-    id?: UuidFilter<"Shopping_list"> | string
-    recipe_id?: UuidFilter<"Shopping_list"> | string
-    recipe_ingredient_id?: UuidFilter<"Shopping_list"> | string
-    purchased?: BoolFilter<"Shopping_list"> | boolean
-    created_at?: DateTimeFilter<"Shopping_list"> | Date | string
   }
 
   export type Recipe_ingredientsCreateWithoutRecipesInput = {
@@ -13132,7 +11639,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     extracted_name: string
     embedding: string
     grocery_section: grocery_section
-    shopping_list?: Shopping_listCreateNestedManyWithoutRecipe_ingredientsInput
   }
 
   export type Recipe_ingredientsUncheckedCreateWithoutRecipesInput = {
@@ -13141,7 +11647,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     extracted_name: string
     embedding: string
     grocery_section: grocery_section
-    shopping_list?: Shopping_listUncheckedCreateNestedManyWithoutRecipe_ingredientsInput
   }
 
   export type Recipe_ingredientsCreateOrConnectWithoutRecipesInput = {
@@ -13173,30 +11678,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type UsersCreateOrConnectWithoutRecipesInput = {
     where: UsersWhereUniqueInput
     create: XOR<UsersCreateWithoutRecipesInput, UsersUncheckedCreateWithoutRecipesInput>
-  }
-
-  export type Shopping_listCreateWithoutRecipesInput = {
-    id: string
-    purchased: boolean
-    created_at: Date | string
-    recipe_ingredients: Recipe_ingredientsCreateNestedOneWithoutShopping_listInput
-  }
-
-  export type Shopping_listUncheckedCreateWithoutRecipesInput = {
-    id: string
-    recipe_ingredient_id: string
-    purchased: boolean
-    created_at: Date | string
-  }
-
-  export type Shopping_listCreateOrConnectWithoutRecipesInput = {
-    where: Shopping_listWhereUniqueInput
-    create: XOR<Shopping_listCreateWithoutRecipesInput, Shopping_listUncheckedCreateWithoutRecipesInput>
-  }
-
-  export type Shopping_listCreateManyRecipesInputEnvelope = {
-    data: Enumerable<Shopping_listCreateManyRecipesInput>
-    skipDuplicates?: boolean
   }
 
   export type Recipe_ingredientsUpsertWithWhereUniqueWithoutRecipesInput = {
@@ -13252,134 +11733,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     ingredient_events?: Ingredient_eventsUncheckedUpdateManyWithoutUsersNestedInput
     ingredients_photo_uploads?: Ingredients_photo_uploadsUncheckedUpdateManyWithoutUsersNestedInput
-  }
-
-  export type Shopping_listUpsertWithWhereUniqueWithoutRecipesInput = {
-    where: Shopping_listWhereUniqueInput
-    update: XOR<Shopping_listUpdateWithoutRecipesInput, Shopping_listUncheckedUpdateWithoutRecipesInput>
-    create: XOR<Shopping_listCreateWithoutRecipesInput, Shopping_listUncheckedCreateWithoutRecipesInput>
-  }
-
-  export type Shopping_listUpdateWithWhereUniqueWithoutRecipesInput = {
-    where: Shopping_listWhereUniqueInput
-    data: XOR<Shopping_listUpdateWithoutRecipesInput, Shopping_listUncheckedUpdateWithoutRecipesInput>
-  }
-
-  export type Shopping_listUpdateManyWithWhereWithoutRecipesInput = {
-    where: Shopping_listScalarWhereInput
-    data: XOR<Shopping_listUpdateManyMutationInput, Shopping_listUncheckedUpdateManyWithoutRecipesInput>
-  }
-
-  export type RecipesCreateWithoutShopping_listInput = {
-    id: string
-    name: string
-    description: string
-    url: string
-    created_at: Date | string
-    updated_at: Date | string
-    recipe_ingredients?: Recipe_ingredientsCreateNestedManyWithoutRecipesInput
-    users: UsersCreateNestedOneWithoutRecipesInput
-  }
-
-  export type RecipesUncheckedCreateWithoutShopping_listInput = {
-    id: string
-    name: string
-    description: string
-    url: string
-    user_id: string
-    created_at: Date | string
-    updated_at: Date | string
-    recipe_ingredients?: Recipe_ingredientsUncheckedCreateNestedManyWithoutRecipesInput
-  }
-
-  export type RecipesCreateOrConnectWithoutShopping_listInput = {
-    where: RecipesWhereUniqueInput
-    create: XOR<RecipesCreateWithoutShopping_listInput, RecipesUncheckedCreateWithoutShopping_listInput>
-  }
-
-  export type Recipe_ingredientsCreateWithoutShopping_listInput = {
-    id: string
-    listing: string
-    extracted_name: string
-    embedding: string
-    grocery_section: grocery_section
-    recipes: RecipesCreateNestedOneWithoutRecipe_ingredientsInput
-  }
-
-  export type Recipe_ingredientsUncheckedCreateWithoutShopping_listInput = {
-    id: string
-    listing: string
-    extracted_name: string
-    embedding: string
-    grocery_section: grocery_section
-    recipe_id: string
-  }
-
-  export type Recipe_ingredientsCreateOrConnectWithoutShopping_listInput = {
-    where: Recipe_ingredientsWhereUniqueInput
-    create: XOR<Recipe_ingredientsCreateWithoutShopping_listInput, Recipe_ingredientsUncheckedCreateWithoutShopping_listInput>
-  }
-
-  export type RecipesUpsertWithoutShopping_listInput = {
-    update: XOR<RecipesUpdateWithoutShopping_listInput, RecipesUncheckedUpdateWithoutShopping_listInput>
-    create: XOR<RecipesCreateWithoutShopping_listInput, RecipesUncheckedCreateWithoutShopping_listInput>
-    where?: RecipesWhereInput
-  }
-
-  export type RecipesUpdateToOneWithWhereWithoutShopping_listInput = {
-    where?: RecipesWhereInput
-    data: XOR<RecipesUpdateWithoutShopping_listInput, RecipesUncheckedUpdateWithoutShopping_listInput>
-  }
-
-  export type RecipesUpdateWithoutShopping_listInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    url?: StringFieldUpdateOperationsInput | string
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    recipe_ingredients?: Recipe_ingredientsUpdateManyWithoutRecipesNestedInput
-    users?: UsersUpdateOneRequiredWithoutRecipesNestedInput
-  }
-
-  export type RecipesUncheckedUpdateWithoutShopping_listInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    url?: StringFieldUpdateOperationsInput | string
-    user_id?: StringFieldUpdateOperationsInput | string
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    recipe_ingredients?: Recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput
-  }
-
-  export type Recipe_ingredientsUpsertWithoutShopping_listInput = {
-    update: XOR<Recipe_ingredientsUpdateWithoutShopping_listInput, Recipe_ingredientsUncheckedUpdateWithoutShopping_listInput>
-    create: XOR<Recipe_ingredientsCreateWithoutShopping_listInput, Recipe_ingredientsUncheckedCreateWithoutShopping_listInput>
-    where?: Recipe_ingredientsWhereInput
-  }
-
-  export type Recipe_ingredientsUpdateToOneWithWhereWithoutShopping_listInput = {
-    where?: Recipe_ingredientsWhereInput
-    data: XOR<Recipe_ingredientsUpdateWithoutShopping_listInput, Recipe_ingredientsUncheckedUpdateWithoutShopping_listInput>
-  }
-
-  export type Recipe_ingredientsUpdateWithoutShopping_listInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    listing?: StringFieldUpdateOperationsInput | string
-    extracted_name?: StringFieldUpdateOperationsInput | string
-    embedding?: StringFieldUpdateOperationsInput | string
-    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
-    recipes?: RecipesUpdateOneRequiredWithoutRecipe_ingredientsNestedInput
-  }
-
-  export type Recipe_ingredientsUncheckedUpdateWithoutShopping_listInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    listing?: StringFieldUpdateOperationsInput | string
-    extracted_name?: StringFieldUpdateOperationsInput | string
-    embedding?: StringFieldUpdateOperationsInput | string
-    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
-    recipe_id?: StringFieldUpdateOperationsInput | string
   }
 
   export type Ingredient_eventsCreateWithoutUsersInput = {
@@ -13448,7 +11801,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     created_at: Date | string
     updated_at: Date | string
     recipe_ingredients?: Recipe_ingredientsCreateNestedManyWithoutRecipesInput
-    shopping_list?: Shopping_listCreateNestedManyWithoutRecipesInput
   }
 
   export type RecipesUncheckedCreateWithoutUsersInput = {
@@ -13459,7 +11811,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     created_at: Date | string
     updated_at: Date | string
     recipe_ingredients?: Recipe_ingredientsUncheckedCreateNestedManyWithoutRecipesInput
-    shopping_list?: Shopping_listUncheckedCreateNestedManyWithoutRecipesInput
   }
 
   export type RecipesCreateOrConnectWithoutUsersInput = {
@@ -13641,34 +11992,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type Shopping_listCreateManyRecipe_ingredientsInput = {
-    id: string
-    recipe_id: string
-    purchased: boolean
-    created_at: Date | string
-  }
-
-  export type Shopping_listUpdateWithoutRecipe_ingredientsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    purchased?: BoolFieldUpdateOperationsInput | boolean
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    recipes?: RecipesUpdateOneRequiredWithoutShopping_listNestedInput
-  }
-
-  export type Shopping_listUncheckedUpdateWithoutRecipe_ingredientsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    recipe_id?: StringFieldUpdateOperationsInput | string
-    purchased?: BoolFieldUpdateOperationsInput | boolean
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type Shopping_listUncheckedUpdateManyWithoutRecipe_ingredientsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    recipe_id?: StringFieldUpdateOperationsInput | string
-    purchased?: BoolFieldUpdateOperationsInput | boolean
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
   export type Recipe_ingredientsCreateManyRecipesInput = {
     id: string
     listing: string
@@ -13677,20 +12000,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     grocery_section: grocery_section
   }
 
-  export type Shopping_listCreateManyRecipesInput = {
-    id: string
-    recipe_ingredient_id: string
-    purchased: boolean
-    created_at: Date | string
-  }
-
   export type Recipe_ingredientsUpdateWithoutRecipesInput = {
     id?: StringFieldUpdateOperationsInput | string
     listing?: StringFieldUpdateOperationsInput | string
     extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
     grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
-    shopping_list?: Shopping_listUpdateManyWithoutRecipe_ingredientsNestedInput
   }
 
   export type Recipe_ingredientsUncheckedUpdateWithoutRecipesInput = {
@@ -13699,7 +12014,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
     grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
-    shopping_list?: Shopping_listUncheckedUpdateManyWithoutRecipe_ingredientsNestedInput
   }
 
   export type Recipe_ingredientsUncheckedUpdateManyWithoutRecipesInput = {
@@ -13708,27 +12022,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
     grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
-  }
-
-  export type Shopping_listUpdateWithoutRecipesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    purchased?: BoolFieldUpdateOperationsInput | boolean
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    recipe_ingredients?: Recipe_ingredientsUpdateOneRequiredWithoutShopping_listNestedInput
-  }
-
-  export type Shopping_listUncheckedUpdateWithoutRecipesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    recipe_ingredient_id?: StringFieldUpdateOperationsInput | string
-    purchased?: BoolFieldUpdateOperationsInput | boolean
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type Shopping_listUncheckedUpdateManyWithoutRecipesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    recipe_ingredient_id?: StringFieldUpdateOperationsInput | string
-    purchased?: BoolFieldUpdateOperationsInput | boolean
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type Ingredient_eventsCreateManyUsersInput = {
@@ -13822,7 +12115,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     recipe_ingredients?: Recipe_ingredientsUpdateManyWithoutRecipesNestedInput
-    shopping_list?: Shopping_listUpdateManyWithoutRecipesNestedInput
   }
 
   export type RecipesUncheckedUpdateWithoutUsersInput = {
@@ -13833,7 +12125,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     recipe_ingredients?: Recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput
-    shopping_list?: Shopping_listUncheckedUpdateManyWithoutRecipesNestedInput
   }
 
   export type RecipesUncheckedUpdateManyWithoutUsersInput = {
