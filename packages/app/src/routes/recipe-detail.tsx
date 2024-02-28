@@ -32,6 +32,7 @@ import {
   createJob,
   isExpiredSoon,
   isRunningLow,
+  lambdaFunction,
 } from "../util"
 import ExpirationDateEdit from "../components/expiration-date-edit"
 import { UpdateIcon } from "@radix-ui/react-icons"
@@ -78,7 +79,7 @@ function AddIngredientsToShoppingListButton({
             ),
           }
           const response = await fetch(
-            `https://7vxq1y2eu2.execute-api.us-east-1.amazonaws.com/create-shopping-list`,
+            `${lambdaFunction}/create-shopping-list`,
             {
               method: `POST`,
               headers: {
@@ -257,7 +258,7 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
                 fetchFn: async () => {
                   // Make LLM call to get description, embedding
                   const response = await fetch(
-                    `https://7vxq1y2eu2.execute-api.us-east-1.amazonaws.com/ingredients`,
+                    `${lambdaFunction}/ingredients`,
                     {
                       method: `POST`,
                       headers: {

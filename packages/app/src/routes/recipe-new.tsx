@@ -12,6 +12,7 @@ import {
 import { UpdateIcon } from "@radix-ui/react-icons"
 import { genUUID } from "electric-sql/util"
 import { Electric, Recipes } from "../generated/client"
+import { lambdaFunction } from "../util"
 
 function Working({
   isWorking,
@@ -56,16 +57,13 @@ const handleSubmit = async (
   })
 
   try {
-    const response = await fetch(
-      `https://7vxq1y2eu2.execute-api.us-east-1.amazonaws.com/recipes`,
-      {
-        method: `POST`,
-        headers: {
-          "Content-Type": `application/json`,
-        },
-        body: JSON.stringify(formProps),
-      }
-    )
+    const response = await fetch(`${lambdaFunction}/recipes`, {
+      method: `POST`,
+      headers: {
+        "Content-Type": `application/json`,
+      },
+      body: JSON.stringify(formProps),
+    })
     if (!response.ok) {
       throw new Error(`Network response was not ok`)
     }

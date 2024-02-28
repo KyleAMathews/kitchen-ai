@@ -16,6 +16,7 @@ import {
 } from "@radix-ui/themes"
 import { isString } from "lodash"
 import { genUUID } from "electric-sql/util"
+import { lambdaFunction } from "../util"
 import ExpirationDateEdit from "../components/expiration-date-edit"
 
 function formatDate(date) {
@@ -271,7 +272,7 @@ export default function IngredientDetail() {
             },
           }
           const response = await fetch(
-            `https://7vxq1y2eu2.execute-api.us-east-1.amazonaws.com/create-shopping-list`,
+            `${lambdaFunction}/create-shopping-list`,
             {
               method: `POST`,
               headers: {

@@ -4,6 +4,7 @@ import { useElectric } from "./context"
 import { genUUID } from "electric-sql/util"
 import { useUser } from "@clerk/clerk-react"
 import { useNavigate } from "react-router-dom"
+import { lambdaFunction } from "../util"
 
 function FileUploadToS3({
   buttonVariant = `surface`,
@@ -59,7 +60,7 @@ function FileUploadToS3({
     // Replace `your-backend-endpoint` with your actual endpoint that returns the signed URL
     try {
       const response = await fetch(
-        `https://7vxq1y2eu2.execute-api.us-east-1.amazonaws.com?bucket=${bucket}&fileName=${encodeURIComponent(file.name)}&contentType=${encodeURIComponent(file.type)}&uuid=${encodeURIComponent(uuid)}`
+        `${lambdaFunction}?bucket=${bucket}&fileName=${encodeURIComponent(file.name)}&contentType=${encodeURIComponent(file.type)}&uuid=${encodeURIComponent(uuid)}`
       )
       const url = await response.text()
       console.log({ url })

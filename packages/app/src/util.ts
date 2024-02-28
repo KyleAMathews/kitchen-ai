@@ -105,3 +105,7 @@ export function isExpiredSoon(ingredient: Ingredients): boolean {
   oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1)
   return oneMonthFromNow > expiredDate
 }
+
+export const lambdaFunction = import.meta.env.PROD
+  ? `https://v6122bvll1.execute-api.us-east-1.amazonaws.com`
+  : `https://7vxq1y2eu2.execute-api.us-east-1.amazonaws.com`
