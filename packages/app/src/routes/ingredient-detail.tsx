@@ -313,7 +313,7 @@ export default function IngredientDetail() {
               expiration_date: newDate,
             },
             where: {
-              id: spice.id,
+              id: ingredient.id,
             },
           })
         }}

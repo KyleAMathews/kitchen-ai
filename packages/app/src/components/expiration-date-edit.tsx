@@ -45,7 +45,7 @@ export default function ExpirationDateEdit({
           </Popover.Content>
         </Popover.Root>
         {` `}
-        <Code style={{ float: `right` }}>
+        <Code color="gray" style={{ float: `right` }}>
           {expirationDate.getFullYear()}/
           {expirationDate.toLocaleString(`default`, {
             month: `2-digit`,
