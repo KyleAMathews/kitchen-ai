@@ -30,6 +30,20 @@ CREATE TYPE grocery_section AS ENUM (
     'Oil_Vinegar',
     'Other__Aisles'
 );
+CREATE TYPE grocery_section2 AS ENUM (
+    'Produce',
+    'Deli',
+    'Bakery',
+    'Meat_Seafood',
+    'Dairy_Eggs',
+    'Dry__Goods',
+    'Canned__Foods',
+    'Spices_Herbs',
+    'Beverages',
+    'Frozen__Foods',
+    'Oil_Vinegar',
+    'Other__Aisles'
+);
 
 CREATE TYPE ingredients_tracking_type AS ENUM ('fill_level', 'count');
 CREATE TABLE ingredients (
@@ -74,7 +88,7 @@ CREATE TABLE recipe_ingredients (
     listing TEXT NOT NULL,
     extracted_name TEXT NOT NULL,
     embedding TEXT NOT NULL,
-    grocery_section grocery_section NOT NULL,
+    grocery_section grocery_section2 NOT NULL,
     recipe_id UUID NOT NULL REFERENCES recipes(id)
 );
 
