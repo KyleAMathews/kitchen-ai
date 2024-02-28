@@ -78,14 +78,6 @@ CREATE TABLE recipe_ingredients (
     recipe_id UUID NOT NULL REFERENCES recipes(id)
 );
 
-CREATE TABLE shopping_list (
-    id UUID PRIMARY KEY,
-    recipe_id UUID NOT NULL REFERENCES recipes(id),
-    recipe_ingredient_id UUID NOT NULL REFERENCES recipe_ingredients(id),
-    purchased BOOLEAN NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL
-);
-
 CREATE TYPE jobs_state AS ENUM ('working', 'done', 'error');
 CREATE TABLE jobs (
     id UUID PRIMARY KEY,
@@ -104,5 +96,4 @@ ALTER TABLE ingredients ENABLE ELECTRIC;
 ALTER TABLE ingredient_events ENABLE ELECTRIC;
 ALTER TABLE recipes ENABLE ELECTRIC;
 ALTER TABLE recipe_ingredients ENABLE ELECTRIC;
-ALTER TABLE shopping_list ENABLE ELECTRIC;
 ALTER TABLE jobs ENABLE ELECTRIC;

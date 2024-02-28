@@ -5,7 +5,7 @@ import { Electric, Recipes } from "../generated/client"
 import { useElectric } from "../context"
 import { useUser } from "@clerk/clerk-react"
 import RecipeCard from "../components/recipe-card"
-import { PlusCircledIcon, CaretRightIcon } from "@radix-ui/react-icons"
+import { PlusCircledIcon } from "@radix-ui/react-icons"
 
 const queries = ({ db }: { db: Electric[`db`] }) => {
   return {
@@ -37,7 +37,7 @@ export default function Recipes() {
     <Flex direction="column" gap="7">
       <Flex direction="column" gap="5">
         <Heading size="6">
-          Recipes{` `}
+          Recipes{` `}({recipes.length})
           <Link
             to="/recipes/new"
             style={{
@@ -45,7 +45,7 @@ export default function Recipes() {
               display: `inline-block`,
               position: `relative`,
               top: 3,
-              left: 4,
+              left: 8,
             }}
           >
             <PlusCircledIcon height="20" width="20" style={{ height: 20 }} />

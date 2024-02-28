@@ -23,7 +23,6 @@ import {
   Recipes,
   Ingredients,
   Recipe_ingredients,
-  Shopping_list,
 } from "../generated/client"
 import { genUUID, uuid } from "electric-sql/util"
 import { useElectric } from "../context"
@@ -406,11 +405,6 @@ const queries = ({ db, id }: { db: Electric[`db`]; id: string }) => {
         recipe_ingredients: true,
       },
     }),
-    shopping_list: db.shopping_list.liveMany({
-      where: {
-        recipe_id: id,
-      },
-    }),
   }
 }
 
@@ -426,11 +420,9 @@ export default function RecipeDetail() {
   const {
     recipe,
     ingredients,
-    shopping_list,
   }: {
     recipe: Recipes
     ingredients: Ingredients[]
-    shopping_list: Shopping_list[]
   } = useElectricData(location.pathname + location.search)
   const [checked, setChecked] = useState({})
 

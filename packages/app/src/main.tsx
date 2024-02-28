@@ -314,40 +314,6 @@ const router = createBrowserRouter([
               return null
             },
           },
-          {
-            path: `/shopping-cart`,
-            element: <ShoppingCart />,
-            loader: async (props) => {
-              const url = new URL(props.request.url)
-              const key = url.pathname + url.search
-              await electricSqlLoader<Electric>({
-                key,
-                shapes: ({ db }) => [
-                  {
-                    shape: db.shopping_list.sync({
-                      include: {
-                        recipes: true,
-                        recipe_ingredients: true,
-                      },
-                    }),
-                    isReady: async () => {
-                      const result = await db.rawQuery({
-                        sql: `select id from shopping_list`,
-                      })
-
-                      return !!result
-                    },
-                  },
-                ],
-                queries: ({ db }) =>
-                  ShoppingCart.queries({
-                    db,
-                  }),
-              })
-
-              return null
-            },
-          },
         ],
       },
     ],
