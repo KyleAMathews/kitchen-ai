@@ -43,6 +43,7 @@ export function ElectricalProvider({ children }) {
 
         // Connect to Electric
         await electric.connect(token)
+        console.log(`connected`, { token })
         // Renew the JWT every hour
         const oneMinute = 60 * 1000
         let stopRenewing = renewPeriodically(electric, oneMinute)
