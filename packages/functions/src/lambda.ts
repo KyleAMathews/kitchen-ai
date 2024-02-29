@@ -13,10 +13,7 @@ export const handler = ApiHandler(async (_evt) => {
     ACL: `public-read`,
     Key: fileName + `---` + uuid,
     ContentType: contentType,
-    Bucket:
-      bucket === `ingredient`
-        ? Bucket.SpiceJarPhotosBucket.bucketName
-        : Bucket.RecipesPhotoBucket.bucketName,
+    Bucket: Bucket.SpiceJarPhotosBucket.bucketName,
   })
 
   const url = await getSignedUrl(new S3Client({}), command)
