@@ -4,7 +4,7 @@ import { useElectric } from "./context"
 import { genUUID } from "electric-sql/util"
 import { useUser } from "@clerk/clerk-react"
 import { useNavigate } from "react-router-dom"
-import { lambdaFunction } from "../util"
+import { lambdaFunction } from "./util"
 
 function FileUploadToS3({
   buttonVariant = `surface`,
