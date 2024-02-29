@@ -11,7 +11,8 @@ export function SpiceJarPhotos({ stack }: StackContext) {
       newSpicePhotos: {
         function: {
           handler: `packages/functions/src/new-spice-jar-photo.main`,
-          bind: [OPENAI_KEY_SECRET],
+          bind: [OPENAI_KEY_SECRET, CONNECTION_STRING],
+          timeout: 600,
         },
         events: [`object_created`],
       },

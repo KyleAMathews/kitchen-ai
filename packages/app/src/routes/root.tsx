@@ -29,7 +29,7 @@ export default function Root() {
         </nav>
       </Flex>
       <Separator orientation="horizontal" size="4" />
-      <Box p="4" py="5">
+      <Box p="4">
         <Outlet />
       </Box>
     </Flex>

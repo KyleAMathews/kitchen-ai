@@ -36,29 +36,33 @@ function IngredientsView({
   ingredients,
   photos,
   search,
+  isSearching,
 }) {
   return (
-    <Flex direction="column" gap="6">
+    <Flex direction="column" gap={isSearching ? `3` : `6`}>
       <Flex direction="column" gap="4">
-        <Heading>
+        <Heading size={isSearching ? `3` : `5`}>
           <Link
             to="/ingredients"
             style={{ color: `inherit`, textDecoration: `none` }}
           >
-            Ingredients{` `}({ingredientsCount}){` `}
+            Ingredients{!isSearching && ` (${ingredientsCount})`}
+            {` `}
           </Link>
-          <Link
-            to="/upload-photos"
-            style={{
-              height: 20,
-              display: `inline-block`,
-              position: `relative`,
-              top: 3,
-              left: 4,
-            }}
-          >
-            <CameraIcon height="20" width="20" />
-          </Link>
+          {!isSearching && (
+            <Link
+              to="/upload-photos"
+              style={{
+                height: 20,
+                display: `inline-block`,
+                position: `relative`,
+                top: 3,
+                left: 4,
+              }}
+            >
+              <CameraIcon height="20" width="20" />
+            </Link>
+          )}
         </Heading>
         {photos && photos.length > 0 && (
           <Button variant="soft">
@@ -80,31 +84,36 @@ function IngredientsView({
         )}
       </Flex>
 
-      {search?.length > 0 && ingredients.length > 0 && (
-        <Flex direction="column" gap="4">
-          {ingredients.map((ingredient, i: number) => {
-            if (ingredient.is_reviewed) {
-              return (
-                <React.Fragment key={ingredient.id}>
-                  <IngredientCard ingredient={ingredient} />
-                  {i !== ingredients.length - 1 && (
-                    <Separator
-                      key={ingredient.id + `-seperator`}
-                      orientation="horizontal"
-                      size="4"
-                    />
-                  )}
-                </React.Fragment>
-              )
-            }
-          })}
-        </Flex>
+      {isSearching &&
+        (ingredients.length > 0 ? (
+          <Flex direction="column" gap="4">
+            {ingredients.map((ingredient, i: number) => {
+              if (ingredient.is_reviewed) {
+                return (
+                  <React.Fragment key={ingredient.id}>
+                    <IngredientCard ingredient={ingredient} />
+                    {i !== ingredients.length - 1 && (
+                      <Separator
+                        key={ingredient.id + `-seperator`}
+                        orientation="horizontal"
+                        size="4"
+                      />
+                    )}
+                  </React.Fragment>
+                )
+              }
+            })}
+          </Flex>
+        ) : (
+          <Text>No results</Text>
+        ))}
+      {!isSearching && (
+        <RadixLink asChild>
+          <Link to="/ingredients">
+            See all <ArrowRightIcon />
+          </Link>
+        </RadixLink>
       )}
-      <RadixLink asChild>
-        <Link to="/ingredients">
-          See all <ArrowRightIcon />
-        </Link>
-      </RadixLink>
     </Flex>
   )
 }
@@ -160,13 +169,24 @@ const queries = ({ db, search }: { db: Electric[`db`]; search: string }) => {
     ingredientsCount: db.liveRawQuery({
       sql: `SELECT count(*) as count from ingredients where is_reviewed = true`,
     }),
-    ingredients: db.liveRawQuery({
-      sql: `SELECT * from ingredients
-      WHERE name LIKE ?
-      ORDER BY name COLLATE NOCASE asc
-      LIMIT 3
-      `,
-      args: [queryStr],
+    // ingredients: db.liveRawQuery({
+    // sql: `SELECT * from ingredients
+    // WHERE name LIKE ?
+    // ORDER BY name COLLATE NOCASE asc
+    // LIMIT 3
+    // `,
+    // args: [queryStr],
+    // }),
+    ingredients: db.ingredients.liveMany({
+      where: {
+        name: {
+          contains: queryStr,
+        },
+      },
+      orderBy: {
+        name: `desc`,
+      },
+      take: search !== null && search.length > 0 ? 3 : 0,
     }),
     recipesCount: db.liveRawQuery({
       sql: `SELECT count(*) as count from recipes`,
@@ -227,6 +247,7 @@ export default function Index() {
   })
 
   const countIngredients = (ingredientsCount && ingredientsCount[0].count) || 0
+  const isSearching = q !== null && q.length > 0
 
   return (
     <>
@@ -234,8 +255,7 @@ export default function Index() {
         <BlankSlate />
       ) : (
         <>
-          <Flex direction="column" gap="6">
-            <Heading>My Kitchen</Heading>
+          <Flex direction="column" gap={isSearching ? `5` : `6`}>
             <form>
               <TextField.Root>
                 <TextField.Slot>
@@ -255,9 +275,9 @@ export default function Index() {
                 />
               </TextField.Root>
             </form>
-            <Flex direction="column" gap="7">
-              <Flex direction="column" gap="6">
-                <Heading>
+            <Flex direction="column" gap={isSearching ? `5` : `7`}>
+              <Flex direction="column" gap={isSearching ? `3` : `6`}>
+                <Heading size={isSearching ? `3` : `5`}>
                   <Link
                     to="/recipes"
                     style={{
@@ -267,26 +287,28 @@ export default function Index() {
                       display: `inline-block`,
                     }}
                   >
-                    Recipes{` `}({recipesCount[0].count}){` `}
+                    Recipes{!isSearching && ` (${recipesCount[0].count}) `}
                   </Link>
-                  <Link
-                    to="/recipes/new"
-                    style={{
-                      height: 20,
-                      display: `inline-block`,
-                      position: `relative`,
-                      top: 3,
-                      left: 8,
-                    }}
-                  >
-                    <PlusCircledIcon
-                      height="20"
-                      width="20"
-                      style={{ height: 20 }}
-                    />
-                  </Link>
+                  {!isSearching && (
+                    <Link
+                      to="/recipes/new"
+                      style={{
+                        height: 20,
+                        display: `inline-block`,
+                        position: `relative`,
+                        top: 3,
+                        left: 8,
+                      }}
+                    >
+                      <PlusCircledIcon
+                        height="20"
+                        width="20"
+                        style={{ height: 20 }}
+                      />
+                    </Link>
+                  )}
                 </Heading>
-                {recipesCount[0].count > 0 ? (
+                {isSearching || recipesCount[0].count > 0 ? (
                   <>
                     {recipes && recipes.length > 0 ? (
                       <Flex direction="column" gap="4">
@@ -304,17 +326,20 @@ export default function Index() {
                     ) : (
                       <Text>No results</Text>
                     )}
-                    <RadixLink asChild>
-                      <Link to="/recipes">
-                        Browse all <ArrowRightIcon />
-                      </Link>
-                    </RadixLink>
+                    {!isSearching && (
+                      <RadixLink asChild>
+                        <Link to="/recipes">
+                          Browse all <ArrowRightIcon />
+                        </Link>
+                      </RadixLink>
+                    )}
                   </>
                 ) : (
                   <Text>Add your first recipe!</Text>
                 )}
               </Flex>
               <IngredientsView
+                isSearching={isSearching}
                 ingredientsCount={countIngredients || 0}
                 ingredients_needing_review={ingredients_needing_review}
                 ingredients={ingredients}
