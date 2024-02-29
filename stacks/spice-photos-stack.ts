@@ -4,6 +4,7 @@ export function SpiceJarPhotos({ stack }: StackContext) {
   const OPENAI_KEY_SECRET = new Config.Secret(stack, `OPENAI_KEY`)
   const TRELLO_TOKEN = new Config.Secret(stack, `TRELLO_TOKEN`)
   const TRELLO_KEY = new Config.Secret(stack, `TRELLO_KEY`)
+  const CONNECTION_STRING = new Config.Secret(stack, `CONNECTION_STRING`)
 
   const ingredientBucket = new Bucket(stack, `SpiceJarPhotosBucket`, {
     notifications: {
@@ -43,7 +44,7 @@ export function SpiceJarPhotos({ stack }: StackContext) {
       },
     },
   })
-  api.bind([ingredientBucket])
+  api.bind([ingredientBucket, CONNECTION_STRING])
   api.bindToRoute(`POST /recipes`, [OPENAI_KEY_SECRET])
   api.bindToRoute(`POST /ingredients`, [OPENAI_KEY_SECRET])
   api.bindToRoute(`POST /create-shopping-list`, [TRELLO_KEY, TRELLO_TOKEN])

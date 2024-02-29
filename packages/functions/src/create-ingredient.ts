@@ -4,7 +4,7 @@ import { z } from "zod"
 import pg from "pg"
 import { performance } from "perf_hooks"
 import { ZodFunctionDef, toTool, parseArguments } from "openai-zod-functions"
-import { randomUUID } from "crypto"
+import { Config } from "sst/node/config"
 import { getEmbedding } from "./_get-embedding"
 
 const { Client } = pg
@@ -15,7 +15,7 @@ const openai = new OpenAI({ apiKey: Config.OPENAI_KEY })
 
 const connectionString = process.env.IS_LOCAL
   ? `postgresql://postgres:pg_password@localhost:5432/kitchen-ai`
-  : ``
+  : Config.CONNECTION_STRING
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   let client

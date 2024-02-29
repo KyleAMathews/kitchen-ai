@@ -246,18 +246,6 @@ const router = createBrowserRouter([
                       })),
                   },
                   {
-                    shape: db.shopping_list.sync({
-                      include: {
-                        recipe_ingredients: true,
-                        recipes: true,
-                      },
-                    }),
-                    isReady: async () =>
-                      !!(await db.rawQuery({
-                        sql: `select count(id) from shopping_list limit 1`,
-                      })),
-                  },
-                  {
                     shape: db.jobs.sync(),
                     isReady: async () => {
                       const result = await db.rawQuery({

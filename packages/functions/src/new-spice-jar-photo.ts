@@ -15,7 +15,7 @@ const openai = new OpenAI({ apiKey: Config.OPENAI_KEY })
 
 const connectionString = process.env.IS_LOCAL
   ? `postgresql://postgres:pg_password@localhost:5432/kitchen-ai`
-  : ``
+  : Config.CONNECTION_STRING
 
 export const main: S3Handler = async (event) => {
   let client
