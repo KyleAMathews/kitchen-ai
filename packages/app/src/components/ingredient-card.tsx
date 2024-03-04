@@ -16,6 +16,7 @@ export default function IngredientCard({ ingredient }: Ingredients) {
   const navigate = useNavigate()
   const expiredDate = new Date(ingredient.expiration_date)
   const expiresInFuture = ingredient.expiration_date > new Date()
+
   return (
     <Flex
       key={ingredient.id}
@@ -32,7 +33,11 @@ export default function IngredientCard({ ingredient }: Ingredients) {
           {ingredient.tracking_type === `count` &&
             ` (` + ingredient.count + `)`}
         </Heading>
-        <Text size="2" color="gray">
+        <Text
+          size="2"
+          weight={isExpiredSoon(ingredient) ? `medium` : `regular`}
+          color={isExpiredSoon(ingredient) ? `crimson` : `gray`}
+        >
           {expiresInFuture ? `Expires` : `Expired`}
           {` `}
           {timeAgo.format(new Date(expiredDate))}
@@ -52,13 +57,6 @@ export default function IngredientCard({ ingredient }: Ingredients) {
           <Box>
             <Badge color="crimson" variant="soft">
               Running Low
-            </Badge>
-          </Box>
-        )}
-        {isExpiredSoon(ingredient) && (
-          <Box>
-            <Badge color="orange" variant="soft">
-              Expired
             </Badge>
           </Box>
         )}

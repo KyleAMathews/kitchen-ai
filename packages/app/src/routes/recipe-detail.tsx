@@ -71,6 +71,7 @@ function AddIngredientsToShoppingListButton({
               }
             })
             .filter((i) => i)
+
           const cardDescription = {
             url: recipe.url,
             checklists: mapValues(
@@ -479,7 +480,9 @@ export default function RecipeDetail() {
         </RadixLink>
       </Flex>
       <ScrollArea scrollbars="vertical" style={{ maxHeight: 180 }} type="auto">
-        <Text>{recipe.description}</Text>
+        <Box pr="6">
+          <Text>{recipe.description}</Text>
+        </Box>
       </ScrollArea>
       <Flex direction="column" gap="4" mt="2">
         <Flex direction="column" gap="2">

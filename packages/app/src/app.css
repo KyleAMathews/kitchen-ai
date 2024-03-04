@@ -121,3 +121,7 @@
 .ToastAction {
   grid-area: action;
 }
+
+.rt-Badge:where(.rt-r-size-1) {
+  padding-bottom: 3px;
+}
