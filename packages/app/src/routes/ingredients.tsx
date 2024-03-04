@@ -23,7 +23,7 @@ export default function IngredientsList() {
     ingredients,
   })
   return (
-    <Flex direction="column" gap="7">
+    <Flex direction="column" gap="7" pt="2">
       <Heading>Ingredients ({ingredients.length})</Heading>
       <Flex direction="column" gap="4">
         {ingredients.map((ingredient, i: number) => {

@@ -34,7 +34,7 @@ export default function Recipes() {
   )
 
   return (
-    <Flex direction="column" gap="7">
+    <Flex direction="column" gap="7" pt="2">
       <Flex direction="column" gap="5">
         <Heading size="6">
           Recipes{` `}({recipes.length})

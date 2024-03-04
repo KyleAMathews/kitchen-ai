@@ -250,7 +250,7 @@ export default function Index() {
 
   return (
     <>
-      {countIngredients === countIngredients ? ( //0 ? (
+      {countIngredients === 0 ? (
         <BlankSlate />
       ) : (
         <>
