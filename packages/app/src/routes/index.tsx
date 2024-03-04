@@ -1,6 +1,6 @@
 import * as React from "react"
 import { useLocation, Link, useSearchParams } from "react-router-dom"
-import measuringCupImg from "../../static/measuring-cup.png"
+import measuringCupImg from "../../static/bowl.png"
 import threeSpices from "../../static/3-spices.jpg"
 import {
   Electric,
@@ -50,18 +50,20 @@ function IngredientsView({
             {` `}
           </Link>
           {!isSearching && (
-            <Link
-              to="/upload-photos"
-              style={{
-                height: 20,
-                display: `inline-block`,
-                position: `relative`,
-                top: 3,
-                left: 4,
-              }}
-            >
-              <CameraIcon height="20" width="20" />
-            </Link>
+            <RadixLink asChild>
+              <Link
+                to="/upload-photos"
+                style={{
+                  height: 20,
+                  display: `inline-block`,
+                  position: `relative`,
+                  top: 3,
+                  left: 4,
+                }}
+              >
+                <CameraIcon height="20" width="20" />
+              </Link>
+            </RadixLink>
           )}
         </Heading>
         {photos && photos.length > 0 && (
@@ -105,7 +107,7 @@ function IngredientsView({
             })}
           </Flex>
         ) : (
-          <Text>No results</Text>
+          <Text color="gray">No results</Text>
         ))}
       {!isSearching && (
         <RadixLink asChild>
@@ -123,28 +125,25 @@ function BlankSlate() {
     <Flex
       direction="column"
       gap="6"
-      pt="8"
       justify="center"
       align="center"
       style={{ textAlign: `center` }}
       height="100%"
     >
-      <img src={measuringCupImg} width={64} height={64} />
+      <img src={measuringCupImg} width={212} />
       <Heading style={{ maxWidth: 264 }}>
-        ADD INGREDIENTS TO YOUR KITCHEN
+        Add ingredients to your kitchen
       </Heading>
-      <Text>Take a photo of some ingredients to get started!</Text>
-      <Flex direction="column" gap="2" style={{ textAlign: `left` }}>
-        <Text color="gray">Example:</Text>
-        <img src={threeSpices} height={196} />
-      </Flex>
+      <Text>
+        Take a photo of some ingredients
+        <br /> to get started!
+      </Text>
       <FileUploadToS3
         bucket="ingredient"
-        buttonVariant="solid"
+        buttonVariant="soft"
         navigateTo="/upload-photos"
       >
-        <PlusIcon />
-        {` `}Add Photo
+        Add Photo
       </FileUploadToS3>
     </Flex>
   )
@@ -251,7 +250,7 @@ export default function Index() {
 
   return (
     <>
-      {countIngredients === 0 ? (
+      {countIngredients === countIngredients ? ( //0 ? (
         <BlankSlate />
       ) : (
         <>
@@ -290,22 +289,24 @@ export default function Index() {
                     Recipes{!isSearching && ` (${recipesCount[0].count}) `}
                   </Link>
                   {!isSearching && (
-                    <Link
-                      to="/recipes/new"
-                      style={{
-                        height: 20,
-                        display: `inline-block`,
-                        position: `relative`,
-                        top: 3,
-                        left: 8,
-                      }}
-                    >
-                      <PlusCircledIcon
-                        height="20"
-                        width="20"
-                        style={{ height: 20 }}
-                      />
-                    </Link>
+                    <RadixLink asChild>
+                      <Link
+                        to="/recipes/new"
+                        style={{
+                          height: 20,
+                          display: `inline-block`,
+                          position: `relative`,
+                          top: 3,
+                          left: 8,
+                        }}
+                      >
+                        <PlusCircledIcon
+                          height="20"
+                          width="20"
+                          style={{ height: 20 }}
+                        />
+                      </Link>
+                    </RadixLink>
                   )}
                 </Heading>
                 {isSearching || recipesCount[0].count > 0 ? (
@@ -324,7 +325,7 @@ export default function Index() {
                         })}
                       </Flex>
                     ) : (
-                      <Text>No results</Text>
+                      <Text color="gray">No results</Text>
                     )}
                     {!isSearching && (
                       <RadixLink asChild>

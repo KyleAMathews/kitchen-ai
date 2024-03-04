@@ -126,6 +126,7 @@ function FileUploadToS3({
           disabled={uploading}
           variant={buttonVariant}
           onClick={() => document.getElementById(`fileInput`)?.click()}
+          size="3"
         >
           {children}
         </Button>

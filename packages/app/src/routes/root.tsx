@@ -12,7 +12,7 @@ import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react"
 
 export default function Root() {
   return (
-    <Container size="1">
+    <Flex style={{ height: `100vh`, maxWidth: 440 }} direction="column">
       <Flex asChild p="4">
         <nav>
           <Heading weight="bold" size="4">
@@ -36,9 +36,9 @@ export default function Root() {
         </nav>
       </Flex>
       <Separator orientation="horizontal" size="4" />
-      <Box p="4">
+      <Flex p="4" direction="column" grow="1">
         <Outlet />
-      </Box>
-    </Container>
+      </Flex>
+    </Flex>
   )
 }
