@@ -8,7 +8,7 @@ import { lambdaFunction } from "./util"
 
 function FileUploadToS3({
   buttonVariant = `surface`,
-  children = `Add Another Photo`,
+  children = `Add Photo`,
   bucket = ``,
   navigateTo = ``,
 }) {
