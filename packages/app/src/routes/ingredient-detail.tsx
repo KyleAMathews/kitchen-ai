@@ -9,6 +9,7 @@ import { useUser } from "@clerk/clerk-react"
 import {
   Flex,
   Heading,
+  Link as RadixLink,
   Text,
   Button,
   Slider,
@@ -256,7 +257,10 @@ export default function IngredientDetail() {
     .split(` `)
     .join(` ’`)
   return (
-    <Flex direction="column" gap="6">
+    <Flex direction="column" gap="5">
+      <RadixLink asChild size="2">
+        <Link to="/ingredients">{`<`} All Ingredients</Link>
+      </RadixLink>
       <Heading>{ingredient.name}</Heading>
       <Flex>
         <Text>{ingredient.description}</Text>
