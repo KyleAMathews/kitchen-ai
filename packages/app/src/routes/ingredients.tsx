@@ -3,6 +3,7 @@ import IngredientCard from "../components/ingredient-card"
 import { useElectricData } from "electric-query"
 import { useLocation } from "react-router-dom"
 import { Heading, Flex, Link as RadixLink, Separator } from "@radix-ui/themes"
+import { Ingredients } from "../generated/client"
 
 const queries = ({ db }: { db: Electric[`db`] }) => {
   return {

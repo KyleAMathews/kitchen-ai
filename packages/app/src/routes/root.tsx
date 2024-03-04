@@ -1,11 +1,18 @@
 import { Outlet, Link } from "react-router-dom"
-import { Flex, Box, Heading, Text, Separator } from "@radix-ui/themes"
+import {
+  Flex,
+  Box,
+  Heading,
+  Text,
+  Separator,
+  Container,
+} from "@radix-ui/themes"
 import Working from "../components/working-icon"
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react"
 
 export default function Root() {
   return (
-    <Flex direction="column">
+    <Container size="1">
       <Flex asChild p="4">
         <nav>
           <Heading weight="bold" size="4">
@@ -32,6 +39,6 @@ export default function Root() {
       <Box p="4">
         <Outlet />
       </Box>
-    </Flex>
+    </Container>
   )
 }
