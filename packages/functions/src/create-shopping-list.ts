@@ -128,29 +128,20 @@ const createOrUpdateCardWithChecklists = async (listId, cardDetails) => {
   }
 }
 
-function getFirstDayOfWeekDate() {
+function getDateString() {
   const today = new Date() // Current date and time
-  const dayOfWeek = today.getDay() // Day of the week, 0 for Sunday, 1 for Monday, etc.
-  const firstDayOfWeek = new Date(today) // Clone today's date
-
-  // Subtract the day of the week from the current date to get to the first day of the week
-  firstDayOfWeek.setDate(today.getDate() - dayOfWeek)
 
   // Format the date as "YYYY/MM/DD"
-  const year = firstDayOfWeek.getFullYear()
+  const year = today.getFullYear()
   // getMonth() returns 0-11; adding 1 to get 1-12 and padStart to ensure two digits
-  const month = (firstDayOfWeek.getMonth() + 1).toString().padStart(2, `0`)
-  const day = firstDayOfWeek.getDate().toString().padStart(2, `0`)
+  const month = (today.getMonth() + 1).toString().padStart(2, `0`)
+  const day = today.getDate().toString().padStart(2, `0`)
 
   return `Shopping ${year}/${month}/${day}`
 }
 
 const cardSchema = z.object({
-  cardName: z
-    .string()
-    .min(10)
-    .startsWith(`Shopping`)
-    .default(getFirstDayOfWeekDate()),
+  cardName: z.string().min(10).startsWith(`Shopping`).default(getDateString()),
   url: z.string().min(1).optional(),
   checklists: z.record(z.string(), z.array(z.string().min(3))),
 })
