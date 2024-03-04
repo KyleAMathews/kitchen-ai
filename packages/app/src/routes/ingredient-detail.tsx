@@ -261,6 +261,25 @@ export default function IngredientDetail() {
       <Flex>
         <Text>{ingredient.description}</Text>
       </Flex>
+      {ingredient.tracking_type === `count` ? (
+        <EditCountLevel ingredient={ingredient} />
+      ) : (
+        <EditFillLevel ingredient={ingredient} />
+      )}
+      <ExpirationDateEdit
+        expirationDate={expirationDate}
+        onValueChange={setExpirationDate}
+        onValueCommit={(newDate: Date) => {
+          db.ingredients.update({
+            data: {
+              expiration_date: newDate,
+            },
+            where: {
+              id: ingredient.id,
+            },
+          })
+        }}
+      />
       <Button
         variant="outline"
         disabled={working}
@@ -300,25 +319,6 @@ export default function IngredientDetail() {
       >
         Add to shopping list
       </Button>
-      {ingredient.tracking_type === `count` ? (
-        <EditCountLevel ingredient={ingredient} />
-      ) : (
-        <EditFillLevel ingredient={ingredient} />
-      )}
-      <ExpirationDateEdit
-        expirationDate={expirationDate}
-        onValueChange={setExpirationDate}
-        onValueCommit={(newDate: Date) => {
-          db.ingredients.update({
-            data: {
-              expiration_date: newDate,
-            },
-            where: {
-              id: ingredient.id,
-            },
-          })
-        }}
-      />
       {events.length > 0 && (
         <Flex direction="column" gap="3">
           <Heading size="4">Timeline</Heading>
