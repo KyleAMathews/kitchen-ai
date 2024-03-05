@@ -24,6 +24,7 @@
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^7.0.2",
     "@typescript-eslint/parser": "^7.0.2",
+    "electric-query": "^0.0.13",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-react": "^1.1.7",
