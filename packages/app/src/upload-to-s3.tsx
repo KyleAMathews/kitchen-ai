@@ -8,6 +8,7 @@ import { lambdaFunction } from "./util"
 
 function FileUploadToS3({
   buttonVariant = `surface`,
+  buttonSize = `3`,
   children = `Add Photo`,
   bucket = ``,
   navigateTo = ``,
@@ -126,7 +127,7 @@ function FileUploadToS3({
           disabled={uploading}
           variant={buttonVariant}
           onClick={() => document.getElementById(`fileInput`)?.click()}
-          size="3"
+          size={buttonSize}
         >
           {children}
         </Button>
