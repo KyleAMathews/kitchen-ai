@@ -142,7 +142,7 @@ function getDateString() {
 
 const cardSchema = z.object({
   cardName: z.string().min(10).startsWith(`Shopping`).default(getDateString()),
-  url: z.string().min(1).optional(),
+  url: z.string().optional(),
   checklists: z.record(z.string(), z.array(z.string().min(3))),
 })
 
