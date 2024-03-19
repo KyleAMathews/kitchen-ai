@@ -487,11 +487,11 @@ export default function RecipeDetail() {
       <Flex direction="column" gap="4" mt="2">
         <Flex direction="column" gap="2">
           <Heading size="4" mb="2">
-            Ingredients
+            Shopping List
           </Heading>
-          <Heading size="2">Needed</Heading>
-          <Text size="1">
-            <Em>Review ingredients Kitchen.ai thinks you need to buy</Em>
+          <Text size="2">
+            Review the ingredients Kitchen.ai thinks you need to buy for this
+            recipe
           </Text>
         </Flex>
         {neededIngredients.map((ingredient_id: string) => {
