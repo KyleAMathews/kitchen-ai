@@ -50,7 +50,7 @@ const findCardByName = async (listId, cardName) => {
 
 // Create a new card
 const createCard = async (listId, cardName, url) => {
-  return makeTrelloRequest({
+  await makeTrelloRequest({
     url: `https://api.trello.com/1/cards`,
     method: `POST`,
     queryParams: {
@@ -59,6 +59,16 @@ const createCard = async (listId, cardName, url) => {
       idList: listId,
     },
   })
+
+  let card = null
+  while (card === null) {
+    card = await findCardByName(listId, cardName)
+    if (card) {
+      return card
+    } else {
+      await new Promise((resolve) => setTimeout(resolve, Math.random() * 250))
+    }
+  }
 }
 
 const updateCard = async (cardId, updates) => {
@@ -81,7 +91,7 @@ const findChecklistOnCard = async (cardId, checklistTitle) => {
 
 // Create a checklist on a card
 const createChecklist = async (cardId, checklistTitle) => {
-  return makeTrelloRequest({
+  await makeTrelloRequest({
     url: `https://api.trello.com/1/checklists`,
     method: `POST`,
     queryParams: {
@@ -89,12 +99,22 @@ const createChecklist = async (cardId, checklistTitle) => {
       name: checklistTitle,
     },
   })
+
+  let checklist = null
+  while (checklist === null) {
+    checklist = await findChecklistOnCard(cardId, checklistTitle)
+    if (checklist) {
+      return checklist
+    } else {
+      await new Promise((resolve) => setTimeout(resolve, Math.random() * 250))
+    }
+  }
 }
 
 // Update checklist items
 const updateChecklistItems = async (checklistId, items) => {
   for (const item of items) {
-    makeTrelloRequest({
+    await makeTrelloRequest({
       url: `https://api.trello.com/1/checklists/${checklistId}/checkItems`,
       method: `POST`,
       queryParams: {
@@ -118,16 +138,13 @@ const createOrUpdateCardWithChecklists = async (listId, cardDetails) => {
 
   for (const [checklistTitle, items] of Object.entries(checklists)) {
     const title = checklistTitle.replace(`__`, ` `).replace(`_`, `/`)
-    console.log({title})
+    console.log({ title })
     let checklist = await findChecklistOnCard(card.id, title)
     if (!checklist) {
       checklist = await createChecklist(card.id, title)
-      // The new checklist isn't immediately available 😬
-      await new Promise(resolve => setTimeout(resolve, 1000))
-    } else {
-      // Optionally, clear existing items here if needed
     }
-    console.log({checklist})
+
+    console.log({ checklist })
     await updateChecklistItems(checklist.id, items)
   }
 }
