@@ -24,7 +24,7 @@ import {
   Ingredients,
   Recipe_ingredients,
 } from "../generated/client"
-import { genUUID, uuid } from "electric-sql/util"
+import { genUUID } from "electric-sql/util"
 import { useElectric } from "../context"
 import { useUser } from "@clerk/clerk-react"
 import {
@@ -252,7 +252,7 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
               const formProps = Object.fromEntries(formData)
 
               createJob({
-                id: uuid(),
+                id: genUUID(),
                 db,
                 target_id: ingredient.id,
                 type: `Transform recipe ingredient to kitchen ingredient`,
@@ -275,7 +275,7 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
 
                   const newIngredient = await db.ingredients.create({
                     data: {
-                      id: uuid(),
+                      id: genUUID(),
                       name: formProps.name,
                       fill_level: parseInt(formProps.fill_level, 10) || 0,
                       embedding: JSON.stringify(data.embedding),
