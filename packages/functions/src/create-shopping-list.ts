@@ -118,12 +118,14 @@ const createOrUpdateCardWithChecklists = async (listId, cardDetails) => {
 
   for (const [checklistTitle, items] of Object.entries(checklists)) {
     const title = checklistTitle.replace(`__`, ` `).replace(`_`, `/`)
+    console.log({title})
     let checklist = await findChecklistOnCard(card.id, title)
     if (!checklist) {
       checklist = await createChecklist(card.id, title)
     } else {
       // Optionally, clear existing items here if needed
     }
+    console.log({checklist})
     await updateChecklistItems(checklist.id, items)
   }
 }
