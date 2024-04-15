@@ -58,7 +58,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
               `Other__Aisles`,
             ])
             .describe(
-              `The section of a US grocery store that someone is most likely to find this ingredient. You can only pick from options within this list. Any other option will be rejected. If you don't like the options, just pick 'Other Aisles'`
+              `The section of a US grocery store that someone is most likely to find this ingredient. You can only pick from options within this list. Any other option will be rejected. If you don't like the options, just pick 'Other Aisles'.`
             ),
         }),
       },
@@ -116,18 +116,15 @@ export const handler: APIGatewayProxyHandler = async (event) => {
           console.log(`json didn't parse`)
           console.log(e)
 
-          if (attempt === 1) {
-            // Remove the image this time
-            messages[0].content.pop()
-          }
-
           // Add on the LLMs' response
           messages.push({
             role: `system`,
             content: [
               {
                 type: `text`,
-                text: response.choices[0].message.content,
+                text:
+                  `previous function response` +
+                  JSON.stringify(response.choices[0].message.tool_calls[0].function),
               },
             ],
           })

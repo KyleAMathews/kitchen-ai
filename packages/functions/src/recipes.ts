@@ -139,7 +139,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                 type: `text`,
                 text:
                   `previous function response` +
-                  response.choices[0].message.tool_calls[0].function,
+                  JSON.stringify(response.choices[0].message.tool_calls[0].function),
               },
             ],
           })
