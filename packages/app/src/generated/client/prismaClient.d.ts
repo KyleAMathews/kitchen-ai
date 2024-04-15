@@ -120,7 +120,7 @@ export type Recipe_ingredients = {
   listing: string
   extracted_name: string
   embedding: string
-  grocery_section: grocery_section
+  grocery_section: grocery_section2
   /**
    * @zod.string.uuid()
    */
@@ -162,14 +162,6 @@ export type Users = {
 // Based on
 // https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
 
-export const ingredients_tracking_type: {
-  fill_level: 'fill_level',
-  count: 'count'
-};
-
-export type ingredients_tracking_type = (typeof ingredients_tracking_type)[keyof typeof ingredients_tracking_type]
-
-
 export const grocery_section: {
   Produce: 'Produce',
   Deli: 'Deli',
@@ -188,6 +180,24 @@ export const grocery_section: {
 export type grocery_section = (typeof grocery_section)[keyof typeof grocery_section]
 
 
+export const grocery_section2: {
+  Produce: 'Produce',
+  Deli: 'Deli',
+  Bakery: 'Bakery',
+  Meat_Seafood: 'Meat_Seafood',
+  Dairy_Eggs: 'Dairy_Eggs',
+  Dry__Goods: 'Dry__Goods',
+  Canned__Foods: 'Canned__Foods',
+  Spices_Herbs: 'Spices_Herbs',
+  Beverages: 'Beverages',
+  Frozen__Foods: 'Frozen__Foods',
+  Oil_Vinegar: 'Oil_Vinegar',
+  Other__Aisles: 'Other__Aisles'
+};
+
+export type grocery_section2 = (typeof grocery_section2)[keyof typeof grocery_section2]
+
+
 export const ingredient_photo_upload_state: {
   uploading: 'uploading',
   ai_processing: 'ai_processing',
@@ -196,6 +206,14 @@ export const ingredient_photo_upload_state: {
 };
 
 export type ingredient_photo_upload_state = (typeof ingredient_photo_upload_state)[keyof typeof ingredient_photo_upload_state]
+
+
+export const ingredients_tracking_type: {
+  fill_level: 'fill_level',
+  count: 'count'
+};
+
+export type ingredients_tracking_type = (typeof ingredients_tracking_type)[keyof typeof ingredients_tracking_type]
 
 
 export const jobs_state: {
@@ -435,7 +453,7 @@ export namespace Prisma {
 
   /**
    * Prisma Client JS version: 4.8.1
-   * Query Engine version: 23fdc5965b1e05fc54e5f26ed3de66776b93de64
+   * Query Engine version: d6e67a83f971b175a593ccc12e15c4a757f93ffe
    */
   export type PrismaVersion = {
     client: string
@@ -1058,7 +1076,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type IngredientsCountOutputTypeSelect = {
-    ingredient_events?: boolean | IngredientsCountOutputTypeCountIngredient_eventsArgs
+    ingredient_events?: boolean
   }
 
   export type IngredientsCountOutputTypeGetPayload<S extends boolean | null | undefined | IngredientsCountOutputTypeArgs> =
@@ -1091,14 +1109,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
 
-  /**
-   * IngredientsCountOutputType without action
-   */
-  export type IngredientsCountOutputTypeCountIngredient_eventsArgs = {
-    where?: Ingredient_eventsWhereInput
-  }
-
-
 
   /**
    * Count Type Ingredients_photo_uploadsCountOutputType
@@ -1110,7 +1120,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type Ingredients_photo_uploadsCountOutputTypeSelect = {
-    ingredients?: boolean | Ingredients_photo_uploadsCountOutputTypeCountIngredientsArgs
+    ingredients?: boolean
   }
 
   export type Ingredients_photo_uploadsCountOutputTypeGetPayload<S extends boolean | null | undefined | Ingredients_photo_uploadsCountOutputTypeArgs> =
@@ -1143,14 +1153,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
 
-  /**
-   * Ingredients_photo_uploadsCountOutputType without action
-   */
-  export type Ingredients_photo_uploadsCountOutputTypeCountIngredientsArgs = {
-    where?: IngredientsWhereInput
-  }
-
-
 
   /**
    * Count Type RecipesCountOutputType
@@ -1162,7 +1164,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type RecipesCountOutputTypeSelect = {
-    recipe_ingredients?: boolean | RecipesCountOutputTypeCountRecipe_ingredientsArgs
+    recipe_ingredients?: boolean
   }
 
   export type RecipesCountOutputTypeGetPayload<S extends boolean | null | undefined | RecipesCountOutputTypeArgs> =
@@ -1195,14 +1197,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
 
-  /**
-   * RecipesCountOutputType without action
-   */
-  export type RecipesCountOutputTypeCountRecipe_ingredientsArgs = {
-    where?: Recipe_ingredientsWhereInput
-  }
-
-
 
   /**
    * Count Type UsersCountOutputType
@@ -1216,9 +1210,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   }
 
   export type UsersCountOutputTypeSelect = {
-    ingredient_events?: boolean | UsersCountOutputTypeCountIngredient_eventsArgs
-    ingredients_photo_uploads?: boolean | UsersCountOutputTypeCountIngredients_photo_uploadsArgs
-    recipes?: boolean | UsersCountOutputTypeCountRecipesArgs
+    ingredient_events?: boolean
+    ingredients_photo_uploads?: boolean
+    recipes?: boolean
   }
 
   export type UsersCountOutputTypeGetPayload<S extends boolean | null | undefined | UsersCountOutputTypeArgs> =
@@ -1248,30 +1242,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
      * 
     **/
     select?: UsersCountOutputTypeSelect | null
-  }
-
-
-  /**
-   * UsersCountOutputType without action
-   */
-  export type UsersCountOutputTypeCountIngredient_eventsArgs = {
-    where?: Ingredient_eventsWhereInput
-  }
-
-
-  /**
-   * UsersCountOutputType without action
-   */
-  export type UsersCountOutputTypeCountIngredients_photo_uploadsArgs = {
-    where?: Ingredients_photo_uploadsWhereInput
-  }
-
-
-  /**
-   * UsersCountOutputType without action
-   */
-  export type UsersCountOutputTypeCountRecipesArgs = {
-    where?: RecipesWhereInput
   }
 
 
@@ -2548,14 +2518,14 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     created_at?: boolean
     updated_at?: boolean
     ingredient_events?: boolean | Ingredients$ingredient_eventsArgs
-    ingredients_photo_uploads?: boolean | Ingredients$ingredients_photo_uploadsArgs
+    ingredients_photo_uploads?: boolean | Ingredients_photo_uploadsArgs
     _count?: boolean | IngredientsCountOutputTypeArgs
   }
 
 
   export type IngredientsInclude = {
     ingredient_events?: boolean | Ingredients$ingredient_eventsArgs
-    ingredients_photo_uploads?: boolean | Ingredients$ingredients_photo_uploadsArgs
+    ingredients_photo_uploads?: boolean | Ingredients_photo_uploadsArgs
     _count?: boolean | IngredientsCountOutputTypeArgs
   } 
 
@@ -2951,7 +2921,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
     ingredient_events<T extends Ingredients$ingredient_eventsArgs= {}>(args?: Subset<T, Ingredients$ingredient_eventsArgs>): PrismaPromise<Array<Ingredient_eventsGetPayload<T>>| Null>;
 
-    ingredients_photo_uploads<T extends Ingredients$ingredients_photo_uploadsArgs= {}>(args?: Subset<T, Ingredients$ingredients_photo_uploadsArgs>): Prisma__Ingredients_photo_uploadsClient<Ingredients_photo_uploadsGetPayload<T> | Null>;
+    ingredients_photo_uploads<T extends Ingredients_photo_uploadsArgs= {}>(args?: Subset<T, Ingredients_photo_uploadsArgs>): Prisma__Ingredients_photo_uploadsClient<Ingredients_photo_uploadsGetPayload<T> | Null>;
 
     private get _document();
     /**
@@ -3376,24 +3346,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     take?: number
     skip?: number
     distinct?: Enumerable<Ingredient_eventsScalarFieldEnum>
-  }
-
-
-  /**
-   * Ingredients.ingredients_photo_uploads
-   */
-  export type Ingredients$ingredients_photo_uploadsArgs = {
-    /**
-     * Select specific fields to fetch from the Ingredients_photo_uploads
-     * 
-    **/
-    select?: Ingredients_photo_uploadsSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: Ingredients_photo_uploadsInclude | null
-    where?: Ingredients_photo_uploadsWhereInput
   }
 
 
@@ -5459,7 +5411,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing: string | null
     extracted_name: string | null
     embedding: string | null
-    grocery_section: grocery_section | null
+    grocery_section: grocery_section2 | null
     recipe_id: string | null
   }
 
@@ -5468,7 +5420,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing: string | null
     extracted_name: string | null
     embedding: string | null
-    grocery_section: grocery_section | null
+    grocery_section: grocery_section2 | null
     recipe_id: string | null
   }
 
@@ -5594,7 +5546,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing: string
     extracted_name: string
     embedding: string
-    grocery_section: grocery_section
+    grocery_section: grocery_section2
     recipe_id: string
     _count: Recipe_ingredientsCountAggregateOutputType | null
     _min: Recipe_ingredientsMinAggregateOutputType | null
@@ -8540,16 +8492,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   // Based on
   // https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
 
-  export const TransactionIsolationLevel: {
-    ReadUncommitted: 'ReadUncommitted',
-    ReadCommitted: 'ReadCommitted',
-    RepeatableRead: 'RepeatableRead',
-    Serializable: 'Serializable'
-  };
-
-  export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
-
-
   export const Ingredient_eventsScalarFieldEnum: {
     id: 'id',
     ingredient_id: 'ingredient_id',
@@ -8609,6 +8551,31 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type JobsScalarFieldEnum = (typeof JobsScalarFieldEnum)[keyof typeof JobsScalarFieldEnum]
 
 
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+  export const QueryMode: {
+    default: 'default',
+    insensitive: 'insensitive'
+  };
+
+  export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
   export const Recipe_ingredientsScalarFieldEnum: {
     id: 'id',
     listing: 'listing',
@@ -8634,6 +8601,24 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type RecipesScalarFieldEnum = (typeof RecipesScalarFieldEnum)[keyof typeof RecipesScalarFieldEnum]
 
 
+  export const SortOrder: {
+    asc: 'asc',
+    desc: 'desc'
+  };
+
+  export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+  export const TransactionIsolationLevel: {
+    ReadUncommitted: 'ReadUncommitted',
+    ReadCommitted: 'ReadCommitted',
+    RepeatableRead: 'RepeatableRead',
+    Serializable: 'Serializable'
+  };
+
+  export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
   export const UsersScalarFieldEnum: {
     id: 'id',
     name: 'name',
@@ -8643,176 +8628,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
 
 
-  export const SortOrder: {
-    asc: 'asc',
-    desc: 'desc'
-  };
-
-  export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
-
-
-  export const NullableJsonNullValueInput: {
-    DbNull: typeof DbNull,
-    JsonNull: typeof JsonNull
-  };
-
-  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
-
-
-  export const QueryMode: {
-    default: 'default',
-    insensitive: 'insensitive'
-  };
-
-  export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
-
-
-  export const JsonNullValueFilter: {
-    DbNull: typeof DbNull,
-    JsonNull: typeof JsonNull,
-    AnyNull: typeof AnyNull
-  };
-
-  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-  export const NullsOrder: {
-    first: 'first',
-    last: 'last'
-  };
-
-  export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
-
-
-  /**
-   * Field references 
-   */
-
-
-  /**
-   * Reference to a field of type 'String'
-   */
-  export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String'>
-    
-
-
-  /**
-   * Reference to a field of type 'String[]'
-   */
-  export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'DateTime'
-   */
-  export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
-    
-
-
-  /**
-   * Reference to a field of type 'DateTime[]'
-   */
-  export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Json'
-   */
-  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-  /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
-    
-
-
-  /**
-   * Reference to a field of type 'ingredients_tracking_type'
-   */
-  export type Enumingredients_tracking_typeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ingredients_tracking_type'>
-    
-
-
-  /**
-   * Reference to a field of type 'ingredients_tracking_type[]'
-   */
-  export type ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ingredients_tracking_type[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'grocery_section'
-   */
-  export type Enumgrocery_sectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'grocery_section'>
-    
-
-
-  /**
-   * Reference to a field of type 'grocery_section[]'
-   */
-  export type ListEnumgrocery_sectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'grocery_section[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'ingredient_photo_upload_state'
-   */
-  export type Enumingredient_photo_upload_stateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ingredient_photo_upload_state'>
-    
-
-
-  /**
-   * Reference to a field of type 'ingredient_photo_upload_state[]'
-   */
-  export type ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ingredient_photo_upload_state[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float'
-   */
-  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float[]'
-   */
-  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'jobs_state'
-   */
-  export type Enumjobs_stateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'jobs_state'>
-    
-
-
-  /**
-   * Reference to a field of type 'jobs_state[]'
-   */
-  export type ListEnumjobs_stateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'jobs_state[]'>
-    
   /**
    * Deep Input Types
    */
@@ -8822,12 +8637,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     AND?: Enumerable<Ingredient_eventsWhereInput>
     OR?: Enumerable<Ingredient_eventsWhereInput>
     NOT?: Enumerable<Ingredient_eventsWhereInput>
-    id?: UuidFilter<"Ingredient_events"> | string
-    ingredient_id?: UuidFilter<"Ingredient_events"> | string
-    user_id?: StringFilter<"Ingredient_events"> | string
-    timestamp?: DateTimeFilter<"Ingredient_events"> | Date | string
-    from_values?: JsonNullableFilter<"Ingredient_events">
-    to_values?: JsonNullableFilter<"Ingredient_events">
+    id?: UuidFilter | string
+    ingredient_id?: UuidFilter | string
+    user_id?: StringFilter | string
+    timestamp?: DateTimeFilter | Date | string
+    from_values?: JsonNullableFilter
+    to_values?: JsonNullableFilter
     ingredients?: XOR<IngredientsRelationFilter, IngredientsWhereInput>
     users?: XOR<UsersRelationFilter, UsersWhereInput>
   }
@@ -8837,33 +8652,23 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     ingredient_id?: SortOrder
     user_id?: SortOrder
     timestamp?: SortOrder
-    from_values?: SortOrderInput | SortOrder
-    to_values?: SortOrderInput | SortOrder
+    from_values?: SortOrder
+    to_values?: SortOrder
     ingredients?: IngredientsOrderByWithRelationInput
     users?: UsersOrderByWithRelationInput
   }
 
-  export type Ingredient_eventsWhereUniqueInput = Prisma.AtLeast<{
+  export type Ingredient_eventsWhereUniqueInput = {
     id?: string
-    AND?: Enumerable<Ingredient_eventsWhereInput>
-    OR?: Enumerable<Ingredient_eventsWhereInput>
-    NOT?: Enumerable<Ingredient_eventsWhereInput>
-    ingredient_id?: UuidFilter<"Ingredient_events"> | string
-    user_id?: StringFilter<"Ingredient_events"> | string
-    timestamp?: DateTimeFilter<"Ingredient_events"> | Date | string
-    from_values?: JsonNullableFilter<"Ingredient_events">
-    to_values?: JsonNullableFilter<"Ingredient_events">
-    ingredients?: XOR<IngredientsRelationFilter, IngredientsWhereInput>
-    users?: XOR<UsersRelationFilter, UsersWhereInput>
-  }, "id">
+  }
 
   export type Ingredient_eventsOrderByWithAggregationInput = {
     id?: SortOrder
     ingredient_id?: SortOrder
     user_id?: SortOrder
     timestamp?: SortOrder
-    from_values?: SortOrderInput | SortOrder
-    to_values?: SortOrderInput | SortOrder
+    from_values?: SortOrder
+    to_values?: SortOrder
     _count?: Ingredient_eventsCountOrderByAggregateInput
     _max?: Ingredient_eventsMaxOrderByAggregateInput
     _min?: Ingredient_eventsMinOrderByAggregateInput
@@ -8873,33 +8678,33 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     AND?: Enumerable<Ingredient_eventsScalarWhereWithAggregatesInput>
     OR?: Enumerable<Ingredient_eventsScalarWhereWithAggregatesInput>
     NOT?: Enumerable<Ingredient_eventsScalarWhereWithAggregatesInput>
-    id?: UuidWithAggregatesFilter<"Ingredient_events"> | string
-    ingredient_id?: UuidWithAggregatesFilter<"Ingredient_events"> | string
-    user_id?: StringWithAggregatesFilter<"Ingredient_events"> | string
-    timestamp?: DateTimeWithAggregatesFilter<"Ingredient_events"> | Date | string
-    from_values?: JsonNullableWithAggregatesFilter<"Ingredient_events">
-    to_values?: JsonNullableWithAggregatesFilter<"Ingredient_events">
+    id?: UuidWithAggregatesFilter | string
+    ingredient_id?: UuidWithAggregatesFilter | string
+    user_id?: StringWithAggregatesFilter | string
+    timestamp?: DateTimeWithAggregatesFilter | Date | string
+    from_values?: JsonNullableWithAggregatesFilter
+    to_values?: JsonNullableWithAggregatesFilter
   }
 
   export type IngredientsWhereInput = {
     AND?: Enumerable<IngredientsWhereInput>
     OR?: Enumerable<IngredientsWhereInput>
     NOT?: Enumerable<IngredientsWhereInput>
-    id?: UuidFilter<"Ingredients"> | string
-    name?: StringFilter<"Ingredients"> | string
-    description?: StringFilter<"Ingredients"> | string
-    is_reviewed?: BoolFilter<"Ingredients"> | boolean
-    embedding?: StringFilter<"Ingredients"> | string
-    tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | ingredients_tracking_type | null
-    fill_level?: IntFilter<"Ingredients"> | number
-    grocery_section?: Enumgrocery_sectionFilter<"Ingredients"> | grocery_section
-    count?: IntFilter<"Ingredients"> | number
-    expiration_date?: DateTimeFilter<"Ingredients"> | Date | string
-    ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
-    created_at?: DateTimeFilter<"Ingredients"> | Date | string
-    updated_at?: DateTimeFilter<"Ingredients"> | Date | string
+    id?: UuidFilter | string
+    name?: StringFilter | string
+    description?: StringFilter | string
+    is_reviewed?: BoolFilter | boolean
+    embedding?: StringFilter | string
+    tracking_type?: Enumingredients_tracking_typeNullableFilter | ingredients_tracking_type | null
+    fill_level?: IntFilter | number
+    grocery_section?: Enumgrocery_sectionFilter | grocery_section
+    count?: IntFilter | number
+    expiration_date?: DateTimeFilter | Date | string
+    ingredients_photo_uploads_id?: UuidNullableFilter | string | null
+    created_at?: DateTimeFilter | Date | string
+    updated_at?: DateTimeFilter | Date | string
     ingredient_events?: Ingredient_eventsListRelationFilter
-    ingredients_photo_uploads?: XOR<Ingredients_photo_uploadsNullableRelationFilter, Ingredients_photo_uploadsWhereInput> | null
+    ingredients_photo_uploads?: XOR<Ingredients_photo_uploadsRelationFilter, Ingredients_photo_uploadsWhereInput> | null
   }
 
   export type IngredientsOrderByWithRelationInput = {
@@ -8908,38 +8713,21 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: SortOrder
     is_reviewed?: SortOrder
     embedding?: SortOrder
-    tracking_type?: SortOrderInput | SortOrder
+    tracking_type?: SortOrder
     fill_level?: SortOrder
     grocery_section?: SortOrder
     count?: SortOrder
     expiration_date?: SortOrder
-    ingredients_photo_uploads_id?: SortOrderInput | SortOrder
+    ingredients_photo_uploads_id?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     ingredient_events?: Ingredient_eventsOrderByRelationAggregateInput
     ingredients_photo_uploads?: Ingredients_photo_uploadsOrderByWithRelationInput
   }
 
-  export type IngredientsWhereUniqueInput = Prisma.AtLeast<{
+  export type IngredientsWhereUniqueInput = {
     id?: string
-    AND?: Enumerable<IngredientsWhereInput>
-    OR?: Enumerable<IngredientsWhereInput>
-    NOT?: Enumerable<IngredientsWhereInput>
-    name?: StringFilter<"Ingredients"> | string
-    description?: StringFilter<"Ingredients"> | string
-    is_reviewed?: BoolFilter<"Ingredients"> | boolean
-    embedding?: StringFilter<"Ingredients"> | string
-    tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | ingredients_tracking_type | null
-    fill_level?: IntFilter<"Ingredients"> | number
-    grocery_section?: Enumgrocery_sectionFilter<"Ingredients"> | grocery_section
-    count?: IntFilter<"Ingredients"> | number
-    expiration_date?: DateTimeFilter<"Ingredients"> | Date | string
-    ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
-    created_at?: DateTimeFilter<"Ingredients"> | Date | string
-    updated_at?: DateTimeFilter<"Ingredients"> | Date | string
-    ingredient_events?: Ingredient_eventsListRelationFilter
-    ingredients_photo_uploads?: XOR<Ingredients_photo_uploadsNullableRelationFilter, Ingredients_photo_uploadsWhereInput> | null
-  }, "id">
+  }
 
   export type IngredientsOrderByWithAggregationInput = {
     id?: SortOrder
@@ -8947,12 +8735,12 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     description?: SortOrder
     is_reviewed?: SortOrder
     embedding?: SortOrder
-    tracking_type?: SortOrderInput | SortOrder
+    tracking_type?: SortOrder
     fill_level?: SortOrder
     grocery_section?: SortOrder
     count?: SortOrder
     expiration_date?: SortOrder
-    ingredients_photo_uploads_id?: SortOrderInput | SortOrder
+    ingredients_photo_uploads_id?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     _count?: IngredientsCountOrderByAggregateInput
@@ -8966,33 +8754,33 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     AND?: Enumerable<IngredientsScalarWhereWithAggregatesInput>
     OR?: Enumerable<IngredientsScalarWhereWithAggregatesInput>
     NOT?: Enumerable<IngredientsScalarWhereWithAggregatesInput>
-    id?: UuidWithAggregatesFilter<"Ingredients"> | string
-    name?: StringWithAggregatesFilter<"Ingredients"> | string
-    description?: StringWithAggregatesFilter<"Ingredients"> | string
-    is_reviewed?: BoolWithAggregatesFilter<"Ingredients"> | boolean
-    embedding?: StringWithAggregatesFilter<"Ingredients"> | string
-    tracking_type?: Enumingredients_tracking_typeNullableWithAggregatesFilter<"Ingredients"> | ingredients_tracking_type | null
-    fill_level?: IntWithAggregatesFilter<"Ingredients"> | number
-    grocery_section?: Enumgrocery_sectionWithAggregatesFilter<"Ingredients"> | grocery_section
-    count?: IntWithAggregatesFilter<"Ingredients"> | number
-    expiration_date?: DateTimeWithAggregatesFilter<"Ingredients"> | Date | string
-    ingredients_photo_uploads_id?: UuidNullableWithAggregatesFilter<"Ingredients"> | string | null
-    created_at?: DateTimeWithAggregatesFilter<"Ingredients"> | Date | string
-    updated_at?: DateTimeWithAggregatesFilter<"Ingredients"> | Date | string
+    id?: UuidWithAggregatesFilter | string
+    name?: StringWithAggregatesFilter | string
+    description?: StringWithAggregatesFilter | string
+    is_reviewed?: BoolWithAggregatesFilter | boolean
+    embedding?: StringWithAggregatesFilter | string
+    tracking_type?: Enumingredients_tracking_typeNullableWithAggregatesFilter | ingredients_tracking_type | null
+    fill_level?: IntWithAggregatesFilter | number
+    grocery_section?: Enumgrocery_sectionWithAggregatesFilter | grocery_section
+    count?: IntWithAggregatesFilter | number
+    expiration_date?: DateTimeWithAggregatesFilter | Date | string
+    ingredients_photo_uploads_id?: UuidNullableWithAggregatesFilter | string | null
+    created_at?: DateTimeWithAggregatesFilter | Date | string
+    updated_at?: DateTimeWithAggregatesFilter | Date | string
   }
 
   export type Ingredients_photo_uploadsWhereInput = {
     AND?: Enumerable<Ingredients_photo_uploadsWhereInput>
     OR?: Enumerable<Ingredients_photo_uploadsWhereInput>
     NOT?: Enumerable<Ingredients_photo_uploadsWhereInput>
-    id?: UuidFilter<"Ingredients_photo_uploads"> | string
-    user_id?: StringFilter<"Ingredients_photo_uploads"> | string
-    created_at?: DateTimeFilter<"Ingredients_photo_uploads"> | Date | string
-    uploaded_at?: DateTimeNullableFilter<"Ingredients_photo_uploads"> | Date | string | null
-    state?: Enumingredient_photo_upload_stateFilter<"Ingredients_photo_uploads"> | ingredient_photo_upload_state
-    upload_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
-    ai_processing_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
-    photo_url?: StringNullableFilter<"Ingredients_photo_uploads"> | string | null
+    id?: UuidFilter | string
+    user_id?: StringFilter | string
+    created_at?: DateTimeFilter | Date | string
+    uploaded_at?: DateTimeNullableFilter | Date | string | null
+    state?: Enumingredient_photo_upload_stateFilter | ingredient_photo_upload_state
+    upload_duration_sec?: FloatNullableFilter | number | null
+    ai_processing_duration_sec?: FloatNullableFilter | number | null
+    photo_url?: StringNullableFilter | string | null
     ingredients?: IngredientsListRelationFilter
     users?: XOR<UsersRelationFilter, UsersWhereInput>
   }
@@ -9001,40 +8789,28 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: SortOrder
     user_id?: SortOrder
     created_at?: SortOrder
-    uploaded_at?: SortOrderInput | SortOrder
+    uploaded_at?: SortOrder
     state?: SortOrder
-    upload_duration_sec?: SortOrderInput | SortOrder
-    ai_processing_duration_sec?: SortOrderInput | SortOrder
-    photo_url?: SortOrderInput | SortOrder
+    upload_duration_sec?: SortOrder
+    ai_processing_duration_sec?: SortOrder
+    photo_url?: SortOrder
     ingredients?: IngredientsOrderByRelationAggregateInput
     users?: UsersOrderByWithRelationInput
   }
 
-  export type Ingredients_photo_uploadsWhereUniqueInput = Prisma.AtLeast<{
+  export type Ingredients_photo_uploadsWhereUniqueInput = {
     id?: string
-    AND?: Enumerable<Ingredients_photo_uploadsWhereInput>
-    OR?: Enumerable<Ingredients_photo_uploadsWhereInput>
-    NOT?: Enumerable<Ingredients_photo_uploadsWhereInput>
-    user_id?: StringFilter<"Ingredients_photo_uploads"> | string
-    created_at?: DateTimeFilter<"Ingredients_photo_uploads"> | Date | string
-    uploaded_at?: DateTimeNullableFilter<"Ingredients_photo_uploads"> | Date | string | null
-    state?: Enumingredient_photo_upload_stateFilter<"Ingredients_photo_uploads"> | ingredient_photo_upload_state
-    upload_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
-    ai_processing_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
-    photo_url?: StringNullableFilter<"Ingredients_photo_uploads"> | string | null
-    ingredients?: IngredientsListRelationFilter
-    users?: XOR<UsersRelationFilter, UsersWhereInput>
-  }, "id">
+  }
 
   export type Ingredients_photo_uploadsOrderByWithAggregationInput = {
     id?: SortOrder
     user_id?: SortOrder
     created_at?: SortOrder
-    uploaded_at?: SortOrderInput | SortOrder
+    uploaded_at?: SortOrder
     state?: SortOrder
-    upload_duration_sec?: SortOrderInput | SortOrder
-    ai_processing_duration_sec?: SortOrderInput | SortOrder
-    photo_url?: SortOrderInput | SortOrder
+    upload_duration_sec?: SortOrder
+    ai_processing_duration_sec?: SortOrder
+    photo_url?: SortOrder
     _count?: Ingredients_photo_uploadsCountOrderByAggregateInput
     _avg?: Ingredients_photo_uploadsAvgOrderByAggregateInput
     _max?: Ingredients_photo_uploadsMaxOrderByAggregateInput
@@ -9046,64 +8822,54 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     AND?: Enumerable<Ingredients_photo_uploadsScalarWhereWithAggregatesInput>
     OR?: Enumerable<Ingredients_photo_uploadsScalarWhereWithAggregatesInput>
     NOT?: Enumerable<Ingredients_photo_uploadsScalarWhereWithAggregatesInput>
-    id?: UuidWithAggregatesFilter<"Ingredients_photo_uploads"> | string
-    user_id?: StringWithAggregatesFilter<"Ingredients_photo_uploads"> | string
-    created_at?: DateTimeWithAggregatesFilter<"Ingredients_photo_uploads"> | Date | string
-    uploaded_at?: DateTimeNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | Date | string | null
-    state?: Enumingredient_photo_upload_stateWithAggregatesFilter<"Ingredients_photo_uploads"> | ingredient_photo_upload_state
-    upload_duration_sec?: FloatNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | number | null
-    ai_processing_duration_sec?: FloatNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | number | null
-    photo_url?: StringNullableWithAggregatesFilter<"Ingredients_photo_uploads"> | string | null
+    id?: UuidWithAggregatesFilter | string
+    user_id?: StringWithAggregatesFilter | string
+    created_at?: DateTimeWithAggregatesFilter | Date | string
+    uploaded_at?: DateTimeNullableWithAggregatesFilter | Date | string | null
+    state?: Enumingredient_photo_upload_stateWithAggregatesFilter | ingredient_photo_upload_state
+    upload_duration_sec?: FloatNullableWithAggregatesFilter | number | null
+    ai_processing_duration_sec?: FloatNullableWithAggregatesFilter | number | null
+    photo_url?: StringNullableWithAggregatesFilter | string | null
   }
 
   export type JobsWhereInput = {
     AND?: Enumerable<JobsWhereInput>
     OR?: Enumerable<JobsWhereInput>
     NOT?: Enumerable<JobsWhereInput>
-    id?: UuidFilter<"Jobs"> | string
-    state?: Enumjobs_stateFilter<"Jobs"> | jobs_state
-    target_id?: UuidNullableFilter<"Jobs"> | string | null
-    type?: StringFilter<"Jobs"> | string
-    created_at?: DateTimeFilter<"Jobs"> | Date | string
-    updated_at?: DateTimeFilter<"Jobs"> | Date | string
-    error?: JsonNullableFilter<"Jobs">
-    result?: JsonNullableFilter<"Jobs">
+    id?: UuidFilter | string
+    state?: Enumjobs_stateFilter | jobs_state
+    target_id?: UuidNullableFilter | string | null
+    type?: StringFilter | string
+    created_at?: DateTimeFilter | Date | string
+    updated_at?: DateTimeFilter | Date | string
+    error?: JsonNullableFilter
+    result?: JsonNullableFilter
   }
 
   export type JobsOrderByWithRelationInput = {
     id?: SortOrder
     state?: SortOrder
-    target_id?: SortOrderInput | SortOrder
+    target_id?: SortOrder
     type?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
-    error?: SortOrderInput | SortOrder
-    result?: SortOrderInput | SortOrder
+    error?: SortOrder
+    result?: SortOrder
   }
 
-  export type JobsWhereUniqueInput = Prisma.AtLeast<{
+  export type JobsWhereUniqueInput = {
     id?: string
-    AND?: Enumerable<JobsWhereInput>
-    OR?: Enumerable<JobsWhereInput>
-    NOT?: Enumerable<JobsWhereInput>
-    state?: Enumjobs_stateFilter<"Jobs"> | jobs_state
-    target_id?: UuidNullableFilter<"Jobs"> | string | null
-    type?: StringFilter<"Jobs"> | string
-    created_at?: DateTimeFilter<"Jobs"> | Date | string
-    updated_at?: DateTimeFilter<"Jobs"> | Date | string
-    error?: JsonNullableFilter<"Jobs">
-    result?: JsonNullableFilter<"Jobs">
-  }, "id">
+  }
 
   export type JobsOrderByWithAggregationInput = {
     id?: SortOrder
     state?: SortOrder
-    target_id?: SortOrderInput | SortOrder
+    target_id?: SortOrder
     type?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
-    error?: SortOrderInput | SortOrder
-    result?: SortOrderInput | SortOrder
+    error?: SortOrder
+    result?: SortOrder
     _count?: JobsCountOrderByAggregateInput
     _max?: JobsMaxOrderByAggregateInput
     _min?: JobsMinOrderByAggregateInput
@@ -9113,26 +8879,26 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     AND?: Enumerable<JobsScalarWhereWithAggregatesInput>
     OR?: Enumerable<JobsScalarWhereWithAggregatesInput>
     NOT?: Enumerable<JobsScalarWhereWithAggregatesInput>
-    id?: UuidWithAggregatesFilter<"Jobs"> | string
-    state?: Enumjobs_stateWithAggregatesFilter<"Jobs"> | jobs_state
-    target_id?: UuidNullableWithAggregatesFilter<"Jobs"> | string | null
-    type?: StringWithAggregatesFilter<"Jobs"> | string
-    created_at?: DateTimeWithAggregatesFilter<"Jobs"> | Date | string
-    updated_at?: DateTimeWithAggregatesFilter<"Jobs"> | Date | string
-    error?: JsonNullableWithAggregatesFilter<"Jobs">
-    result?: JsonNullableWithAggregatesFilter<"Jobs">
+    id?: UuidWithAggregatesFilter | string
+    state?: Enumjobs_stateWithAggregatesFilter | jobs_state
+    target_id?: UuidNullableWithAggregatesFilter | string | null
+    type?: StringWithAggregatesFilter | string
+    created_at?: DateTimeWithAggregatesFilter | Date | string
+    updated_at?: DateTimeWithAggregatesFilter | Date | string
+    error?: JsonNullableWithAggregatesFilter
+    result?: JsonNullableWithAggregatesFilter
   }
 
   export type Recipe_ingredientsWhereInput = {
     AND?: Enumerable<Recipe_ingredientsWhereInput>
     OR?: Enumerable<Recipe_ingredientsWhereInput>
     NOT?: Enumerable<Recipe_ingredientsWhereInput>
-    id?: UuidFilter<"Recipe_ingredients"> | string
-    listing?: StringFilter<"Recipe_ingredients"> | string
-    extracted_name?: StringFilter<"Recipe_ingredients"> | string
-    embedding?: StringFilter<"Recipe_ingredients"> | string
-    grocery_section?: Enumgrocery_sectionFilter<"Recipe_ingredients"> | grocery_section
-    recipe_id?: UuidFilter<"Recipe_ingredients"> | string
+    id?: UuidFilter | string
+    listing?: StringFilter | string
+    extracted_name?: StringFilter | string
+    embedding?: StringFilter | string
+    grocery_section?: Enumgrocery_section2Filter | grocery_section2
+    recipe_id?: UuidFilter | string
     recipes?: XOR<RecipesRelationFilter, RecipesWhereInput>
   }
 
@@ -9146,18 +8912,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     recipes?: RecipesOrderByWithRelationInput
   }
 
-  export type Recipe_ingredientsWhereUniqueInput = Prisma.AtLeast<{
+  export type Recipe_ingredientsWhereUniqueInput = {
     id?: string
-    AND?: Enumerable<Recipe_ingredientsWhereInput>
-    OR?: Enumerable<Recipe_ingredientsWhereInput>
-    NOT?: Enumerable<Recipe_ingredientsWhereInput>
-    listing?: StringFilter<"Recipe_ingredients"> | string
-    extracted_name?: StringFilter<"Recipe_ingredients"> | string
-    embedding?: StringFilter<"Recipe_ingredients"> | string
-    grocery_section?: Enumgrocery_sectionFilter<"Recipe_ingredients"> | grocery_section
-    recipe_id?: UuidFilter<"Recipe_ingredients"> | string
-    recipes?: XOR<RecipesRelationFilter, RecipesWhereInput>
-  }, "id">
+  }
 
   export type Recipe_ingredientsOrderByWithAggregationInput = {
     id?: SortOrder
@@ -9175,25 +8932,25 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     AND?: Enumerable<Recipe_ingredientsScalarWhereWithAggregatesInput>
     OR?: Enumerable<Recipe_ingredientsScalarWhereWithAggregatesInput>
     NOT?: Enumerable<Recipe_ingredientsScalarWhereWithAggregatesInput>
-    id?: UuidWithAggregatesFilter<"Recipe_ingredients"> | string
-    listing?: StringWithAggregatesFilter<"Recipe_ingredients"> | string
-    extracted_name?: StringWithAggregatesFilter<"Recipe_ingredients"> | string
-    embedding?: StringWithAggregatesFilter<"Recipe_ingredients"> | string
-    grocery_section?: Enumgrocery_sectionWithAggregatesFilter<"Recipe_ingredients"> | grocery_section
-    recipe_id?: UuidWithAggregatesFilter<"Recipe_ingredients"> | string
+    id?: UuidWithAggregatesFilter | string
+    listing?: StringWithAggregatesFilter | string
+    extracted_name?: StringWithAggregatesFilter | string
+    embedding?: StringWithAggregatesFilter | string
+    grocery_section?: Enumgrocery_section2WithAggregatesFilter | grocery_section2
+    recipe_id?: UuidWithAggregatesFilter | string
   }
 
   export type RecipesWhereInput = {
     AND?: Enumerable<RecipesWhereInput>
     OR?: Enumerable<RecipesWhereInput>
     NOT?: Enumerable<RecipesWhereInput>
-    id?: UuidFilter<"Recipes"> | string
-    name?: StringFilter<"Recipes"> | string
-    description?: StringFilter<"Recipes"> | string
-    url?: StringFilter<"Recipes"> | string
-    user_id?: StringFilter<"Recipes"> | string
-    created_at?: DateTimeFilter<"Recipes"> | Date | string
-    updated_at?: DateTimeFilter<"Recipes"> | Date | string
+    id?: UuidFilter | string
+    name?: StringFilter | string
+    description?: StringFilter | string
+    url?: StringFilter | string
+    user_id?: StringFilter | string
+    created_at?: DateTimeFilter | Date | string
+    updated_at?: DateTimeFilter | Date | string
     recipe_ingredients?: Recipe_ingredientsListRelationFilter
     users?: XOR<UsersRelationFilter, UsersWhereInput>
   }
@@ -9210,20 +8967,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     users?: UsersOrderByWithRelationInput
   }
 
-  export type RecipesWhereUniqueInput = Prisma.AtLeast<{
+  export type RecipesWhereUniqueInput = {
     id?: string
-    AND?: Enumerable<RecipesWhereInput>
-    OR?: Enumerable<RecipesWhereInput>
-    NOT?: Enumerable<RecipesWhereInput>
-    name?: StringFilter<"Recipes"> | string
-    description?: StringFilter<"Recipes"> | string
-    url?: StringFilter<"Recipes"> | string
-    user_id?: StringFilter<"Recipes"> | string
-    created_at?: DateTimeFilter<"Recipes"> | Date | string
-    updated_at?: DateTimeFilter<"Recipes"> | Date | string
-    recipe_ingredients?: Recipe_ingredientsListRelationFilter
-    users?: XOR<UsersRelationFilter, UsersWhereInput>
-  }, "id">
+  }
 
   export type RecipesOrderByWithAggregationInput = {
     id?: SortOrder
@@ -9242,22 +8988,22 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     AND?: Enumerable<RecipesScalarWhereWithAggregatesInput>
     OR?: Enumerable<RecipesScalarWhereWithAggregatesInput>
     NOT?: Enumerable<RecipesScalarWhereWithAggregatesInput>
-    id?: UuidWithAggregatesFilter<"Recipes"> | string
-    name?: StringWithAggregatesFilter<"Recipes"> | string
-    description?: StringWithAggregatesFilter<"Recipes"> | string
-    url?: StringWithAggregatesFilter<"Recipes"> | string
-    user_id?: StringWithAggregatesFilter<"Recipes"> | string
-    created_at?: DateTimeWithAggregatesFilter<"Recipes"> | Date | string
-    updated_at?: DateTimeWithAggregatesFilter<"Recipes"> | Date | string
+    id?: UuidWithAggregatesFilter | string
+    name?: StringWithAggregatesFilter | string
+    description?: StringWithAggregatesFilter | string
+    url?: StringWithAggregatesFilter | string
+    user_id?: StringWithAggregatesFilter | string
+    created_at?: DateTimeWithAggregatesFilter | Date | string
+    updated_at?: DateTimeWithAggregatesFilter | Date | string
   }
 
   export type UsersWhereInput = {
     AND?: Enumerable<UsersWhereInput>
     OR?: Enumerable<UsersWhereInput>
     NOT?: Enumerable<UsersWhereInput>
-    id?: StringFilter<"Users"> | string
-    name?: StringFilter<"Users"> | string
-    avatar_url?: StringNullableFilter<"Users"> | string | null
+    id?: StringFilter | string
+    name?: StringFilter | string
+    avatar_url?: StringNullableFilter | string | null
     ingredient_events?: Ingredient_eventsListRelationFilter
     ingredients_photo_uploads?: Ingredients_photo_uploadsListRelationFilter
     recipes?: RecipesListRelationFilter
@@ -9266,28 +9012,20 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type UsersOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
-    avatar_url?: SortOrderInput | SortOrder
+    avatar_url?: SortOrder
     ingredient_events?: Ingredient_eventsOrderByRelationAggregateInput
     ingredients_photo_uploads?: Ingredients_photo_uploadsOrderByRelationAggregateInput
     recipes?: RecipesOrderByRelationAggregateInput
   }
 
-  export type UsersWhereUniqueInput = Prisma.AtLeast<{
+  export type UsersWhereUniqueInput = {
     id?: string
-    AND?: Enumerable<UsersWhereInput>
-    OR?: Enumerable<UsersWhereInput>
-    NOT?: Enumerable<UsersWhereInput>
-    name?: StringFilter<"Users"> | string
-    avatar_url?: StringNullableFilter<"Users"> | string | null
-    ingredient_events?: Ingredient_eventsListRelationFilter
-    ingredients_photo_uploads?: Ingredients_photo_uploadsListRelationFilter
-    recipes?: RecipesListRelationFilter
-  }, "id">
+  }
 
   export type UsersOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
-    avatar_url?: SortOrderInput | SortOrder
+    avatar_url?: SortOrder
     _count?: UsersCountOrderByAggregateInput
     _max?: UsersMaxOrderByAggregateInput
     _min?: UsersMinOrderByAggregateInput
@@ -9297,9 +9035,9 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     AND?: Enumerable<UsersScalarWhereWithAggregatesInput>
     OR?: Enumerable<UsersScalarWhereWithAggregatesInput>
     NOT?: Enumerable<UsersScalarWhereWithAggregatesInput>
-    id?: StringWithAggregatesFilter<"Users"> | string
-    name?: StringWithAggregatesFilter<"Users"> | string
-    avatar_url?: StringNullableWithAggregatesFilter<"Users"> | string | null
+    id?: StringWithAggregatesFilter | string
+    name?: StringWithAggregatesFilter | string
+    avatar_url?: StringNullableWithAggregatesFilter | string | null
   }
 
   export type Ingredient_eventsCreateInput = {
@@ -9640,7 +9378,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing: string
     extracted_name: string
     embedding: string
-    grocery_section: grocery_section
+    grocery_section: grocery_section2
     recipes: RecipesCreateNestedOneWithoutRecipe_ingredientsInput
   }
 
@@ -9649,7 +9387,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing: string
     extracted_name: string
     embedding: string
-    grocery_section: grocery_section
+    grocery_section: grocery_section2
     recipe_id: string
   }
 
@@ -9658,7 +9396,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: StringFieldUpdateOperationsInput | string
     extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
-    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
+    grocery_section?: Enumgrocery_section2FieldUpdateOperationsInput | grocery_section2
     recipes?: RecipesUpdateOneRequiredWithoutRecipe_ingredientsNestedInput
   }
 
@@ -9667,7 +9405,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: StringFieldUpdateOperationsInput | string
     extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
-    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
+    grocery_section?: Enumgrocery_section2FieldUpdateOperationsInput | grocery_section2
     recipe_id?: StringFieldUpdateOperationsInput | string
   }
 
@@ -9676,7 +9414,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing: string
     extracted_name: string
     embedding: string
-    grocery_section: grocery_section
+    grocery_section: grocery_section2
     recipe_id: string
   }
 
@@ -9685,7 +9423,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: StringFieldUpdateOperationsInput | string
     extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
-    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
+    grocery_section?: Enumgrocery_section2FieldUpdateOperationsInput | grocery_section2
   }
 
   export type Recipe_ingredientsUncheckedUpdateManyInput = {
@@ -9693,7 +9431,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: StringFieldUpdateOperationsInput | string
     extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
-    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
+    grocery_section?: Enumgrocery_section2FieldUpdateOperationsInput | grocery_section2
     recipe_id?: StringFieldUpdateOperationsInput | string
   }
 
@@ -9824,64 +9562,64 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type UuidFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
+  export type UuidFilter = {
+    equals?: string
+    in?: Enumerable<string>
+    notIn?: Enumerable<string>
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
     mode?: QueryMode
-    not?: NestedUuidFilter<$PrismaModel> | string
+    not?: NestedUuidFilter | string
   }
 
-  export type StringFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
+  export type StringFilter = {
+    equals?: string
+    in?: Enumerable<string>
+    notIn?: Enumerable<string>
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
     mode?: QueryMode
-    not?: NestedStringFilter<$PrismaModel> | string
+    not?: NestedStringFilter | string
   }
 
-  export type DateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  export type DateTimeFilter = {
+    equals?: Date | string
+    in?: Enumerable<Date> | Enumerable<string>
+    notIn?: Enumerable<Date> | Enumerable<string>
+    lt?: Date | string
+    lte?: Date | string
+    gt?: Date | string
+    gte?: Date | string
+    not?: NestedDateTimeFilter | Date | string
   }
-  export type JsonNullableFilter<$PrismaModel = never> = 
+  export type JsonNullableFilter = 
     | PatchUndefined<
-        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableFilterBase<$PrismaModel>>
+        Either<Required<JsonNullableFilterBase>, Exclude<keyof Required<JsonNullableFilterBase>, 'path'>>,
+        Required<JsonNullableFilterBase>
       >
-    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase>, 'path'>>
 
-  export type JsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  export type JsonNullableFilterBase = {
+    equals?: InputJsonValue | JsonNullValueFilter
     path?: Array<string>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    string_contains?: string
+    string_starts_with?: string
+    string_ends_with?: string
+    array_contains?: InputJsonValue | null
+    array_starts_with?: InputJsonValue | null
+    array_ends_with?: InputJsonValue | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonNullValueFilter
   }
 
   export type IngredientsRelationFilter = {
@@ -9892,11 +9630,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type UsersRelationFilter = {
     is?: UsersWhereInput
     isNot?: UsersWhereInput
-  }
-
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
   }
 
   export type Ingredient_eventsCountOrderByAggregateInput = {
@@ -9922,118 +9655,118 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     timestamp?: SortOrder
   }
 
-  export type UuidWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
+  export type UuidWithAggregatesFilter = {
+    equals?: string
+    in?: Enumerable<string>
+    notIn?: Enumerable<string>
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
     mode?: QueryMode
-    not?: NestedUuidWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
+    not?: NestedUuidWithAggregatesFilter | string
+    _count?: NestedIntFilter
+    _min?: NestedStringFilter
+    _max?: NestedStringFilter
   }
 
-  export type StringWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
+  export type StringWithAggregatesFilter = {
+    equals?: string
+    in?: Enumerable<string>
+    notIn?: Enumerable<string>
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
     mode?: QueryMode
-    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
+    not?: NestedStringWithAggregatesFilter | string
+    _count?: NestedIntFilter
+    _min?: NestedStringFilter
+    _max?: NestedStringFilter
   }
 
-  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
+  export type DateTimeWithAggregatesFilter = {
+    equals?: Date | string
+    in?: Enumerable<Date> | Enumerable<string>
+    notIn?: Enumerable<Date> | Enumerable<string>
+    lt?: Date | string
+    lte?: Date | string
+    gt?: Date | string
+    gte?: Date | string
+    not?: NestedDateTimeWithAggregatesFilter | Date | string
+    _count?: NestedIntFilter
+    _min?: NestedDateTimeFilter
+    _max?: NestedDateTimeFilter
   }
-  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> = 
+  export type JsonNullableWithAggregatesFilter = 
     | PatchUndefined<
-        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+        Either<Required<JsonNullableWithAggregatesFilterBase>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase>
       >
-    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase>, 'path'>>
 
-  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  export type JsonNullableWithAggregatesFilterBase = {
+    equals?: InputJsonValue | JsonNullValueFilter
     path?: Array<string>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedJsonNullableFilter<$PrismaModel>
-    _max?: NestedJsonNullableFilter<$PrismaModel>
+    string_contains?: string
+    string_starts_with?: string
+    string_ends_with?: string
+    array_contains?: InputJsonValue | null
+    array_starts_with?: InputJsonValue | null
+    array_ends_with?: InputJsonValue | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonNullValueFilter
+    _count?: NestedIntNullableFilter
+    _min?: NestedJsonNullableFilter
+    _max?: NestedJsonNullableFilter
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
+  export type BoolFilter = {
+    equals?: boolean
+    not?: NestedBoolFilter | boolean
   }
 
-  export type Enumingredients_tracking_typeNullableFilter<$PrismaModel = never> = {
-    equals?: ingredients_tracking_type | Enumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<ingredients_tracking_type> | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<ingredients_tracking_type> | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel> | ingredients_tracking_type | null
+  export type Enumingredients_tracking_typeNullableFilter = {
+    equals?: ingredients_tracking_type | null
+    in?: Enumerable<ingredients_tracking_type> | null
+    notIn?: Enumerable<ingredients_tracking_type> | null
+    not?: NestedEnumingredients_tracking_typeNullableFilter | ingredients_tracking_type | null
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
+  export type IntFilter = {
+    equals?: number
+    in?: Enumerable<number>
+    notIn?: Enumerable<number>
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntFilter | number
   }
 
-  export type Enumgrocery_sectionFilter<$PrismaModel = never> = {
-    equals?: grocery_section | Enumgrocery_sectionFieldRefInput<$PrismaModel>
-    in?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
-    not?: NestedEnumgrocery_sectionFilter<$PrismaModel> | grocery_section
+  export type Enumgrocery_sectionFilter = {
+    equals?: grocery_section
+    in?: Enumerable<grocery_section>
+    notIn?: Enumerable<grocery_section>
+    not?: NestedEnumgrocery_sectionFilter | grocery_section
   }
 
-  export type UuidNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
+  export type UuidNullableFilter = {
+    equals?: string | null
+    in?: Enumerable<string> | null
+    notIn?: Enumerable<string> | null
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
     mode?: QueryMode
-    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
+    not?: NestedUuidNullableFilter | string | null
   }
 
   export type Ingredient_eventsListRelationFilter = {
@@ -10042,7 +9775,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     none?: Ingredient_eventsWhereInput
   }
 
-  export type Ingredients_photo_uploadsNullableRelationFilter = {
+  export type Ingredients_photo_uploadsRelationFilter = {
     is?: Ingredients_photo_uploadsWhereInput | null
     isNot?: Ingredients_photo_uploadsWhereInput | null
   }
@@ -10109,107 +9842,107 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     count?: SortOrder
   }
 
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
+  export type BoolWithAggregatesFilter = {
+    equals?: boolean
+    not?: NestedBoolWithAggregatesFilter | boolean
+    _count?: NestedIntFilter
+    _min?: NestedBoolFilter
+    _max?: NestedBoolFilter
   }
 
-  export type Enumingredients_tracking_typeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: ingredients_tracking_type | Enumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<ingredients_tracking_type> | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<ingredients_tracking_type> | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumingredients_tracking_typeNullableWithAggregatesFilter<$PrismaModel> | ingredients_tracking_type | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel>
-    _max?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel>
+  export type Enumingredients_tracking_typeNullableWithAggregatesFilter = {
+    equals?: ingredients_tracking_type | null
+    in?: Enumerable<ingredients_tracking_type> | null
+    notIn?: Enumerable<ingredients_tracking_type> | null
+    not?: NestedEnumingredients_tracking_typeNullableWithAggregatesFilter | ingredients_tracking_type | null
+    _count?: NestedIntNullableFilter
+    _min?: NestedEnumingredients_tracking_typeNullableFilter
+    _max?: NestedEnumingredients_tracking_typeNullableFilter
   }
 
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
+  export type IntWithAggregatesFilter = {
+    equals?: number
+    in?: Enumerable<number>
+    notIn?: Enumerable<number>
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntWithAggregatesFilter | number
+    _count?: NestedIntFilter
+    _avg?: NestedFloatFilter
+    _sum?: NestedIntFilter
+    _min?: NestedIntFilter
+    _max?: NestedIntFilter
   }
 
-  export type Enumgrocery_sectionWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: grocery_section | Enumgrocery_sectionFieldRefInput<$PrismaModel>
-    in?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
-    not?: NestedEnumgrocery_sectionWithAggregatesFilter<$PrismaModel> | grocery_section
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumgrocery_sectionFilter<$PrismaModel>
-    _max?: NestedEnumgrocery_sectionFilter<$PrismaModel>
+  export type Enumgrocery_sectionWithAggregatesFilter = {
+    equals?: grocery_section
+    in?: Enumerable<grocery_section>
+    notIn?: Enumerable<grocery_section>
+    not?: NestedEnumgrocery_sectionWithAggregatesFilter | grocery_section
+    _count?: NestedIntFilter
+    _min?: NestedEnumgrocery_sectionFilter
+    _max?: NestedEnumgrocery_sectionFilter
   }
 
-  export type UuidNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
+  export type UuidNullableWithAggregatesFilter = {
+    equals?: string | null
+    in?: Enumerable<string> | null
+    notIn?: Enumerable<string> | null
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
     mode?: QueryMode
-    not?: NestedUuidNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
+    not?: NestedUuidNullableWithAggregatesFilter | string | null
+    _count?: NestedIntNullableFilter
+    _min?: NestedStringNullableFilter
+    _max?: NestedStringNullableFilter
   }
 
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  export type DateTimeNullableFilter = {
+    equals?: Date | string | null
+    in?: Enumerable<Date> | Enumerable<string> | null
+    notIn?: Enumerable<Date> | Enumerable<string> | null
+    lt?: Date | string
+    lte?: Date | string
+    gt?: Date | string
+    gte?: Date | string
+    not?: NestedDateTimeNullableFilter | Date | string | null
   }
 
-  export type Enumingredient_photo_upload_stateFilter<$PrismaModel = never> = {
-    equals?: ingredient_photo_upload_state | Enumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    in?: Enumerable<ingredient_photo_upload_state> | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<ingredient_photo_upload_state> | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    not?: NestedEnumingredient_photo_upload_stateFilter<$PrismaModel> | ingredient_photo_upload_state
+  export type Enumingredient_photo_upload_stateFilter = {
+    equals?: ingredient_photo_upload_state
+    in?: Enumerable<ingredient_photo_upload_state>
+    notIn?: Enumerable<ingredient_photo_upload_state>
+    not?: NestedEnumingredient_photo_upload_stateFilter | ingredient_photo_upload_state
   }
 
-  export type FloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  export type FloatNullableFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedFloatNullableFilter | number | null
   }
 
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
+  export type StringNullableFilter = {
+    equals?: string | null
+    in?: Enumerable<string> | null
+    notIn?: Enumerable<string> | null
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
     mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+    not?: NestedStringNullableFilter | string | null
   }
 
   export type IngredientsListRelationFilter = {
@@ -10265,69 +9998,69 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     ai_processing_duration_sec?: SortOrder
   }
 
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  export type DateTimeNullableWithAggregatesFilter = {
+    equals?: Date | string | null
+    in?: Enumerable<Date> | Enumerable<string> | null
+    notIn?: Enumerable<Date> | Enumerable<string> | null
+    lt?: Date | string
+    lte?: Date | string
+    gt?: Date | string
+    gte?: Date | string
+    not?: NestedDateTimeNullableWithAggregatesFilter | Date | string | null
+    _count?: NestedIntNullableFilter
+    _min?: NestedDateTimeNullableFilter
+    _max?: NestedDateTimeNullableFilter
   }
 
-  export type Enumingredient_photo_upload_stateWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: ingredient_photo_upload_state | Enumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    in?: Enumerable<ingredient_photo_upload_state> | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<ingredient_photo_upload_state> | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    not?: NestedEnumingredient_photo_upload_stateWithAggregatesFilter<$PrismaModel> | ingredient_photo_upload_state
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumingredient_photo_upload_stateFilter<$PrismaModel>
-    _max?: NestedEnumingredient_photo_upload_stateFilter<$PrismaModel>
+  export type Enumingredient_photo_upload_stateWithAggregatesFilter = {
+    equals?: ingredient_photo_upload_state
+    in?: Enumerable<ingredient_photo_upload_state>
+    notIn?: Enumerable<ingredient_photo_upload_state>
+    not?: NestedEnumingredient_photo_upload_stateWithAggregatesFilter | ingredient_photo_upload_state
+    _count?: NestedIntFilter
+    _min?: NestedEnumingredient_photo_upload_stateFilter
+    _max?: NestedEnumingredient_photo_upload_stateFilter
   }
 
-  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedFloatNullableFilter<$PrismaModel>
-    _min?: NestedFloatNullableFilter<$PrismaModel>
-    _max?: NestedFloatNullableFilter<$PrismaModel>
+  export type FloatNullableWithAggregatesFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedFloatNullableWithAggregatesFilter | number | null
+    _count?: NestedIntNullableFilter
+    _avg?: NestedFloatNullableFilter
+    _sum?: NestedFloatNullableFilter
+    _min?: NestedFloatNullableFilter
+    _max?: NestedFloatNullableFilter
   }
 
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
+  export type StringNullableWithAggregatesFilter = {
+    equals?: string | null
+    in?: Enumerable<string> | null
+    notIn?: Enumerable<string> | null
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
     mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter | string | null
+    _count?: NestedIntNullableFilter
+    _min?: NestedStringNullableFilter
+    _max?: NestedStringNullableFilter
   }
 
-  export type Enumjobs_stateFilter<$PrismaModel = never> = {
-    equals?: jobs_state | Enumjobs_stateFieldRefInput<$PrismaModel>
-    in?: Enumerable<jobs_state> | ListEnumjobs_stateFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<jobs_state> | ListEnumjobs_stateFieldRefInput<$PrismaModel>
-    not?: NestedEnumjobs_stateFilter<$PrismaModel> | jobs_state
+  export type Enumjobs_stateFilter = {
+    equals?: jobs_state
+    in?: Enumerable<jobs_state>
+    notIn?: Enumerable<jobs_state>
+    not?: NestedEnumjobs_stateFilter | jobs_state
   }
 
   export type JobsCountOrderByAggregateInput = {
@@ -10359,14 +10092,21 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     updated_at?: SortOrder
   }
 
-  export type Enumjobs_stateWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: jobs_state | Enumjobs_stateFieldRefInput<$PrismaModel>
-    in?: Enumerable<jobs_state> | ListEnumjobs_stateFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<jobs_state> | ListEnumjobs_stateFieldRefInput<$PrismaModel>
-    not?: NestedEnumjobs_stateWithAggregatesFilter<$PrismaModel> | jobs_state
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumjobs_stateFilter<$PrismaModel>
-    _max?: NestedEnumjobs_stateFilter<$PrismaModel>
+  export type Enumjobs_stateWithAggregatesFilter = {
+    equals?: jobs_state
+    in?: Enumerable<jobs_state>
+    notIn?: Enumerable<jobs_state>
+    not?: NestedEnumjobs_stateWithAggregatesFilter | jobs_state
+    _count?: NestedIntFilter
+    _min?: NestedEnumjobs_stateFilter
+    _max?: NestedEnumjobs_stateFilter
+  }
+
+  export type Enumgrocery_section2Filter = {
+    equals?: grocery_section2
+    in?: Enumerable<grocery_section2>
+    notIn?: Enumerable<grocery_section2>
+    not?: NestedEnumgrocery_section2Filter | grocery_section2
   }
 
   export type RecipesRelationFilter = {
@@ -10399,6 +10139,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     embedding?: SortOrder
     grocery_section?: SortOrder
     recipe_id?: SortOrder
+  }
+
+  export type Enumgrocery_section2WithAggregatesFilter = {
+    equals?: grocery_section2
+    in?: Enumerable<grocery_section2>
+    notIn?: Enumerable<grocery_section2>
+    not?: NestedEnumgrocery_section2WithAggregatesFilter | grocery_section2
+    _count?: NestedIntFilter
+    _min?: NestedEnumgrocery_section2Filter
+    _max?: NestedEnumgrocery_section2Filter
   }
 
   export type Recipe_ingredientsListRelationFilter = {
@@ -10504,7 +10254,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     connectOrCreate?: IngredientsCreateOrConnectWithoutIngredient_eventsInput
     upsert?: IngredientsUpsertWithoutIngredient_eventsInput
     connect?: IngredientsWhereUniqueInput
-    update?: XOR<XOR<IngredientsUpdateToOneWithWhereWithoutIngredient_eventsInput, IngredientsUpdateWithoutIngredient_eventsInput>, IngredientsUncheckedUpdateWithoutIngredient_eventsInput>
+    update?: XOR<IngredientsUpdateWithoutIngredient_eventsInput, IngredientsUncheckedUpdateWithoutIngredient_eventsInput>
   }
 
   export type UsersUpdateOneRequiredWithoutIngredient_eventsNestedInput = {
@@ -10512,7 +10262,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     connectOrCreate?: UsersCreateOrConnectWithoutIngredient_eventsInput
     upsert?: UsersUpsertWithoutIngredient_eventsInput
     connect?: UsersWhereUniqueInput
-    update?: XOR<XOR<UsersUpdateToOneWithWhereWithoutIngredient_eventsInput, UsersUpdateWithoutIngredient_eventsInput>, UsersUncheckedUpdateWithoutIngredient_eventsInput>
+    update?: XOR<UsersUpdateWithoutIngredient_eventsInput, UsersUncheckedUpdateWithoutIngredient_eventsInput>
   }
 
   export type Ingredient_eventsCreateNestedManyWithoutIngredientsInput = {
@@ -10573,10 +10323,10 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     create?: XOR<Ingredients_photo_uploadsCreateWithoutIngredientsInput, Ingredients_photo_uploadsUncheckedCreateWithoutIngredientsInput>
     connectOrCreate?: Ingredients_photo_uploadsCreateOrConnectWithoutIngredientsInput
     upsert?: Ingredients_photo_uploadsUpsertWithoutIngredientsInput
-    disconnect?: Ingredients_photo_uploadsWhereInput | boolean
-    delete?: Ingredients_photo_uploadsWhereInput | boolean
+    disconnect?: boolean
+    delete?: boolean
     connect?: Ingredients_photo_uploadsWhereUniqueInput
-    update?: XOR<XOR<Ingredients_photo_uploadsUpdateToOneWithWhereWithoutIngredientsInput, Ingredients_photo_uploadsUpdateWithoutIngredientsInput>, Ingredients_photo_uploadsUncheckedUpdateWithoutIngredientsInput>
+    update?: XOR<Ingredients_photo_uploadsUpdateWithoutIngredientsInput, Ingredients_photo_uploadsUncheckedUpdateWithoutIngredientsInput>
   }
 
   export type NullableStringFieldUpdateOperationsInput = {
@@ -10652,7 +10402,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     connectOrCreate?: UsersCreateOrConnectWithoutIngredients_photo_uploadsInput
     upsert?: UsersUpsertWithoutIngredients_photo_uploadsInput
     connect?: UsersWhereUniqueInput
-    update?: XOR<XOR<UsersUpdateToOneWithWhereWithoutIngredients_photo_uploadsInput, UsersUpdateWithoutIngredients_photo_uploadsInput>, UsersUncheckedUpdateWithoutIngredients_photo_uploadsInput>
+    update?: XOR<UsersUpdateWithoutIngredients_photo_uploadsInput, UsersUncheckedUpdateWithoutIngredients_photo_uploadsInput>
   }
 
   export type IngredientsUncheckedUpdateManyWithoutIngredients_photo_uploadsNestedInput = {
@@ -10679,12 +10429,16 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     connect?: RecipesWhereUniqueInput
   }
 
+  export type Enumgrocery_section2FieldUpdateOperationsInput = {
+    set?: grocery_section2
+  }
+
   export type RecipesUpdateOneRequiredWithoutRecipe_ingredientsNestedInput = {
     create?: XOR<RecipesCreateWithoutRecipe_ingredientsInput, RecipesUncheckedCreateWithoutRecipe_ingredientsInput>
     connectOrCreate?: RecipesCreateOrConnectWithoutRecipe_ingredientsInput
     upsert?: RecipesUpsertWithoutRecipe_ingredientsInput
     connect?: RecipesWhereUniqueInput
-    update?: XOR<XOR<RecipesUpdateToOneWithWhereWithoutRecipe_ingredientsInput, RecipesUpdateWithoutRecipe_ingredientsInput>, RecipesUncheckedUpdateWithoutRecipe_ingredientsInput>
+    update?: XOR<RecipesUpdateWithoutRecipe_ingredientsInput, RecipesUncheckedUpdateWithoutRecipe_ingredientsInput>
   }
 
   export type Recipe_ingredientsCreateNestedManyWithoutRecipesInput = {
@@ -10726,7 +10480,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     connectOrCreate?: UsersCreateOrConnectWithoutRecipesInput
     upsert?: UsersUpsertWithoutRecipesInput
     connect?: UsersWhereUniqueInput
-    update?: XOR<XOR<UsersUpdateToOneWithWhereWithoutRecipesInput, UsersUpdateWithoutRecipesInput>, UsersUncheckedUpdateWithoutRecipesInput>
+    update?: XOR<UsersUpdateWithoutRecipesInput, UsersUncheckedUpdateWithoutRecipesInput>
   }
 
   export type Recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput = {
@@ -10869,345 +10623,362 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     deleteMany?: Enumerable<RecipesScalarWhereInput>
   }
 
-  export type NestedUuidFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedUuidFilter<$PrismaModel> | string
+  export type NestedUuidFilter = {
+    equals?: string
+    in?: Enumerable<string>
+    notIn?: Enumerable<string>
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    not?: NestedUuidFilter | string
   }
 
-  export type NestedStringFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringFilter<$PrismaModel> | string
+  export type NestedStringFilter = {
+    equals?: string
+    in?: Enumerable<string>
+    notIn?: Enumerable<string>
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
+    not?: NestedStringFilter | string
   }
 
-  export type NestedDateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  export type NestedDateTimeFilter = {
+    equals?: Date | string
+    in?: Enumerable<Date> | Enumerable<string>
+    notIn?: Enumerable<Date> | Enumerable<string>
+    lt?: Date | string
+    lte?: Date | string
+    gt?: Date | string
+    gte?: Date | string
+    not?: NestedDateTimeFilter | Date | string
   }
 
-  export type NestedUuidWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedUuidWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
+  export type NestedUuidWithAggregatesFilter = {
+    equals?: string
+    in?: Enumerable<string>
+    notIn?: Enumerable<string>
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    not?: NestedUuidWithAggregatesFilter | string
+    _count?: NestedIntFilter
+    _min?: NestedStringFilter
+    _max?: NestedStringFilter
   }
 
-  export type NestedIntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
+  export type NestedIntFilter = {
+    equals?: number
+    in?: Enumerable<number>
+    notIn?: Enumerable<number>
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntFilter | number
   }
 
-  export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
+  export type NestedStringWithAggregatesFilter = {
+    equals?: string
+    in?: Enumerable<string>
+    notIn?: Enumerable<string>
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
+    not?: NestedStringWithAggregatesFilter | string
+    _count?: NestedIntFilter
+    _min?: NestedStringFilter
+    _max?: NestedStringFilter
   }
 
-  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
+  export type NestedDateTimeWithAggregatesFilter = {
+    equals?: Date | string
+    in?: Enumerable<Date> | Enumerable<string>
+    notIn?: Enumerable<Date> | Enumerable<string>
+    lt?: Date | string
+    lte?: Date | string
+    gt?: Date | string
+    gte?: Date | string
+    not?: NestedDateTimeWithAggregatesFilter | Date | string
+    _count?: NestedIntFilter
+    _min?: NestedDateTimeFilter
+    _max?: NestedDateTimeFilter
   }
 
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  export type NestedIntNullableFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableFilter | number | null
   }
-  export type NestedJsonNullableFilter<$PrismaModel = never> = 
+  export type NestedJsonNullableFilter = 
     | PatchUndefined<
-        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+        Either<Required<NestedJsonNullableFilterBase>, Exclude<keyof Required<NestedJsonNullableFilterBase>, 'path'>>,
+        Required<NestedJsonNullableFilterBase>
       >
-    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase>, 'path'>>
 
-  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  export type NestedJsonNullableFilterBase = {
+    equals?: InputJsonValue | JsonNullValueFilter
     path?: Array<string>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    string_contains?: string
+    string_starts_with?: string
+    string_ends_with?: string
+    array_contains?: InputJsonValue | null
+    array_starts_with?: InputJsonValue | null
+    array_ends_with?: InputJsonValue | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonNullValueFilter
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
+  export type NestedBoolFilter = {
+    equals?: boolean
+    not?: NestedBoolFilter | boolean
   }
 
-  export type NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel = never> = {
-    equals?: ingredients_tracking_type | Enumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<ingredients_tracking_type> | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<ingredients_tracking_type> | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel> | ingredients_tracking_type | null
+  export type NestedEnumingredients_tracking_typeNullableFilter = {
+    equals?: ingredients_tracking_type | null
+    in?: Enumerable<ingredients_tracking_type> | null
+    notIn?: Enumerable<ingredients_tracking_type> | null
+    not?: NestedEnumingredients_tracking_typeNullableFilter | ingredients_tracking_type | null
   }
 
-  export type NestedEnumgrocery_sectionFilter<$PrismaModel = never> = {
-    equals?: grocery_section | Enumgrocery_sectionFieldRefInput<$PrismaModel>
-    in?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
-    not?: NestedEnumgrocery_sectionFilter<$PrismaModel> | grocery_section
+  export type NestedEnumgrocery_sectionFilter = {
+    equals?: grocery_section
+    in?: Enumerable<grocery_section>
+    notIn?: Enumerable<grocery_section>
+    not?: NestedEnumgrocery_sectionFilter | grocery_section
   }
 
-  export type NestedUuidNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
+  export type NestedUuidNullableFilter = {
+    equals?: string | null
+    in?: Enumerable<string> | null
+    notIn?: Enumerable<string> | null
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    not?: NestedUuidNullableFilter | string | null
   }
 
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
+  export type NestedBoolWithAggregatesFilter = {
+    equals?: boolean
+    not?: NestedBoolWithAggregatesFilter | boolean
+    _count?: NestedIntFilter
+    _min?: NestedBoolFilter
+    _max?: NestedBoolFilter
   }
 
-  export type NestedEnumingredients_tracking_typeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: ingredients_tracking_type | Enumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<ingredients_tracking_type> | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<ingredients_tracking_type> | ListEnumingredients_tracking_typeFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumingredients_tracking_typeNullableWithAggregatesFilter<$PrismaModel> | ingredients_tracking_type | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel>
-    _max?: NestedEnumingredients_tracking_typeNullableFilter<$PrismaModel>
+  export type NestedEnumingredients_tracking_typeNullableWithAggregatesFilter = {
+    equals?: ingredients_tracking_type | null
+    in?: Enumerable<ingredients_tracking_type> | null
+    notIn?: Enumerable<ingredients_tracking_type> | null
+    not?: NestedEnumingredients_tracking_typeNullableWithAggregatesFilter | ingredients_tracking_type | null
+    _count?: NestedIntNullableFilter
+    _min?: NestedEnumingredients_tracking_typeNullableFilter
+    _max?: NestedEnumingredients_tracking_typeNullableFilter
   }
 
-  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<number> | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
+  export type NestedIntWithAggregatesFilter = {
+    equals?: number
+    in?: Enumerable<number>
+    notIn?: Enumerable<number>
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntWithAggregatesFilter | number
+    _count?: NestedIntFilter
+    _avg?: NestedFloatFilter
+    _sum?: NestedIntFilter
+    _min?: NestedIntFilter
+    _max?: NestedIntFilter
   }
 
-  export type NestedFloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
+  export type NestedFloatFilter = {
+    equals?: number
+    in?: Enumerable<number>
+    notIn?: Enumerable<number>
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedFloatFilter | number
   }
 
-  export type NestedEnumgrocery_sectionWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: grocery_section | Enumgrocery_sectionFieldRefInput<$PrismaModel>
-    in?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<grocery_section> | ListEnumgrocery_sectionFieldRefInput<$PrismaModel>
-    not?: NestedEnumgrocery_sectionWithAggregatesFilter<$PrismaModel> | grocery_section
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumgrocery_sectionFilter<$PrismaModel>
-    _max?: NestedEnumgrocery_sectionFilter<$PrismaModel>
+  export type NestedEnumgrocery_sectionWithAggregatesFilter = {
+    equals?: grocery_section
+    in?: Enumerable<grocery_section>
+    notIn?: Enumerable<grocery_section>
+    not?: NestedEnumgrocery_sectionWithAggregatesFilter | grocery_section
+    _count?: NestedIntFilter
+    _min?: NestedEnumgrocery_sectionFilter
+    _max?: NestedEnumgrocery_sectionFilter
   }
 
-  export type NestedUuidNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedUuidNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
+  export type NestedUuidNullableWithAggregatesFilter = {
+    equals?: string | null
+    in?: Enumerable<string> | null
+    notIn?: Enumerable<string> | null
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    not?: NestedUuidNullableWithAggregatesFilter | string | null
+    _count?: NestedIntNullableFilter
+    _min?: NestedStringNullableFilter
+    _max?: NestedStringNullableFilter
   }
 
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  export type NestedStringNullableFilter = {
+    equals?: string | null
+    in?: Enumerable<string> | null
+    notIn?: Enumerable<string> | null
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
+    not?: NestedStringNullableFilter | string | null
   }
 
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  export type NestedDateTimeNullableFilter = {
+    equals?: Date | string | null
+    in?: Enumerable<Date> | Enumerable<string> | null
+    notIn?: Enumerable<Date> | Enumerable<string> | null
+    lt?: Date | string
+    lte?: Date | string
+    gt?: Date | string
+    gte?: Date | string
+    not?: NestedDateTimeNullableFilter | Date | string | null
   }
 
-  export type NestedEnumingredient_photo_upload_stateFilter<$PrismaModel = never> = {
-    equals?: ingredient_photo_upload_state | Enumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    in?: Enumerable<ingredient_photo_upload_state> | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<ingredient_photo_upload_state> | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    not?: NestedEnumingredient_photo_upload_stateFilter<$PrismaModel> | ingredient_photo_upload_state
+  export type NestedEnumingredient_photo_upload_stateFilter = {
+    equals?: ingredient_photo_upload_state
+    in?: Enumerable<ingredient_photo_upload_state>
+    notIn?: Enumerable<ingredient_photo_upload_state>
+    not?: NestedEnumingredient_photo_upload_stateFilter | ingredient_photo_upload_state
   }
 
-  export type NestedFloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  export type NestedFloatNullableFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedFloatNullableFilter | number | null
   }
 
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<Date> | Enumerable<string> | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  export type NestedDateTimeNullableWithAggregatesFilter = {
+    equals?: Date | string | null
+    in?: Enumerable<Date> | Enumerable<string> | null
+    notIn?: Enumerable<Date> | Enumerable<string> | null
+    lt?: Date | string
+    lte?: Date | string
+    gt?: Date | string
+    gte?: Date | string
+    not?: NestedDateTimeNullableWithAggregatesFilter | Date | string | null
+    _count?: NestedIntNullableFilter
+    _min?: NestedDateTimeNullableFilter
+    _max?: NestedDateTimeNullableFilter
   }
 
-  export type NestedEnumingredient_photo_upload_stateWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: ingredient_photo_upload_state | Enumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    in?: Enumerable<ingredient_photo_upload_state> | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<ingredient_photo_upload_state> | ListEnumingredient_photo_upload_stateFieldRefInput<$PrismaModel>
-    not?: NestedEnumingredient_photo_upload_stateWithAggregatesFilter<$PrismaModel> | ingredient_photo_upload_state
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumingredient_photo_upload_stateFilter<$PrismaModel>
-    _max?: NestedEnumingredient_photo_upload_stateFilter<$PrismaModel>
+  export type NestedEnumingredient_photo_upload_stateWithAggregatesFilter = {
+    equals?: ingredient_photo_upload_state
+    in?: Enumerable<ingredient_photo_upload_state>
+    notIn?: Enumerable<ingredient_photo_upload_state>
+    not?: NestedEnumingredient_photo_upload_stateWithAggregatesFilter | ingredient_photo_upload_state
+    _count?: NestedIntFilter
+    _min?: NestedEnumingredient_photo_upload_stateFilter
+    _max?: NestedEnumingredient_photo_upload_stateFilter
   }
 
-  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<number> | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedFloatNullableFilter<$PrismaModel>
-    _min?: NestedFloatNullableFilter<$PrismaModel>
-    _max?: NestedFloatNullableFilter<$PrismaModel>
+  export type NestedFloatNullableWithAggregatesFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedFloatNullableWithAggregatesFilter | number | null
+    _count?: NestedIntNullableFilter
+    _avg?: NestedFloatNullableFilter
+    _sum?: NestedFloatNullableFilter
+    _min?: NestedFloatNullableFilter
+    _max?: NestedFloatNullableFilter
   }
 
-  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: Enumerable<string> | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
+  export type NestedStringNullableWithAggregatesFilter = {
+    equals?: string | null
+    in?: Enumerable<string> | null
+    notIn?: Enumerable<string> | null
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
+    not?: NestedStringNullableWithAggregatesFilter | string | null
+    _count?: NestedIntNullableFilter
+    _min?: NestedStringNullableFilter
+    _max?: NestedStringNullableFilter
   }
 
-  export type NestedEnumjobs_stateFilter<$PrismaModel = never> = {
-    equals?: jobs_state | Enumjobs_stateFieldRefInput<$PrismaModel>
-    in?: Enumerable<jobs_state> | ListEnumjobs_stateFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<jobs_state> | ListEnumjobs_stateFieldRefInput<$PrismaModel>
-    not?: NestedEnumjobs_stateFilter<$PrismaModel> | jobs_state
+  export type NestedEnumjobs_stateFilter = {
+    equals?: jobs_state
+    in?: Enumerable<jobs_state>
+    notIn?: Enumerable<jobs_state>
+    not?: NestedEnumjobs_stateFilter | jobs_state
   }
 
-  export type NestedEnumjobs_stateWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: jobs_state | Enumjobs_stateFieldRefInput<$PrismaModel>
-    in?: Enumerable<jobs_state> | ListEnumjobs_stateFieldRefInput<$PrismaModel>
-    notIn?: Enumerable<jobs_state> | ListEnumjobs_stateFieldRefInput<$PrismaModel>
-    not?: NestedEnumjobs_stateWithAggregatesFilter<$PrismaModel> | jobs_state
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumjobs_stateFilter<$PrismaModel>
-    _max?: NestedEnumjobs_stateFilter<$PrismaModel>
+  export type NestedEnumjobs_stateWithAggregatesFilter = {
+    equals?: jobs_state
+    in?: Enumerable<jobs_state>
+    notIn?: Enumerable<jobs_state>
+    not?: NestedEnumjobs_stateWithAggregatesFilter | jobs_state
+    _count?: NestedIntFilter
+    _min?: NestedEnumjobs_stateFilter
+    _max?: NestedEnumjobs_stateFilter
+  }
+
+  export type NestedEnumgrocery_section2Filter = {
+    equals?: grocery_section2
+    in?: Enumerable<grocery_section2>
+    notIn?: Enumerable<grocery_section2>
+    not?: NestedEnumgrocery_section2Filter | grocery_section2
+  }
+
+  export type NestedEnumgrocery_section2WithAggregatesFilter = {
+    equals?: grocery_section2
+    in?: Enumerable<grocery_section2>
+    notIn?: Enumerable<grocery_section2>
+    not?: NestedEnumgrocery_section2WithAggregatesFilter | grocery_section2
+    _count?: NestedIntFilter
+    _min?: NestedEnumgrocery_section2Filter
+    _max?: NestedEnumgrocery_section2Filter
   }
 
   export type IngredientsCreateWithoutIngredient_eventsInput = {
@@ -11271,12 +11042,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type IngredientsUpsertWithoutIngredient_eventsInput = {
     update: XOR<IngredientsUpdateWithoutIngredient_eventsInput, IngredientsUncheckedUpdateWithoutIngredient_eventsInput>
     create: XOR<IngredientsCreateWithoutIngredient_eventsInput, IngredientsUncheckedCreateWithoutIngredient_eventsInput>
-    where?: IngredientsWhereInput
-  }
-
-  export type IngredientsUpdateToOneWithWhereWithoutIngredient_eventsInput = {
-    where?: IngredientsWhereInput
-    data: XOR<IngredientsUpdateWithoutIngredient_eventsInput, IngredientsUncheckedUpdateWithoutIngredient_eventsInput>
   }
 
   export type IngredientsUpdateWithoutIngredient_eventsInput = {
@@ -11314,12 +11079,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type UsersUpsertWithoutIngredient_eventsInput = {
     update: XOR<UsersUpdateWithoutIngredient_eventsInput, UsersUncheckedUpdateWithoutIngredient_eventsInput>
     create: XOR<UsersCreateWithoutIngredient_eventsInput, UsersUncheckedCreateWithoutIngredient_eventsInput>
-    where?: UsersWhereInput
-  }
-
-  export type UsersUpdateToOneWithWhereWithoutIngredient_eventsInput = {
-    where?: UsersWhereInput
-    data: XOR<UsersUpdateWithoutIngredient_eventsInput, UsersUncheckedUpdateWithoutIngredient_eventsInput>
   }
 
   export type UsersUpdateWithoutIngredient_eventsInput = {
@@ -11404,30 +11163,24 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredient_eventsUpdateManyWithWhereWithoutIngredientsInput = {
     where: Ingredient_eventsScalarWhereInput
-    data: XOR<Ingredient_eventsUpdateManyMutationInput, Ingredient_eventsUncheckedUpdateManyWithoutIngredientsInput>
+    data: XOR<Ingredient_eventsUpdateManyMutationInput, Ingredient_eventsUncheckedUpdateManyWithoutIngredient_eventsInput>
   }
 
   export type Ingredient_eventsScalarWhereInput = {
     AND?: Enumerable<Ingredient_eventsScalarWhereInput>
     OR?: Enumerable<Ingredient_eventsScalarWhereInput>
     NOT?: Enumerable<Ingredient_eventsScalarWhereInput>
-    id?: UuidFilter<"Ingredient_events"> | string
-    ingredient_id?: UuidFilter<"Ingredient_events"> | string
-    user_id?: StringFilter<"Ingredient_events"> | string
-    timestamp?: DateTimeFilter<"Ingredient_events"> | Date | string
-    from_values?: JsonNullableFilter<"Ingredient_events">
-    to_values?: JsonNullableFilter<"Ingredient_events">
+    id?: UuidFilter | string
+    ingredient_id?: UuidFilter | string
+    user_id?: StringFilter | string
+    timestamp?: DateTimeFilter | Date | string
+    from_values?: JsonNullableFilter
+    to_values?: JsonNullableFilter
   }
 
   export type Ingredients_photo_uploadsUpsertWithoutIngredientsInput = {
     update: XOR<Ingredients_photo_uploadsUpdateWithoutIngredientsInput, Ingredients_photo_uploadsUncheckedUpdateWithoutIngredientsInput>
     create: XOR<Ingredients_photo_uploadsCreateWithoutIngredientsInput, Ingredients_photo_uploadsUncheckedCreateWithoutIngredientsInput>
-    where?: Ingredients_photo_uploadsWhereInput
-  }
-
-  export type Ingredients_photo_uploadsUpdateToOneWithWhereWithoutIngredientsInput = {
-    where?: Ingredients_photo_uploadsWhereInput
-    data: XOR<Ingredients_photo_uploadsUpdateWithoutIngredientsInput, Ingredients_photo_uploadsUncheckedUpdateWithoutIngredientsInput>
   }
 
   export type Ingredients_photo_uploadsUpdateWithoutIngredientsInput = {
@@ -11528,37 +11281,31 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type IngredientsUpdateManyWithWhereWithoutIngredients_photo_uploadsInput = {
     where: IngredientsScalarWhereInput
-    data: XOR<IngredientsUpdateManyMutationInput, IngredientsUncheckedUpdateManyWithoutIngredients_photo_uploadsInput>
+    data: XOR<IngredientsUpdateManyMutationInput, IngredientsUncheckedUpdateManyWithoutIngredientsInput>
   }
 
   export type IngredientsScalarWhereInput = {
     AND?: Enumerable<IngredientsScalarWhereInput>
     OR?: Enumerable<IngredientsScalarWhereInput>
     NOT?: Enumerable<IngredientsScalarWhereInput>
-    id?: UuidFilter<"Ingredients"> | string
-    name?: StringFilter<"Ingredients"> | string
-    description?: StringFilter<"Ingredients"> | string
-    is_reviewed?: BoolFilter<"Ingredients"> | boolean
-    embedding?: StringFilter<"Ingredients"> | string
-    tracking_type?: Enumingredients_tracking_typeNullableFilter<"Ingredients"> | ingredients_tracking_type | null
-    fill_level?: IntFilter<"Ingredients"> | number
-    grocery_section?: Enumgrocery_sectionFilter<"Ingredients"> | grocery_section
-    count?: IntFilter<"Ingredients"> | number
-    expiration_date?: DateTimeFilter<"Ingredients"> | Date | string
-    ingredients_photo_uploads_id?: UuidNullableFilter<"Ingredients"> | string | null
-    created_at?: DateTimeFilter<"Ingredients"> | Date | string
-    updated_at?: DateTimeFilter<"Ingredients"> | Date | string
+    id?: UuidFilter | string
+    name?: StringFilter | string
+    description?: StringFilter | string
+    is_reviewed?: BoolFilter | boolean
+    embedding?: StringFilter | string
+    tracking_type?: Enumingredients_tracking_typeNullableFilter | ingredients_tracking_type | null
+    fill_level?: IntFilter | number
+    grocery_section?: Enumgrocery_sectionFilter | grocery_section
+    count?: IntFilter | number
+    expiration_date?: DateTimeFilter | Date | string
+    ingredients_photo_uploads_id?: UuidNullableFilter | string | null
+    created_at?: DateTimeFilter | Date | string
+    updated_at?: DateTimeFilter | Date | string
   }
 
   export type UsersUpsertWithoutIngredients_photo_uploadsInput = {
     update: XOR<UsersUpdateWithoutIngredients_photo_uploadsInput, UsersUncheckedUpdateWithoutIngredients_photo_uploadsInput>
     create: XOR<UsersCreateWithoutIngredients_photo_uploadsInput, UsersUncheckedCreateWithoutIngredients_photo_uploadsInput>
-    where?: UsersWhereInput
-  }
-
-  export type UsersUpdateToOneWithWhereWithoutIngredients_photo_uploadsInput = {
-    where?: UsersWhereInput
-    data: XOR<UsersUpdateWithoutIngredients_photo_uploadsInput, UsersUncheckedUpdateWithoutIngredients_photo_uploadsInput>
   }
 
   export type UsersUpdateWithoutIngredients_photo_uploadsInput = {
@@ -11605,12 +11352,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
   export type RecipesUpsertWithoutRecipe_ingredientsInput = {
     update: XOR<RecipesUpdateWithoutRecipe_ingredientsInput, RecipesUncheckedUpdateWithoutRecipe_ingredientsInput>
     create: XOR<RecipesCreateWithoutRecipe_ingredientsInput, RecipesUncheckedCreateWithoutRecipe_ingredientsInput>
-    where?: RecipesWhereInput
-  }
-
-  export type RecipesUpdateToOneWithWhereWithoutRecipe_ingredientsInput = {
-    where?: RecipesWhereInput
-    data: XOR<RecipesUpdateWithoutRecipe_ingredientsInput, RecipesUncheckedUpdateWithoutRecipe_ingredientsInput>
   }
 
   export type RecipesUpdateWithoutRecipe_ingredientsInput = {
@@ -11638,7 +11379,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing: string
     extracted_name: string
     embedding: string
-    grocery_section: grocery_section
+    grocery_section: grocery_section2
   }
 
   export type Recipe_ingredientsUncheckedCreateWithoutRecipesInput = {
@@ -11646,7 +11387,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing: string
     extracted_name: string
     embedding: string
-    grocery_section: grocery_section
+    grocery_section: grocery_section2
   }
 
   export type Recipe_ingredientsCreateOrConnectWithoutRecipesInput = {
@@ -11693,30 +11434,24 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Recipe_ingredientsUpdateManyWithWhereWithoutRecipesInput = {
     where: Recipe_ingredientsScalarWhereInput
-    data: XOR<Recipe_ingredientsUpdateManyMutationInput, Recipe_ingredientsUncheckedUpdateManyWithoutRecipesInput>
+    data: XOR<Recipe_ingredientsUpdateManyMutationInput, Recipe_ingredientsUncheckedUpdateManyWithoutRecipe_ingredientsInput>
   }
 
   export type Recipe_ingredientsScalarWhereInput = {
     AND?: Enumerable<Recipe_ingredientsScalarWhereInput>
     OR?: Enumerable<Recipe_ingredientsScalarWhereInput>
     NOT?: Enumerable<Recipe_ingredientsScalarWhereInput>
-    id?: UuidFilter<"Recipe_ingredients"> | string
-    listing?: StringFilter<"Recipe_ingredients"> | string
-    extracted_name?: StringFilter<"Recipe_ingredients"> | string
-    embedding?: StringFilter<"Recipe_ingredients"> | string
-    grocery_section?: Enumgrocery_sectionFilter<"Recipe_ingredients"> | grocery_section
-    recipe_id?: UuidFilter<"Recipe_ingredients"> | string
+    id?: UuidFilter | string
+    listing?: StringFilter | string
+    extracted_name?: StringFilter | string
+    embedding?: StringFilter | string
+    grocery_section?: Enumgrocery_section2Filter | grocery_section2
+    recipe_id?: UuidFilter | string
   }
 
   export type UsersUpsertWithoutRecipesInput = {
     update: XOR<UsersUpdateWithoutRecipesInput, UsersUncheckedUpdateWithoutRecipesInput>
     create: XOR<UsersCreateWithoutRecipesInput, UsersUncheckedCreateWithoutRecipesInput>
-    where?: UsersWhereInput
-  }
-
-  export type UsersUpdateToOneWithWhereWithoutRecipesInput = {
-    where?: UsersWhereInput
-    data: XOR<UsersUpdateWithoutRecipesInput, UsersUncheckedUpdateWithoutRecipesInput>
   }
 
   export type UsersUpdateWithoutRecipesInput = {
@@ -11836,7 +11571,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredient_eventsUpdateManyWithWhereWithoutUsersInput = {
     where: Ingredient_eventsScalarWhereInput
-    data: XOR<Ingredient_eventsUpdateManyMutationInput, Ingredient_eventsUncheckedUpdateManyWithoutUsersInput>
+    data: XOR<Ingredient_eventsUpdateManyMutationInput, Ingredient_eventsUncheckedUpdateManyWithoutIngredient_eventsInput>
   }
 
   export type Ingredients_photo_uploadsUpsertWithWhereUniqueWithoutUsersInput = {
@@ -11852,21 +11587,21 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type Ingredients_photo_uploadsUpdateManyWithWhereWithoutUsersInput = {
     where: Ingredients_photo_uploadsScalarWhereInput
-    data: XOR<Ingredients_photo_uploadsUpdateManyMutationInput, Ingredients_photo_uploadsUncheckedUpdateManyWithoutUsersInput>
+    data: XOR<Ingredients_photo_uploadsUpdateManyMutationInput, Ingredients_photo_uploadsUncheckedUpdateManyWithoutIngredients_photo_uploadsInput>
   }
 
   export type Ingredients_photo_uploadsScalarWhereInput = {
     AND?: Enumerable<Ingredients_photo_uploadsScalarWhereInput>
     OR?: Enumerable<Ingredients_photo_uploadsScalarWhereInput>
     NOT?: Enumerable<Ingredients_photo_uploadsScalarWhereInput>
-    id?: UuidFilter<"Ingredients_photo_uploads"> | string
-    user_id?: StringFilter<"Ingredients_photo_uploads"> | string
-    created_at?: DateTimeFilter<"Ingredients_photo_uploads"> | Date | string
-    uploaded_at?: DateTimeNullableFilter<"Ingredients_photo_uploads"> | Date | string | null
-    state?: Enumingredient_photo_upload_stateFilter<"Ingredients_photo_uploads"> | ingredient_photo_upload_state
-    upload_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
-    ai_processing_duration_sec?: FloatNullableFilter<"Ingredients_photo_uploads"> | number | null
-    photo_url?: StringNullableFilter<"Ingredients_photo_uploads"> | string | null
+    id?: UuidFilter | string
+    user_id?: StringFilter | string
+    created_at?: DateTimeFilter | Date | string
+    uploaded_at?: DateTimeNullableFilter | Date | string | null
+    state?: Enumingredient_photo_upload_stateFilter | ingredient_photo_upload_state
+    upload_duration_sec?: FloatNullableFilter | number | null
+    ai_processing_duration_sec?: FloatNullableFilter | number | null
+    photo_url?: StringNullableFilter | string | null
   }
 
   export type RecipesUpsertWithWhereUniqueWithoutUsersInput = {
@@ -11882,20 +11617,20 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
 
   export type RecipesUpdateManyWithWhereWithoutUsersInput = {
     where: RecipesScalarWhereInput
-    data: XOR<RecipesUpdateManyMutationInput, RecipesUncheckedUpdateManyWithoutUsersInput>
+    data: XOR<RecipesUpdateManyMutationInput, RecipesUncheckedUpdateManyWithoutRecipesInput>
   }
 
   export type RecipesScalarWhereInput = {
     AND?: Enumerable<RecipesScalarWhereInput>
     OR?: Enumerable<RecipesScalarWhereInput>
     NOT?: Enumerable<RecipesScalarWhereInput>
-    id?: UuidFilter<"Recipes"> | string
-    name?: StringFilter<"Recipes"> | string
-    description?: StringFilter<"Recipes"> | string
-    url?: StringFilter<"Recipes"> | string
-    user_id?: StringFilter<"Recipes"> | string
-    created_at?: DateTimeFilter<"Recipes"> | Date | string
-    updated_at?: DateTimeFilter<"Recipes"> | Date | string
+    id?: UuidFilter | string
+    name?: StringFilter | string
+    description?: StringFilter | string
+    url?: StringFilter | string
+    user_id?: StringFilter | string
+    created_at?: DateTimeFilter | Date | string
+    updated_at?: DateTimeFilter | Date | string
   }
 
   export type Ingredient_eventsCreateManyIngredientsInput = {
@@ -11922,7 +11657,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     to_values?: NullableJsonNullValueInput | InputJsonValue
   }
 
-  export type Ingredient_eventsUncheckedUpdateManyWithoutIngredientsInput = {
+  export type Ingredient_eventsUncheckedUpdateManyWithoutIngredient_eventsInput = {
     id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11977,7 +11712,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     ingredient_events?: Ingredient_eventsUncheckedUpdateManyWithoutIngredientsNestedInput
   }
 
-  export type IngredientsUncheckedUpdateManyWithoutIngredients_photo_uploadsInput = {
+  export type IngredientsUncheckedUpdateManyWithoutIngredientsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -11997,7 +11732,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing: string
     extracted_name: string
     embedding: string
-    grocery_section: grocery_section
+    grocery_section: grocery_section2
   }
 
   export type Recipe_ingredientsUpdateWithoutRecipesInput = {
@@ -12005,7 +11740,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: StringFieldUpdateOperationsInput | string
     extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
-    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
+    grocery_section?: Enumgrocery_section2FieldUpdateOperationsInput | grocery_section2
   }
 
   export type Recipe_ingredientsUncheckedUpdateWithoutRecipesInput = {
@@ -12013,15 +11748,15 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     listing?: StringFieldUpdateOperationsInput | string
     extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
-    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
+    grocery_section?: Enumgrocery_section2FieldUpdateOperationsInput | grocery_section2
   }
 
-  export type Recipe_ingredientsUncheckedUpdateManyWithoutRecipesInput = {
+  export type Recipe_ingredientsUncheckedUpdateManyWithoutRecipe_ingredientsInput = {
     id?: StringFieldUpdateOperationsInput | string
     listing?: StringFieldUpdateOperationsInput | string
     extracted_name?: StringFieldUpdateOperationsInput | string
     embedding?: StringFieldUpdateOperationsInput | string
-    grocery_section?: Enumgrocery_sectionFieldUpdateOperationsInput | grocery_section
+    grocery_section?: Enumgrocery_section2FieldUpdateOperationsInput | grocery_section2
   }
 
   export type Ingredient_eventsCreateManyUsersInput = {
@@ -12067,14 +11802,6 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     to_values?: NullableJsonNullValueInput | InputJsonValue
   }
 
-  export type Ingredient_eventsUncheckedUpdateManyWithoutUsersInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    ingredient_id?: StringFieldUpdateOperationsInput | string
-    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-    from_values?: NullableJsonNullValueInput | InputJsonValue
-    to_values?: NullableJsonNullValueInput | InputJsonValue
-  }
-
   export type Ingredients_photo_uploadsUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12097,7 +11824,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     ingredients?: IngredientsUncheckedUpdateManyWithoutIngredients_photo_uploadsNestedInput
   }
 
-  export type Ingredients_photo_uploadsUncheckedUpdateManyWithoutUsersInput = {
+  export type Ingredients_photo_uploadsUncheckedUpdateManyWithoutIngredients_photo_uploadsInput = {
     id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     uploaded_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -12127,7 +11854,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     recipe_ingredients?: Recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput
   }
 
-  export type RecipesUncheckedUpdateManyWithoutUsersInput = {
+  export type RecipesUncheckedUpdateManyWithoutRecipesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -12151,3 +11878,5 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
    */
   export const dmmf: runtime.BaseDMMF
 }
+
+type Buffer = Omit<Uint8Array, 'set'>
