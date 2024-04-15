@@ -122,6 +122,8 @@ const createOrUpdateCardWithChecklists = async (listId, cardDetails) => {
     let checklist = await findChecklistOnCard(card.id, title)
     if (!checklist) {
       checklist = await createChecklist(card.id, title)
+      // The new checklist isn't immediately available 😬
+      await new Promise(resolve => setTimeout(resolve, 1000))
     } else {
       // Optionally, clear existing items here if needed
     }
