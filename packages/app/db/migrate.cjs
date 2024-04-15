@@ -14,7 +14,7 @@ const args = [
   `--directory`,
   `./db/migrations`,
 ]
-const proc = spawn(`pnpm`, args, {
+const proc = spawn(`npx`, args, {
   stdio: [`inherit`, `pipe`, `inherit`],
 })
 
