@@ -101,14 +101,14 @@ export default function RecipeNew() {
         <Flex direction="column" gap="4">
           <Flex direction="column" gap="2">
             <Text as="label">URL</Text>
-            <TextFieldInput name="url" />
+            <TextFieldInput required name="url" />
           </Flex>
           <Flex direction="column" gap="2">
             <Text as="label">
               Copy/Paste recipe text (including Recipe title) and Kitchen.ai
               will extract the ingredients
             </Text>
-            <TextArea name="pasted" />
+            <TextArea required name="pasted" />
           </Flex>
           <Button disabled={working}>Add Recipe</Button>
         </Flex>
