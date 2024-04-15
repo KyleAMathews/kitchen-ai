@@ -150,7 +150,7 @@ function BlankSlate() {
 }
 
 const queries = ({ db, search }: { db: Electric[`db`]; search: string }) => {
-  const queryStr = `%${search || ``}%`
+  const queryStr = `${search || ``}`
   return {
     photos: db.ingredients_photo_uploads.liveMany({
       where: {
