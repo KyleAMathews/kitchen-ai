@@ -13,6 +13,7 @@ import { UpdateIcon } from "@radix-ui/react-icons"
 import { genUUID } from "electric-sql/util"
 import { Electric, Recipes } from "../generated/client"
 import { lambdaFunction } from "../util"
+import { useNavigate, NavigateFunction } from "react-router"
 
 function Working({
   isWorking,
@@ -34,7 +35,8 @@ const handleSubmit = async (
   e: React.FormEvent<HTMLFormElement>,
   db: Electric[`db`],
   user_id: string,
-  setWorking: Function
+  setWorking: Function,
+  navigate: NavigateFunction
 ) => {
   setWorking(true)
   e.preventDefault()
@@ -69,6 +71,7 @@ const handleSubmit = async (
     }
     const data = await response.json()
     console.log(`Submission successful`, data)
+    navigate(`/recipes`)
   } catch (error) {
     await db.recipes.delete({
       where: {
@@ -78,12 +81,12 @@ const handleSubmit = async (
     console.error(`Submission failed`, error)
   } finally {
     setWorking(false)
-    target.reset()
   }
 }
 
 export default function RecipeNew() {
   const [working, setWorking] = useState(false)
+  const navigate = useNavigate()
   const { db } = useElectric()!
   const {
     user: { id: user_id },
@@ -94,7 +97,7 @@ export default function RecipeNew() {
       <Heading size="4">
         Add New Recipe <Working isWorking={working} />
       </Heading>
-      <form onSubmit={(e) => handleSubmit(e, db, user_id, setWorking)}>
+      <form onSubmit={(e) => handleSubmit(e, db, user_id, setWorking, navigate)}>
         <Flex direction="column" gap="4">
           <Flex direction="column" gap="2">
             <Text as="label">URL</Text>
