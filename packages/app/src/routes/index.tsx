@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useLocation, Link, useSearchParams } from "react-router-dom"
+import { Link, useSearch, useLocation } from "@tanstack/react-router"
 import measuringCupImg from "../../static/bowl.png"
 import threeSpices from "../../static/3-spices.jpg"
 import {
@@ -216,37 +216,35 @@ const queries = ({ db, search }: { db: Electric[`db`]; search: string }) => {
 Index.queries = queries
 
 export default function Index() {
-  const { db } = useElectric()!
+  // const { db } = useElectric()!
   const location = useLocation()
-  const [search, setSearchParams] = useSearchParams()
-  const q = new URLSearchParams(search).get(`q`)
+  const search = useSearch({ from: '/' })
 
-  const {
-    photos,
-    ingredients,
-    ingredientsCount,
-    ingredients_needing_review,
-    recipesCount,
-    recipes,
-  }: {
-    ingredients: Ingredients[]
-    ingredientsCount: any[]
-    photos: Ingredients_photo_uploads[]
-    ingredients_needing_review: Ingredients[]
-    recipesCount: any[]
-    recipes: Recipes[]
-  } = useElectricData(location.pathname + location.search)
-  console.log({
-    ingredients,
-    ingredientsCount,
-    photos,
-    ingredients_needing_review,
-    recipes,
-    recipesCount,
-  })
+  // const {
+  //   photos,
+  //   ingredients,
+  //   ingredientsCount,
+  //   ingredients_needing_review,
+  //   recipesCount,
+  //   recipes,
+  // }: {
+  //   ingredients: Ingredients[]
+  //   ingredientsCount: any[]
+  //   photos: Ingredients_photo_uploads[]
+  //   ingredients_needing_review: Ingredients[]
+  //   recipesCount: any[]
+  //   recipes: Recipes[]
+  // } = useElectricData(location.pathname + location.search)
+  const photos: Ingredients_photo_uploads[] = []
+  const ingredients: Ingredients[] = []
+  const ingredientsCount: any[] = []
+  const ingredients_needing_review: Ingredients[] = []
+  const recipesCount: any[] = [{ count: 0 }]
+  const recipes: Recipes[] = []
 
-  const countIngredients = (ingredientsCount && ingredientsCount[0].count) || 0
-  const isSearching = q !== null && q.length > 0
+  const countIngredients = 0
+  // const countIngredients = (ingredientsCount && ingredientsCount[0].count) || 0
+  const isSearching = search !== null && search.length > 0
 
   return (
     <>
@@ -265,11 +263,11 @@ export default function Index() {
                   type="search"
                   autoComplete="false"
                   name="q"
-                  value={q || ``}
+                  value={search || ``}
                   onChange={(event) => {
                     const formData = new FormData(event.currentTarget.form)
                     const updates = Object.fromEntries(formData)
-                    setSearchParams({ q: updates.q }, { replace: true })
+                    // setSearchParams({ q: updates.q }, { replace: true })
                   }}
                 />
               </TextField.Root>
@@ -345,7 +343,7 @@ export default function Index() {
                 ingredients_needing_review={ingredients_needing_review}
                 ingredients={ingredients}
                 photos={photos}
-                search={q}
+                search={search}
               />
             </Flex>
           </Flex>

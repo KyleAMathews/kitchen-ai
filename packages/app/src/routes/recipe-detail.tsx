@@ -1,4 +1,4 @@
-import { useLocation, Link } from "react-router-dom"
+import { Link, useParams } from "@tanstack/react-router"
 import { useLiveQuery } from "electric-sql/react"
 import { useState } from "react"
 import {
@@ -46,7 +46,7 @@ function AddIngredientsToShoppingListButton({
 }) {
   const [working, setWorking] = useState(false)
   const [open, setOpen] = useState(false)
-  const { db } = useElectric()!
+  // const { db } = useElectric()!
 
   return (
     <Toast.Provider swipeDirection="right">
@@ -96,14 +96,14 @@ function AddIngredientsToShoppingListButton({
           console.log(`response`, data)
           setOpen(true)
           setWorking(false)
-          db.recipes.update({
-            data: {
-              updated_at: new Date(),
-            },
-            where: {
-              id: recipe.id,
-            },
-          })
+          // db.recipes.update({
+          //   data: {
+          //     updated_at: new Date(),
+          //   },
+          //   where: {
+          //     id: recipe.id,
+          //   },
+          // })
         }}
       >
         Add items to Shopping List
@@ -160,14 +160,14 @@ function AlreadyHaveIngredient({
   checked: boolean
   possibleMatches: Recipe_ingredients[]
 }) {
-  const { db } = useElectric()!
+  // const { db } = useElectric()!
   const { results: liveJobs } = useLiveQuery(
-    db.jobs.liveMany({
-      where: {
-        state: `working`,
-        target_id: ingredient.id,
-      },
-    })
+    // db.jobs.liveMany({
+    //   where: {
+    //     state: `working`,
+    //     target_id: ingredient.id,
+    //   },
+    // })
   )
   const jobs = liveJobs || []
   const matchedIngred = possibleMatches[ingredient.id] as Ingredients
@@ -231,7 +231,7 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
   const [type, setType] = useState(`fill_level`)
   const [open, setOpen] = useState(false)
   const [expirationDate, setExpirationDate] = useState(new Date())
-  const { db } = useElectric()!
+  // const { db } = useElectric()!
 
   return (
     <Box pl="5">
@@ -251,48 +251,48 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
               const formData = new FormData(target)
               const formProps = Object.fromEntries(formData)
 
-              createJob({
-                id: genUUID(),
-                db,
-                target_id: ingredient.id,
-                type: `Transform recipe ingredient to kitchen ingredient`,
-                fetchFn: async () => {
-                  // Make LLM call to get description, embedding
-                  const response = await fetch(
-                    `${lambdaFunction}/ingredients`,
-                    {
-                      method: `POST`,
-                      headers: {
-                        "Content-Type": `application/json`,
-                      },
-                      body: JSON.stringify({ ingredient: formProps.name }),
-                    }
-                  )
-                  if (!response.ok) {
-                    throw new Error(`Network response was not ok`)
-                  }
-                  const data = await response.json()
+              // createJob({
+              //   id: genUUID(),
+              //   db,
+              //   target_id: ingredient.id,
+              //   type: `Transform recipe ingredient to kitchen ingredient`,
+              //   fetchFn: async () => {
+              //     // Make LLM call to get description, embedding
+              //     const response = await fetch(
+              //       `${lambdaFunction}/ingredients`,
+              //       {
+              //         method: `POST`,
+              //         headers: {
+              //           "Content-Type": `application/json`,
+              //         },
+              //         body: JSON.stringify({ ingredient: formProps.name }),
+              //       }
+              //     )
+              //     if (!response.ok) {
+              //       throw new Error(`Network response was not ok`)
+              //     }
+              //     const data = await response.json()
 
-                  const newIngredient = await db.ingredients.create({
-                    data: {
-                      id: genUUID(),
-                      name: formProps.name,
-                      fill_level: parseInt(formProps.fill_level, 10) || 0,
-                      embedding: JSON.stringify(data.embedding),
-                      tracking_type: type,
-                      count: parseInt(formProps?.count, 10) || 0,
-                      grocery_section: data.grocery_section,
-                      expiration_date: expirationDate,
-                      description: data.description,
-                      is_reviewed: true,
-                      created_at: new Date(),
-                      updated_at: new Date(),
-                    },
-                  })
+              //     const newIngredient = await db.ingredients.create({
+              //       data: {
+              //         id: genUUID(),
+              //         name: formProps.name,
+              //         fill_level: parseInt(formProps.fill_level, 10) || 0,
+              //         embedding: JSON.stringify(data.embedding),
+              //         tracking_type: type,
+              //         count: parseInt(formProps?.count, 10) || 0,
+              //         grocery_section: data.grocery_section,
+              //         expiration_date: expirationDate,
+              //         description: data.description,
+              //         is_reviewed: true,
+              //         created_at: new Date(),
+              //         updated_at: new Date(),
+              //       },
+              //     })
 
-                  return response
-                },
-              })
+              //     return response
+              //   },
+              // })
 
               // Job is going so now let's close the dialog
               setOpen(false)
@@ -413,19 +413,22 @@ const queries = ({ db, id }: { db: Electric[`db`]; id: string }) => {
 RecipeDetail.queries = queries
 
 export default function RecipeDetail() {
+  const { id } = useParams({ from: '/recipes/$id' })
   const location = useLocation()
-  const { db } = useElectric()!
-  const {
-    user: { id: user_id },
-  } = useUser()
+  // const { db } = useElectric()!
 
-  const {
-    recipe,
-    ingredients,
-  }: {
-    recipe: Recipes
-    ingredients: Ingredients[]
-  } = useElectricData(location.pathname + location.search)
+  const params = useParams()
+
+  // const {
+  //   recipe,
+  //   ingredients,
+  // }: {
+  //   recipe: Recipes
+  //   ingredients: Ingredients[]
+  // } = useElectricData(location.pathname + location.search)
+  const recipe: Recipes = {} as Recipes
+  const ingredients: Ingredients[] = []
+
   const [checked, setChecked] = useState({})
 
   const possibleMatches = Object.fromEntries(

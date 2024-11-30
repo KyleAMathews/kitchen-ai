@@ -13,12 +13,12 @@ function FileUploadToS3({
   bucket = ``,
   navigateTo = ``,
 }) {
-  const {
-    user: { id: user_id },
-  } = useUser()
-  const navigate = useNavigate()
+  // const {
+  //   user: { id: user_id },
+  // } = useUser()
+  // const navigate = useNavigate()
 
-  const { db } = useElectric()!
+  // const { db } = useElectric()!
   const [uploadStatus, setUploadStatus] = useState(``)
   const [uploading, setUploading] = useState(false)
 
@@ -43,15 +43,15 @@ function FileUploadToS3({
           state: `uploading`,
         },
       })
-      const newUpload = await db.ingredients_photo_uploads.create({
-        data: {
-          id: uuid,
-          user_id,
-          created_at: start,
-          state: `uploading`,
-        },
-      })
-      console.log({ newUpload })
+      // const newUpload = await db.ingredients_photo_uploads.create({
+      //   data: {
+      //     id: uuid,
+      //     user_id,
+      //     created_at: start,
+      //     state: `uploading`,
+      //   },
+      // })
+      console.log({ /* newUpload */ })
     } catch (e) {
       console.log(`failed to insert new photo upload`, e)
       throw e
@@ -68,21 +68,21 @@ function FileUploadToS3({
 
       if (url) {
         await uploadFileToS3(file, url)
-        db.ingredients_photo_uploads.update({
-          data: {
-            upload_duration_sec:
-              (new Date().getTime() - start.getTime()) / 1000,
-          },
-          where: {
-            id: uuid,
-          },
-        })
+        // db.ingredients_photo_uploads.update({
+        //   data: {
+        //     upload_duration_sec:
+        //       (new Date().getTime() - start.getTime()) / 1000,
+        //   },
+        //   where: {
+        //     id: uuid,
+        //   },
+        // })
 
         setUploading(false)
 
-        if (navigateTo.length > 0) {
-          navigate(navigateTo)
-        }
+        // if (navigateTo.length > 0) {
+        //   navigate(navigateTo)
+        // }
       } else {
         throw new Error(`Failed to get a signed URL.`)
         setUploading(false)

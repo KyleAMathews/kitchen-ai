@@ -1,10 +1,8 @@
-import { useLocation, Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useParams } from "@tanstack/react-router"
 import { useState } from "react"
 import DatePicker from "react-date-picker"
 import "react-date-picker/dist/DatePicker.css"
 import { Electric, Ingredient_events, Ingredients } from "../generated/client"
-import { useElectric } from "../context"
-import { useElectricData } from "electric-query"
 import { useUser } from "@clerk/clerk-react"
 import {
   Flex,
@@ -82,7 +80,7 @@ const queries = ({ db, id }: { db: Electric[`db`]; id: string }) => {
 
 function EditCountLevel({ ingredient }: { ingredient: Ingredients }) {
   const [focused, setFocused] = useState(false)
-  const { db } = useElectric()!
+  // const { db } = useElectric()!
   const {
     user: { id: user_id },
   } = useUser()
@@ -96,25 +94,25 @@ function EditCountLevel({ ingredient }: { ingredient: Ingredients }) {
         const formProps = Object.fromEntries(formData)
         console.log({ formProps })
         const newCount = parseInt(formProps.count, 10)
-        db.ingredients.update({
-          data: {
-            count: newCount,
-            updated_at: new Date(),
-          },
-          where: {
-            id: ingredient.id,
-          },
-        })
-        db.ingredient_events.create({
-          data: {
-            id: genUUID(),
-            ingredient_id: ingredient.id,
-            timestamp: new Date(),
-            from_values: { count: ingredient.count },
-            to_values: { count: newCount },
-            user_id,
-          },
-        })
+        // db.ingredients.update({
+        //   data: {
+        //     count: newCount,
+        //     updated_at: new Date(),
+        //   },
+        //   where: {
+        //     id: ingredient.id,
+        //   },
+        // })
+        // db.ingredient_events.create({
+        //   data: {
+        //     id: genUUID(),
+        //     ingredient_id: ingredient.id,
+        //     timestamp: new Date(),
+        //     from_values: { count: ingredient.count },
+        //     to_values: { count: newCount },
+        //     user_id,
+        //   },
+        // })
         setFocused(false)
       }}
     >
@@ -138,7 +136,7 @@ function EditFillLevel({ ingredient }) {
   const {
     user: { id: user_id },
   } = useUser()
-  const { db } = useElectric()!
+  // const { db } = useElectric()!
   return (
     <>
       <Flex direction="column" gap="2">
@@ -147,68 +145,68 @@ function EditFillLevel({ ingredient }) {
           defaultValue={[ingredient.fill_level]}
           onValueCommit={async (val) => {
             const newFillLevel = val[0] as number
-            db.ingredients.update({
-              data: {
-                fill_level: newFillLevel,
-                updated_at: new Date(),
-              },
-              where: {
-                id: ingredient.id,
-              },
-            })
+            // db.ingredients.update({
+            //   data: {
+            //     fill_level: newFillLevel,
+            //     updated_at: new Date(),
+            //   },
+            //   where: {
+            //     id: ingredient.id,
+            //   },
+            // })
             const halfHourAgo = new Date()
             halfHourAgo.setMinutes(halfHourAgo.getMinutes() - 30)
 
-            const recentEvents = await db.ingredient_events.findMany({
-              where: {
-                ingredient_id: ingredient.id,
-                timestamp: {
-                  gte: halfHourAgo,
-                },
-              },
-            })
+            // const recentEvents = await db.ingredient_events.findMany({
+            //   where: {
+            //     ingredient_id: ingredient.id,
+            //     timestamp: {
+            //       gte: halfHourAgo,
+            //     },
+            //   },
+            // })
 
-            const recentEvent = recentEvents.find(
-              (e) => Object.keys(e.from_values)[0] === `fill_level`
-            )
-            console.log({ recentEvent })
+            // const recentEvent = recentEvents.find(
+            //   (e) => Object.keys(e.from_values)[0] === `fill_level`
+            // )
+            // console.log({ recentEvent })
 
-            let didGoUp = false
+            // let didGoUp = false
 
-            if (recentEvent) {
-              if (recentEvent.from_values.fill_level < newFillLevel) {
-                didGoUp = true
-                db.ingredient_events.delete({
-                  where: {
-                    id: recentEvent?.id,
-                  },
-                })
-              } else {
-                db.ingredient_events.update({
-                  data: {
-                    to_values: { fill_level: newFillLevel },
-                  },
-                  where: {
-                    id: recentEvent?.id,
-                  },
-                })
-              }
-            } else {
-              if (ingredient.fill_level < newFillLevel) {
-                didGoUp = true
-              } else {
-                db.ingredient_events.create({
-                  data: {
-                    id: genUUID(),
-                    ingredient_id: ingredient.id,
-                    timestamp: new Date(),
-                    from_values: { fill_level: ingredient.fill_level },
-                    to_values: { fill_level: newFillLevel },
-                    user_id,
-                  },
-                })
-              }
-            }
+            // if (recentEvent) {
+            //   if (recentEvent.from_values.fill_level < newFillLevel) {
+            //     didGoUp = true
+            //     // db.ingredient_events.delete({
+            //     //   where: {
+            //     //     id: recentEvent?.id,
+            //     //   },
+            //     // })
+            //   } else {
+            //     // db.ingredient_events.update({
+            //     //   data: {
+            //     //     to_values: { fill_level: newFillLevel },
+            //     //   },
+            //     //   where: {
+            //     //     id: recentEvent?.id,
+            //     //   },
+            //     // })
+            //   }
+            // } else {
+            //   if (ingredient.fill_level < newFillLevel) {
+            //     didGoUp = true
+            //   } else {
+            //     // db.ingredient_events.create({
+            //     //   data: {
+            //     //     id: genUUID(),
+            //     //     ingredient_id: ingredient.id,
+            //     //     timestamp: new Date(),
+            //     //     from_values: { fill_level: ingredient.fill_level },
+            //     //     to_values: { fill_level: newFillLevel },
+            //     //     user_id,
+            //     //   },
+            //     // })
+            //   }
+            // }
           }}
         />
         <Flex justify="between">
@@ -224,7 +222,7 @@ function EditFillLevel({ ingredient }) {
   )
 }
 
-IngredientDetail.queries = queries
+// IngredientDetail.queries = queries
 
 const diffInMonths = (date1, date2) => {
   const yearDiff = date2.getFullYear() - date1.getFullYear()
@@ -233,15 +231,18 @@ const diffInMonths = (date1, date2) => {
 }
 export default function IngredientDetail() {
   const [working, setWorking] = useState(false)
-  const location = useLocation()
-  const { db } = useElectric()!
+  const navigate = useNavigate()
+  const { id } = useParams({ from: '/ingredients/$id' })
+  // const { db } = useElectric()!
 
-  const {
-    ingredient,
-    events,
-  }: { ingredient: Ingredients; events: Ingredient_events } = useElectricData(
-    location.pathname + location.search
-  )
+  // const {
+  //   ingredient,
+  //   events,
+  // }: { ingredient: Ingredients; events: Ingredient_events } = useElectricData(
+  //   `/ingredients/${id}`
+  // )
+  const ingredient: Ingredients = {} as Ingredients
+  const events: Ingredient_events = {} as Ingredient_events
   const [expirationDate, setExpirationDate] = useState(
     ingredient.expiration_date
   )
@@ -274,14 +275,14 @@ export default function IngredientDetail() {
         expirationDate={expirationDate}
         onValueChange={setExpirationDate}
         onValueCommit={(newDate: Date) => {
-          db.ingredients.update({
-            data: {
-              expiration_date: newDate,
-            },
-            where: {
-              id: ingredient.id,
-            },
-          })
+          // db.ingredients.update({
+          //   data: {
+          //     expiration_date: newDate,
+          //   },
+          //   where: {
+          //     id: ingredient.id,
+          //   },
+          // })
         }}
       />
       <Button
@@ -310,14 +311,14 @@ export default function IngredientDetail() {
             const data = await response.json()
             console.log(`response`, data)
             setWorking(false)
-            db.ingredients.update({
-              data: {
-                updated_at: new Date(),
-              },
-              where: {
-                id: ingredient.id,
-              },
-            })
+            // db.ingredients.update({
+            //   data: {
+            //     updated_at: new Date(),
+            //   },
+            //   where: {
+            //     id: ingredient.id,
+            //   },
+            // })
           }
         }}
       >

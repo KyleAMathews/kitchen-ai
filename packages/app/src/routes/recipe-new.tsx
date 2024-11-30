@@ -4,7 +4,7 @@ import { useElectric } from "../context"
 import {
   Flex,
   Heading,
-  TextFieldInput,
+  TextField,
   Text,
   TextArea,
   Button,
@@ -13,7 +13,7 @@ import { UpdateIcon } from "@radix-ui/react-icons"
 import { genUUID } from "electric-sql/util"
 import { Electric, Recipes } from "../generated/client"
 import { lambdaFunction } from "../util"
-import { useNavigate, NavigateFunction } from "react-router"
+import { useNavigate } from "@tanstack/react-router"
 
 function Working({
   isWorking,
@@ -36,7 +36,7 @@ const handleSubmit = async (
   db: Electric[`db`],
   user_id: string,
   setWorking: Function,
-  navigate: NavigateFunction
+  navigate: ReturnType<typeof useNavigate>
 ) => {
   setWorking(true)
   e.preventDefault()
@@ -87,7 +87,7 @@ const handleSubmit = async (
 export default function RecipeNew() {
   const [working, setWorking] = useState(false)
   const navigate = useNavigate()
-  const { db } = useElectric()!
+  // const { db } = useElectric()!
   const {
     user: { id: user_id },
   } = useUser()
@@ -97,11 +97,11 @@ export default function RecipeNew() {
       <Heading size="4">
         Add New Recipe <Working isWorking={working} />
       </Heading>
-      <form onSubmit={(e) => handleSubmit(e, db, user_id, setWorking, navigate)}>
+      <form onSubmit={(e) => handleSubmit(e, undefined, user_id, setWorking, navigate)}>
         <Flex direction="column" gap="4">
           <Flex direction="column" gap="2">
             <Text as="label">URL</Text>
-            <TextFieldInput required name="url" />
+            <TextField required name="url" />
           </Flex>
           <Flex direction="column" gap="2">
             <Text as="label">

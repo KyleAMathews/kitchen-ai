@@ -1,4 +1,4 @@
-import { useLocation, Link } from "react-router-dom"
+import { useLocation, useNavigate, Link } from "@tanstack/react-router"
 import { Electric } from "../generated/client"
 import { useElectricData } from "electric-query"
 import { Flex, Heading, Box, Text, Button } from "@radix-ui/themes"
@@ -41,11 +41,14 @@ AddIngredients.queries = queries
 
 export default function AddIngredients() {
   const location = useLocation()
-  const { db } = useElectric()!
+  const navigate = useNavigate()
+  // const { db } = useElectric()!
 
-  const { photos, ingredients } = useElectricData(
-    location.pathname + location.search
-  )
+  // const { photos, ingredients }: { photos: Ingredients_photo_uploads[]; ingredients: Ingredients[] } = useElectricData(
+  //   location.pathname + location.search
+  // )
+  const photos: Ingredients_photo_uploads[] = []
+  const ingredients: Ingredients[] = []
   console.log({ photos, ingredients })
 
   function label(photo) {
@@ -83,14 +86,14 @@ export default function AddIngredients() {
             <Cross1Icon
               style={{ position: `absolute`, right: 0, top: 0 }}
               onClick={() => {
-                db.ingredients_photo_uploads.delete({
-                  where: {
-                    id: photo.id,
-                  },
-                  include: {
-                    ingredients: true,
-                  },
-                })
+                // db.ingredients_photo_uploads.delete({
+                //   where: {
+                //     id: photo.id,
+                //   },
+                //   include: {
+                //     ingredients: true,
+                //   },
+                // })
               }}
             />
             {photo.photo_url ? (

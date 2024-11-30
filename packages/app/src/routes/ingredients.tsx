@@ -14,11 +14,12 @@ const queries = ({ db }: { db: Electric[`db`] }) => {
 IngredientsList.queries = queries
 export default function IngredientsList() {
   const location = useLocation()
-  const {
-    ingredients,
-  }: {
-    ingredients: Ingredients[]
-  } = useElectricData(location.pathname + location.search)
+  // const {
+  //   ingredients,
+  // }: {
+  //   ingredients: Ingredients[]
+  // } = useElectricData(location.pathname + location.search)
+  const ingredients: Ingredients[] = []
   console.log({
     ingredients,
   })

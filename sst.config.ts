@@ -73,8 +73,9 @@ function deploySite(
       name: `kitchen-ai${$app.stage === `production` ? `` : `-stage-${$app.stage}`}.bricolage.io`,
       dns: sst.cloudflare.dns(),
     },
+    path: `packages/app`,
     dev: {
-      command: `cd packages/app && npm run dev`,
+      command: `npm run dev`,
       url: `http://localhost:5173`,
     },
     build: {
@@ -86,6 +87,7 @@ function deploySite(
       VITE_DATABASE_ID: electricInfo.properties.database_id,
       VITE_ELECTRIC_URL: process.env.ELECTRIC_URL!,
       VITE_API_URL: worker.url as unknown as string,
+      VITE_CLERK_PUBLISHABLE_KEY: process.env.VITE_CLERK_PUBLISHABLE_KEY!,
     },
   })
 }

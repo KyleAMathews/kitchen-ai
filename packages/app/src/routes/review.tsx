@@ -127,12 +127,14 @@ const queries = ({ db }: { db: Electric[`db`] }) => {
 Review.queries = queries
 
 export default function Review() {
-  const { db } = useElectric()!
+  // const { db } = useElectric()!
   const navigate = useNavigate()
   const location = useLocation()
-  const { photos, ingredients } = useElectricData(
-    location.pathname + location.search
-  )
+  // const { photos, ingredients }: { photos: Ingredients_photo_uploads[]; ingredients: Ingredients[] } = useElectricData(
+  //   location.pathname + location.search
+  // )
+  const photos: Ingredients_photo_uploads[] = []
+  const ingredients: Ingredients[] = []
 
   return (
     <Flex direction="column" gap="7" pt="2">
@@ -165,22 +167,22 @@ export default function Review() {
         onClick={async () => {
           navigate(`/`)
           Promise.all([
-            db.ingredients_photo_uploads.updateMany({
-              data: {
-                state: `done`,
-              },
-              where: {
-                state: `reviewing`,
-              },
-            }),
-            db.ingredients.updateMany({
-              data: {
-                is_reviewed: true,
-              },
-              where: {
-                is_reviewed: false,
-              },
-            }),
+            // db.ingredients_photo_uploads.updateMany({
+            //   data: {
+            //     state: `done`,
+            //   },
+            //   where: {
+            //     state: `reviewing`,
+            //   },
+            // }),
+            // db.ingredients.updateMany({
+            //   data: {
+            //     is_reviewed: true,
+            //   },
+            //   where: {
+            //     is_reviewed: false,
+            //   },
+            // }),
           ])
         }}
       >

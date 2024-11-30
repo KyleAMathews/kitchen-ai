@@ -1,4 +1,4 @@
-import { useLocation, Link } from "react-router-dom"
+import { useLocation, useNavigate, Link } from "@tanstack/react-router"
 import { Flex, Heading, Separator } from "@radix-ui/themes"
 import { useElectricData } from "electric-query"
 import { Electric, Recipes } from "../generated/client"
@@ -24,14 +24,16 @@ Recipes.queries = queries
 
 export default function Recipes() {
   const location = useLocation()
-  const { db } = useElectric()!
+  const navigate = useNavigate()
+  // const { db } = useElectric()!
   const {
     user: { id: user_id },
   } = useUser()
 
-  const { recipes }: { recipes: Recipes[] } = useElectricData(
-    location.pathname + location.search
-  )
+  // const { recipes }: { recipes: Recipes[] } = useElectricData(
+  //   location.pathname + location.search
+  // )
+  const recipes: Recipes[] = []
 
   return (
     <Flex direction="column" gap="7" pt="2">

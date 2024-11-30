@@ -12,318 +12,35 @@ import "../static/GeneralSans_Complete/Fonts/WEB/css/general-sans.css"
 import "./typography.css"
 import "./app.css"
 import { Theme } from "@radix-ui/themes"
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import ErrorPage from "./error-page"
+import { router } from './router'
+import { RouterProvider } from '@tanstack/react-router'
+import { ClerkProvider } from "@clerk/clerk-react"
 import { ElectricalProvider } from "./context"
-import { electricSqlLoader } from "electric-query"
-import { Electric } from "./generated/client"
-import { ClerkProvider, SignIn } from "@clerk/clerk-react"
-
-import AuthedLayout from "./authed-layout"
-
-import Root from "./routes/root"
-import Index from "./routes/index"
-import Review from "./routes/review"
-import AddIngredients from "./routes/add-ingredients"
-import Recipes from "./routes/recipes"
-import RecipesNew from "./routes/recipe-new"
-import IngredientDetail from "./routes/ingredient-detail"
-import RecipeDetail from "./routes/recipe-detail"
-import IngredientsList from "./routes/ingredients"
-
-const router = createBrowserRouter([
-  {
-    path: `/`,
-    element: <Root />,
-    errorElement: <ErrorPage />,
-    children: [
-      {
-        path: `/sign-in`,
-        element: <SignIn />,
-      },
-      {
-        element: <AuthedLayout />,
-        children: [
-          {
-            index: true,
-            element: <Index />,
-            loader: async (props) => {
-              const url = new URL(props.request.url)
-              const search = new URLSearchParams(url.search).get(`q`)
-              console.log({ url, search })
-              const key = url.pathname + url.search
-              console.log(`before loader`)
-              await electricSqlLoader<Electric>({
-                key,
-                shapes: ({ db }) => [
-                  {
-                    shape: db.ingredients_photo_uploads.sync({
-                      include: { ingredients: true, users: true },
-                    }),
-                    isReady: async () =>
-                      !!(await db.rawQuery({
-                        sql: `select id from ingredients_photo_uploads limit 1`,
-                      })),
-                  },
-                  {
-                    shape: db.recipes.sync({
-                      include: { recipe_ingredients: true, users: true },
-                    }),
-                    isReady: async () =>
-                      !!(await db.rawQuery({
-                        sql: `select id from recipes limit 1`,
-                      })),
-                  },
-                ],
-                queries:
-                  ({ db }) =>
-                  () =>
-                    Index.queries({
-                      db,
-                      search: search,
-                    }),
-              })
-              console.log(`after loader`)
-
-              return null
-            },
-          },
-          {
-            path: `/ingredients`,
-            element: <IngredientsList />,
-            loader: async (props) => {
-              const url = new URL(props.request.url)
-              const key = url.pathname + url.search
-              await electricSqlLoader<Electric>({
-                key,
-                shapes: ({ db }) => [
-                  {
-                    shape: db.ingredients.sync({
-                      include: { ingredients_photo_uploads: true },
-                    }),
-                    isReady: async () => {
-                      const result = await db.rawQuery({
-                        sql: `select id from ingredients`,
-                      })
-
-                      console.log({ result, boolean: !!result })
-                      return !!result
-                    },
-                  },
-                ],
-                queries: ({ db }) =>
-                  IngredientsList.queries({
-                    db,
-                  }),
-              })
-
-              return null
-            },
-          },
-          {
-            path: `/upload-photos`,
-            element: <AddIngredients />,
-            loader: async (props) => {
-              const url = new URL(props.request.url)
-              const key = url.pathname + url.search
-              await electricSqlLoader<Electric>({
-                key,
-                shapes: ({ db }) => [
-                  {
-                    shape: db.ingredients_photo_uploads.sync({
-                      include: { ingredients: true, users: true },
-                    }),
-                    isReady: async () =>
-                      !!(await db.rawQuery({
-                        sql: `select id from ingredients_photo_uploads limit 1`,
-                      })),
-                  },
-                  {
-                    shape: db.ingredients.sync({
-                      include: { ingredients_photo_uploads: true },
-                    }),
-                    isReady: async () => {
-                      const result = await db.rawQuery({
-                        sql: `select id from ingredients`,
-                      })
-
-                      console.log({ result, boolean: !!result })
-                      return !!result
-                    },
-                  },
-                ],
-                queries: ({ db }) =>
-                  AddIngredients.queries({
-                    db,
-                  }),
-              })
-
-              return null
-            },
-          },
-          {
-            path: `/review`,
-            element: <Review />,
-            loader: async (props) => {
-              const url = new URL(props.request.url)
-              const key = url.pathname + url.search
-              await electricSqlLoader<Electric>({
-                key,
-                shapes: ({ db }) => [
-                  {
-                    shape: db.ingredients_photo_uploads.sync(),
-                    isReady: async () =>
-                      !!(await db.rawQuery({
-                        sql: `select id from ingredients_photo_uploads limit 1`,
-                      })),
-                  },
-                ],
-                queries: ({ db }) =>
-                  Review.queries({
-                    db,
-                  }),
-              })
-
-              return null
-            },
-          },
-          {
-            path: `/recipes`,
-            element: <Recipes />,
-            loader: async (props) => {
-              const url = new URL(props.request.url)
-              const key = url.pathname + url.search
-              await electricSqlLoader<Electric>({
-                key,
-                shapes: ({ db }) => [
-                  {
-                    shape: db.recipes.sync({
-                      include: {
-                        recipe_ingredients: true,
-                        users: true,
-                      },
-                    }),
-                    isReady: async () =>
-                      !!(await db.rawQuery({
-                        sql: `select id from recipes limit 1`,
-                      })),
-                  },
-                ],
-                queries: ({ db }) =>
-                  Recipes.queries({
-                    db,
-                  }),
-              })
-
-              return null
-            },
-          },
-          {
-            path: `/recipes/new`,
-            element: <RecipesNew />,
-          },
-          {
-            path: `/recipes/:id`,
-            element: <RecipeDetail />,
-            loader: async (props) => {
-              const url = new URL(props.request.url)
-              const key = url.pathname + url.search
-              await electricSqlLoader<Electric>({
-                key,
-                shapes: ({ db }) => [
-                  {
-                    shape: db.recipes.sync({
-                      include: {
-                        recipe_ingredients: true,
-                        users: true,
-                      },
-                    }),
-                    isReady: async () =>
-                      !!(await db.rawQuery({
-                        sql: `select id from recipes limit 1`,
-                      })),
-                  },
-                  {
-                    shape: db.jobs.sync(),
-                    isReady: async () => {
-                      const result = await db.rawQuery({
-                        sql: `select count(id) from jobs limit 1`,
-                      })
-                      console.log({ result })
-                      return !!result
-                    },
-                  },
-                ],
-                queries: ({ db }) =>
-                  RecipeDetail.queries({
-                    db,
-                    id: props.params.id,
-                  }),
-              })
-
-              return null
-            },
-          },
-          {
-            path: `/ingredients/:id`,
-            element: <IngredientDetail />,
-            loader: async (props) => {
-              const url = new URL(props.request.url)
-              const key = url.pathname + url.search
-              await electricSqlLoader<Electric>({
-                key,
-                shapes: ({ db }) => [
-                  {
-                    shape: db.ingredients.sync({
-                      include: {
-                        ingredients_photo_uploads: true,
-                        ingredient_events: true,
-                      },
-                    }),
-                    isReady: async () => {
-                      const result = await db.rawQuery({
-                        sql: `select id from ingredients`,
-                      })
-
-                      console.log({ result, boolean: !!result })
-                      return !!result
-                    },
-                  },
-                ],
-                queries: ({ db }) =>
-                  IngredientDetail.queries({
-                    db,
-                    id: props.params.id,
-                  }),
-              })
-
-              return null
-            },
-          },
-        ],
-      },
-    ],
-  },
-])
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
 if (!PUBLISHABLE_KEY) {
-  throw new Error(`Missing Publishable Key`)
+  throw new Error('Missing Publishable Key')
 }
 
 async function render() {
-  ReactDOM.createRoot(document.getElementById(`root`)!).render(
+  // Initialize the router
+  await router.load()
+
+  const rootElement = document.getElementById("root")
+  if (!rootElement) throw new Error("Root element not found")
+
+  ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
-      <Theme accentColor="teal">
+      <Theme>
         <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
           <ElectricalProvider>
             <RouterProvider router={router} />
           </ElectricalProvider>
         </ClerkProvider>
       </Theme>
-    </React.StrictMode>
+    </React.StrictMode>,
   )
 }
 
-render()
+render().catch(console.error)
