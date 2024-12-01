@@ -85,7 +85,6 @@ function deploySite(
     environment: {
       VITE_ELECTRIC_TOKEN: electricInfo.properties.token,
       VITE_DATABASE_ID: electricInfo.properties.database_id,
-      VITE_ELECTRIC_URL: process.env.ELECTRIC_URL!,
       VITE_API_URL: worker.url as unknown as string,
       VITE_CLERK_PUBLISHABLE_KEY: process.env.VITE_CLERK_PUBLISHABLE_KEY!,
     },

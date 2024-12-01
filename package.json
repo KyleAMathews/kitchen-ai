@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "dependencies": {
     "@electric-sql/react": "^0.5.4",
-    "sst": "3.3.35",
+    "sst": "3.3.38",
     "vite-plugin-capsize-radix": "^0.0.9"
   },
   "devDependencies": {

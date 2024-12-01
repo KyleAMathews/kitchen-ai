@@ -10,7 +10,7 @@
     "@tsconfig/node18": "^18.2.2",
     "@types/aws-lambda": "^8.10.133",
     "@types/node": "^20.11.14",
-    "sst": "^3.3.35",
+    "sst": "^3.3.38",
     "vitest": "^1.2.2"
   },
   "dependencies": {

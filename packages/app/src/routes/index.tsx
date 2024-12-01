@@ -25,7 +25,7 @@ import {
   ArrowRightIcon,
   CameraIcon,
 } from "@radix-ui/react-icons"
-import { useElectric } from "../context"
+import { useShape } from "@electric-sql/react"
 import FileUploadToS3 from "../upload-to-s3"
 import RecipeCard from "../components/recipe-card"
 import IngredientCard from "../components/ingredient-card"
@@ -38,6 +38,7 @@ function IngredientsView({
   search,
   isSearching,
 }) {
+  console.log({ ingredients, ingredientsCount })
   return (
     <Flex direction="column" gap={isSearching ? `3` : `6`}>
       <Flex direction="column" gap="4">
@@ -90,6 +91,7 @@ function IngredientsView({
         (ingredients.length > 0 ? (
           <Flex direction="column" gap="4">
             {ingredients.map((ingredient, i: number) => {
+              console.log({ ingredient })
               if (ingredient.is_reviewed) {
                 return (
                   <React.Fragment key={ingredient.id}>
@@ -235,16 +237,30 @@ export default function Index() {
   //   recipesCount: any[]
   //   recipes: Recipes[]
   // } = useElectricData(location.pathname + location.search)
+  console.log({ url: `${import.meta.env.VITE_API_URL}/v1/shape`, meta: import.meta.env })
+  const { data: ingredients, isLoading: isIngredientsLoading } = useShape({
+    url: `${import.meta.env.VITE_API_URL}/v1/shape`,
+    table: `ingredients`
+  })
+  const { data: recipes, isLoading: isRecipesLoading } = useShape({
+    url: `${import.meta.env.VITE_API_URL}/v1/shape`,
+    table: `recipes`
+  })
   const photos: Ingredients_photo_uploads[] = []
-  const ingredients: Ingredients[] = []
-  const ingredientsCount: any[] = []
+  // const ingredients: Ingredients[] = []
+  // const ingredientsCount: any[] = []
   const ingredients_needing_review: Ingredients[] = []
-  const recipesCount: any[] = [{ count: 0 }]
-  const recipes: Recipes[] = []
+  // const recipesCount: any[] = [{ count: 0 }]
+  // const recipes: Recipes[] = []
 
-  const countIngredients = 0
+  if (isIngredientsLoading || isRecipesLoading) {
+    return ``
+  }
+
+  const recipesCount = recipes.length
+  const countIngredients = ingredients.length
   // const countIngredients = (ingredientsCount && ingredientsCount[0].count) || 0
-  const isSearching = search !== null && search.length > 0
+  const isSearching = search.q !== undefined && search.q.length > 0
 
   return (
     <>
@@ -254,22 +270,21 @@ export default function Index() {
         <>
           <Flex direction="column" gap={isSearching ? `5` : `6`}>
             <form>
-              <TextField.Root>
+              <TextField.Root
+                placeholder="Search Kitchen"
+                type="search"
+                autoComplete="false"
+                name="q"
+                value={search.q || ``}
+                onChange={(event) => {
+                  const formData = new FormData(event.currentTarget.form)
+                  const updates = Object.fromEntries(formData)
+                  // setSearchParams({ q: updates.q }, { replace: true })
+                }}
+              >
                 <TextField.Slot>
                   <MagnifyingGlassIcon height="16" width="16" />
                 </TextField.Slot>
-                <TextField.Input
-                  placeholder="Search Kitchen"
-                  type="search"
-                  autoComplete="false"
-                  name="q"
-                  value={search || ``}
-                  onChange={(event) => {
-                    const formData = new FormData(event.currentTarget.form)
-                    const updates = Object.fromEntries(formData)
-                    // setSearchParams({ q: updates.q }, { replace: true })
-                  }}
-                />
               </TextField.Root>
             </form>
             <Flex direction="column" gap={isSearching ? `5` : `7`}>
@@ -284,7 +299,7 @@ export default function Index() {
                       display: `inline-block`,
                     }}
                   >
-                    Recipes{!isSearching && ` (${recipesCount[0].count}) `}
+                    Recipes{!isSearching && ` (${recipes.length}) `}
                   </Link>
                   {!isSearching && (
                     <RadixLink asChild>
@@ -307,7 +322,7 @@ export default function Index() {
                     </RadixLink>
                   )}
                 </Heading>
-                {isSearching || recipesCount[0].count > 0 ? (
+                {isSearching || recipes.length > 0 ? (
                   <>
                     {recipes && recipes.length > 0 ? (
                       <Flex direction="column" gap="4">

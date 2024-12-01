@@ -8,6 +8,7 @@ declare module "sst" {
   export interface Resource {
     "ElectricUrl": {
       "type": "sst.sst.Linkable"
+      "url": string
     }
     "databaseUriLink": {
       "type": "sst.sst.Linkable"
