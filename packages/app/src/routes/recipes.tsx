@@ -1,10 +1,10 @@
 import * as React from "react"
-import { useLocation, useNavigate, Link } from "@tanstack/react-router"
-import { Flex, Heading, Separator } from "@radix-ui/themes"
-import { useShape } from "@electric-sql/react"
-import { useUser } from "@clerk/clerk-react"
+import { useSearch, useNavigate, Link } from "@tanstack/react-router"
+import { Flex, Button, Heading, Separator } from "@radix-ui/themes"
+// import { useUser } from "@clerk/clerk-react"
 import RecipeCard from "../components/recipe-card"
 import { PlusCircledIcon } from "@radix-ui/react-icons"
+import { useRecipesShape } from "../hooks/use-shapes"
 
 // const queries = ({ db }: { db: Electric[`db`] }) => {
 //   return {
@@ -22,21 +22,12 @@ import { PlusCircledIcon } from "@radix-ui/react-icons"
 // Recipes.queries = queries
 
 export default function Recipes() {
-  const location = useLocation()
-  const navigate = useNavigate()
-  // const { db } = useElectric()!
-  // const {
-  //   user: { id: user_id },
-  // } = useUser()
-  const { data: recipes, isLoading: isRecipesLoading } = useShape({
-    url: `${import.meta.env.VITE_API_URL}/v1/shape`,
-    params: {
-      table: `recipes`,
-    },
-  })
+  // const location = useSearch({ from: "/recipes" })
+  // const navigate = useNavigate()
+  const { data: recipes, isLoading: isRecipesLoading } = useRecipesShape()
 
   if (isRecipesLoading) {
-    return null
+    return ``
   }
 
   console.log({ recipes })

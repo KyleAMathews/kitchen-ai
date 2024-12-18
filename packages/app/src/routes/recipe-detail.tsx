@@ -29,6 +29,7 @@ import ExpirationDateEdit from "../components/expiration-date-edit"
 import { UpdateIcon } from "@radix-ui/react-icons"
 import * as Toast from "@radix-ui/react-toast"
 import { groupBy, mapValues } from "lodash"
+import { useIngredientsShape, useRecipeIngredientsShape, useRecipesShape } from "../hooks/use-shapes"
 
 function AddIngredientsToShoppingListButton({
   possibleMatches,
@@ -411,26 +412,9 @@ export default function RecipeDetail() {
   const [checked, setChecked] = useState({})
   const { id: recipeId } = useParams({ from: '/recipes/$id' })
 
-  const { data: recipes, isLoading: isRecipesLoading } = useShape({
-    url: `${import.meta.env.VITE_API_URL}/v1/shape`,
-    params: {
-      table: `recipes`,
-    },
-  })
-
-  const { data: ingredients, isLoading: isIngredientsLoading } = useShape({
-    url: `${import.meta.env.VITE_API_URL}/v1/shape`,
-    params: {
-      table: `ingredients`,
-    }
-  })
-
-  const { data: recipeIngredients, isLoading: isLoadingRecipesIngredients } = useShape({
-    url: `${import.meta.env.VITE_API_URL}/v1/shape`,
-    params: {
-      table: `recipe_ingredients`,
-    }
-  })
+  const { data: recipes, isLoading: isRecipesLoading } = useRecipesShape()
+  const { data: ingredients, isLoading: isIngredientsLoading } = useIngredientsShape()
+  const { data: recipeIngredients, isLoading: isLoadingRecipesIngredients } = useRecipeIngredientsShape()
 
   if (isIngredientsLoading || isRecipesLoading || isLoadingRecipesIngredients) {
     return ``

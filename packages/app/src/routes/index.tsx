@@ -17,7 +17,7 @@ import {
   ArrowRightIcon,
   CameraIcon,
 } from "@radix-ui/react-icons"
-import { useShape } from "@electric-sql/react"
+import { useIngredientsShape, usePhotosShape, useRecipesShape } from "../hooks/use-shapes"
 import FileUploadToS3 from "../upload-to-s3"
 import RecipeCard from "../components/recipe-card"
 import IngredientCard from "../components/ingredient-card"
@@ -228,24 +228,9 @@ export default function Index() {
   //   recipesCount: any[]
   //   recipes: Recipes[]
   // } = useElectricData(location.pathname + location.search)
-  const { data: unfilteredIngredients, isLoading: isIngredientsLoading } = useShape({
-    url: `${import.meta.env.VITE_API_URL}/v1/shape`,
-    params: {
-      table: `ingredients`,
-    }
-  })
-  const { data: unfilteredRecipes, isLoading: isRecipesLoading } = useShape({
-    url: `${import.meta.env.VITE_API_URL}/v1/shape`,
-    params: {
-      table: `recipes`,
-    },
-  })
-  const { data: photos, isLoading: isPhotosLoading } = useShape({
-    url: `${import.meta.env.VITE_API_URL}/v1/shape`,
-    params: {
-      table: `photos`,
-    },
-  })
+  const { data: unfilteredIngredients, isLoading: isIngredientsLoading } = useIngredientsShape()
+  const { data: unfilteredRecipes, isLoading: isRecipesLoading } = useRecipesShape()
+  const { data: photos, isLoading: isPhotosLoading } = usePhotosShape()
 
   if (isIngredientsLoading || isRecipesLoading) {
     return ``
