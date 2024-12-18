@@ -1,5 +1,4 @@
 import { Link, useParams, useLocation } from "@tanstack/react-router"
-import { useLiveQuery } from "electric-sql/react"
 import { useState } from "react"
 import {
   Flex,
@@ -17,14 +16,7 @@ import {
   RadioGroup,
   Slider,
 } from "@radix-ui/themes"
-import {
-  Electric,
-  Recipes,
-  Ingredients,
-  Recipe_ingredients,
-} from "../generated/client"
-import { genUUID } from "electric-sql/util"
-import { useElectric } from "../context"
+import { useShape } from "@electric-sql/react"
 import { useUser } from "@clerk/clerk-react"
 import {
   cosineSimilarity,
@@ -160,15 +152,15 @@ function AlreadyHaveIngredient({
   possibleMatches: Recipe_ingredients[]
 }) {
   // const { db } = useElectric()!
-  const { results: liveJobs } = useLiveQuery(
-    // db.jobs.liveMany({
-    //   where: {
-    //     state: `working`,
-    //     target_id: ingredient.id,
-    //   },
-    // })
-  )
-  const jobs = liveJobs || []
+  // const { results: liveJobs } = useLiveQuery(
+  // db.jobs.liveMany({
+  //   where: {
+  //     state: `working`,
+  //     target_id: ingredient.id,
+  //   },
+  // })
+  // )
+  const jobs = []
   const matchedIngred = possibleMatches[ingredient.id] as Ingredients
   return (
     <Flex direction="column" gap="2" position="relative">
@@ -416,19 +408,45 @@ export default function RecipeDetail() {
   const location = useLocation()
   // const { db } = useElectric()!
 
-  const params = useParams()
-
-  // const {
-  //   recipe,
-  //   ingredients,
-  // }: {
-  //   recipe: Recipes
-  //   ingredients: Ingredients[]
-  // } = useElectricData(location.pathname + location.search)
-  const recipe: Recipes = {} as Recipes
-  const ingredients: Ingredients[] = []
-
   const [checked, setChecked] = useState({})
+  const { id: recipeId } = useParams({ from: '/recipes/$id' })
+
+  const { data: recipes, isLoading: isRecipesLoading } = useShape({
+    url: `${import.meta.env.VITE_API_URL}/v1/shape`,
+    params: {
+      table: `recipes`,
+    },
+  })
+
+  const { data: ingredients, isLoading: isIngredientsLoading } = useShape({
+    url: `${import.meta.env.VITE_API_URL}/v1/shape`,
+    params: {
+      table: `ingredients`,
+    }
+  })
+
+  const { data: recipeIngredients, isLoading: isLoadingRecipesIngredients } = useShape({
+    url: `${import.meta.env.VITE_API_URL}/v1/shape`,
+    params: {
+      table: `recipe_ingredients`,
+    }
+  })
+
+  if (isIngredientsLoading || isRecipesLoading || isLoadingRecipesIngredients) {
+    return ``
+  }
+
+  const recipe = recipes.find(recipe => recipe.id === recipeId)
+  if (!recipe) {
+    // TODO does tanstack/router have something for this?
+    return `404`
+  }
+
+  recipe.recipe_ingredients = recipeIngredients.filter(i => i.recipe_id === recipeId)
+
+  console.log({ recipe, ingredients, recipeIngredients })
+
+
 
   const possibleMatches = Object.fromEntries(
     recipe.recipe_ingredients.map((ri, i) => {
@@ -502,6 +520,7 @@ export default function RecipeDetail() {
           )
           return (
             <Text
+              key={ingredient_id}
               as="label"
               size="2"
               style={{
@@ -545,6 +564,7 @@ export default function RecipeDetail() {
               recipe.recipe_ingredients.find((i) => i.id === ingredient_id)
             return (
               <AlreadyHaveIngredient
+                key={ingredient_id}
                 setChecked={setChecked}
                 ingredient={ingredient}
                 checked={checked}
@@ -552,6 +572,7 @@ export default function RecipeDetail() {
               />
             )
           }
+          return null
         })}
       </Flex>
     </Flex>

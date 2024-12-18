@@ -9,7 +9,7 @@ export default $config({
       removal: input?.stage === `production` ? `retain` : `remove`,
       home: `aws`,
       providers: {
-        neon: `0.6.3`,
+        // neon: `0.6.3`,
         aws: {
           profile: `kyle`,
         },
@@ -18,11 +18,11 @@ export default $config({
   },
   async run() {
     try {
-      const { electricInfo, databaseUri } = createExampleDbAndAddtoElectric({
+      const { electricInfo, databaseUri } = await createDbAndAddtoElectric({
         name: $app.name,
       })
 
-      databaseUri.properties.url.apply(applyMigrations)
+      applyMigrations(databaseUri.properties.url)
 
       const electricUrlLink = new sst.Linkable(`ElectricUrl`, {
         properties: {
@@ -91,23 +91,24 @@ function deploySite(
   })
 }
 
-function createExampleDbAndAddtoElectric({ name }: { name: string }) {
-  const NEON_ELECTRIC_EXAMPLES_ID = `calm-breeze-71276912`
-  const project = neon.getProjectOutput({ id: NEON_ELECTRIC_EXAMPLES_ID })
+async function createDbAndAddtoElectric({ name }: { name: string }) {
+  // const NEON_PROJECT_ID = `br-fragrant-wildflower-a6w0rlbj`
+  // const project = neon.getProjectOutput({ id: NEON_PROJECT_ID })
+  //
+  // const db = new neon.Database(`${name}-${$app.stage}-db`, {
+  //   projectId: project.id,
+  //   branchId: project.defaultBranchId,
+  //   name:
+  //     $app.stage === `Production`
+  //       ? `${name}-production`
+  //       : `${name}-${$app.stage}`,
+  //   ownerName: `neondb_owner`,
+  // })
+  // const databaseUri = getNeonDbUri(project, db)
+  const databaseUri = `postgresql://mathews.kyle:AosB6Fqa2wJC@ep-frosty-breeze-a6mpxhgo.us-west-2.aws.neon.tech/neondb?sslmode=require`
 
-  const db = new neon.Database(`${name}-${$app.stage}-db`, {
-    projectId: project.id,
-    branchId: project.defaultBranchId,
-    name:
-      $app.stage === `Production`
-        ? `${name}-production`
-        : `${name}-${$app.stage}`,
-    ownerName: `neondb_owner`,
-  })
-  const databaseUri = getNeonDbUri(project, db)
-
-  const electricInfo = databaseUri.apply((uri) => addDatabaseToElectric(uri))
-  electricInfo.apply(console.log)
+  const electricInfo = await addDatabaseToElectric(databaseUri)
+  // electricInfo.apply(console.log)
 
   const electricInfoLink = new sst.Linkable(`electricInfo`, {
     properties: {
@@ -125,18 +126,18 @@ function createExampleDbAndAddtoElectric({ name }: { name: string }) {
   return { electricInfo: electricInfoLink, databaseUri: databaseUriLink }
 }
 
-function getNeonDbUri(
-  project: $util.Output<neon.GetProjectResult>,
-  db: neon.Database
-) {
-  const passwordOutput = neon.getBranchRolePasswordOutput({
-    projectId: project.id,
-    branchId: project.defaultBranchId,
-    roleName: db.ownerName,
-  })
-
-  return $interpolate`postgresql://${passwordOutput.roleName}:${passwordOutput.password}@${project.databaseHost}/${db.name}?sslmode=require`
-}
+// function getNeonDbUri(
+//   project: $util.Output<neon.GetProjectResult>,
+//   db: neon.Database
+// ) {
+//   const passwordOutput = neon.getBranchRolePasswordOutput({
+//     projectId: project.id,
+//     branchId: project.defaultBranchId,
+//     roleName: db.ownerName,
+//   })
+//
+//   return $interpolate`postgresql://${passwordOutput.roleName}:${passwordOutput.password}@${project.databaseHost}/${db.name}?sslmode=require`
+// }
 
 async function addDatabaseToElectric(
   uri: string

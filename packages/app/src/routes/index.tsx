@@ -59,8 +59,8 @@ function IngredientsView({
                 position: `relative`,
                 top: 3,
                 left: 4,
-                color: 'inherit',
-                textDecoration: 'none'
+                color: "inherit",
+                textDecoration: "none",
               }}
             >
               <CameraIcon height="20" width="20" />
@@ -218,7 +218,7 @@ Index.queries = queries
 export default function Index() {
   // const { db } = useElectric()!
   const location = useLocation()
-  const search = useSearch({ from: '/' })
+  const search = useSearch({ from: "/" })
 
   // const {
   //   photos,
@@ -235,14 +235,21 @@ export default function Index() {
   //   recipesCount: any[]
   //   recipes: Recipes[]
   // } = useElectricData(location.pathname + location.search)
-  console.log({ url: `${import.meta.env.VITE_API_URL}/v1/shape`, meta: import.meta.env })
+  console.log({
+    url: `${import.meta.env.VITE_API_URL}/v1/shape`,
+    meta: import.meta.env,
+  })
   const { data: ingredients, isLoading: isIngredientsLoading } = useShape({
     url: `${import.meta.env.VITE_API_URL}/v1/shape`,
-    table: `ingredients`
+    params: {
+      table: `ingredients`,
+    }
   })
   const { data: recipes, isLoading: isRecipesLoading } = useShape({
     url: `${import.meta.env.VITE_API_URL}/v1/shape`,
-    table: `recipes`
+    params: {
+      table: `recipes`,
+    },
   })
   const photos: Ingredients_photo_uploads[] = []
   // const ingredients: Ingredients[] = []
@@ -308,8 +315,8 @@ export default function Index() {
                         position: `relative`,
                         top: 3,
                         left: 8,
-                        color: 'inherit',
-                        textDecoration: 'none'
+                        color: "inherit",
+                        textDecoration: "none",
                       }}
                     >
                       <PlusCircledIcon
@@ -326,12 +333,12 @@ export default function Index() {
                       <Flex direction="column" gap="4">
                         {recipes.map((recipe, i) => {
                           return (
-                            <>
-                              <RecipeCard recipe={recipe} />
+                            <React.Fragment key={recipe.id}>
+                              <RecipeCard key={recipe.id} recipe={recipe} />
                               {recipes.length - 1 !== i && (
                                 <Separator size="4" />
                               )}
-                            </>
+                            </React.Fragment>
                           )
                         })}
                       </Flex>
