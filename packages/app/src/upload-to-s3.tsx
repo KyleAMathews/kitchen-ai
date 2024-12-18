@@ -3,7 +3,7 @@ import { Button, Flex } from "@radix-ui/themes"
 import { useElectric } from "./context"
 import { genUUID } from "electric-sql/util"
 import { useUser } from "@clerk/clerk-react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "@tanstack/react-router"
 import { lambdaFunction } from "./util"
 
 function FileUploadToS3({

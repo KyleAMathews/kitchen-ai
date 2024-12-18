@@ -1,5 +1,5 @@
 import { isRunningLow, isExpiredSoon } from "../util"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "@tanstack/react-router"
 import {
   Flex,
   Heading,

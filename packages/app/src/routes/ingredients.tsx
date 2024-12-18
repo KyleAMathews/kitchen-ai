@@ -1,7 +1,7 @@
 import * as React from "react"
 import IngredientCard from "../components/ingredient-card"
 import { useElectricData } from "electric-query"
-import { useLocation } from "react-router-dom"
+import { Link, useLocation } from "@tanstack/react-router"
 import { Heading, Flex, Link as RadixLink, Separator } from "@radix-ui/themes"
 import { Ingredients } from "../generated/client"
 

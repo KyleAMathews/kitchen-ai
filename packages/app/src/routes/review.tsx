@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { useLocation, useNavigate, Link } from "react-router-dom"
+import * as React from "react"
+import { Link, useNavigate, useLocation } from "@tanstack/react-router"
 import { useElectric } from "../context"
 import { Electric } from "../generated/client"
 import { useElectricData } from "electric-query"

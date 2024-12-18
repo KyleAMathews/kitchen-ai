@@ -51,20 +51,20 @@ function IngredientsView({
             {` `}
           </Link>
           {!isSearching && (
-            <RadixLink asChild>
-              <Link
-                to="/upload-photos"
-                style={{
-                  height: 20,
-                  display: `inline-block`,
-                  position: `relative`,
-                  top: 3,
-                  left: 4,
-                }}
-              >
-                <CameraIcon height="20" width="20" />
-              </Link>
-            </RadixLink>
+            <Link
+              to="/upload-photos"
+              style={{
+                height: 20,
+                display: `inline-block`,
+                position: `relative`,
+                top: 3,
+                left: 4,
+                color: 'inherit',
+                textDecoration: 'none'
+              }}
+            >
+              <CameraIcon height="20" width="20" />
+            </Link>
           )}
         </Heading>
         {photos && photos.length > 0 && (
@@ -112,11 +112,9 @@ function IngredientsView({
           <Text color="gray">No results</Text>
         ))}
       {!isSearching && (
-        <RadixLink asChild>
-          <Link to="/ingredients">
-            See all <ArrowRightIcon />
-          </Link>
-        </RadixLink>
+        <Link to="/ingredients">
+          See all <ArrowRightIcon />
+        </Link>
       )}
     </Flex>
   )
@@ -302,24 +300,24 @@ export default function Index() {
                     Recipes{!isSearching && ` (${recipes.length}) `}
                   </Link>
                   {!isSearching && (
-                    <RadixLink asChild>
-                      <Link
-                        to="/recipes/new"
-                        style={{
-                          height: 20,
-                          display: `inline-block`,
-                          position: `relative`,
-                          top: 3,
-                          left: 8,
-                        }}
-                      >
-                        <PlusCircledIcon
-                          height="20"
-                          width="20"
-                          style={{ height: 20 }}
-                        />
-                      </Link>
-                    </RadixLink>
+                    <Link
+                      to="/recipes/new"
+                      style={{
+                        height: 20,
+                        display: `inline-block`,
+                        position: `relative`,
+                        top: 3,
+                        left: 8,
+                        color: 'inherit',
+                        textDecoration: 'none'
+                      }}
+                    >
+                      <PlusCircledIcon
+                        height="20"
+                        width="20"
+                        style={{ height: 20 }}
+                      />
+                    </Link>
                   )}
                 </Heading>
                 {isSearching || recipes.length > 0 ? (
@@ -341,11 +339,9 @@ export default function Index() {
                       <Text color="gray">No results</Text>
                     )}
                     {!isSearching && (
-                      <RadixLink asChild>
-                        <Link to="/recipes">
-                          Browse all <ArrowRightIcon />
-                        </Link>
-                      </RadixLink>
+                      <Link to="/recipes">
+                        Browse all <ArrowRightIcon />
+                      </Link>
                     )}
                   </>
                 ) : (

@@ -1,4 +1,4 @@
-import { Link, useParams } from "@tanstack/react-router"
+import { Link, useParams, useLocation } from "@tanstack/react-router"
 import { useLiveQuery } from "electric-sql/react"
 import { useState } from "react"
 import {
@@ -17,7 +17,6 @@ import {
   RadioGroup,
   Slider,
 } from "@radix-ui/themes"
-import { useElectricData } from "electric-query"
 import {
   Electric,
   Recipes,
@@ -357,7 +356,7 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
                     <Slider
                       defaultValue={[0]}
                       name="fill_level"
-                      onValueCommit={(val) => {}}
+                      onValueCommit={(val) => { }}
                     />
                     <Flex justify="between">
                       <Text size="1" color="gray">
@@ -453,8 +452,8 @@ export default function RecipeDetail() {
         possibleMatches.length === 0
           ? null
           : possibleMatches.reduce((prev, current) => {
-              return prev.distance > current.distance ? prev : current
-            })
+            return prev.distance > current.distance ? prev : current
+          })
 
       return [ri.id, possibleMatch]
     })

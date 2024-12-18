@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link } from "@tanstack/react-router"
 import { CaretRightIcon } from "@radix-ui/react-icons"
 import {
   Flex,
@@ -25,7 +25,7 @@ export default function RecipeCard({ recipe }) {
           </Link>
         </Heading>
         <Text color="gray" size="2">
-          Last used {timeAgo.format(recipe.updated_at)}
+          Last used {timeAgo.format(new Date(recipe.updated_at))}
         </Text>
       </Flex>
       <Flex align="center">

@@ -1,4 +1,4 @@
-import { useLocation, useNavigate, Link } from "@tanstack/react-router"
+import { useLocation, useNavigate } from "@tanstack/react-router"
 import { Electric } from "../generated/client"
 import { useElectricData } from "electric-query"
 import { Flex, Heading, Box, Text, Button } from "@radix-ui/themes"
