@@ -1,9 +1,8 @@
 import * as React from "react"
 import IngredientCard from "../components/ingredient-card"
-import { useElectricData } from "electric-query"
 import { Link, useLocation } from "@tanstack/react-router"
 import { Heading, Flex, Link as RadixLink, Separator } from "@radix-ui/themes"
-import { Ingredients } from "../generated/client"
+import { useIngredientsShape } from "../hooks/use-shapes"
 
 const queries = ({ db }: { db: Electric[`db`] }) => {
   return {
@@ -13,16 +12,9 @@ const queries = ({ db }: { db: Electric[`db`] }) => {
 
 IngredientsList.queries = queries
 export default function IngredientsList() {
-  const location = useLocation()
-  // const {
-  //   ingredients,
-  // }: {
-  //   ingredients: Ingredients[]
-  // } = useElectricData(location.pathname + location.search)
-  const ingredients: Ingredients[] = []
-  console.log({
-    ingredients,
-  })
+  const { data: ingredients, isLoading: isIngredientsLoading } = useIngredientsShape()
+
+  ingredients.sort((a, b) => a.updated_at > b.updated_at ? -11 : 1)
   return (
     <Flex direction="column" gap="7" pt="2">
       <Heading>Ingredients ({ingredients.length})</Heading>

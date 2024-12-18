@@ -69,6 +69,9 @@ importers:
       '@databases/pg-migrations':
         specifier: ^5.0.3
         version: 5.0.3(typescript@5.7.2)
+      '@electric-sql/client':
+        specifier: 1.0.0-beta.1
+        version: 1.0.0-beta.1
       '@fontsource-variable/inter':
         specifier: ^5.0.17
         version: 5.1.0

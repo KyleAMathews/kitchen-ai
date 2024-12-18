@@ -16,7 +16,6 @@ import {
   RadioGroup,
   Slider,
 } from "@radix-ui/themes"
-import { useShape } from "@electric-sql/react"
 import { useUser } from "@clerk/clerk-react"
 import {
   cosineSimilarity,

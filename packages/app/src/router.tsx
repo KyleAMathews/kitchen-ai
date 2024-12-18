@@ -18,6 +18,8 @@ import AuthedLayout from './authed-layout'
 import ErrorPage from './error-page'
 import { Electric } from './generated/client'
 import { electricSqlLoader } from 'electric-query'
+import { preloadShape } from '@electric-sql/react'
+import { shapeConfigs } from './hooks/use-shapes'
 
 // Create a root route
 const rootRoute = createRootRoute({
@@ -56,39 +58,13 @@ const indexRoute = createRoute({
   },
   loaderDeps: ({ search: { q } }) => ({ q }),
   loader: async ({ deps: { q } }) => {
-    const key = '/' + (q ? `?q=${q}` : '')
-    console.log({ key })
-    // await electricSqlLoader<Electric>({
-    //   key,
-    //   shapes: ({ db }) => [
-    //     {
-    //       shape: db.ingredients_photo_uploads.sync({
-    //         include: { ingredients: true, users: true },
-    //       }),
-    //       isReady: async () =>
-    //         !!(await db.rawQuery({
-    //           sql: `select id from ingredients_photo_uploads limit 1`,
-    //         })),
-    //     },
-    //     {
-    //       shape: db.recipes.sync({
-    //         include: { recipe_ingredients: true, users: true },
-    //       }),
-    //       isReady: async () =>
-    //         !!(await db.rawQuery({
-    //           sql: `select id from recipes limit 1`,
-    //         })),
-    //     },
-    //   ],
-    //   queries:
-    //     ({ db }) =>
-    //       () =>
-    //         Index.queries({
-    //           db,
-    //           search: q ?? undefined,
-    //         }),
-    // })
-    return null
+    // Preload the shapes we need
+    await Promise.all([
+      preloadShape(shapeConfigs.recipes),
+      preloadShape(shapeConfigs.ingredients),
+      preloadShape(shapeConfigs.photos),
+    ])
+    return { q }
   },
 })
 
@@ -97,25 +73,9 @@ const ingredientsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/ingredients',
   component: IngredientsList,
-  loader: async ({ location }) => {
-    const key = location.pathname + location.search
-    console.log({ key })
-    // await electricSqlLoader<Electric>({
-    //   key,
-    //   shapes: ({ db }) => [
-    //     {
-    //       shape: db.ingredients.sync({
-    //         include: { ingredients_photo_uploads: true },
-    //       }),
-    //       isReady: async () =>
-    //         !!(await db.rawQuery({
-    //           sql: `select id from ingredients limit 1`,
-    //         })),
-    //     },
-    //   ],
-    // })
-    return null
-  },
+  loader: () => {
+    return preloadShape(shapeConfigs.ingredients)
+  }
 })
 
 const uploadPhotosRoute = createRoute({
@@ -134,24 +94,36 @@ const recipesRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/recipes',
   component: Recipes,
+  loader: () => {
+    return preloadShape(shapeConfigs.recipes)
+  }
 })
 
 const recipesNewRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/recipes/new',
   component: RecipesNew,
+  loader: () => {
+    return preloadShape(shapeConfigs.recipes)
+  }
 })
 
 const ingredientDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/ingredients/$id',
   component: IngredientDetail,
+  loader: () => {
+    return preloadShape(shapeConfigs.ingredients)
+  }
 })
 
 const recipeDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/recipes/$id',
   component: RecipeDetail,
+  loader: () => {
+    return preloadShape(shapeConfigs.recipes)
+  }
 })
 
 // Create the router configuration

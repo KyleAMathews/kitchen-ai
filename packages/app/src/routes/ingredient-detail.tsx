@@ -17,6 +17,7 @@ import { isString } from "lodash"
 import { genUUID } from "electric-sql/util"
 import { lambdaFunction } from "../util"
 import ExpirationDateEdit from "../components/expiration-date-edit"
+import { useIngredientsShape } from "../hooks/use-shapes"
 
 function formatDate(date) {
   const year = date.getFullYear() // Gets the year (4 digits)
@@ -40,9 +41,9 @@ function generateEventText(event) {
   if (
     key === `fill_level` &&
     event.from_values.fill_level >
-      (isString(event.to_values)
-        ? JSON.parse(event.to_values).fill_level
-        : event.to_values.fill_level)
+    (isString(event.to_values)
+      ? JSON.parse(event.to_values).fill_level
+      : event.to_values.fill_level)
   ) {
     action = `used this`
   }
@@ -133,9 +134,9 @@ function EditCountLevel({ ingredient }: { ingredient: Ingredients }) {
 }
 
 function EditFillLevel({ ingredient }) {
-  const {
-    user: { id: user_id },
-  } = useUser()
+  // const {
+  //   user: { id: user_id },
+  // } = useUser()
   // const { db } = useElectric()!
   return (
     <>
@@ -233,7 +234,6 @@ export default function IngredientDetail() {
   const [working, setWorking] = useState(false)
   const navigate = useNavigate()
   const { id } = useParams({ from: '/ingredients/$id' })
-  // const { db } = useElectric()!
 
   // const {
   //   ingredient,
@@ -241,13 +241,18 @@ export default function IngredientDetail() {
   // }: { ingredient: Ingredients; events: Ingredient_events } = useElectricData(
   //   `/ingredients/${id}`
   // )
-  const ingredient: Ingredients = {} as Ingredients
-  const events: Ingredient_events = {} as Ingredient_events
+  const { data: ingredients, isLoading: isIngredientsLoading } = useIngredientsShape()
+
+  const ingredient = ingredients.find(i => i.id === id)
+  console.log({ ingredient })
+
+  const events = []
+  // const ingredient: Ingredients = {} as Ingredients
+  // const events: Ingredient_events = {} as Ingredient_events
   const [expirationDate, setExpirationDate] = useState(
     ingredient.expiration_date
   )
 
-  console.log({ ingredient })
   // Get expired date string
   const expiredDate = new Date(ingredient.expiration_date)
   const expireDateStr = expiredDate

@@ -5,14 +5,13 @@ import {
   Heading,
   Box,
   Text,
-  Separator,
   Slider,
   Badge,
 } from "@radix-ui/themes"
 import { CaretRightIcon } from "@radix-ui/react-icons"
 import { timeAgo } from "../util"
 
-export default function IngredientCard({ ingredient }: Ingredients) {
+export default function IngredientCard({ ingredient }) {
   const navigate = useNavigate()
   const expiredDate = new Date(ingredient.expiration_date)
   const expiresInFuture = ingredient.expiration_date > new Date()
@@ -24,7 +23,7 @@ export default function IngredientCard({ ingredient }: Ingredients) {
       style={{ cursor: `pointer` }}
       align="center"
       onClick={() => {
-        navigate(`/ingredients/${ingredient.id}`)
+        navigate({ to: `/ingredients/$id`, params: { id: ingredient.id } })
       }}
     >
       <Flex gap="2" direction="column">
