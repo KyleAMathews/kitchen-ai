@@ -13,7 +13,6 @@ import { CaretRightIcon } from "@radix-ui/react-icons"
 import { timeAgo } from "../util"
 
 export default function IngredientCard({ ingredient }: Ingredients) {
-  console.log({ ingredient })
   const navigate = useNavigate()
   const expiredDate = new Date(ingredient.expiration_date)
   const expiresInFuture = ingredient.expiration_date > new Date()

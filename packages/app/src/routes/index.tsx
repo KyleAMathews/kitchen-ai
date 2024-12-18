@@ -1,14 +1,7 @@
 import * as React from "react"
-import { Link, useSearch, useLocation } from "@tanstack/react-router"
+import { Link, useSearch, useLocation, useNavigate } from "@tanstack/react-router"
 import measuringCupImg from "../../static/bowl.png"
-import threeSpices from "../../static/3-spices.jpg"
-import {
-  Electric,
-  Ingredients,
-  Ingredients_photo_uploads,
-  Recipes,
-} from "../generated/client"
-import { useElectricData } from "electric-query"
+// import threeSpices from "../../static/3-spices.jpg"
 import {
   Flex,
   Heading,
@@ -21,7 +14,6 @@ import {
 import {
   MagnifyingGlassIcon,
   PlusCircledIcon,
-  PlusIcon,
   ArrowRightIcon,
   CameraIcon,
 } from "@radix-ui/react-icons"
@@ -91,11 +83,10 @@ function IngredientsView({
         (ingredients.length > 0 ? (
           <Flex direction="column" gap="4">
             {ingredients.map((ingredient, i: number) => {
-              console.log({ ingredient })
               if (ingredient.is_reviewed) {
                 return (
                   <React.Fragment key={ingredient.id}>
-                    <IngredientCard ingredient={ingredient} />
+                    <IngredientCard key={ingredient.id} ingredient={ingredient} />
                     {i !== ingredients.length - 1 && (
                       <Separator
                         key={ingredient.id + `-seperator`}
@@ -218,7 +209,9 @@ Index.queries = queries
 export default function Index() {
   // const { db } = useElectric()!
   const location = useLocation()
+  const navigate = useNavigate()
   const search = useSearch({ from: "/" })
+  console.log({ search })
 
   // const {
   //   photos,
@@ -235,37 +228,37 @@ export default function Index() {
   //   recipesCount: any[]
   //   recipes: Recipes[]
   // } = useElectricData(location.pathname + location.search)
-  console.log({
-    url: `${import.meta.env.VITE_API_URL}/v1/shape`,
-    meta: import.meta.env,
-  })
-  const { data: ingredients, isLoading: isIngredientsLoading } = useShape({
+  const { data: unfilteredIngredients, isLoading: isIngredientsLoading } = useShape({
     url: `${import.meta.env.VITE_API_URL}/v1/shape`,
     params: {
       table: `ingredients`,
     }
   })
-  const { data: recipes, isLoading: isRecipesLoading } = useShape({
+  const { data: unfilteredRecipes, isLoading: isRecipesLoading } = useShape({
     url: `${import.meta.env.VITE_API_URL}/v1/shape`,
     params: {
       table: `recipes`,
     },
   })
-  const photos: Ingredients_photo_uploads[] = []
-  // const ingredients: Ingredients[] = []
-  // const ingredientsCount: any[] = []
-  const ingredients_needing_review: Ingredients[] = []
-  // const recipesCount: any[] = [{ count: 0 }]
-  // const recipes: Recipes[] = []
+  const { data: photos, isLoading: isPhotosLoading } = useShape({
+    url: `${import.meta.env.VITE_API_URL}/v1/shape`,
+    params: {
+      table: `photos`,
+    },
+  })
 
   if (isIngredientsLoading || isRecipesLoading) {
     return ``
   }
 
-  const recipesCount = recipes.length
-  const countIngredients = ingredients.length
-  // const countIngredients = (ingredientsCount && ingredientsCount[0].count) || 0
   const isSearching = search.q !== undefined && search.q.length > 0
+
+  const recipes = isSearching ? unfilteredRecipes.filter(r => r.name?.toLowerCase().includes(search.q)) : unfilteredRecipes
+
+  const ingredients = isSearching ? unfilteredIngredients.filter(r => r.name?.toLowerCase().includes(search.q)) : unfilteredIngredients
+
+  const countIngredients = unfilteredIngredients.length
+  // const countIngredients = (ingredientsCount && ingredientsCount[0].count) || 0
 
   return (
     <>
@@ -284,7 +277,7 @@ export default function Index() {
                 onChange={(event) => {
                   const formData = new FormData(event.currentTarget.form)
                   const updates = Object.fromEntries(formData)
-                  // setSearchParams({ q: updates.q }, { replace: true })
+                  navigate({ search: () => ({ q: updates.q }) })
                 }}
               >
                 <TextField.Slot>
@@ -358,7 +351,7 @@ export default function Index() {
               <IngredientsView
                 isSearching={isSearching}
                 ingredientsCount={countIngredients || 0}
-                ingredients_needing_review={ingredients_needing_review}
+                ingredients_needing_review={ingredients}
                 ingredients={ingredients}
                 photos={photos}
                 search={search}
