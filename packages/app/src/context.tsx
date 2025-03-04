@@ -2,7 +2,6 @@ import { useState, useEffect } from "react"
 import { makeElectricContext } from "electric-sql/react"
 import { Electric, schema } from "../src/generated/client"
 import { useAuth, useUser } from "@clerk/clerk-react"
-import { initElectric, setLoggedOut } from "electric-query"
 import sqliteWasm from "wa-sqlite/dist/wa-sqlite-async.wasm?asset"
 import { isEqual } from "lodash"
 

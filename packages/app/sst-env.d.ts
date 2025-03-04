@@ -7,17 +7,11 @@ export {}
 declare module "sst" {
   export interface Resource {
     "ElectricUrl": {
+      "DATABASE_URL": string
+      "SOURCE_ID": string
+      "SOURCE_SECRET": string
       "type": "sst.sst.Linkable"
       "url": string
-    }
-    "databaseUriLink": {
-      "type": "sst.sst.Linkable"
-      "url": string
-    }
-    "electricInfo": {
-      "database_id": string
-      "token": string
-      "type": "sst.sst.Linkable"
     }
     "kitchen-ai-site": {
       "type": "sst.aws.StaticSite"

@@ -24,8 +24,8 @@ app.get(`/v1/shape`, async (c) => {
   const shapeUrl = new URL(
     `${Resource.ElectricUrl.url}${url.pathname}${url.search}`
   )
-  shapeUrl.searchParams.set(`token`, Resource.electricInfo.token)
-  shapeUrl.searchParams.set(`database_id`, Resource.electricInfo.database_id)
+  shapeUrl.searchParams.set(`source_secret`, Resource.ElectricUrl.SOURCE_SECRET)
+  shapeUrl.searchParams.set(`source_id`, Resource.ElectricUrl.SOURCE_ID)
   const clonedHeaders = new Headers(request.headers)
 
   return await fetch(shapeUrl.toString(), {

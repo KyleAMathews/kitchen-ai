@@ -1,9 +1,7 @@
 import { useState } from "react"
 import * as React from "react"
 import { Link, useNavigate, useLocation } from "@tanstack/react-router"
-import { useElectric } from "../context"
 import { Electric } from "../generated/client"
-import { useElectricData } from "electric-query"
 import { TrashIcon } from "@radix-ui/react-icons"
 import {
   Flex,
@@ -20,7 +18,6 @@ import ExpirationDateEdit from "../components/expiration-date-edit"
 
 function ReviewSpice({ spice, allIngredients }) {
   const [expirationDate, setExpirationDate] = useState(spice.expiration_date)
-  const { db } = useElectric()!
 
   // Check if there's any ingredients that we've probably uploaded before.
   const similarIngredient = allIngredients
@@ -128,7 +125,6 @@ const queries = ({ db }: { db: Electric[`db`] }) => {
 Review.queries = queries
 
 export default function Review() {
-  // const { db } = useElectric()!
   const navigate = useNavigate()
   const location = useLocation()
   // const { photos, ingredients }: { photos: Ingredients_photo_uploads[]; ingredients: Ingredients[] } = useElectricData(

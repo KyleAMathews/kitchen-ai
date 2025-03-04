@@ -18,30 +18,28 @@ export default $config({
   },
   async run() {
     try {
-      const { electricInfo, databaseUri } = await createDbAndAddtoElectric({
-        name: $app.name,
-      })
-
-      applyMigrations(databaseUri.properties.url)
-
-      const electricUrlLink = new sst.Linkable(`ElectricUrl`, {
+      const electriDbInfo = new sst.Linkable(`ElectricUrl`, {
         properties: {
           url: process.env.ELECTRIC_URL,
+          SOURCE_SECRET: process.env.SOURCE_SECRET,
+          SOURCE_ID: process.env.SOURCE_ID,
+          DATABASE_URL: process.env.DATABASE_URL,
         },
       })
+
+      applyMigrations(electriDbInfo.properties.DATABASE_URL)
 
       // Add Cloudflare Worker
       const worker = new sst.cloudflare.Worker(`${$app.name}-worker`, {
         handler: `./packages/functions/src/index.ts`,
         url: true,
-        link: [databaseUri, electricInfo, electricUrlLink],
+        link: [electriDbInfo],
       })
 
-      const website = deploySite(electricInfo, worker)
+      const website = deploySite(electriDbInfo, worker)
 
       return {
-        databaseUri: databaseUri.properties.url,
-        ...electricInfo.properties,
+        ...electriDbInfo.properties,
         website: website.url,
         api: worker.url,
       }
@@ -89,75 +87,4 @@ function deploySite(
       VITE_CLERK_PUBLISHABLE_KEY: process.env.VITE_CLERK_PUBLISHABLE_KEY!,
     },
   })
-}
-
-async function createDbAndAddtoElectric({ name }: { name: string }) {
-  // const NEON_PROJECT_ID = `br-fragrant-wildflower-a6w0rlbj`
-  // const project = neon.getProjectOutput({ id: NEON_PROJECT_ID })
-  //
-  // const db = new neon.Database(`${name}-${$app.stage}-db`, {
-  //   projectId: project.id,
-  //   branchId: project.defaultBranchId,
-  //   name:
-  //     $app.stage === `Production`
-  //       ? `${name}-production`
-  //       : `${name}-${$app.stage}`,
-  //   ownerName: `neondb_owner`,
-  // })
-  // const databaseUri = getNeonDbUri(project, db)
-  const databaseUri = `postgresql://mathews.kyle:AosB6Fqa2wJC@ep-frosty-breeze-a6mpxhgo.us-west-2.aws.neon.tech/neondb?sslmode=require`
-
-  const electricInfo = await addDatabaseToElectric(databaseUri)
-  // electricInfo.apply(console.log)
-
-  const electricInfoLink = new sst.Linkable(`electricInfo`, {
-    properties: {
-      database_id: electricInfo.id,
-      token: electricInfo.token,
-    },
-  })
-
-  const databaseUriLink = new sst.Linkable(`databaseUriLink`, {
-    properties: {
-      url: databaseUri,
-    },
-  })
-
-  return { electricInfo: electricInfoLink, databaseUri: databaseUriLink }
-}
-
-// function getNeonDbUri(
-//   project: $util.Output<neon.GetProjectResult>,
-//   db: neon.Database
-// ) {
-//   const passwordOutput = neon.getBranchRolePasswordOutput({
-//     projectId: project.id,
-//     branchId: project.defaultBranchId,
-//     roleName: db.ownerName,
-//   })
-//
-//   return $interpolate`postgresql://${passwordOutput.roleName}:${passwordOutput.password}@${project.databaseHost}/${db.name}?sslmode=require`
-// }
-
-async function addDatabaseToElectric(
-  uri: string
-): Promise<{ id: string; token: string }> {
-  const adminApi = `https://admin-api-dev-production.electric-sql.com`
-
-  const result = await fetch(`${adminApi}/v1/databases`, {
-    method: `PUT`,
-    headers: { "Content-Type": `application/json` },
-    body: JSON.stringify({
-      database_url: uri,
-      region: `us-east-1`,
-    }),
-  })
-
-  if (!result.ok) {
-    throw new Error(
-      `Could not add database to Electric (${result.status}): ${await result.text()}`
-    )
-  }
-
-  return (await result.json()) as { id: string; token: string }
 }

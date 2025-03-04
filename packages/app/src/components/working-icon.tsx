@@ -1,5 +1,4 @@
 import { UpdateIcon } from "@radix-ui/react-icons"
-import { useElectric } from "../context"
 import { useLiveQuery } from "electric-sql/react"
 
 export default function WorkingIcon() {

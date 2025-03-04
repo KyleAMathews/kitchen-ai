@@ -16,16 +16,12 @@ import RecipeDetail from './routes/recipe-detail'
 import IngredientsList from './routes/ingredients'
 import AuthedLayout from './authed-layout'
 import ErrorPage from './error-page'
-import { Electric } from './generated/client'
-import { electricSqlLoader } from 'electric-query'
 import { preloadShape } from '@electric-sql/react'
 import { shapeConfigs } from './hooks/use-shapes'
 
 // Create a root route
 const rootRoute = createRootRoute({
-  component: () => (
-    <Outlet />
-  ),
+  component: Root,
   errorComponent: ErrorPage,
   notFoundComponent: () => {
     return (
@@ -39,12 +35,12 @@ const rootRoute = createRootRoute({
 })
 
 // Create an authenticated layout route
-// const authedRoute = createRoute({
-//   getParentRoute: () => rootRoute,
-//   id: 'authed',
-//   component: Root,
-//   errorComponent: ErrorPage,
-// })
+const authedRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  id: 'authed',
+  component: Root,
+  errorComponent: ErrorPage,
+})
 
 // Create the index route
 const indexRoute = createRoute({

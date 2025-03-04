@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import { Button, Flex } from "@radix-ui/themes"
-import { useElectric } from "./context"
 import { genUUID } from "electric-sql/util"
 import { useUser } from "@clerk/clerk-react"
 import { useNavigate } from "@tanstack/react-router"
@@ -18,7 +17,6 @@ function FileUploadToS3({
   // } = useUser()
   // const navigate = useNavigate()
 
-  // const { db } = useElectric()!
   const [uploadStatus, setUploadStatus] = useState(``)
   const [uploading, setUploading] = useState(false)
 

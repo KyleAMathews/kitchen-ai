@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { useUser } from "@clerk/clerk-react"
-import { useElectric } from "../context"
 import {
   Flex,
   Heading,
@@ -87,7 +86,6 @@ const handleSubmit = async (
 export default function RecipeNew() {
   const [working, setWorking] = useState(false)
   const navigate = useNavigate()
-  // const { db } = useElectric()!
   const {
     user: { id: user_id },
   } = useUser()

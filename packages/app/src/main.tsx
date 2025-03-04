@@ -15,7 +15,6 @@ import { Theme } from "@radix-ui/themes"
 import { router } from './router'
 import { RouterProvider } from '@tanstack/react-router'
 import { ClerkProvider } from "@clerk/clerk-react"
-import { ElectricalProvider } from "./context"
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -34,9 +33,7 @@ async function render() {
     <React.StrictMode>
       <Theme>
         <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-          <ElectricalProvider>
-            <RouterProvider router={router} />
-          </ElectricalProvider>
+          <RouterProvider router={router} />
         </ClerkProvider>
       </Theme>
     </React.StrictMode>,
