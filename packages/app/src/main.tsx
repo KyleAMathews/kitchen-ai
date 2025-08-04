@@ -18,9 +18,9 @@ import { ClerkProvider } from "@clerk/clerk-react"
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
-if (!PUBLISHABLE_KEY) {
-  throw new Error('Missing Publishable Key')
-}
+// if (!PUBLISHABLE_KEY) {
+//   throw new Error('Missing Publishable Key')
+// }
 
 async function render() {
   // Initialize the router
@@ -32,9 +32,7 @@ async function render() {
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
       <Theme>
-        <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-          <RouterProvider router={router} />
-        </ClerkProvider>
+        <RouterProvider router={router} />
       </Theme>
     </React.StrictMode>,
   )

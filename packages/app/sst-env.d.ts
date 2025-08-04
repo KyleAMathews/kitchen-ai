@@ -2,24 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /* deno-fmt-ignore-file */
+
+/// <reference path="../../sst-env.d.ts" />
+
 import "sst"
 export {}
-declare module "sst" {
-  export interface Resource {
-    "ElectricUrl": {
-      "DATABASE_URL": string
-      "SOURCE_ID": string
-      "SOURCE_SECRET": string
-      "type": "sst.sst.Linkable"
-      "url": string
-    }
-    "kitchen-ai-site": {
-      "type": "sst.aws.StaticSite"
-      "url": string
-    }
-    "kitchen-ai-worker": {
-      "type": "sst.cloudflare.Worker"
-      "url": string
-    }
-  }
-}

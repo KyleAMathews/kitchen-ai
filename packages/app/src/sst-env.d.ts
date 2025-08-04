@@ -3,10 +3,9 @@
 /* eslint-disable */
 /// <reference types="vite/client" />
 interface ImportMetaEnv {
-  readonly VITE_ELECTRIC_TOKEN: string
-  readonly VITE_DATABASE_ID: string
+  readonly VITE_ELECTRIC_SECRET: string
+  readonly VITE_ELECTRIC_ID: string
   readonly VITE_API_URL: string
-  readonly VITE_CLERK_PUBLISHABLE_KEY: string
 }
 interface ImportMeta {
   readonly env: ImportMetaEnv

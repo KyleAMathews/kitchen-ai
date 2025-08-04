@@ -1,7 +1,5 @@
 /// <reference path="./.sst/platform/config.d.ts" />
 
-import { execSync } from "child_process"
-
 export default $config({
   app(input) {
     return {
@@ -18,28 +16,37 @@ export default $config({
   },
   async run() {
     try {
-      const electriDbInfo = new sst.Linkable(`ElectricUrl`, {
-        properties: {
-          url: process.env.ELECTRIC_URL,
-          SOURCE_SECRET: process.env.SOURCE_SECRET,
-          SOURCE_ID: process.env.SOURCE_ID,
-          DATABASE_URL: process.env.DATABASE_URL,
-        },
-      })
+      // TODO put pg & electric info here via secrets.
+      const connectionInfo = {
+        ELECTRIC_SECRET: new sst.Secret(`ELECTRIC_SECRET`),
+        ELECTRIC_ID: new sst.Secret(`ELECTRIC_ID`),
+        PGURI: new sst.Secret(`PGURI`),
+        PGURI_POOL: new sst.Secret(`PGURI_POOL`),
+        OPENAI_KEY: new sst.Secret(`OPENAI_KEY`),
+      }
 
-      applyMigrations(electriDbInfo.properties.DATABASE_URL)
+      connectionInfo.PGURI_POOL.value.apply(
+        async (dburi) => await applyMigrations(dburi)
+      )
 
       // Add Cloudflare Worker
       const worker = new sst.cloudflare.Worker(`${$app.name}-worker`, {
         handler: `./packages/functions/src/index.ts`,
         url: true,
-        link: [electriDbInfo],
+        environment: {
+          ...Object.fromEntries(
+            Object.entries(connectionInfo).map(([key, secret]) => [
+              key,
+              secret.value,
+            ])
+          ),
+        },
       })
 
-      const website = deploySite(electriDbInfo, worker)
+      const website = deploySite(connectionInfo, worker)
 
       return {
-        ...electriDbInfo.properties,
+        ...connectionInfo,
         website: website.url,
         api: worker.url,
       }
@@ -49,8 +56,11 @@ export default $config({
   },
 })
 
-function applyMigrations(uri: string) {
+// pg_dump --data-only --no-owner --no-privileges "postgresql://mathews.kyle:AosB6Fqa2wJC@ep-frosty-breeze-a6mpxhgo-pooler.us-west-2.aws.neon.tech/neondb?sslmode=require" | psql "postgresql://postgres:mXAhACvGxPlKbHKJ@db.rvksdcveprumaohdikrj.supabase.co:5432/postgres
+
+async function applyMigrations(uri) {
   console.log(`apply migrations to `, uri)
+  const { execSync } = await import(`child_process`)
   execSync(`npx pg-migrations apply --directory ./migrations`, {
     env: {
       ...process.env,
@@ -59,13 +69,7 @@ function applyMigrations(uri: string) {
   })
 }
 
-function deploySite(
-  electricInfo: sst.Linkable<{
-    database_id: $util.Output<string>
-    token: $util.Output<string>
-  }>,
-  worker: sst.cloudflare.Worker
-) {
+function deploySite(connectionInfo, worker: sst.cloudflare.Worker) {
   return new sst.aws.StaticSite(`${$app.name}-site`, {
     domain: {
       name: `kitchen-ai${$app.stage === `production` ? `` : `-stage-${$app.stage}`}.bricolage.io`,
@@ -81,10 +85,9 @@ function deploySite(
       output: `dist`,
     },
     environment: {
-      VITE_ELECTRIC_TOKEN: electricInfo.properties.token,
-      VITE_DATABASE_ID: electricInfo.properties.database_id,
+      VITE_ELECTRIC_SECRET: connectionInfo.ELECTRIC_SECRET,
+      VITE_ELECTRIC_ID: connectionInfo.ELECTRIC_ID,
       VITE_API_URL: worker.url as unknown as string,
-      VITE_CLERK_PUBLISHABLE_KEY: process.env.VITE_CLERK_PUBLISHABLE_KEY!,
     },
   })
 }

@@ -7,7 +7,6 @@ import {
   Container,
 } from "@radix-ui/themes"
 import Working from "../components/working-icon"
-import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react"
 
 export default function Root() {
   return (
@@ -23,16 +22,6 @@ export default function Root() {
                 Kitchen.ai <Working />
               </Link>
             </Heading>
-            <Flex ml="auto">
-              <SignedIn>
-                <UserButton afterSignOutUrl="/sign-in" />
-              </SignedIn>
-              <SignedOut>
-                <Text>
-                  <Link to="/sign-in">Sign In</Link>
-                </Text>
-              </SignedOut>
-            </Flex>
           </nav>
         </Flex>
         <Separator orientation="horizontal" size="4" />

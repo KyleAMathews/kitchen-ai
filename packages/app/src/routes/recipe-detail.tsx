@@ -1,4 +1,5 @@
 import { Link, useParams, useLocation } from "@tanstack/react-router"
+import { useLiveQuery } from "@tanstack/react-db"
 import { useState } from "react"
 import {
   Flex,
@@ -28,7 +29,11 @@ import ExpirationDateEdit from "../components/expiration-date-edit"
 import { UpdateIcon } from "@radix-ui/react-icons"
 import * as Toast from "@radix-ui/react-toast"
 import { groupBy, mapValues } from "lodash"
-import { useIngredientsShape, useRecipeIngredientsShape, useRecipesShape } from "../hooks/use-shapes"
+import {
+  ingredientsCollection,
+  recipeIngredientsCollection,
+  recipesCollection,
+} from "../hooks/use-shapes"
 
 function AddIngredientsToShoppingListButton({
   possibleMatches,
@@ -404,32 +409,56 @@ const queries = ({ db, id }: { db: Electric[`db`]; id: string }) => {
 RecipeDetail.queries = queries
 
 export default function RecipeDetail() {
-  const { id } = useParams({ from: '/recipes/$id' })
+  const { id } = useParams({ from: "/recipes/$id" })
   const location = useLocation()
-  // const { db } = useElectric()!
 
   const [checked, setChecked] = useState({})
-  const { id: recipeId } = useParams({ from: '/recipes/$id' })
+  const { id: recipeId } = useParams({ from: "/recipes/$id" })
 
-  const { data: recipes, isLoading: isRecipesLoading } = useRecipesShape()
-  const { data: ingredients, isLoading: isIngredientsLoading } = useIngredientsShape()
-  const { data: recipeIngredients, isLoading: isLoadingRecipesIngredients } = useRecipeIngredientsShape()
+  const { data: recipeArray } = useLiveQuery(
+    (q) =>
+      q
+        .from({ recipesCollection })
+        .where(`@id`, `=`, recipeId)
+        .select(`@*`),
+    [recipeId]
+  )
+  const recipe = recipeArray[0]
+  const { data: ingredients } = useLiveQuery(
+    (q) =>
+      q
+        .from({ ingredientsCollection })
+        .select(`@*`),
+    []
+  )
+  const { data: recipeIngredients } = useLiveQuery(
+    (q) =>
+      q
+        .from({ recipeIngredientsCollection })
+        .select(`@*`),
+    []
+  )
+  // const { data: recipes, isLoading: isRecipesLoading } = useRecipesShape()
+  // const { data: ingredients, isLoading: isIngredientsLoading } =
+  //   useIngredientsShape()
+  // const { data: recipeIngredients, isLoading: isLoadingRecipesIngredients } =
+  //   useRecipeIngredientsShape()
 
-  if (isIngredientsLoading || isRecipesLoading || isLoadingRecipesIngredients) {
-    return ``
-  }
+  // if (isIngredientsLoading || isRecipesLoading || isLoadingRecipesIngredients) {
+  //   return ``
+  // }
 
-  const recipe = recipes.find(recipe => recipe.id === recipeId)
+  // const recipe = recipes.find((recipe) => recipe.id === recipeId)
   if (!recipe) {
     // TODO does tanstack/router have something for this?
     return `404`
   }
 
-  recipe.recipe_ingredients = recipeIngredients.filter(i => i.recipe_id === recipeId)
+  recipe.recipe_ingredients = recipeIngredients.filter(
+    (i) => i.recipe_id === recipeId
+  )
 
   console.log({ recipe, ingredients, recipeIngredients })
-
-
 
   const possibleMatches = Object.fromEntries(
     recipe.recipe_ingredients.map((ri, i) => {

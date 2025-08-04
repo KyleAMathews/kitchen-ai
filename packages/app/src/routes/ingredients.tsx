@@ -2,7 +2,8 @@ import * as React from "react"
 import IngredientCard from "../components/ingredient-card"
 import { Link, useLocation } from "@tanstack/react-router"
 import { Heading, Flex, Link as RadixLink, Separator } from "@radix-ui/themes"
-import { useIngredientsShape } from "../hooks/use-shapes"
+import { ingredientsCollection } from "../hooks/use-shapes"
+import { useLiveQuery } from "@tanstack/react-db"
 
 const queries = ({ db }: { db: Electric[`db`] }) => {
   return {
@@ -12,9 +13,13 @@ const queries = ({ db }: { db: Electric[`db`] }) => {
 
 IngredientsList.queries = queries
 export default function IngredientsList() {
-  const { data: ingredients, isLoading: isIngredientsLoading } = useIngredientsShape()
+  const { data: ingredients } = useLiveQuery((q) =>
+    q
+      .from({ ingredientsCollection })
+      .select(`@*`)
+      .orderBy(`@updated_at`)
+  )
 
-  ingredients.sort((a, b) => a.updated_at > b.updated_at ? -11 : 1)
   return (
     <Flex direction="column" gap="7" pt="2">
       <Heading>Ingredients ({ingredients.length})</Heading>

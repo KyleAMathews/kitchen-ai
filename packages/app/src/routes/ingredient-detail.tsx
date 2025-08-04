@@ -14,10 +14,11 @@ import {
   TextField,
 } from "@radix-ui/themes"
 import { isString } from "lodash"
+import { useLiveQuery } from "@tanstack/react-db"
 import { genUUID } from "electric-sql/util"
 import { lambdaFunction } from "../util"
 import ExpirationDateEdit from "../components/expiration-date-edit"
-import { useIngredientsShape } from "../hooks/use-shapes"
+import { ingredientsCollection } from "../hooks/use-shapes"
 
 function formatDate(date) {
   const year = date.getFullYear() // Gets the year (4 digits)
@@ -233,7 +234,7 @@ const diffInMonths = (date1, date2) => {
 export default function IngredientDetail() {
   const [working, setWorking] = useState(false)
   const navigate = useNavigate()
-  const { id } = useParams({ from: '/ingredients/$id' })
+  const { id } = useParams({ from: "/ingredients/$id" })
 
   // const {
   //   ingredient,
@@ -241,27 +242,27 @@ export default function IngredientDetail() {
   // }: { ingredient: Ingredients; events: Ingredient_events } = useElectricData(
   //   `/ingredients/${id}`
   // )
-  const { data: ingredients, isLoading: isIngredientsLoading } = useIngredientsShape()
+  // const { data: ingredients, update: updateIngredient, isLoading: isIngredientsLoading } = useIngredientsShape()
 
-  const ingredient = ingredients.find(i => i.id === id)
+  const { data: ingredients } = useLiveQuery(
+    (q) =>
+      q
+        .from({ ingredientsCollection })
+        .select(`@*`)
+        .where(`@id`, `=`, id),
+    [id]
+  )
+
+  const ingredient = ingredients[0]
   console.log({ ingredient })
 
   const events = []
   // const ingredient: Ingredients = {} as Ingredients
   // const events: Ingredient_events = {} as Ingredient_events
-  const [expirationDate, setExpirationDate] = useState(
-    ingredient.expiration_date
-  )
 
-  // Get expired date string
-  const expiredDate = new Date(ingredient.expiration_date)
-  const expireDateStr = expiredDate
-    .toLocaleDateString(`en-US`, {
-      year: `2-digit`,
-      month: `short`,
-    })
-    .split(` `)
-    .join(` ’`)
+  if (!ingredient) return null
+  console.log(`rendering`)
+
   return (
     <Flex direction="column" gap="5">
       <RadixLink asChild size="2">
@@ -277,9 +278,13 @@ export default function IngredientDetail() {
         <EditFillLevel ingredient={ingredient} />
       )}
       <ExpirationDateEdit
-        expirationDate={expirationDate}
-        onValueChange={setExpirationDate}
+        expirationDate={ingredient.expiration_date}
+        onValueChange={() => console.log(`implement optimistic mutation`)}
         onValueCommit={(newDate: Date) => {
+          console.log(`manually commit transaction here`, newDate)
+          updateIngredient(ingredient, (draft) => {
+            draft.expiration_date = newDate
+          })
           // db.ingredients.update({
           //   data: {
           //     expiration_date: newDate,

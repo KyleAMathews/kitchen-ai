@@ -2,16 +2,28 @@
 /* tslint:disable */
 /* eslint-disable */
 /* deno-fmt-ignore-file */
-import "sst"
-export {}
+
 declare module "sst" {
   export interface Resource {
-    "ElectricUrl": {
-      "DATABASE_URL": string
-      "SOURCE_ID": string
-      "SOURCE_SECRET": string
-      "type": "sst.sst.Linkable"
-      "url": string
+    "ELECTRIC_ID": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "ELECTRIC_SECRET": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "OPENAI_KEY": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "PGURI": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "PGURI_POOL": {
+      "type": "sst.sst.Secret"
+      "value": string
     }
     "kitchen-ai-site": {
       "type": "sst.aws.StaticSite"
@@ -23,3 +35,7 @@ declare module "sst" {
     }
   }
 }
+/// <reference path="sst-env.d.ts" />
+
+import "sst"
+export {}

@@ -17,7 +17,8 @@ import IngredientsList from './routes/ingredients'
 import AuthedLayout from './authed-layout'
 import ErrorPage from './error-page'
 import { preloadShape } from '@electric-sql/react'
-import { shapeConfigs } from './hooks/use-shapes'
+import { preloadCollection } from "@kylemathews/sync/useCollection"
+// import { shapeConfigs, collectionConfigs } from './hooks/use-shapes'
 
 // Create a root route
 const rootRoute = createRootRoute({
@@ -55,11 +56,11 @@ const indexRoute = createRoute({
   loaderDeps: ({ search: { q } }) => ({ q }),
   loader: async ({ deps: { q } }) => {
     // Preload the shapes we need
-    await Promise.all([
-      preloadShape(shapeConfigs.recipes),
-      preloadShape(shapeConfigs.ingredients),
-      preloadShape(shapeConfigs.photos),
-    ])
+    // await Promise.all([
+    //   preloadCollection(collectionConfigs.recipes),
+    //   preloadCollection(collectionConfigs.ingredients),
+    //   preloadShape(shapeConfigs.photos),
+    // ])
     return { q }
   },
 })
@@ -70,7 +71,8 @@ const ingredientsRoute = createRoute({
   path: '/ingredients',
   component: IngredientsList,
   loader: () => {
-    return preloadShape(shapeConfigs.ingredients)
+    // return preloadCollection(collectionConfigs.ingredients)
+    return null
   }
 })
 
@@ -91,7 +93,8 @@ const recipesRoute = createRoute({
   path: '/recipes',
   component: Recipes,
   loader: () => {
-    return preloadShape(shapeConfigs.recipes)
+    // return preloadCollection(collectionConfigs.recipes)
+    return null
   }
 })
 
@@ -100,7 +103,8 @@ const recipesNewRoute = createRoute({
   path: '/recipes/new',
   component: RecipesNew,
   loader: () => {
-    return preloadShape(shapeConfigs.recipes)
+    // return preloadCollection(collectionConfigs.recipes)
+    return null
   }
 })
 
@@ -109,7 +113,8 @@ const ingredientDetailRoute = createRoute({
   path: '/ingredients/$id',
   component: IngredientDetail,
   loader: () => {
-    return preloadShape(shapeConfigs.ingredients)
+    // return preloadCollection(collectionConfigs.ingredients)
+    return null
   }
 })
 
@@ -117,8 +122,11 @@ const recipeDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/recipes/$id',
   component: RecipeDetail,
-  loader: () => {
-    return preloadShape(shapeConfigs.recipes)
+  loader: async () => {
+    // console.time(`preloading`)
+    // await preloadCollection(collectionConfigs.recipes)
+    // console.timeEnd(`preloading`)
+    return null
   }
 })
 

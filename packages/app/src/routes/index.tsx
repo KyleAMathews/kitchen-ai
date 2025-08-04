@@ -1,6 +1,12 @@
 import * as React from "react"
-import { Link, useSearch, useLocation, useNavigate } from "@tanstack/react-router"
+import {
+  Link,
+  useSearch,
+  useLocation,
+  useNavigate,
+} from "@tanstack/react-router"
 import measuringCupImg from "../../static/bowl.png"
+import { useLiveQuery } from "@tanstack/react-db"
 // import threeSpices from "../../static/3-spices.jpg"
 import {
   Flex,
@@ -17,7 +23,11 @@ import {
   ArrowRightIcon,
   CameraIcon,
 } from "@radix-ui/react-icons"
-import { useIngredientsShape, usePhotosShape, useRecipesShape } from "../hooks/use-shapes"
+import {
+  ingredientsCollection,
+  photoUploadsCollection,
+  recipesCollection,
+} from "../hooks/use-shapes"
 import FileUploadToS3 from "../upload-to-s3"
 import RecipeCard from "../components/recipe-card"
 import IngredientCard from "../components/ingredient-card"
@@ -86,7 +96,10 @@ function IngredientsView({
               if (ingredient.is_reviewed) {
                 return (
                   <React.Fragment key={ingredient.id}>
-                    <IngredientCard key={ingredient.id} ingredient={ingredient} />
+                    <IngredientCard
+                      key={ingredient.id}
+                      ingredient={ingredient}
+                    />
                     {i !== ingredients.length - 1 && (
                       <Separator
                         key={ingredient.id + `-seperator`}
@@ -213,138 +226,137 @@ export default function Index() {
   const search = useSearch({ from: "/" })
   console.log({ search })
 
-  // const {
-  //   photos,
-  //   ingredients,
-  //   ingredientsCount,
-  //   ingredients_needing_review,
-  //   recipesCount,
-  //   recipes,
-  // }: {
-  //   ingredients: Ingredients[]
-  //   ingredientsCount: any[]
-  //   photos: Ingredients_photo_uploads[]
-  //   ingredients_needing_review: Ingredients[]
-  //   recipesCount: any[]
-  //   recipes: Recipes[]
-  // } = useElectricData(location.pathname + location.search)
-  const { data: unfilteredIngredients, isLoading: isIngredientsLoading } = useIngredientsShape()
-  const { data: unfilteredRecipes, isLoading: isRecipesLoading } = useRecipesShape()
-  const { data: photos, isLoading: isPhotosLoading } = usePhotosShape()
-
-  if (isIngredientsLoading || isRecipesLoading) {
-    return ``
-  }
+  const { data: photos } = useLiveQuery((q) =>
+    q.from({ photoUploadsCollection }).select(`@*`)
+  )
+  const { data: unfilteredRecipes } = useLiveQuery((q) =>
+    q.from({ recipesCollection }).select(`@*`)
+  )
 
   const isSearching = search.q !== undefined && search.q.length > 0
 
-  const recipes = isSearching ? unfilteredRecipes.filter(r => r.name?.toLowerCase().includes(search.q)) : unfilteredRecipes
+  const { data: recipes } = useLiveQuery(
+    (q) =>
+      q
+        .from({ recipesCollection })
+        .where(`@name`, `like`, `%${search.q || ``}%`)
+        .select(`@*`),
+    [search.q]
+  )
+  const { data: ingredients } = useLiveQuery(
+    (q) =>
+      q
+        .from({ ingredientsCollection })
+        .where(`@name`, `like`, `%${search.q || ``}%`)
+        .select(`@*`),
+    [search.q]
+  )
 
-  const ingredients = isSearching ? unfilteredIngredients.filter(r => r.name?.toLowerCase().includes(search.q)) : unfilteredIngredients
+  const { data: ingredientsCount } = useLiveQuery(
+    (q) =>
+      q
+        .from({ ingredientsCollection })
+        .groupBy(null)
+        .select({ count: { COUNT: `@id` } }),
+    [search.q]
+  )
 
-  const countIngredients = unfilteredIngredients.length
-  // const countIngredients = (ingredientsCount && ingredientsCount[0].count) || 0
+  const countIngredients = ingredientsCollection.size
 
   return (
     <>
-      {countIngredients === 0 ? (
-        <BlankSlate />
-      ) : (
-        <>
-          <Flex direction="column" gap={isSearching ? `5` : `6`}>
-            <form>
-              <TextField.Root
-                placeholder="Search Kitchen"
-                type="search"
-                autoComplete="false"
-                name="q"
-                value={search.q || ``}
-                onChange={(event) => {
-                  const formData = new FormData(event.currentTarget.form)
-                  const updates = Object.fromEntries(formData)
-                  navigate({ search: () => ({ q: updates.q }) })
+      <Flex direction="column" gap={isSearching ? `5` : `6`}>
+        <form>
+          <TextField.Root
+            placeholder="Search Kitchen"
+            type="search"
+            autoComplete="false"
+            name="q"
+            value={search.q || ``}
+            onChange={(event) => {
+              const formData = new FormData(event.currentTarget.form)
+              const updates = Object.fromEntries(formData)
+              navigate({ search: () => ({ q: updates.q }) })
+            }}
+          >
+            <TextField.Slot>
+              <MagnifyingGlassIcon height="16" width="16" />
+            </TextField.Slot>
+          </TextField.Root>
+        </form>
+        <Flex direction="column" gap={isSearching ? `5` : `7`}>
+          <Flex direction="column" gap={isSearching ? `3` : `6`}>
+            <Heading size={isSearching ? `3` : `5`}>
+              <Link
+                to="/recipes"
+                style={{
+                  color: `inherit`,
+                  textDecoration: `none`,
+                  height: 20,
+                  display: `inline-block`,
                 }}
               >
-                <TextField.Slot>
-                  <MagnifyingGlassIcon height="16" width="16" />
-                </TextField.Slot>
-              </TextField.Root>
-            </form>
-            <Flex direction="column" gap={isSearching ? `5` : `7`}>
-              <Flex direction="column" gap={isSearching ? `3` : `6`}>
-                <Heading size={isSearching ? `3` : `5`}>
-                  <Link
-                    to="/recipes"
-                    style={{
-                      color: `inherit`,
-                      textDecoration: `none`,
-                      height: 20,
-                      display: `inline-block`,
-                    }}
-                  >
-                    Recipes{!isSearching && ` (${recipes.length}) `}
-                  </Link>
-                  {!isSearching && (
-                    <Link
-                      to="/recipes/new"
-                      style={{
-                        height: 20,
-                        display: `inline-block`,
-                        position: `relative`,
-                        top: 3,
-                        left: 8,
-                        color: "inherit",
-                        textDecoration: "none",
-                      }}
-                    >
-                      <PlusCircledIcon
-                        height="20"
-                        width="20"
-                        style={{ height: 20 }}
-                      />
-                    </Link>
-                  )}
-                </Heading>
-                {isSearching || recipes.length > 0 ? (
-                  <>
-                    {recipes && recipes.length > 0 ? (
-                      <Flex direction="column" gap="4">
-                        {recipes.map((recipe, i) => {
-                          return (
-                            <React.Fragment key={recipe.id}>
-                              <RecipeCard key={recipe.id} recipe={recipe} />
-                              {recipes.length - 1 !== i && (
-                                <Separator size="4" />
-                              )}
-                            </React.Fragment>
-                          )
-                        })}
-                      </Flex>
-                    ) : (
-                      <Text color="gray">No results</Text>
-                    )}
-                    {!isSearching && (
-                      <Link to="/recipes">
-                        Browse all <ArrowRightIcon />
-                      </Link>
-                    )}
-                  </>
+                Recipes{!isSearching && ` (${recipes.length}) `}
+              </Link>
+              {!isSearching && (
+                <Link
+                  to="/recipes/new"
+                  style={{
+                    height: 20,
+                    display: `inline-block`,
+                    position: `relative`,
+                    top: 3,
+                    left: 8,
+                    color: "inherit",
+                    textDecoration: "none",
+                  }}
+                >
+                  <PlusCircledIcon
+                    height="20"
+                    width="20"
+                    style={{ height: 20 }}
+                  />
+                </Link>
+              )}
+            </Heading>
+            {isSearching || recipes.length > 0 ? (
+              <>
+                {recipes && recipes.length > 0 ? (
+                  <Flex direction="column" gap="4">
+                    {recipes.map((recipe, i) => {
+                      return (
+                        <React.Fragment key={recipe.id}>
+                          <RecipeCard key={recipe.id} recipe={recipe} />
+                          {recipes.length - 1 !== i && (
+                            <Separator size="4" />
+                          )}
+                        </React.Fragment>
+                      )
+                    })}
+                  </Flex>
                 ) : (
-                  <Text>Add your first recipe!</Text>
+                  <Text color="gray">No results</Text>
                 )}
-              </Flex>
-              <IngredientsView
-                isSearching={isSearching}
-                ingredientsCount={countIngredients || 0}
-                ingredients_needing_review={ingredients}
-                ingredients={ingredients}
-                photos={photos}
-                search={search}
-              />
-            </Flex>
+                {!isSearching && (
+                  <Link to="/recipes">
+                    Browse all <ArrowRightIcon />
+                  </Link>
+                )}
+              </>
+            ) : (
+              <Text>Add your first recipe!</Text>
+            )}
           </Flex>
-        </>
-      )}
+          <IngredientsView
+            isSearching={isSearching}
+            ingredientsCount={countIngredients || 0}
+            ingredients_needing_review={ingredients}
+            ingredients={ingredients}
+            photos={photos}
+            search={search}
+          />
+        </Flex>
+      </Flex>
     </>
   )
 }

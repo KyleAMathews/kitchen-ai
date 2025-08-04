@@ -2,9 +2,9 @@
   "name": "kitchen-ai",
   "version": "0.0.0",
   "dependencies": {
-    "@electric-sql/react": "1.0.0-beta.2",
-    "sst": "3.4.22",
-    "vite-plugin-capsize-radix": "^0.0.9"
+    "@electric-sql/react": "1.0.7",
+    "sst": "3.17.10",
+    "vite-plugin-capsize-radix": "^0.1.1"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.4",
@@ -14,10 +14,10 @@
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-react": "^1.1.7",
-    "eslint-plugin-prettier": "^5.2.3",
-    "eslint-plugin-react": "^7.37.4",
-    "prettier": "^3.5.3",
-    "typescript": "^5.8.2"
+    "eslint-plugin-prettier": "^5.5.3",
+    "eslint-plugin-react": "^7.37.5",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2"
   },
   "private": true,
   "scripts": {
