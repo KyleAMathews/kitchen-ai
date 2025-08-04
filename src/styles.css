@@ -1,0 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import typography from existing Kitchen AI setup */
+@import "./typography.css";
