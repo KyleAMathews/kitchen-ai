@@ -77,7 +77,7 @@ kitchen-ai/
 - [ ] Create new root `package.json` combining all dependencies
 - [ ] Set up TanStack Start configuration in `vite.config.ts`
 - [ ] Create Docker Compose file for local development
-- [ ] Set up Caddy for HTTPS development
+- [ ] Copy Caddy setup from Electric starter (`Caddyfile` and `src/vite-plugin-caddy.ts`)
 - [ ] Configure TypeScript for new structure
 
 ### 1.2 Dependency Migration

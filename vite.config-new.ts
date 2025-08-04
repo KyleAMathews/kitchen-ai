@@ -1,0 +1,56 @@
+import { defineConfig } from "vite"
+import { tanstackStart } from "@tanstack/react-start/plugin/vite"
+import viteTsConfigPaths from "vite-tsconfig-paths"
+import tailwindcss from "@tailwindcss/vite"
+import { fromFile } from "@capsizecss/unpack"
+import { capsizeRadixPlugin } from "vite-plugin-capsize-radix"
+import montserrat from "@capsizecss/metrics/montserrat"
+import arial from "@capsizecss/metrics/arial"
+import { caddyPlugin } from "./src/vite-plugin-caddy"
+
+export default defineConfig(async () => {
+  // Load GeneralSans font metrics (if still available)
+  let generalSansMetrics
+  try {
+    generalSansMetrics = await fromFile(
+      `./static/GeneralSans_Complete/Fonts/WEB/fonts/GeneralSans-Regular.ttf`
+    )
+    generalSansMetrics.familyName = `GeneralSans`
+  } catch (error) {
+    console.warn("GeneralSans font not found, falling back to system fonts")
+    generalSansMetrics = arial // fallback
+  }
+
+  return {
+    server: {
+      host: true,
+      port: 5173,
+    },
+    plugins: [
+      // Path aliases support
+      viteTsConfigPaths({
+        projects: [`./tsconfig.json`],
+      }),
+      // Local HTTPS with Caddy
+      caddyPlugin(),
+      // Typography optimization
+      capsizeRadixPlugin({
+        outputPath: `./src/typography.css`,
+        defaultFontStack: [generalSansMetrics, arial],
+        headingFontStack: [montserrat, arial],
+      }),
+      // Tailwind CSS
+      tailwindcss(),
+      // TanStack Start
+      tanstackStart({
+        spa: {
+          enabled: true,
+        },
+      }),
+    ],
+    define: {
+      VITE_ELECTRIC_URL: JSON.stringify(process.env.VITE_ELECTRIC_URL),
+    },
+    assetsInclude: [`**/*.wasm`],
+  }
+})
