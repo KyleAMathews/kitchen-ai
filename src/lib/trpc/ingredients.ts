@@ -1,28 +1,19 @@
 import { z } from "zod"
 import { router, authedProcedure, generateTxId } from "@/lib/trpc"
 import { ingredients } from "@/db/schema"
+import {
+  grocerySectionSchema,
+  ingredientsTrackingTypeSchema,
+} from "@/db/zod-schemas"
 import { eq, and } from "drizzle-orm"
 
 const createIngredientSchema = z.object({
   name: z.string(),
   description: z.string().default(""),
   embedding: z.string(),
-  trackingType: z.enum(["fill_level", "count"]).optional(),
+  trackingType: ingredientsTrackingTypeSchema.optional(),
   fillLevel: z.number().default(100),
-  grocerySection: z.enum([
-    "Produce",
-    "Deli", 
-    "Bakery",
-    "Meat_Seafood",
-    "Dairy_Eggs",
-    "Dry__Goods",
-    "Canned__Foods",
-    "Spices_Herbs",
-    "Beverages",
-    "Frozen__Foods",
-    "Oil_Vinegar",
-    "Other__Aisles",
-  ]),
+  grocerySection: grocerySectionSchema,
   count: z.number().default(1),
   expirationDate: z.date(),
   ingredientsPhotoUploadsId: z.string().optional(),
@@ -32,22 +23,9 @@ const updateIngredientSchema = z.object({
   name: z.string().optional(),
   description: z.string().optional(),
   isReviewed: z.boolean().optional(),
-  trackingType: z.enum(["fill_level", "count"]).optional(),
+  trackingType: ingredientsTrackingTypeSchema.optional(),
   fillLevel: z.number().optional(),
-  grocerySection: z.enum([
-    "Produce",
-    "Deli", 
-    "Bakery",
-    "Meat_Seafood",
-    "Dairy_Eggs",
-    "Dry__Goods",
-    "Canned__Foods",
-    "Spices_Herbs",
-    "Beverages",
-    "Frozen__Foods",
-    "Oil_Vinegar",
-    "Other__Aisles",
-  ]).optional(),
+  grocerySection: grocerySectionSchema.optional(),
   count: z.number().optional(),
   expirationDate: z.date().optional(),
   ingredientsPhotoUploadsId: z.string().optional(),
@@ -59,41 +37,48 @@ export const ingredientsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const result = await ctx.db.transaction(async (tx) => {
         const txid = await generateTxId(tx)
-        const [newIngredient] = await tx.insert(ingredients).values({
-          ...input,
-          userId: ctx.session.user.id,
-        }).returning()
+        const [newIngredient] = await tx
+          .insert(ingredients)
+          .values({
+            ...input,
+            user_id: ctx.session.user.id,
+          })
+          .returning()
         return { ingredient: newIngredient, txid }
       })
       return result
     }),
 
   update: authedProcedure
-    .input(z.object({ 
-      id: z.string(), 
-      data: updateIngredientSchema 
-    }))
+    .input(
+      z.object({
+        id: z.string(),
+        data: updateIngredientSchema,
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const result = await ctx.db.transaction(async (tx) => {
         const txid = await generateTxId(tx)
-        
+
         // Check ownership
         const [updatedIngredient] = await tx
           .update(ingredients)
           .set({
             ...input.data,
-            updatedAt: new Date(),
+            updated_at: new Date(),
           })
-          .where(and(
-            eq(ingredients.id, input.id),
-            eq(ingredients.userId, ctx.session.user.id)
-          ))
+          .where(
+            and(
+              eq(ingredients.id, input.id),
+              eq(ingredients.user_id, ctx.session.user.id)
+            )
+          )
           .returning()
-          
+
         if (!updatedIngredient) {
           throw new Error("Ingredient not found or not owned by user")
         }
-        
+
         return { ingredient: updatedIngredient, txid }
       })
       return result
@@ -104,19 +89,21 @@ export const ingredientsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const result = await ctx.db.transaction(async (tx) => {
         const txid = await generateTxId(tx)
-        
+
         const [deletedIngredient] = await tx
           .delete(ingredients)
-          .where(and(
-            eq(ingredients.id, input.id),
-            eq(ingredients.userId, ctx.session.user.id)
-          ))
+          .where(
+            and(
+              eq(ingredients.id, input.id),
+              eq(ingredients.user_id, ctx.session.user.id)
+            )
+          )
           .returning()
-          
+
         if (!deletedIngredient) {
           throw new Error("Ingredient not found or not owned by user")
         }
-        
+
         return { ingredient: deletedIngredient, txid }
       })
       return result
@@ -128,12 +115,14 @@ export const ingredientsRouter = router({
       const [ingredient] = await ctx.db
         .select()
         .from(ingredients)
-        .where(and(
-          eq(ingredients.id, input.id),
-          eq(ingredients.userId, ctx.session.user.id)
-        ))
+        .where(
+          and(
+            eq(ingredients.id, input.id),
+            eq(ingredients.user_id, ctx.session.user.id)
+          )
+        )
         .limit(1)
-        
+
       return ingredient || null
     }),
 })

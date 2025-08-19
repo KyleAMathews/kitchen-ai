@@ -1,60 +1,59 @@
-import { 
-  pgTable, 
-  text, 
-  timestamp, 
-  boolean, 
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
   integer,
   uuid,
   pgEnum,
   jsonb,
-  real
+  real,
 } from "drizzle-orm/pg-core"
+export * from "./auth-schema"
 import { users } from "./auth-schema"
 
 // Enums
-export const ingredientPhotoUploadStateEnum = pgEnum("ingredient_photo_upload_state", [
-  "uploading", 
-  "ai_processing", 
-  "reviewing", 
-  "done"
-])
+export const ingredientPhotoUploadStateEnum = pgEnum(
+  "ingredient_photo_upload_state",
+  ["uploading", "ai_processing", "reviewing", "done"]
+)
 
 export const grocerySectionEnum = pgEnum("grocery_section", [
-  "Produce",
-  "Deli", 
-  "Bakery",
-  "Meat_Seafood",
-  "Dairy_Eggs",
-  "Dry__Goods",
-  "Canned__Foods",
-  "Spices_Herbs",
-  "Beverages",
-  "Frozen__Foods",
-  "Oil_Vinegar",
-  "Other__Aisles"
+  "Produce", // Fresh fruits and vegetables
+  "Meat & Seafood", // Fresh meat, poultry, fish
+  "Dairy", // Milk, cheese, yogurt, eggs
+  "Bakery", // Fresh bread, pastries, cakes
+  "Deli", // Sliced meats, prepared foods, cheeses
+  "Frozen", // Frozen foods, ice cream
+  "Pantry", // Dry goods, pasta, rice, cereal, canned goods
+  "Condiments", // Sauces, dressings, oils, vinegar
+  "Spices & Baking", // Spices, herbs, flour, sugar, baking supplies
+  "Snacks", // Chips, crackers, cookies, candy
+  "Beverages", // Drinks, coffee, tea, juice
+  "Other", // Everything else
 ])
 
 export const ingredientsTrackingTypeEnum = pgEnum("ingredients_tracking_type", [
   "fill_level",
-  "count"
+  "count",
 ])
 
-export const jobsStateEnum = pgEnum("jobs_state", [
-  "working",
-  "done", 
-  "error"
-])
+export const jobsStateEnum = pgEnum("jobs_state", ["working", "done", "error"])
 
 // Photo upload system
 export const ingredientsPhotoUploads = pgTable("ingredients_photo_uploads", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  uploadedAt: timestamp("uploaded_at", { withTimezone: true }),
+  user_id: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  created_at: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  uploaded_at: timestamp("uploaded_at", { withTimezone: true }),
   state: ingredientPhotoUploadStateEnum("state").notNull(),
-  uploadDurationSec: real("upload_duration_sec"),
-  aiProcessingDurationSec: real("ai_processing_duration_sec"),
-  photoUrl: text("photo_url"),
+  upload_duration_sec: real("upload_duration_sec"),
+  ai_processing_duration_sec: real("ai_processing_duration_sec"),
+  photo_url: text("photo_url"),
 })
 
 // Ingredients system
@@ -62,27 +61,41 @@ export const ingredients = pgTable("ingredients", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   description: text("description").notNull(),
-  isReviewed: boolean("is_reviewed").notNull().default(false),
+  is_reviewed: boolean("is_reviewed").notNull().default(false),
   embedding: text("embedding").notNull(),
-  trackingType: ingredientsTrackingTypeEnum("tracking_type"),
-  fillLevel: integer("fill_level").notNull().default(0),
-  grocerySection: grocerySectionEnum("grocery_section").notNull(),
+  tracking_type: ingredientsTrackingTypeEnum("tracking_type"),
+  fill_level: integer("fill_level").notNull().default(0),
+  grocery_section: grocerySectionEnum("grocery_section").notNull(),
   count: integer("count").notNull().default(0),
-  expirationDate: timestamp("expiration_date", { withTimezone: true }).notNull(),
-  ingredientsPhotoUploadsId: uuid("ingredients_photo_uploads_id").references(() => ingredientsPhotoUploads.id),
-  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }), // Add user ownership
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  expiration_date: timestamp("expiration_date", {
+    withTimezone: true,
+  }).notNull(),
+  ingredients_photo_uploads_id: uuid("ingredients_photo_uploads_id").references(
+    () => ingredientsPhotoUploads.id
+  ),
+  user_id: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }), // Add user ownership
+  created_at: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updated_at: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 })
 
 // Ingredient events for tracking changes
 export const ingredientEvents = pgTable("ingredient_events", {
   id: uuid("id").primaryKey().defaultRandom(),
-  ingredientId: uuid("ingredient_id").notNull().references(() => ingredients.id, { onDelete: "cascade" }),
-  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  ingredient_id: uuid("ingredient_id")
+    .notNull()
+    .references(() => ingredients.id, { onDelete: "cascade" }),
+  user_id: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   timestamp: timestamp("timestamp").notNull(),
-  fromValues: jsonb("from_values"),
-  toValues: jsonb("to_values"),
+  from_values: jsonb("from_values"),
+  to_values: jsonb("to_values"),
 })
 
 // Recipe system
@@ -91,28 +104,40 @@ export const recipes = pgTable("recipes", {
   name: text("name").notNull(),
   description: text("description").notNull(),
   url: text("url").notNull(),
-  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  user_id: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  created_at: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updated_at: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 })
 
 export const recipeIngredients = pgTable("recipe_ingredients", {
   id: uuid("id").primaryKey().defaultRandom(),
   listing: text("listing").notNull(),
-  extractedName: text("extracted_name").notNull(),
+  extracted_name: text("extracted_name").notNull(),
   embedding: text("embedding").notNull(),
-  grocerySection: grocerySectionEnum("grocery_section").notNull(), // Use main enum, not grocery_section2
-  recipeId: uuid("recipe_id").notNull().references(() => recipes.id, { onDelete: "cascade" }),
+  grocery_section: grocerySectionEnum("grocery_section").notNull(), // Use main enum, not grocery_section2
+  recipe_id: uuid("recipe_id")
+    .notNull()
+    .references(() => recipes.id, { onDelete: "cascade" }),
 })
 
 // Job queue system
 export const jobs = pgTable("jobs", {
   id: uuid("id").primaryKey().defaultRandom(),
   state: jobsStateEnum("state").notNull(),
-  targetId: uuid("target_id"),
+  target_id: uuid("target_id"),
   type: text("type").notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  created_at: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updated_at: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
   error: jsonb("error"),
   result: jsonb("result"),
 })

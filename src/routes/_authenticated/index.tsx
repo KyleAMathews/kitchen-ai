@@ -21,56 +21,81 @@ import IngredientCard from "@/components/ingredient-card"
 
 export const Route = createFileRoute("/_authenticated/")({
   component: Dashboard,
+  ssr: false,
+  loader: async () => {
+    await Promise.all([
+      recipesCollection.preload(),
+      ingredientsCollection.preload(),
+    ])
+  },
 })
 
 function Dashboard() {
+  console.log(`dashboard`)
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState("")
 
   // Get all recipes and ingredients for dashboard
-  const { data: recipes } = useLiveQuery((q) => 
-    q.from({ recipesCollection }).limit(3).orderBy({ updatedAt: "desc" })
+  const { data: recipes } = useLiveQuery((q) =>
+    q
+      .from({ recipesCollection })
+      .orderBy(({ recipesCollection }) => recipesCollection.updatedAt)
+      .limit(3)
   )
 
-  const { data: ingredients } = useLiveQuery((q) => 
-    q.from({ ingredientsCollection }).limit(3).orderBy({ updatedAt: "desc" })
+  const { data: ingredients } = useLiveQuery((q) =>
+    q
+      .from({ ingredientsCollection })
+      .orderBy(
+        ({ ingredientsCollection }) => ingredientsCollection.updatedAt,
+        `desc`
+      )
+      .limit(3)
   )
 
-  const { data: allRecipes } = useLiveQuery((q) => 
+  const { data: allRecipes } = useLiveQuery((q) =>
     q.from({ recipesCollection })
   )
 
-  const { data: allIngredients } = useLiveQuery((q) => 
+  const { data: allIngredients } = useLiveQuery((q) =>
     q.from({ ingredientsCollection })
   )
 
   // Search functionality
-  const { data: searchRecipes } = useLiveQuery((q) => 
-    searchQuery.length > 0 
-      ? q.from({ recipesCollection })
-          .where(({ recipesCollection }) => 
-            q.or(
-              q.like(recipesCollection.name, `%${searchQuery}%`),
-              q.like(recipesCollection.description, `%${searchQuery}%`)
+  const { data: searchRecipes } = useLiveQuery(
+    (q) =>
+      searchQuery.length > 0
+        ? q
+            .from({ recipesCollection })
+            .where(({ recipesCollection }) =>
+              q.or(
+                q.like(recipesCollection.name, `%${searchQuery}%`),
+                q.like(recipesCollection.description, `%${searchQuery}%`)
+              )
             )
-          )
-          .limit(3)
-      : q.from({ recipesCollection }).limit(0)
-  , [searchQuery])
+        : // .limit(3)
+          q.from({ recipesCollection }),
+    [searchQuery]
+  )
 
-  const { data: searchIngredients } = useLiveQuery((q) => 
-    searchQuery.length > 0 
-      ? q.from({ ingredientsCollection })
-          .where(({ ingredientsCollection }) => 
-            q.like(ingredientsCollection.name, `%${searchQuery}%`)
-          )
-          .limit(3)
-      : q.from({ ingredientsCollection }).limit(0)
-  , [searchQuery])
+  const { data: searchIngredients } = useLiveQuery(
+    (q) =>
+      searchQuery.length > 0
+        ? q
+            .from({ ingredientsCollection })
+            .where(({ ingredientsCollection }) =>
+              q.like(ingredientsCollection.name, `%${searchQuery}%`)
+            )
+        : // .limit(3)
+          q.from({ ingredientsCollection }),
+    [searchQuery]
+  )
 
   const isSearching = searchQuery.length > 0
-  const displayRecipes = isSearching ? (searchRecipes || []) : (recipes || [])
-  const displayIngredients = isSearching ? (searchIngredients || []) : (ingredients || [])
+  const displayRecipes = isSearching ? searchRecipes || [] : recipes || []
+  const displayIngredients = isSearching
+    ? searchIngredients || []
+    : ingredients || []
 
   return (
     <div className="p-6">
@@ -126,7 +151,7 @@ function Dashboard() {
                 </Link>
               )}
             </Heading>
-            
+
             {displayRecipes.length > 0 ? (
               <>
                 <Flex direction="column" gap="4">
@@ -178,7 +203,7 @@ function Dashboard() {
                 </Link>
               )}
             </Heading>
-            
+
             {displayIngredients.length > 0 ? (
               <>
                 <Flex direction="column" gap="4">

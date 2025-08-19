@@ -1,119 +1,44 @@
+import { createSelectSchema } from "drizzle-zod"
 import { z } from "zod"
+import {
+  users,
+  ingredientsPhotoUploads,
+  ingredients,
+  ingredientEvents,
+  recipes,
+  recipeIngredients,
+  jobs,
+  grocerySectionEnum,
+  ingredientsTrackingTypeEnum,
+  ingredientPhotoUploadStateEnum,
+  jobsStateEnum,
+} from "./schema"
 
-// Enum schemas
-export const grocerySectionSchema = z.enum([
-  "Produce",
-  "Deli", 
-  "Bakery",
-  "Meat_Seafood",
-  "Dairy_Eggs",
-  "Dry__Goods",
-  "Canned__Foods",
-  "Spices_Herbs",
-  "Beverages",
-  "Frozen__Foods",
-  "Oil_Vinegar",
-  "Other__Aisles",
-])
+// Generate base schemas from Drizzle tables
+const baseSelectUsersSchema = createSelectSchema(users)
 
-export const ingredientsTrackingTypeSchema = z.enum([
-  "fill_level",
-  "count",
-])
+// Transform user schema to snake_case for Electric sync compatibility
+// Better-auth uses camelCase internally, but Electric syncs with snake_case
+export const selectUsersSchema = baseSelectUsersSchema.transform((data) => ({
+  id: data.id,
+  name: data.name,
+  email: data.email,
+  email_verified: data.emailVerified,
+  image: data.image,
+  created_at: data.createdAt,
+  updated_at: data.updatedAt,
+}))
 
-export const ingredientPhotoUploadStateSchema = z.enum([
-  "uploading", 
-  "ai_processing", 
-  "reviewing", 
-  "done"
-])
+// Other schemas are already in snake_case in the Drizzle schema
+export const selectIngredientsPhotoUploadsSchema = createSelectSchema(ingredientsPhotoUploads)
+export const selectIngredientsSchema = createSelectSchema(ingredients)
+export const selectIngredientEventsSchema = createSelectSchema(ingredientEvents)
+export const selectRecipesSchema = createSelectSchema(recipes)
+export const selectRecipeIngredientsSchema = createSelectSchema(recipeIngredients)
+export const selectJobsSchema = createSelectSchema(jobs)
 
-export const jobsStateSchema = z.enum([
-  "working",
-  "done", 
-  "error"
-])
-
-// User schema (from auth)
-export const selectUsersSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  email: z.string().email(),
-  emailVerified: z.boolean(),
-  image: z.string().nullable(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-})
-
-// Ingredients photo uploads schema
-export const selectIngredientsPhotoUploadsSchema = z.object({
-  id: z.string(),
-  userId: z.string(),
-  createdAt: z.date(),
-  uploadedAt: z.date().nullable(),
-  state: ingredientPhotoUploadStateSchema,
-  uploadDurationSec: z.number().nullable(),
-  aiProcessingDurationSec: z.number().nullable(),
-  photoUrl: z.string().nullable(),
-})
-
-// Ingredients schema
-export const selectIngredientsSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string(),
-  isReviewed: z.boolean(),
-  embedding: z.string(),
-  trackingType: ingredientsTrackingTypeSchema.nullable(),
-  fillLevel: z.number(),
-  grocerySection: grocerySectionSchema,
-  count: z.number(),
-  expirationDate: z.date(),
-  ingredientsPhotoUploadsId: z.string().nullable(),
-  userId: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-})
-
-// Ingredient events schema
-export const selectIngredientEventsSchema = z.object({
-  id: z.string(),
-  ingredientId: z.string(),
-  userId: z.string(),
-  timestamp: z.date(),
-  fromValues: z.record(z.any()).nullable(),
-  toValues: z.record(z.any()).nullable(),
-})
-
-// Recipes schema
-export const selectRecipesSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string(),
-  url: z.string(),
-  userId: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-})
-
-// Recipe ingredients schema
-export const selectRecipeIngredientsSchema = z.object({
-  id: z.string(),
-  listing: z.string(),
-  extractedName: z.string(),
-  embedding: z.string(),
-  grocerySection: grocerySectionSchema,
-  recipeId: z.string(),
-})
-
-// Jobs schema
-export const selectJobsSchema = z.object({
-  id: z.string(),
-  state: jobsStateSchema,
-  targetId: z.string().nullable(),
-  type: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-  error: z.record(z.any()).nullable(),
-  result: z.record(z.any()).nullable(),
-})
+// Re-export enum schemas for convenience
+export const grocerySectionSchema = z.enum(grocerySectionEnum.enumValues)
+export const ingredientsTrackingTypeSchema = z.enum(ingredientsTrackingTypeEnum.enumValues)
+export const ingredientPhotoUploadStateSchema = z.enum(ingredientPhotoUploadStateEnum.enumValues)
+export const jobsStateSchema = z.enum(jobsStateEnum.enumValues)

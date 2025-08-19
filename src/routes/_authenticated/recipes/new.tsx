@@ -2,10 +2,13 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
 import { Heading, Flex, Text, Button, TextArea } from "@radix-ui/themes"
 import { recipesCollection } from "@/lib/collections"
-import { trpc } from "@/lib/trpc-client"
 
 export const Route = createFileRoute("/_authenticated/recipes/new")({
   component: NewRecipe,
+  ssr: false,
+  loader: async () => {
+    return recipesCollection.preload()
+  },
 })
 
 export default function NewRecipe() {
@@ -16,7 +19,7 @@ export default function NewRecipe() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!pastedText.trim()) {
       setError("Please paste a recipe to process")
       return
@@ -26,43 +29,57 @@ export default function NewRecipe() {
     setError("")
 
     try {
-      // Create a placeholder recipe first
+      // Create a placeholder recipe with pastedText as metadata
       const recipeId = crypto.randomUUID()
-      recipesCollection.insert({
-        id: recipeId,
-        name: "Processing...",
-        description: "AI processing in progress",
-        url: "",
-        userId: "", // This will be set by the backend
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
+      const insertResult = recipesCollection.insert(
+        {
+          id: recipeId,
+          name: "Processing...",
+          description: "AI processing in progress",
+          url: "",
+          userId: "", // This will be set by the backend
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+        {
+          metadata: { pastedText },
+        }
+      )
 
-      // Process the recipe with AI
-      const result = await trpc.ai.processRecipe.mutate({
-        pasted: pastedText,
-        recipeId,
-      })
+      console.log(1)
 
-      // Update the recipe with processed data
-      await trpc.recipes.processAndUpdate.mutate({
-        recipeId,
-        name: result.recipe.name,
-        description: result.recipe.description,
-        ingredients: result.ingredients.map(ing => ({
-          listing: ing.listing,
-          extracted_name: ing.extracted_name,
-          embedding: ing.embedding,
-          grocery_section: ing.grocery_section as any,
-        })),
-      })
+      // Wait for the insert to persist
+      await insertResult.isPersisted.promise
+      console.log(2)
 
-      // Navigate to the new recipe
-      navigate({ to: "/recipes/$id", params: { id: recipeId } })
+      // Subscribe to changes for this specific recipe
+      const unsubscribe = recipesCollection.subscribeChanges(
+        (recipe) => {
+          console.log(3)
+          console.log({ recipe })
+          // Check if the recipe has been processed (name changed from "Processing...")
+          if (recipe && recipe.name !== "Processing...") {
+            console.log(4)
+            unsubscribe()
+            // Navigate to the recipe page
+            navigate({ to: "/recipes/$id", params: { id: recipeId } })
+          }
+        }
+      )
+
+      // Set a timeout in case processing takes too long
+      setTimeout(() => {
+        unsubscribe()
+        if (isProcessing) {
+          setError(
+            "Recipe processing is taking longer than expected. You can check back later."
+          )
+          setIsProcessing(false)
+        }
+      }, 60000) // 60 second timeout
     } catch (err: any) {
       console.error("Recipe processing error:", err)
       setError(err.message || "Failed to process recipe")
-    } finally {
       setIsProcessing(false)
     }
   }
@@ -71,9 +88,10 @@ export default function NewRecipe() {
     <div className="p-6">
       <Flex direction="column" gap="6">
         <Heading size="6">Add New Recipe</Heading>
-        
+
         <Text color="gray">
-          Paste a recipe from any website and we'll automatically extract the ingredients and details using AI.
+          Paste a recipe from any website and we'll automatically extract the
+          ingredients and details using AI.
         </Text>
 
         <form onSubmit={handleSubmit}>

@@ -22,6 +22,7 @@ interface RecipeCardProps {
 }
 
 export default function RecipeCard({ recipe }: RecipeCardProps) {
+  console.log({ recipe })
   return (
     <Flex>
       <Flex direction="column" gap="3">
@@ -37,7 +38,7 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
           </Link>
         </Heading>
         <Text color="gray" size="2">
-          Last used {timeAgo.format(new Date(recipe.updatedAt))}
+          Last used {timeAgo.format(recipe.updated_at)}
         </Text>
       </Flex>
       <Flex align="center">

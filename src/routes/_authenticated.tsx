@@ -2,26 +2,61 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router"
 import { useEffect } from "react"
 import { Outlet } from "@tanstack/react-router"
 import { authClient } from "@/lib/auth-client"
+import {
+  Flex,
+  Text,
+  Button,
+  Heading,
+  Container,
+  Separator,
+} from "@radix-ui/themes"
 
 export const Route = createFileRoute("/_authenticated")({
   component: AuthenticatedLayout,
   ssr: false,
   beforeLoad: async ({ location }) => {
     const { data: session } = await authClient.getSession()
-    
+
     if (!session) {
       throw new Error("Not authenticated")
     }
-    
+
     return { session }
   },
-  errorComponent: () => {
-    // Redirect to login if not authenticated
-    if (typeof window !== 'undefined') {
-      window.location.href = '/login'
+  errorComponent: ({ error }) => {
+    const ErrorComponent = () => {
+      const { data: session } = authClient.useSession()
+
+      // Only redirect to login if user is not authenticated
+      if (!session && typeof window !== "undefined") {
+        window.location.href = "/login"
+        return null
+      }
+
+      // For other errors, render an error message
+      return (
+        <Flex
+          direction="column"
+          align="center"
+          justify="center"
+          minHeight="100vh"
+          gap="4"
+        >
+          <Heading size="6" color="red">
+            Error
+          </Heading>
+          <Text color="gray">
+            {error?.message || "An unexpected error occurred"}
+          </Text>
+          <Button onClick={() => window.location.reload()} variant="soft">
+            Retry
+          </Button>
+        </Flex>
+      )
     }
-    return null
-  }
+
+    return <ErrorComponent />
+  },
 })
 
 function AuthenticatedLayout() {
@@ -35,9 +70,14 @@ function AuthenticatedLayout() {
 
   if (isPending) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-600">Loading...</div>
-      </div>
+      <Flex
+        direction="column"
+        align="center"
+        justify="center"
+        minHeight="100vh"
+      >
+        <Text color="gray">Loading...</Text>
+      </Flex>
     )
   }
 
@@ -46,78 +86,30 @@ function AuthenticatedLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex-shrink-0">
-              <Link to="/" className="flex items-center">
-                <h1 className="text-xl font-semibold text-gray-900">
-                  🍳 Kitchen AI
-                </h1>
-              </Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">
+    <Container maxWidth="440px">
+      <Flex style={{ height: `100vh`, maxWidth: 440 }} direction="column">
+        {/* Header */}
+        <Flex asChild p="4" justify="between" align="center" >
+          <nav>
+            <Link to="/" >
+              <Heading size="5">Kitchen AI</Heading>
+            </Link>
+            <Flex align="center" gap="4">
+              <Text size="2" color="gray">
                 {session.user.name || session.user.email}
-              </span>
-              <button
-                onClick={handleLogout}
-                className="text-sm font-medium text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
-              >
+              </Text>
+              <Button variant="ghost" onClick={handleLogout}>
                 Sign out
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-      <div className="flex">
-        <aside className="w-64 bg-white shadow-sm border-r border-gray-200 min-h-screen">
-          <div className="p-4">
-            <nav className="space-y-1">
-              <Link
-                to="/ingredients"
-                className="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md"
-                activeProps={{
-                  className: "block px-3 py-2 text-sm font-medium text-green-700 bg-green-50 rounded-md"
-                }}
-              >
-                📦 Ingredients
-              </Link>
-              <Link
-                to="/recipes"
-                className="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md"
-                activeProps={{
-                  className: "block px-3 py-2 text-sm font-medium text-green-700 bg-green-50 rounded-md"
-                }}
-              >
-                📖 Recipes
-              </Link>
-              <Link
-                to="/upload-photos"
-                className="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md"
-                activeProps={{
-                  className: "block px-3 py-2 text-sm font-medium text-green-700 bg-green-50 rounded-md"
-                }}
-              >
-                📸 Upload Photos
-              </Link>
-              <Link
-                to="/review"
-                className="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md"
-                activeProps={{
-                  className: "block px-3 py-2 text-sm font-medium text-green-700 bg-green-50 rounded-md"
-                }}
-              >
-                ✏️ Review AI
-              </Link>
-            </nav>
-          </div>
-        </aside>
-        <main className="flex-1">
+              </Button>
+            </Flex>
+          </nav>
+        </Flex>
+
+        {/* Main Content */}
+        <Flex direction="column" p="4" flexGrow="1">
           <Outlet />
-        </main>
-      </div>
-    </div>
+        </Flex>
+      </Flex>
+    </Container>
   )
 }

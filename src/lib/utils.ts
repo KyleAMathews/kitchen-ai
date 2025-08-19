@@ -1,7 +1,12 @@
 import TimeAgo from "javascript-time-ago"
 import en from "javascript-time-ago/locale/en"
 
-TimeAgo.addDefaultLocale(en)
+// Only add locale if it hasn't been added yet
+try {
+  TimeAgo.addDefaultLocale(en)
+} catch (error) {
+  // Locale already added, ignore
+}
 
 // Create formatter (English).
 export const timeAgo = new TimeAgo(`en-US`)

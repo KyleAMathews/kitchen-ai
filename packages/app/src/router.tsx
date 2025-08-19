@@ -24,6 +24,7 @@ import { preloadCollection } from "@kylemathews/sync/useCollection"
 const rootRoute = createRootRoute({
   component: Root,
   errorComponent: ErrorPage,
+  ssr: false,
   notFoundComponent: () => {
     return (
       <div style={{ padding: 20 }}>
@@ -41,6 +42,7 @@ const authedRoute = createRoute({
   id: 'authed',
   component: Root,
   errorComponent: ErrorPage,
+  ssr: false,
 })
 
 // Create the index route
@@ -48,6 +50,7 @@ const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
   component: Index,
+  ssr: false,
   validateSearch: (search: Record<string, unknown>) => {
     return {
       q: (search.q as string) || undefined,
@@ -70,6 +73,7 @@ const ingredientsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/ingredients',
   component: IngredientsList,
+  ssr: false,
   loader: () => {
     // return preloadCollection(collectionConfigs.ingredients)
     return null
@@ -80,18 +84,21 @@ const uploadPhotosRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/upload-photos',
   component: AddIngredients,
+  ssr: false,
 })
 
 const reviewRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/review',
   component: Review,
+  ssr: false,
 })
 
 const recipesRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/recipes',
   component: Recipes,
+  ssr: false,
   loader: () => {
     // return preloadCollection(collectionConfigs.recipes)
     return null
@@ -102,6 +109,7 @@ const recipesNewRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/recipes/new',
   component: RecipesNew,
+  ssr: false,
   loader: () => {
     // return preloadCollection(collectionConfigs.recipes)
     return null
@@ -112,6 +120,7 @@ const ingredientDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/ingredients/$id',
   component: IngredientDetail,
+  ssr: false,
   loader: () => {
     // return preloadCollection(collectionConfigs.ingredients)
     return null
@@ -122,6 +131,7 @@ const recipeDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/recipes/$id',
   component: RecipeDetail,
+  ssr: false,
   loader: async () => {
     // console.time(`preloading`)
     // await preloadCollection(collectionConfigs.recipes)

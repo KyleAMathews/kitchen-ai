@@ -1,16 +1,28 @@
 import { createFileRoute, useParams } from "@tanstack/react-router"
 import { useLiveQuery } from "@tanstack/react-db"
-import { Heading, Flex, Text, Badge, Box, Slider, Button } from "@radix-ui/themes"
+import {
+  Heading,
+  Flex,
+  Text,
+  Badge,
+  Box,
+  Slider,
+  Button,
+} from "@radix-ui/themes"
 import { ingredientsCollection } from "@/lib/collections"
 import { isRunningLow, isExpiredSoon, timeAgo } from "@/lib/utils"
 
 export const Route = createFileRoute("/_authenticated/ingredients/$id")({
   component: IngredientDetail,
+  ssr: false,
+  loader: async () => {
+    await ingredientsCollection.preload()
+  },
 })
 
 export default function IngredientDetail() {
   const { id } = useParams({ from: "/_authenticated/ingredients/$id" })
-  
+
   const { data: ingredients } = useLiveQuery((q) =>
     q
       .from({ ingredientsCollection })
@@ -34,9 +46,11 @@ export default function IngredientDetail() {
     <div className="p-6">
       <Flex direction="column" gap="6">
         <Heading size="6">{ingredient.name}</Heading>
-        
+
         {ingredient.description && (
-          <Text size="3" color="gray">{ingredient.description}</Text>
+          <Text size="3" color="gray">
+            {ingredient.description}
+          </Text>
         )}
 
         <Flex direction="column" gap="4">
@@ -46,13 +60,14 @@ export default function IngredientDetail() {
               color={isExpiredSoon(ingredient) ? "crimson" : "gray"}
               weight={isExpiredSoon(ingredient) ? "medium" : "regular"}
             >
-              {expiresInFuture ? "Expires" : "Expired"} {timeAgo.format(expiredDate)}
+              {expiresInFuture ? "Expires" : "Expired"}{" "}
+              {timeAgo.format(expiredDate)}
             </Text>
           </Flex>
 
           <Flex direction="column" gap="2">
             <Text weight="medium">Grocery Section</Text>
-            <Badge variant="soft">{ingredient.grocerySection.replace(/_/g, " ")}</Badge>
+            <Badge variant="soft">{ingredient.grocerySection}</Badge>
           </Flex>
 
           {ingredient.trackingType === "fill_level" && (
@@ -72,7 +87,9 @@ export default function IngredientDetail() {
                   }}
                 />
               </Box>
-              <Text size="2" color="gray">{ingredient.fillLevel}%</Text>
+              <Text size="2" color="gray">
+                {ingredient.fillLevel}%
+              </Text>
             </Flex>
           )}
 
@@ -80,8 +97,8 @@ export default function IngredientDetail() {
             <Flex direction="column" gap="2">
               <Text weight="medium">Count</Text>
               <Flex gap="2" align="center">
-                <Button 
-                  size="1" 
+                <Button
+                  size="1"
                   variant="soft"
                   onClick={() => {
                     ingredientsCollection.update({
@@ -94,8 +111,8 @@ export default function IngredientDetail() {
                   -
                 </Button>
                 <Text>{ingredient.count}</Text>
-                <Button 
-                  size="1" 
+                <Button
+                  size="1"
                   variant="soft"
                   onClick={() => {
                     ingredientsCollection.update({

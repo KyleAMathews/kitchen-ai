@@ -1,20 +1,349 @@
-import { createFileRoute, useParams } from "@tanstack/react-router"
-import { useLiveQuery } from "@tanstack/react-db"
-import { Heading, Flex, Text, Link as RadixLink } from "@radix-ui/themes"
-import { recipesCollection } from "@/lib/collections"
-import { timeAgo } from "@/lib/utils"
+import { createFileRoute, useParams, Link } from "@tanstack/react-router"
+import { useLiveQuery, eq } from "@tanstack/react-db"
+import { useState } from "react"
+import {
+  Heading,
+  Flex,
+  Text,
+  Link as RadixLink,
+  Badge,
+  Separator,
+  Box,
+  Button,
+  Checkbox,
+  ScrollArea,
+  Dialog,
+  TextField,
+  RadioGroup,
+  Slider,
+  Em,
+} from "@radix-ui/themes"
+import { UpdateIcon } from "@radix-ui/react-icons"
+import * as Toast from "@radix-ui/react-toast"
+import { groupBy, mapValues } from "lodash-es"
+import {
+  recipesCollection,
+  recipeIngredientsCollection,
+  ingredientsCollection,
+} from "@/lib/collections"
+import { timeAgo, cosineSimilarity, isExpiredSoon, isRunningLow } from "@/lib/utils"
+import ExpirationDateEdit from "@/components/expiration-date-edit"
 
 export const Route = createFileRoute("/_authenticated/recipes/$id")({
   component: RecipeDetail,
+  ssr: false,
+  loader: async () => {
+    await Promise.all([
+      recipesCollection.preload(),
+      recipeIngredientsCollection.preload(),
+      ingredientsCollection.preload(),
+    ])
+  },
 })
+
+function Working({
+  isWorking,
+  style,
+}: {
+  isWorking: boolean
+  style: React.CSSProperties
+}) {
+  if (isWorking) {
+    return (
+      <UpdateIcon style={style} height="14" width="14" className="icon-spin" />
+    )
+  } else {
+    return null
+  }
+}
+
+function AddIngredientsToShoppingListButton({
+  possibleMatches,
+  checked,
+  recipe,
+}: {
+  possibleMatches: Record<string, any>
+  checked: Record<string, boolean>
+  recipe: any
+}) {
+  const [working, setWorking] = useState(false)
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Toast.Provider swipeDirection="right">
+      <Button
+        disabled={working}
+        onClick={async () => {
+          setOpen(false)
+          setWorking(true)
+          const createObjects = Object.keys(possibleMatches)
+            .map((ingredient_id: string) => {
+              if (
+                checked[ingredient_id] === false ||
+                (typeof checked[ingredient_id] === `undefined` &&
+                  possibleMatches[ingredient_id] === null)
+              ) {
+                const ingredient = recipe.recipe_ingredients.find(
+                  (i: any) => i.id === ingredient_id
+                )
+                return {
+                  ingredient: ingredient.listing,
+                  section: ingredient.grocery_section,
+                }
+              }
+            })
+            .filter((i) => i)
+
+          const cardDescription = {
+            url: recipe.url,
+            checklists: mapValues(
+              groupBy(createObjects, (o) => o?.section),
+              (sectionVals) => sectionVals.map((s) => s?.ingredient)
+            ),
+          }
+
+          // TODO: Implement shopping list API endpoint
+          console.log('Shopping list items:', cardDescription)
+
+          setOpen(true)
+          setWorking(false)
+        }}
+      >
+        Add items to Shopping List
+      </Button>
+      <Toast.Root className="ToastRoot" open={open} onOpenChange={setOpen}>
+        <Toast.Title className="ToastTitle">
+          <Flex p="4">
+            <Text>Ingredients added to shopping list</Text>
+          </Flex>
+        </Toast.Title>
+      </Toast.Root>
+      <Toast.Viewport className="ToastViewport" />
+    </Toast.Provider>
+  )
+}
+
+function AlreadyHaveIngredient({
+  ingredient,
+  setChecked,
+  checked,
+  possibleMatches,
+}: {
+  ingredient: any
+  setChecked: (val: any) => void
+  checked: Record<string, boolean>
+  possibleMatches: Record<string, any>
+}) {
+  const matchedIngred = possibleMatches[ingredient.id]
+
+  return (
+    <Flex direction="column" gap="2" position="relative">
+      <Text as="label" size="2">
+        <Flex gap="2">
+          <Checkbox
+            checked={true}
+            onClick={() => {
+              setChecked({ ...checked, [ingredient.id]: false })
+            }}
+          />
+          {` `}
+          {ingredient.listing}
+          {` `}
+        </Flex>
+      </Text>
+      {matchedIngred && (
+        <>
+          <Box pl="5" asChild>
+            <Text color="gray" size="1">
+              matches:{` `}"
+              <Link
+                to={`/ingredients/${matchedIngred.id}`}
+                style={{ color: `var(--teal-a11)`, textDecoration: `none` }}
+              >
+                {matchedIngred.name}
+                {matchedIngred.tracking_type === `count` &&
+                  ` (${matchedIngred.count})`}
+              </Link>
+              "{` `}
+            </Text>
+          </Box>
+          <Flex gap="1" pl="5">
+            {isRunningLow(matchedIngred) && (
+              <Badge color="crimson" variant="soft" size="1">
+                Running Low
+              </Badge>
+            )}
+            {isExpiredSoon(matchedIngred) && (
+              <Badge color="orange" variant="soft" size="1">
+                Expired
+              </Badge>
+            )}
+          </Flex>
+        </>
+      )}
+      {!matchedIngred && (
+        <AddIngredient ingredient={ingredient} />
+      )}
+    </Flex>
+  )
+}
+
+function AddIngredient({ ingredient }: { ingredient: any }) {
+  const [type, setType] = useState(`fill_level`)
+  const [open, setOpen] = useState(false)
+  const [expirationDate, setExpirationDate] = useState(new Date())
+
+  return (
+    <Box pl="5">
+      <Dialog.Root open={open} onOpenChange={setOpen}>
+        <Dialog.Trigger>
+          <Button variant="outline" size="1">
+            Add to Kitchen.ai
+          </Button>
+        </Dialog.Trigger>
+
+        <Dialog.Content style={{ maxWidth: 450 }}>
+          <Dialog.Title>Add Ingredient</Dialog.Title>
+          <form
+            onSubmit={async (event) => {
+              event.preventDefault()
+              const target = event.target as HTMLFormElement
+              const formData = new FormData(target)
+              const formProps = Object.fromEntries(formData)
+
+              // TODO: Implement ingredient creation via tRPC
+              console.log('Create ingredient:', formProps)
+
+              // Close dialog after submission
+              setOpen(false)
+            }}
+          >
+            <Flex direction="column" gap="5">
+              <label>
+                <Text size="1">Ingredient Name</Text>
+                <TextField.Input
+                  name="name"
+                  defaultValue={ingredient.extracted_name}
+                  placeholder="Enter the ingredient name"
+                />
+              </label>
+              <label>
+                <Flex direction="column" gap="3">
+                  <Text size="2" as="p">
+                    Track ingredient by "fill level" or by "count"
+                  </Text>
+                  <Box py="1">
+                    <RadioGroup.Root
+                      value={type}
+                      name="tracking_type"
+                      onValueChange={(value) => {
+                        setType(value)
+                      }}
+                    >
+                      <Flex gap="2" direction="column">
+                        <Text as="label" size="2">
+                          <Flex gap="2">
+                            <RadioGroup.Item value="fill_level" />
+                            {` `}
+                            Fill Level (0-100%)
+                          </Flex>
+                        </Text>
+                        <Text as="label" size="2">
+                          <Flex gap="2">
+                            <RadioGroup.Item value="count" /> Count (e.g. number
+                            of cans)
+                          </Flex>
+                        </Text>
+                      </Flex>
+                    </RadioGroup.Root>
+                  </Box>
+                </Flex>
+              </label>
+              {type === `count` ? (
+                <label>
+                  <Text as="div" size="1" mb="1">
+                    Count
+                  </Text>
+                  <TextField.Input
+                    type="number"
+                    name="count"
+                    placeholder="How many of this ingredient do you have?"
+                  />
+                </label>
+              ) : (
+                <label>
+                  <Flex direction="column" gap="2">
+                    <Text size="1">Fill Level</Text>
+                    <Slider
+                      defaultValue={[0]}
+                      name="fill_level"
+                      onValueCommit={(val) => { }}
+                    />
+                    <Flex justify="between">
+                      <Text size="1" color="gray">
+                        0%
+                      </Text>
+                      <Text size="1" color="gray">
+                        100%
+                      </Text>
+                    </Flex>
+                  </Flex>
+                </label>
+              )}
+              <ExpirationDateEdit
+                onValueChange={setExpirationDate}
+                expirationDate={expirationDate}
+              />
+            </Flex>
+
+            <Flex gap="3" mt="4" justify="end">
+              <Button
+                variant="soft"
+                color="gray"
+                onClick={(e) => {
+                  e.preventDefault()
+                  setOpen(false)
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">Save</Button>
+            </Flex>
+          </form>
+        </Dialog.Content>
+      </Dialog.Root>
+    </Box>
+  )
+}
 
 export default function RecipeDetail() {
   const { id } = useParams({ from: "/_authenticated/recipes/$id" })
-  
-  const { data: recipes } = useLiveQuery((q) =>
-    q
-      .from({ recipesCollection })
-      .where(({ recipesCollection }) => q.eq(recipesCollection.id, id))
+  const [checked, setChecked] = useState<Record<string, boolean>>({})
+
+  // Get recipe data
+  const { data: recipes } = useLiveQuery(
+    (q) =>
+      q
+        .from({ recipesCollection })
+        .where(({ recipesCollection }) => eq(recipesCollection.id, id)),
+    [id]
+  )
+
+  // Get recipe ingredients
+  const { data: recipeIngredients } = useLiveQuery(
+    (q) =>
+      q
+        .from({ recipeIngredientsCollection })
+        .where(({ recipeIngredientsCollection }) =>
+          eq(recipeIngredientsCollection.recipe_id, id)
+        ),
+    [id]
+  )
+
+  // Get all user ingredients for matching
+  const { data: userIngredients } = useLiveQuery(
+    (q) => q.from({ ingredientsCollection }),
+    []
   )
 
   const recipe = recipes?.[0]
@@ -27,33 +356,145 @@ export default function RecipeDetail() {
     )
   }
 
+  // Attach recipe ingredients to recipe object
+  recipe.recipe_ingredients = recipeIngredients || []
+
+  // Calculate ingredient matches using cosine similarity
+  const possibleMatches: Record<string, any> = {}
+
+  if (recipeIngredients && userIngredients) {
+    recipeIngredients.forEach((ri) => {
+      const matches = userIngredients
+        .map((ui) => {
+          if (ri.embedding && ui.embedding) {
+            const distance = cosineSimilarity(
+              JSON.parse(ri.embedding),
+              JSON.parse(ui.embedding)
+            )
+            if (distance > 0.73) {
+              return { distance, ...ui }
+            }
+          }
+          return null
+        })
+        .filter(Boolean)
+
+      possibleMatches[ri.id] = matches.length === 0
+        ? null
+        : matches.reduce((prev: any, current: any) => {
+          return prev.distance > current.distance ? prev : current
+        })
+    })
+  }
+
+  const neededIngredients = Object.keys(possibleMatches).filter(
+    (ingredient_id) => {
+      return (
+        checked[ingredient_id] === false ||
+        (typeof checked[ingredient_id] === `undefined` &&
+          possibleMatches[ingredient_id] === null)
+      )
+    }
+  )
+
   return (
-    <div className="p-6">
-      <Flex direction="column" gap="6">
-        <Heading size="6">{recipe.name}</Heading>
-        
-        {recipe.description && (
-          <Text size="3" color="gray">{recipe.description}</Text>
-        )}
+    <Flex direction="column" gap="5">
+      <RadixLink asChild size="2">
+        <Link to="/recipes">&lt; All Recipes</Link>
+      </RadixLink>
 
+      <Flex direction="column" gap="3">
+        <Heading>{recipe.name}</Heading>
         {recipe.url && (
-          <Flex direction="column" gap="2">
-            <Text weight="medium">Original Recipe</Text>
-            <RadixLink href={recipe.url} target="_blank" rel="noopener noreferrer">
+          <RadixLink size="2" asChild>
+            <a target="_blank" href={recipe.url}>
               {recipe.url}
-            </RadixLink>
-          </Flex>
+            </a>
+          </RadixLink>
         )}
-
-        <Text size="2" color="gray">
-          Last updated {timeAgo.format(new Date(recipe.updatedAt))}
-        </Text>
-
-        {/* TODO: Add recipe ingredients display here */}
-        <Text color="gray" style={{ fontStyle: "italic" }}>
-          Recipe ingredients display coming soon...
-        </Text>
       </Flex>
-    </div>
+
+      {recipe.description && (
+        <ScrollArea scrollbars="vertical" style={{ maxHeight: 180 }} type="auto">
+          <Box pr="6">
+            <Text>{recipe.description}</Text>
+          </Box>
+        </ScrollArea>
+      )}
+
+      <Flex direction="column" gap="4" mt="2">
+        <Flex direction="column" gap="2">
+          <Heading size="4" mb="2">
+            Shopping List
+          </Heading>
+          <Text size="2">
+            Review the ingredients Kitchen.ai thinks you need to buy for this
+            recipe
+          </Text>
+        </Flex>
+        {neededIngredients.map((ingredient_id: string) => {
+          const ingredient = recipe.recipe_ingredients.find(
+            (i: any) => i.id === ingredient_id
+          )
+          return (
+            <Text
+              key={ingredient_id}
+              as="label"
+              size="2"
+              style={{
+                position: `relative`,
+                paddingRight: 12,
+              }}
+            >
+              <Flex gap="2">
+                <Checkbox
+                  checked={false}
+                  onClick={() => {
+                    setChecked({ ...checked, [ingredient_id]: true })
+                  }}
+                />
+                {` `}
+                {ingredient.listing}
+                {` `}
+              </Flex>
+            </Text>
+          )
+        })}
+        <AddIngredientsToShoppingListButton
+          possibleMatches={possibleMatches}
+          recipe={recipe}
+          checked={checked}
+        />
+      </Flex>
+
+      <Flex direction="column" gap="4">
+        <Heading size="2">Already Have</Heading>
+        {Object.keys(checked).length === 0 &&
+          Object.values(possibleMatches).filter((i) => i).length === 0 && (
+            <Text size="2">No matching ingredients</Text>
+          )}
+        {Object.keys(possibleMatches).map((ingredient_id: string) => {
+          if (
+            checked[ingredient_id] === true ||
+            (typeof checked[ingredient_id] === `undefined` &&
+              possibleMatches[ingredient_id] !== null)
+          ) {
+            const ingredient = recipe.recipe_ingredients.find(
+              (i: any) => i.id === ingredient_id
+            )
+            return (
+              <AlreadyHaveIngredient
+                key={ingredient_id}
+                setChecked={setChecked}
+                ingredient={ingredient}
+                checked={checked}
+                possibleMatches={possibleMatches}
+              />
+            )
+          }
+          return null
+        })}
+      </Flex>
+    </Flex>
   )
 }

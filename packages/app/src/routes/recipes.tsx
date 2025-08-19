@@ -1,31 +1,15 @@
 import * as React from "react"
 import { useLiveQuery } from "@tanstack/react-db"
-import { useSearch, useNavigate, Link } from "@tanstack/react-router"
+import { Link } from "@tanstack/react-router"
 import { Flex, Button, Heading, Separator } from "@radix-ui/themes"
-// import { useUser } from "@clerk/clerk-react"
 import RecipeCard from "../components/recipe-card"
 import { PlusCircledIcon } from "@radix-ui/react-icons"
 import { recipesCollection } from "../hooks/use-shapes"
 
-// const queries = ({ db }: { db: Electric[`db`] }) => {
-//   return {
-//     recipes: db.recipes.liveMany({
-//       orderBy: {
-//         updated_at: `desc`,
-//       },
-//       include: {
-//         recipe_ingredients: true,
-//       },
-//     }),
-//   }
-// }
-//
-// Recipes.queries = queries
-
 export default function Recipes() {
   // const location = useSearch({ from: "/recipes" })
   // const navigate = useNavigate()
-  const { data: recipes } = useLiveQuery(q => q.from({ recipesCollection }).select(`@*`))
+  const { data: recipes } = useLiveQuery(q => q.from({ recipesCollection }))
 
   console.log({ recipes })
 

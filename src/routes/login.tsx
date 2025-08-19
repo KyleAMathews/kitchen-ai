@@ -1,6 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { authClient } from "@/lib/auth-client"
 import { useState } from "react"
+import {
+  Card,
+  Flex,
+  Text,
+  TextField,
+  Button,
+  Heading,
+  Callout,
+} from "@radix-ui/themes"
+import { InfoCircledIcon } from "@radix-ui/react-icons"
 
 export const Route = createFileRoute(`/login`)({
   component: LoginPage,
@@ -33,8 +43,9 @@ function LoginPage() {
         }
       )
 
+      console.log({ data, error, e: JSON.stringify(error, null, 4) })
       // If user already exists, try to sign in
-      if (error?.code === `USER_ALREADY_EXISTS`) {
+      if (error?.code === `USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL`) {
         const result = await authClient.signIn.email(
           {
             email,
@@ -64,77 +75,73 @@ function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Welcome to Kitchen AI
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Sign in to manage your ingredients and recipes
-          </p>
+    <Flex
+      direction="column"
+      align="center"
+      justify="center"
+      style={{ minHeight: "100vh", padding: "2rem" }}
+    >
+      <Card size="3" style={{ width: "100%", maxWidth: "500px" }}>
+        <Flex direction="column" gap="6">
+          <Flex direction="column" gap="3" align="center">
+            <Heading size="6" align="center">
+              Welcome to Kitchen AI
+            </Heading>
+            <Text size="2" color="gray" align="center">
+              Sign in to manage your ingredients and recipes
+            </Text>
+          </Flex>
+
           {process.env.NODE_ENV === "development" && (
-            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
-              <p className="text-sm text-blue-700">
-                <strong>Development Mode:</strong> Any email/password combination
-                will work for testing. New accounts are automatically created.
-              </p>
-            </div>
-          )}
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-              />
-            </div>
-          </div>
-
-          {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="text-sm text-red-700">{error}</div>
-            </div>
+            <Callout.Root color="blue">
+              <Callout.Icon>
+                <InfoCircledIcon />
+              </Callout.Icon>
+              <Callout.Text size="2">
+                <strong>Development Mode:</strong> Any email/password
+                combination will work for testing. New accounts are
+                automatically created.
+              </Callout.Text>
+            </Callout.Root>
           )}
 
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? "Signing in..." : "Sign in"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+          <form onSubmit={handleSubmit}>
+            <Flex direction="column" gap="4">
+              <Flex direction="column" gap="2">
+                <TextField.Root
+                  placeholder="Email address"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <TextField.Root
+                  placeholder="Password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </Flex>
+
+              {error && (
+                <Callout.Root color="red">
+                  <Callout.Text size="2">{error}</Callout.Text>
+                </Callout.Root>
+              )}
+
+              <Button
+                type="submit"
+                disabled={isLoading}
+                size="3"
+                style={{ width: "100%" }}
+              >
+                {isLoading ? "Signing in..." : "Sign in"}
+              </Button>
+            </Flex>
+          </form>
+        </Flex>
+      </Card>
+    </Flex>
   )
 }

@@ -6,13 +6,15 @@ import IngredientCard from "@/components/ingredient-card"
 
 export const Route = createFileRoute("/_authenticated/ingredients/")({
   component: IngredientsList,
+  ssr: false,
+  loader: async () => {
+    await ingredientsCollection.preload()
+  },
 })
 
 export default function IngredientsList() {
   const { data: ingredients } = useLiveQuery((q) =>
-    q
-      .from({ ingredientsCollection })
-      .orderBy({ updatedAt: "desc" })
+    q.from({ ingredientsCollection }).orderBy({ updatedAt: "desc" })
   )
 
   return (
@@ -27,10 +29,7 @@ export default function IngredientsList() {
                   <div key={ingredient.id}>
                     <IngredientCard ingredient={ingredient} />
                     {i !== ingredients.length - 1 && (
-                      <Separator
-                        orientation="horizontal"
-                        size="4"
-                      />
+                      <Separator orientation="horizontal" size="4" />
                     )}
                   </div>
                 )
@@ -39,7 +38,9 @@ export default function IngredientsList() {
             })}
           </Flex>
         ) : (
-          <Text color="gray">No ingredients yet. Start by uploading photos!</Text>
+          <Text color="gray">
+            No ingredients yet. Start by uploading photos!
+          </Text>
         )}
       </Flex>
     </div>

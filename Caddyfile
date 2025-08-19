@@ -6,7 +6,7 @@ kitchen-ai.localhost {
 }
 
 # Network access
-192.168.1.239 {
+192.168.1.238 {
   reverse_proxy localhost:5173
   encode {
     gzip

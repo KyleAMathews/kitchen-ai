@@ -1,6 +1,6 @@
 import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core"
 
-// Better-auth compatible user table
+// Better-auth compatible user table - MUST use camelCase for better-auth
 export const users = pgTable("users", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),

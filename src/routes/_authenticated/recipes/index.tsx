@@ -7,12 +7,16 @@ import { recipesCollection } from "@/lib/collections"
 
 export const Route = createFileRoute("/_authenticated/recipes/")({
   component: Recipes,
+  ssr: false,
+  loader: async () => {
+    await recipesCollection.preload()
+  },
 })
 
 export default function Recipes() {
-  const { data: recipes } = useLiveQuery((q) => 
-    q.from({ recipesCollection }).orderBy({ updatedAt: "desc" })
-  )
+  const { data: recipes } = useLiveQuery((q) => q.from({ recipesCollection }))
+
+  console.log({ recipes })
 
   return (
     <div className="p-6">
@@ -36,7 +40,7 @@ export default function Recipes() {
             </Link>
           </Heading>
         </Flex>
-        
+
         {recipes && recipes.length > 0 ? (
           <Flex direction="column" gap="4">
             {recipes.map((recipe, i) => (

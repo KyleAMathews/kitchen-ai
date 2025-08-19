@@ -21,23 +21,6 @@ const serve = async ({ request }: { request: Request }) => {
   })
 
   originUrl.searchParams.set("table", "recipe_ingredients")
-  
-  // Join with recipes table to filter by user ownership
-  // This assumes recipe_ingredients can be filtered by joining to recipes
-  // Alternative: we could add user_id to recipe_ingredients table for direct filtering
-  const recipeIdParam = url.searchParams.get("recipe_id")
-  if (recipeIdParam) {
-    // If specific recipe requested, verify ownership via join
-    const filter = `recipe_id = '${recipeIdParam}'`
-    originUrl.searchParams.set("where", filter)
-  } else {
-    // For general queries, we'd need to join with recipes table
-    // For now, let's require recipe_id parameter
-    return new Response(JSON.stringify({ error: "recipe_id parameter required" }), {
-      status: 400,
-      headers: { "content-type": "application/json" },
-    })
-  }
 
   const response = await fetch(originUrl)
   const headers = new Headers(response.headers)
