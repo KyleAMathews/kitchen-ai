@@ -1,11 +1,11 @@
-import { createServerFileRoute } from '@tanstack/react-start/server'
-import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
-import { router } from '@/lib/trpc'
-import { ingredientsRouter } from '@/lib/trpc/ingredients'
-import { recipesRouter } from '@/lib/trpc/recipes'
-import { aiRouter } from '@/lib/trpc/ai'
-import { db } from '@/db/connection'
-import { auth } from '@/lib/auth'
+import { createServerFileRoute } from "@tanstack/react-start/server"
+import { fetchRequestHandler } from "@trpc/server/adapters/fetch"
+import { router } from "@/lib/trpc"
+import { ingredientsRouter } from "@/lib/trpc/ingredients"
+import { recipesRouter } from "@/lib/trpc/recipes"
+import { aiRouter } from "@/lib/trpc/ai"
+import { db } from "@/db/connection"
+import { auth } from "@/lib/auth"
 
 export const appRouter = router({
   ingredients: ingredientsRouter,
@@ -17,7 +17,7 @@ export type AppRouter = typeof appRouter
 
 const serve = ({ request }: { request: Request }) => {
   return fetchRequestHandler({
-    endpoint: '/api/trpc',
+    endpoint: `/api/trpc`,
     req: request,
     router: appRouter,
     createContext: async () => ({
@@ -27,7 +27,7 @@ const serve = ({ request }: { request: Request }) => {
   })
 }
 
-export const ServerRoute = createServerFileRoute('/api/trpc/$').methods({
+export const ServerRoute = createServerFileRoute(`/api/trpc/$`).methods({
   GET: serve,
   POST: serve,
 })

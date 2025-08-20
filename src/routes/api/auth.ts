@@ -5,7 +5,7 @@ const serve = ({ request }: { request: Request }) => {
   return auth.handler(request)
 }
 
-export const ServerRoute = createServerFileRoute("/api/auth").methods({
+export const ServerRoute = createServerFileRoute(`/api/auth`).methods({
   GET: serve,
   POST: serve,
   PUT: serve,
