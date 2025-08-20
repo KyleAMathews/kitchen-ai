@@ -1,4 +1,4 @@
-import { createFileRoute, useParams } from "@tanstack/react-router"
+import { createFileRoute, useParams, Link } from "@tanstack/react-router"
 import { useLiveQuery, eq } from "@tanstack/react-db"
 import {
   Heading,
@@ -8,9 +8,16 @@ import {
   Box,
   Slider,
   Button,
+  Card,
+  ScrollArea,
 } from "@radix-ui/themes"
-import { ingredientsCollection } from "@/lib/collections"
-import { isRunningLow, isExpiredSoon, timeAgo } from "@/lib/utils"
+import {
+  ingredientsCollection,
+  recipeIngredientsCollection,
+  recipesCollection,
+} from "@/lib/collections"
+import { isRunningLow, isExpiredSoon, timeAgo, cosineSimilarity } from "@/lib/utils"
+import { useMemo } from "react"
 
 export const Route = createFileRoute("/_authenticated/ingredients/$id")({
   component: IngredientDetail,
@@ -32,6 +39,72 @@ export default function IngredientDetail() {
   )
 
   const ingredient = ingredients?.[0]
+
+  // Get all recipe ingredients and recipes for matching
+  const { data: allRecipeIngredients } = useLiveQuery(
+    (q) => q.from({ recipeIngredientsCollection }),
+    []
+  )
+
+  const { data: allRecipes } = useLiveQuery(
+    (q) => q.from({ recipesCollection }),
+    []
+  )
+
+  // Find recipes that use this ingredient based on embedding similarity
+  const matchingRecipes = useMemo(() => {
+    if (!ingredient?.embedding || !allRecipeIngredients || !allRecipes) {
+      return []
+    }
+
+    const ingredientEmbedding = JSON.parse(ingredient.embedding)
+    const matches: Array<{ recipe_id: string; similarity: number; recipe: any }> = []
+
+    // Group recipe ingredients by recipe_id
+    const recipeIngredientsMap = new Map<string, any[]>()
+    allRecipeIngredients.forEach((ri) => {
+      if (!recipeIngredientsMap.has(ri.recipe_id)) {
+        recipeIngredientsMap.set(ri.recipe_id, [])
+      }
+      recipeIngredientsMap.get(ri.recipe_id)?.push(ri)
+    })
+
+    // Check each recipe's ingredients for matches
+    recipeIngredientsMap.forEach((recipeIngredients, recipe_id) => {
+      let maxSimilarity = 0
+      
+      for (const ri of recipeIngredients) {
+        if (ri.embedding) {
+          try {
+            const similarity = cosineSimilarity(
+              ingredientEmbedding,
+              JSON.parse(ri.embedding)
+            )
+            if (similarity > maxSimilarity) {
+              maxSimilarity = similarity
+            }
+          } catch (e) {
+            console.error("Error parsing embedding:", e)
+          }
+        }
+      }
+
+      // Only include recipes with similarity above threshold
+      if (maxSimilarity > 0.73) {
+        const recipe = allRecipes.find((r) => r.id === recipe_id)
+        if (recipe) {
+          matches.push({
+            recipe_id,
+            similarity: maxSimilarity,
+            recipe,
+          })
+        }
+      }
+    })
+
+    // Sort by similarity score (highest first)
+    return matches.sort((a, b) => b.similarity - a.similarity)
+  }, [ingredient, allRecipeIngredients, allRecipes])
 
   if (!ingredient) {
     return (
@@ -145,6 +218,47 @@ export default function IngredientDetail() {
               </Badge>
             )}
         </Flex>
+
+        {/* Matching Recipes Section */}
+        {matchingRecipes.length > 0 && (
+          <Flex direction="column" gap="3">
+            <Heading size="4">Recipes Using This Ingredient</Heading>
+            <ScrollArea
+              type="auto"
+              scrollbars="vertical"
+              style={{ maxHeight: 400 }}
+            >
+              <Flex direction="column" gap="3">
+                {matchingRecipes.map(({ recipe, similarity }) => (
+                  <Link
+                    key={recipe.id}
+                    to="/recipes/$id"
+                    params={{ id: recipe.id }}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <Card style={{ cursor: "pointer" }}>
+                      <Flex direction="column" gap="2">
+                        <Flex justify="between" align="center">
+                          <Heading size="3">{recipe.name}</Heading>
+                          <Badge variant="soft" color="gray">
+                            {Math.round(similarity * 100)}% match
+                          </Badge>
+                        </Flex>
+                        {recipe.description && (
+                          <Text size="2" color="gray">
+                            {recipe.description.length > 150
+                              ? recipe.description.slice(0, 150) + "..."
+                              : recipe.description}
+                          </Text>
+                        )}
+                      </Flex>
+                    </Card>
+                  </Link>
+                ))}
+              </Flex>
+            </ScrollArea>
+          </Flex>
+        )}
       </Flex>
     </div>
   )
