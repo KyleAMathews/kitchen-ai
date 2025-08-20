@@ -1,5 +1,6 @@
 import { createFileRoute, useParams, Link } from "@tanstack/react-router"
 import { useLiveQuery, eq } from "@tanstack/react-db"
+import { useState } from "react"
 import {
   Heading,
   Flex,
@@ -10,6 +11,8 @@ import {
   Button,
   Card,
   ScrollArea,
+  Select,
+  Dialog,
 } from "@radix-ui/themes"
 import {
   ingredientsCollection,
@@ -18,6 +21,9 @@ import {
 } from "@/lib/collections"
 import { isRunningLow, isExpiredSoon, timeAgo, cosineSimilarity } from "@/lib/utils"
 import { useMemo } from "react"
+import ExpirationDateEdit from "@/components/expiration-date-edit"
+import { ingredientsTrackingTypeSchema } from "@/db/zod-schemas"
+import { z } from "zod"
 
 export const Route = createFileRoute("/_authenticated/ingredients/$id")({
   component: IngredientDetail,
@@ -26,6 +32,82 @@ export const Route = createFileRoute("/_authenticated/ingredients/$id")({
     await ingredientsCollection.preload()
   },
 })
+
+function TrackingTypeEditor({ ingredient }: { ingredient: any }) {
+  const [open, setOpen] = useState(false)
+  const [selectedType, setSelectedType] = useState(ingredient.tracking_type)
+
+  const trackingTypeOptions = [
+    { value: "fill_level", label: "Fill Level (0-100%)" },
+    { value: "count", label: "Count (number of items)" },
+    { value: "pantry_staple", label: "Pantry Staple (always available)" },
+  ]
+
+  const handleSave = () => {
+    ingredientsCollection.update(ingredient.id, (draft) => {
+      draft.tracking_type = selectedType as z.infer<typeof ingredientsTrackingTypeSchema>
+      draft.updated_at = new Date()
+
+      // Reset tracking values when changing type
+      if (selectedType === "fill_level") {
+        draft.fill_level = 100
+        draft.count = 0
+      } else if (selectedType === "count") {
+        draft.count = 1
+        draft.fill_level = 0
+      } else if (selectedType === "pantry_staple") {
+        draft.fill_level = 0
+        draft.count = 0
+        draft.expiration_date = new Date("2099-12-31") // Far future for pantry staples
+      }
+    })
+    setOpen(false)
+  }
+
+  return (
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Trigger>
+        <Button variant="soft" size="1">
+          Change Type
+        </Button>
+      </Dialog.Trigger>
+
+      <Dialog.Content style={{ maxWidth: 450 }}>
+        <Dialog.Title>Change Tracking Type</Dialog.Title>
+        <Dialog.Description size="2" mb="4">
+          Choose how you want to track this ingredient. This will reset current values.
+        </Dialog.Description>
+
+        <Flex direction="column" gap="3">
+          <Select.Root value={selectedType} onValueChange={setSelectedType}>
+            <Select.Trigger />
+            <Select.Content>
+              {trackingTypeOptions.map((option) => (
+                <Select.Item key={option.value} value={option.value}>
+                  {option.label}
+                </Select.Item>
+              ))}
+            </Select.Content>
+          </Select.Root>
+        </Flex>
+
+        <Flex gap="3" mt="4" justify="end">
+          <Button
+            variant="soft"
+            color="gray"
+            onClick={() => {
+              setSelectedType(ingredient.tracking_type)
+              setOpen(false)
+            }}
+          >
+            Cancel
+          </Button>
+          <Button onClick={handleSave}>Save Changes</Button>
+        </Flex>
+      </Dialog.Content>
+    </Dialog.Root>
+  )
+}
 
 export default function IngredientDetail() {
   const { id } = useParams({ from: "/_authenticated/ingredients/$id" })
@@ -72,7 +154,7 @@ export default function IngredientDetail() {
     // Check each recipe's ingredients for matches
     recipeIngredientsMap.forEach((recipeIngredients, recipe_id) => {
       let maxSimilarity = 0
-      
+
       for (const ri of recipeIngredients) {
         if (ri.embedding) {
           try {
@@ -129,16 +211,30 @@ export default function IngredientDetail() {
         )}
 
         <Flex direction="column" gap="4">
+          <Flex direction="column" gap="2">
+            <Flex justify="between" align="center">
+              <Text weight="medium">Tracking Type</Text>
+              <TrackingTypeEditor ingredient={ingredient} />
+            </Flex>
+            <Badge variant="soft" color="blue">
+              {ingredient.tracking_type === "fill_level" && "Fill Level"}
+              {ingredient.tracking_type === "count" && "Count"}
+              {ingredient.tracking_type === "pantry_staple" && "Pantry Staple"}
+            </Badge>
+          </Flex>
+
           {ingredient.tracking_type !== "pantry_staple" && (
             <Flex direction="column" gap="2">
-              <Text weight="medium">Expiration</Text>
-              <Text
-                color={isExpiredSoon(ingredient) ? "crimson" : "gray"}
-                weight={isExpiredSoon(ingredient) ? "medium" : "regular"}
-              >
-                {expiresInFuture ? "Expires" : "Expired"}{" "}
-                {timeAgo.format(expiredDate)}
-              </Text>
+              <Text weight="medium">Expiration Date</Text>
+              <ExpirationDateEdit
+                expirationDate={ingredient.expiration_date}
+                onValueChange={(newDate) => {
+                  ingredientsCollection.update(ingredient.id, (draft) => {
+                    draft.expiration_date = newDate
+                    draft.updated_at = new Date()
+                  })
+                }}
+              />
             </Flex>
           )}
 
@@ -155,7 +251,6 @@ export default function IngredientDetail() {
                   variant="soft"
                   value={[ingredient.fill_level]}
                   onValueChange={(values) => {
-                    // Update ingredient fill level optimistically
                     ingredientsCollection.update(ingredient.id, (draft) => {
                       draft.fill_level = values[0]
                       draft.updated_at = new Date()
