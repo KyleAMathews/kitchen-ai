@@ -1,4 +1,4 @@
-import { createFileRoute, useParams, Link } from "@tanstack/react-router"
+import { createFileRoute, useParams, Link, useNavigate } from "@tanstack/react-router"
 import { useLiveQuery, eq } from "@tanstack/react-db"
 import { useState } from "react"
 import { z } from "zod"
@@ -280,7 +280,7 @@ function AddIngredient({ ingredient }: { ingredient: any }) {
                     <Slider
                       defaultValue={[0]}
                       name="fill_level"
-                      onValueCommit={(val) => {}}
+                      onValueCommit={(val) => { }}
                     />
                     <Flex justify="between">
                       <Text size="1" color="gray">
@@ -318,6 +318,56 @@ function AddIngredient({ ingredient }: { ingredient: any }) {
         </Dialog.Content>
       </Dialog.Root>
     </Box>
+  )
+}
+
+function DeleteRecipeButton({ recipe }: { recipe: any }) {
+  const [open, setOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const navigate = useNavigate()
+
+  return (
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Trigger>
+        <Button variant="soft" color="red" size="2">
+          Delete Recipe
+        </Button>
+      </Dialog.Trigger>
+
+      <Dialog.Content style={{ maxWidth: 450 }}>
+        <Dialog.Title>Delete Recipe</Dialog.Title>
+        <Dialog.Description size="2" mb="4">
+          Are you sure you want to delete "{recipe.name}"? This action cannot be undone.
+        </Dialog.Description>
+
+        <Flex gap="3" mt="4" justify="end">
+          <Button
+            variant="soft"
+            color="gray"
+            onClick={() => setOpen(false)}
+            disabled={deleting}
+          >
+            Cancel
+          </Button>
+          <Button
+            color="red"
+            onClick={async () => {
+              setDeleting(true)
+              try {
+                recipesCollection.delete(recipe.id)
+                navigate({ to: "/recipes" })
+              } catch (error) {
+                console.error("Failed to delete recipe:", error)
+                setDeleting(false)
+              }
+            }}
+            disabled={deleting}
+          >
+            {deleting ? "Deleting..." : "Delete"}
+          </Button>
+        </Flex>
+      </Dialog.Content>
+    </Dialog.Root>
   )
 }
 
@@ -388,8 +438,8 @@ export default function RecipeDetail() {
         matches.length === 0
           ? null
           : matches.reduce((prev: any, current: any) => {
-              return prev.distance > current.distance ? prev : current
-            })
+            return prev.distance > current.distance ? prev : current
+          })
     })
   }
 
@@ -410,7 +460,10 @@ export default function RecipeDetail() {
       </RadixLink>
 
       <Flex direction="column" gap="3">
-        <Heading>{recipe.name}</Heading>
+        <Flex justify="between" align="start">
+          <Heading>{recipe.name}</Heading>
+          <DeleteRecipeButton recipe={recipe} />
+        </Flex>
         {recipe.url && (
           <RadixLink size="2" asChild>
             <a target="_blank" href={recipe.url}>
