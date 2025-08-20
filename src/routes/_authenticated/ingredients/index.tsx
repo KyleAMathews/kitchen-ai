@@ -4,7 +4,7 @@ import { Heading, Flex, Separator, Text } from "@radix-ui/themes"
 import { ingredientsCollection } from "@/lib/collections"
 import IngredientCard from "@/components/ingredient-card"
 
-export const Route = createFileRoute("/_authenticated/ingredients/")({
+export const Route = createFileRoute(`/_authenticated/ingredients/`)({
   component: IngredientsList,
   ssr: false,
   loader: async () => {

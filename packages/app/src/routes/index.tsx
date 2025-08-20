@@ -61,8 +61,8 @@ function IngredientsView({
                 position: `relative`,
                 top: 3,
                 left: 4,
-                color: "inherit",
-                textDecoration: "none",
+                color: `inherit`,
+                textDecoration: `none`,
               }}
             >
               <CameraIcon height="20" width="20" />
@@ -223,7 +223,7 @@ export default function Index() {
   // const { db } = useElectric()!
   const location = useLocation()
   const navigate = useNavigate()
-  const search = useSearch({ from: "/" })
+  const search = useSearch({ from: `/` })
   console.log({ search })
 
   const { data: photos } = useLiveQuery((q) =>
@@ -307,8 +307,8 @@ export default function Index() {
                     position: `relative`,
                     top: 3,
                     left: 8,
-                    color: "inherit",
-                    textDecoration: "none",
+                    color: `inherit`,
+                    textDecoration: `none`,
                   }}
                 >
                   <PlusCircledIcon
@@ -327,9 +327,7 @@ export default function Index() {
                       return (
                         <React.Fragment key={recipe.id}>
                           <RecipeCard key={recipe.id} recipe={recipe} />
-                          {recipes.length - 1 !== i && (
-                            <Separator size="4" />
-                          )}
+                          {recipes.length - 1 !== i && <Separator size="4" />}
                         </React.Fragment>
                       )
                     })}

@@ -1,10 +1,6 @@
 import { Link } from "@tanstack/react-router"
 import { CaretRightIcon } from "@radix-ui/react-icons"
-import {
-  Flex,
-  Heading,
-  Text,
-} from "@radix-ui/themes"
+import { Flex, Heading, Text } from "@radix-ui/themes"
 import { timeAgo } from "@/lib/utils"
 
 interface Recipe {

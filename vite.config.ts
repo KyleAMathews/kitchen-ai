@@ -16,7 +16,7 @@ export default defineConfig(async () => {
     )
     generalSansMetrics.familyName = `GeneralSans`
   } catch (error) {
-    console.warn("GeneralSans font not found, falling back to system fonts")
+    console.warn(`GeneralSans font not found, falling back to system fonts`)
     generalSansMetrics = arial // fallback
   }
 

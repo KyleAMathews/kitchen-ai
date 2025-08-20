@@ -115,7 +115,7 @@ export async function processRecipeWithAI(
           },
           {
             role: `user`,
-            content: `Please try again. Extract the recipe name, description, and ingredients. Use only the allowed grocery sections: ${grocerySectionEnum.options.join(", ")}`,
+            content: `Please try again. Extract the recipe name, description, and ingredients. Use only the allowed grocery sections: ${grocerySectionEnum.options.join(`, `)}`,
           },
         ]
       }
@@ -131,7 +131,7 @@ export async function processRecipeWithAI(
         content: `You are a recipe parsing assistant. Extract recipe information from user-provided text.
 
 IMPORTANT: For grocery_section, you MUST use exactly one of these values:
-${grocerySectionEnum.options.join(", ")}
+${grocerySectionEnum.options.join(`, `)}
 
 Do NOT use underscores, hyphens, or any other variations. Use the exact capitalization and spacing shown above.`,
       },
@@ -159,9 +159,9 @@ Do NOT use underscores, hyphens, or any other variations. Use the exact capitali
     await db.transaction(async (tx: any) => {
       const txid = await generateTxId(tx)
 
-      console.log('Updating recipe with:', { 
-        name: parsed.name, 
-        description: parsed.description 
+      console.log(`Updating recipe with:`, {
+        name: parsed.name,
+        description: parsed.description,
       })
 
       // Update recipe with processed data
@@ -174,11 +174,14 @@ Do NOT use underscores, hyphens, or any other variations. Use the exact capitali
         })
         .where(and(eq(recipes.id, recipeId), eq(recipes.user_id, userId)))
 
-      console.log('Inserting ingredients:', ingredientsWithEmbeddings.map(ing => ({
-        listing: ing.listing,
-        extracted_name: ing.extracted_name,
-        grocery_section: ing.grocery_section,
-      })))
+      console.log(
+        `Inserting ingredients:`,
+        ingredientsWithEmbeddings.map((ing) => ({
+          listing: ing.listing,
+          extracted_name: ing.extracted_name,
+          grocery_section: ing.grocery_section,
+        }))
+      )
 
       // Insert ingredients
       await tx.insert(recipeIngredients).values(
@@ -192,9 +195,9 @@ Do NOT use underscores, hyphens, or any other variations. Use the exact capitali
       )
     })
   } catch (dbError) {
-    console.error('Database error during recipe processing:', dbError)
-    console.error('Parsed data:', parsed)
-    console.error('Ingredients with embeddings:', ingredientsWithEmbeddings)
+    console.error(`Database error during recipe processing:`, dbError)
+    console.error(`Parsed data:`, parsed)
+    console.error(`Ingredients with embeddings:`, ingredientsWithEmbeddings)
     throw dbError
   }
 

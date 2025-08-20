@@ -3,7 +3,7 @@ import { useLiveQuery } from "electric-sql/react"
 
 export default function WorkingIcon() {
   // const electric = useElectric()!
-  if (false/* electric */) {
+  if (false /* electric */) {
     // const { db } = electric
     // const { results: count } = useLiveQuery(
     //   db.ingredients_photo_uploads.liveFirst({
@@ -14,7 +14,6 @@ export default function WorkingIcon() {
     //     },
     //   })
     // )
-
     // if (count) {
     //   return <UpdateIcon className="icon-spin" />
     // } else {

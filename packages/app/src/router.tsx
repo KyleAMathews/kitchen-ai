@@ -4,19 +4,19 @@ import {
   createRootRoute,
   Link,
   Outlet,
-} from '@tanstack/react-router'
-import Root from './routes/root'
-import Index from './routes/index'
-import Review from './routes/review'
-import AddIngredients from './routes/add-ingredients'
-import Recipes from './routes/recipes'
-import RecipesNew from './routes/recipe-new'
-import IngredientDetail from './routes/ingredient-detail'
-import RecipeDetail from './routes/recipe-detail'
-import IngredientsList from './routes/ingredients'
-import AuthedLayout from './authed-layout'
-import ErrorPage from './error-page'
-import { preloadShape } from '@electric-sql/react'
+} from "@tanstack/react-router"
+import Root from "./routes/root"
+import Index from "./routes/index"
+import Review from "./routes/review"
+import AddIngredients from "./routes/add-ingredients"
+import Recipes from "./routes/recipes"
+import RecipesNew from "./routes/recipe-new"
+import IngredientDetail from "./routes/ingredient-detail"
+import RecipeDetail from "./routes/recipe-detail"
+import IngredientsList from "./routes/ingredients"
+import AuthedLayout from "./authed-layout"
+import ErrorPage from "./error-page"
+import { preloadShape } from "@electric-sql/react"
 import { preloadCollection } from "@kylemathews/sync/useCollection"
 // import { shapeConfigs, collectionConfigs } from './hooks/use-shapes'
 
@@ -39,7 +39,7 @@ const rootRoute = createRootRoute({
 // Create an authenticated layout route
 const authedRoute = createRoute({
   getParentRoute: () => rootRoute,
-  id: 'authed',
+  id: `authed`,
   component: Root,
   errorComponent: ErrorPage,
   ssr: false,
@@ -48,7 +48,7 @@ const authedRoute = createRoute({
 // Create the index route
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/',
+  path: `/`,
   component: Index,
   ssr: false,
   validateSearch: (search: Record<string, unknown>) => {
@@ -71,65 +71,65 @@ const indexRoute = createRoute({
 // Create other routes
 const ingredientsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/ingredients',
+  path: `/ingredients`,
   component: IngredientsList,
   ssr: false,
   loader: () => {
     // return preloadCollection(collectionConfigs.ingredients)
     return null
-  }
+  },
 })
 
 const uploadPhotosRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/upload-photos',
+  path: `/upload-photos`,
   component: AddIngredients,
   ssr: false,
 })
 
 const reviewRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/review',
+  path: `/review`,
   component: Review,
   ssr: false,
 })
 
 const recipesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/recipes',
+  path: `/recipes`,
   component: Recipes,
   ssr: false,
   loader: () => {
     // return preloadCollection(collectionConfigs.recipes)
     return null
-  }
+  },
 })
 
 const recipesNewRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/recipes/new',
+  path: `/recipes/new`,
   component: RecipesNew,
   ssr: false,
   loader: () => {
     // return preloadCollection(collectionConfigs.recipes)
     return null
-  }
+  },
 })
 
 const ingredientDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/ingredients/$id',
+  path: `/ingredients/$id`,
   component: IngredientDetail,
   ssr: false,
   loader: () => {
     // return preloadCollection(collectionConfigs.ingredients)
     return null
-  }
+  },
 })
 
 const recipeDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/recipes/$id',
+  path: `/recipes/$id`,
   component: RecipeDetail,
   ssr: false,
   loader: async () => {
@@ -137,7 +137,7 @@ const recipeDetailRoute = createRoute({
     // await preloadCollection(collectionConfigs.recipes)
     // console.timeEnd(`preloading`)
     return null
-  }
+  },
 })
 
 // Create the router configuration
@@ -155,15 +155,13 @@ const routeTree = rootRoute.addChildren([
 // Create and export the router
 export const router = createRouter({
   routeTree,
-  defaultPreload: 'intent',
-  defaultPendingComponent: () => (
-    <div style={{ padding: 20 }}>Loading...</div>
-  ),
+  defaultPreload: `intent`,
+  defaultPendingComponent: () => <div style={{ padding: 20 }}>Loading...</div>,
   defaultErrorComponent: ErrorPage,
 })
 
 // Register the router for type safety
-declare module '@tanstack/react-router' {
+declare module `@tanstack/react-router` {
   interface Register {
     router: typeof router
   }

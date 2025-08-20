@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { Heading, Flex, Text, Button } from "@radix-ui/themes"
 import { CheckIcon } from "@radix-ui/react-icons"
 
-export const Route = createFileRoute("/_authenticated/review")({
+export const Route = createFileRoute(`/_authenticated/review`)({
   component: Review,
   ssr: false,
 })
@@ -14,7 +14,7 @@ export default function Review() {
         direction="column"
         gap="6"
         align="center"
-        style={{ textAlign: "center", minHeight: "60vh" }}
+        style={{ textAlign: `center`, minHeight: `60vh` }}
         justify="center"
       >
         <CheckIcon height="64" width="64" color="gray" />

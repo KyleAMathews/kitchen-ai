@@ -10,9 +10,10 @@ const allSchemas = {
 }
 
 export const db = drizzle(
-  process.env.DATABASE_URL || "postgresql://postgres:password@localhost:54321/kitchen_ai",
-  { 
-    casing: "snake_case",
+  process.env.DATABASE_URL ||
+    `postgresql://postgres:password@localhost:54321/kitchen_ai`,
+  {
+    casing: `snake_case`,
     schema: allSchemas,
   }
 )

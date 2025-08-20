@@ -9,7 +9,7 @@ import { recipesCollection } from "../hooks/use-shapes"
 export default function Recipes() {
   // const location = useSearch({ from: "/recipes" })
   // const navigate = useNavigate()
-  const { data: recipes } = useLiveQuery(q => q.from({ recipesCollection }))
+  const { data: recipes } = useLiveQuery((q) => q.from({ recipesCollection }))
 
   console.log({ recipes })
 

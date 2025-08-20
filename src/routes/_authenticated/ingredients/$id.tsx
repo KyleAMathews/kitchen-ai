@@ -19,13 +19,18 @@ import {
   recipeIngredientsCollection,
   recipesCollection,
 } from "@/lib/collections"
-import { isRunningLow, isExpiredSoon, timeAgo, cosineSimilarity } from "@/lib/utils"
+import {
+  isRunningLow,
+  isExpiredSoon,
+  timeAgo,
+  cosineSimilarity,
+} from "@/lib/utils"
 import { useMemo } from "react"
 import ExpirationDateEdit from "@/components/expiration-date-edit"
 import { ingredientsTrackingTypeSchema } from "@/db/zod-schemas"
 import { z } from "zod"
 
-export const Route = createFileRoute("/_authenticated/ingredients/$id")({
+export const Route = createFileRoute(`/_authenticated/ingredients/$id`)({
   component: IngredientDetail,
   ssr: false,
   loader: async () => {
@@ -38,27 +43,29 @@ function TrackingTypeEditor({ ingredient }: { ingredient: any }) {
   const [selectedType, setSelectedType] = useState(ingredient.tracking_type)
 
   const trackingTypeOptions = [
-    { value: "fill_level", label: "Fill Level (0-100%)" },
-    { value: "count", label: "Count (number of items)" },
-    { value: "pantry_staple", label: "Pantry Staple (always available)" },
+    { value: `fill_level`, label: `Fill Level (0-100%)` },
+    { value: `count`, label: `Count (number of items)` },
+    { value: `pantry_staple`, label: `Pantry Staple (always available)` },
   ]
 
   const handleSave = () => {
     ingredientsCollection.update(ingredient.id, (draft) => {
-      draft.tracking_type = selectedType as z.infer<typeof ingredientsTrackingTypeSchema>
+      draft.tracking_type = selectedType as z.infer<
+        typeof ingredientsTrackingTypeSchema
+      >
       draft.updated_at = new Date()
 
       // Reset tracking values when changing type
-      if (selectedType === "fill_level") {
+      if (selectedType === `fill_level`) {
         draft.fill_level = 100
         draft.count = 0
-      } else if (selectedType === "count") {
+      } else if (selectedType === `count`) {
         draft.count = 1
         draft.fill_level = 0
-      } else if (selectedType === "pantry_staple") {
+      } else if (selectedType === `pantry_staple`) {
         draft.fill_level = 0
         draft.count = 0
-        draft.expiration_date = new Date("2099-12-31") // Far future for pantry staples
+        draft.expiration_date = new Date(`2099-12-31`) // Far future for pantry staples
       }
     })
     setOpen(false)
@@ -75,7 +82,8 @@ function TrackingTypeEditor({ ingredient }: { ingredient: any }) {
       <Dialog.Content style={{ maxWidth: 450 }}>
         <Dialog.Title>Change Tracking Type</Dialog.Title>
         <Dialog.Description size="2" mb="4">
-          Choose how you want to track this ingredient. This will reset current values.
+          Choose how you want to track this ingredient. This will reset current
+          values.
         </Dialog.Description>
 
         <Flex direction="column" gap="3">
@@ -110,7 +118,7 @@ function TrackingTypeEditor({ ingredient }: { ingredient: any }) {
 }
 
 export default function IngredientDetail() {
-  const { id } = useParams({ from: "/_authenticated/ingredients/$id" })
+  const { id } = useParams({ from: `/_authenticated/ingredients/$id` })
 
   const { data: ingredients } = useLiveQuery(
     (q) =>
@@ -140,7 +148,11 @@ export default function IngredientDetail() {
     }
 
     const ingredientEmbedding = JSON.parse(ingredient.embedding)
-    const matches: Array<{ recipe_id: string; similarity: number; recipe: any }> = []
+    const matches: Array<{
+      recipe_id: string
+      similarity: number
+      recipe: any
+    }> = []
 
     // Group recipe ingredients by recipe_id
     const recipeIngredientsMap = new Map<string, any[]>()
@@ -166,7 +178,7 @@ export default function IngredientDetail() {
               maxSimilarity = similarity
             }
           } catch (e) {
-            console.error("Error parsing embedding:", e)
+            console.error(`Error parsing embedding:`, e)
           }
         }
       }
@@ -217,13 +229,13 @@ export default function IngredientDetail() {
               <TrackingTypeEditor ingredient={ingredient} />
             </Flex>
             <Badge variant="soft" color="blue">
-              {ingredient.tracking_type === "fill_level" && "Fill Level"}
-              {ingredient.tracking_type === "count" && "Count"}
-              {ingredient.tracking_type === "pantry_staple" && "Pantry Staple"}
+              {ingredient.tracking_type === `fill_level` && `Fill Level`}
+              {ingredient.tracking_type === `count` && `Count`}
+              {ingredient.tracking_type === `pantry_staple` && `Pantry Staple`}
             </Badge>
           </Flex>
 
-          {ingredient.tracking_type !== "pantry_staple" && (
+          {ingredient.tracking_type !== `pantry_staple` && (
             <Flex direction="column" gap="2">
               <Text weight="medium">Expiration Date</Text>
               <ExpirationDateEdit
@@ -243,7 +255,7 @@ export default function IngredientDetail() {
             <Badge variant="soft">{ingredient.grocery_section}</Badge>
           </Flex>
 
-          {ingredient.tracking_type === "fill_level" && (
+          {ingredient.tracking_type === `fill_level` && (
             <Flex direction="column" gap="2">
               <Text weight="medium">Fill Level</Text>
               <Box style={{ width: 200 }}>
@@ -264,7 +276,7 @@ export default function IngredientDetail() {
             </Flex>
           )}
 
-          {ingredient.tracking_type === "count" && (
+          {ingredient.tracking_type === `count` && (
             <Flex direction="column" gap="2">
               <Text weight="medium">Count</Text>
               <Flex gap="2" align="center">
@@ -297,7 +309,7 @@ export default function IngredientDetail() {
             </Flex>
           )}
 
-          {ingredient.tracking_type === "pantry_staple" && (
+          {ingredient.tracking_type === `pantry_staple` && (
             <Flex direction="column" gap="2">
               <Text weight="medium">Status</Text>
               <Badge color="green" variant="soft">
@@ -307,7 +319,7 @@ export default function IngredientDetail() {
           )}
 
           {isRunningLow(ingredient) &&
-            ingredient.tracking_type !== "pantry_staple" && (
+            ingredient.tracking_type !== `pantry_staple` && (
               <Badge color="crimson" variant="soft">
                 Running Low
               </Badge>
@@ -329,9 +341,9 @@ export default function IngredientDetail() {
                     key={recipe.id}
                     to="/recipes/$id"
                     params={{ id: recipe.id }}
-                    style={{ textDecoration: "none" }}
+                    style={{ textDecoration: `none` }}
                   >
-                    <Card style={{ cursor: "pointer" }}>
+                    <Card style={{ cursor: `pointer` }}>
                       <Flex direction="column" gap="2">
                         <Flex justify="between" align="center">
                           <Heading size="3">{recipe.name}</Heading>
@@ -342,7 +354,7 @@ export default function IngredientDetail() {
                         {recipe.description && (
                           <Text size="2" color="gray">
                             {recipe.description.length > 150
-                              ? recipe.description.slice(0, 150) + "..."
+                              ? recipe.description.slice(0, 150) + `...`
                               : recipe.description}
                           </Text>
                         )}

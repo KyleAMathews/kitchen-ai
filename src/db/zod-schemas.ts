@@ -1,4 +1,8 @@
-import { createSelectSchema, createInsertSchema, createUpdateSchema } from "drizzle-zod"
+import {
+  createSelectSchema,
+  createInsertSchema,
+  createUpdateSchema,
+} from "drizzle-zod"
 import { z } from "zod"
 import {
   users,
@@ -30,17 +34,20 @@ export const selectUsersSchema = baseSelectUsersSchema.transform((data) => ({
 }))
 
 // Other schemas are already in snake_case in the Drizzle schema
-export const selectIngredientsPhotoUploadsSchema = createSelectSchema(ingredientsPhotoUploads)
+export const selectIngredientsPhotoUploadsSchema = createSelectSchema(
+  ingredientsPhotoUploads
+)
 export const selectIngredientsSchema = createSelectSchema(ingredients)
 export const selectIngredientEventsSchema = createSelectSchema(ingredientEvents)
 export const selectRecipesSchema = createSelectSchema(recipes)
-export const selectRecipeIngredientsSchema = createSelectSchema(recipeIngredients)
+export const selectRecipeIngredientsSchema =
+  createSelectSchema(recipeIngredients)
 export const selectJobsSchema = createSelectSchema(jobs)
 
 // Date coercion helper - transforms string dates to Date objects
 // Needed because tRPC stringifies dates during HTTP transport
 const dateCoercion = z.preprocess((val) => {
-  if (typeof val === 'string' || typeof val === 'number') {
+  if (typeof val === `string` || typeof val === `number`) {
     return new Date(val)
   }
   return val
@@ -65,11 +72,17 @@ export const updateRecipesSchema = createUpdateSchema(recipes, {
   updated_at: dateCoercion.optional(),
 })
 
-export const insertRecipeIngredientsSchema = createInsertSchema(recipeIngredients)
-export const updateRecipeIngredientsSchema = createUpdateSchema(recipeIngredients)
+export const insertRecipeIngredientsSchema =
+  createInsertSchema(recipeIngredients)
+export const updateRecipeIngredientsSchema =
+  createUpdateSchema(recipeIngredients)
 
 // Re-export enum schemas for convenience
 export const grocerySectionSchema = z.enum(grocerySectionEnum.enumValues)
-export const ingredientsTrackingTypeSchema = z.enum(ingredientsTrackingTypeEnum.enumValues)
-export const ingredientPhotoUploadStateSchema = z.enum(ingredientPhotoUploadStateEnum.enumValues)
+export const ingredientsTrackingTypeSchema = z.enum(
+  ingredientsTrackingTypeEnum.enumValues
+)
+export const ingredientPhotoUploadStateSchema = z.enum(
+  ingredientPhotoUploadStateEnum.enumValues
+)
 export const jobsStateSchema = z.enum(jobsStateEnum.enumValues)

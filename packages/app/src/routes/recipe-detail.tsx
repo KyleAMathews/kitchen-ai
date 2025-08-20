@@ -353,7 +353,7 @@ function AddIngredient({ ingredient }: { ingredient: Recipe_ingredients }) {
                     <Slider
                       defaultValue={[0]}
                       name="fill_level"
-                      onValueCommit={(val) => { }}
+                      onValueCommit={(val) => {}}
                     />
                     <Flex justify="between">
                       <Text size="1" color="gray">
@@ -409,33 +409,24 @@ const queries = ({ db, id }: { db: Electric[`db`]; id: string }) => {
 RecipeDetail.queries = queries
 
 export default function RecipeDetail() {
-  const { id } = useParams({ from: "/recipes/$id" })
+  const { id } = useParams({ from: `/recipes/$id` })
   const location = useLocation()
 
   const [checked, setChecked] = useState({})
-  const { id: recipeId } = useParams({ from: "/recipes/$id" })
+  const { id: recipeId } = useParams({ from: `/recipes/$id` })
 
   const { data: recipeArray } = useLiveQuery(
     (q) =>
-      q
-        .from({ recipesCollection })
-        .where(`@id`, `=`, recipeId)
-        .select(`@*`),
+      q.from({ recipesCollection }).where(`@id`, `=`, recipeId).select(`@*`),
     [recipeId]
   )
   const recipe = recipeArray[0]
   const { data: ingredients } = useLiveQuery(
-    (q) =>
-      q
-        .from({ ingredientsCollection })
-        .select(`@*`),
+    (q) => q.from({ ingredientsCollection }).select(`@*`),
     []
   )
   const { data: recipeIngredients } = useLiveQuery(
-    (q) =>
-      q
-        .from({ recipeIngredientsCollection })
-        .select(`@*`),
+    (q) => q.from({ recipeIngredientsCollection }).select(`@*`),
     []
   )
   // const { data: recipes, isLoading: isRecipesLoading } = useRecipesShape()
@@ -482,8 +473,8 @@ export default function RecipeDetail() {
         possibleMatches.length === 0
           ? null
           : possibleMatches.reduce((prev, current) => {
-            return prev.distance > current.distance ? prev : current
-          })
+              return prev.distance > current.distance ? prev : current
+            })
 
       return [ri.id, possibleMatch]
     })

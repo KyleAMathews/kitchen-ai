@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { Heading, Flex, Text, Button } from "@radix-ui/themes"
 import { CameraIcon } from "@radix-ui/react-icons"
 
-export const Route = createFileRoute("/_authenticated/upload-photos")({
+export const Route = createFileRoute(`/_authenticated/upload-photos`)({
   component: UploadPhotos,
   ssr: false,
 })
@@ -14,7 +14,7 @@ export default function UploadPhotos() {
         direction="column"
         gap="6"
         align="center"
-        style={{ textAlign: "center", minHeight: "60vh" }}
+        style={{ textAlign: `center`, minHeight: `60vh` }}
         justify="center"
       >
         <CameraIcon height="64" width="64" color="gray" />

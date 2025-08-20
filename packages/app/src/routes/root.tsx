@@ -1,11 +1,5 @@
 import { Link, Outlet } from "@tanstack/react-router"
-import {
-  Flex,
-  Heading,
-  Text,
-  Separator,
-  Container,
-} from "@radix-ui/themes"
+import { Flex, Heading, Text, Separator, Container } from "@radix-ui/themes"
 import Working from "../components/working-icon"
 
 export default function Root() {

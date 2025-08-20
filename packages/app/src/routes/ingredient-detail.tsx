@@ -42,9 +42,9 @@ function generateEventText(event) {
   if (
     key === `fill_level` &&
     event.from_values.fill_level >
-    (isString(event.to_values)
-      ? JSON.parse(event.to_values).fill_level
-      : event.to_values.fill_level)
+      (isString(event.to_values)
+        ? JSON.parse(event.to_values).fill_level
+        : event.to_values.fill_level)
   ) {
     action = `used this`
   }
@@ -234,7 +234,7 @@ const diffInMonths = (date1, date2) => {
 export default function IngredientDetail() {
   const [working, setWorking] = useState(false)
   const navigate = useNavigate()
-  const { id } = useParams({ from: "/ingredients/$id" })
+  const { id } = useParams({ from: `/ingredients/$id` })
 
   // const {
   //   ingredient,
@@ -245,11 +245,7 @@ export default function IngredientDetail() {
   // const { data: ingredients, update: updateIngredient, isLoading: isIngredientsLoading } = useIngredientsShape()
 
   const { data: ingredients } = useLiveQuery(
-    (q) =>
-      q
-        .from({ ingredientsCollection })
-        .select(`@*`)
-        .where(`@id`, `=`, id),
+    (q) => q.from({ ingredientsCollection }).select(`@*`).where(`@id`, `=`, id),
     [id]
   )
 

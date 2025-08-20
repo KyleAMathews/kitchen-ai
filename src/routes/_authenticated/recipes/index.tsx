@@ -5,7 +5,7 @@ import { PlusCircledIcon } from "@radix-ui/react-icons"
 import RecipeCard from "@/components/recipe-card"
 import { recipesCollection } from "@/lib/collections"
 
-export const Route = createFileRoute("/_authenticated/recipes/")({
+export const Route = createFileRoute(`/_authenticated/recipes/`)({
   component: Recipes,
   ssr: false,
   loader: async () => {
@@ -32,8 +32,8 @@ export default function Recipes() {
                 position: `relative`,
                 top: 3,
                 left: 8,
-                color: "inherit",
-                textDecoration: "none",
+                color: `inherit`,
+                textDecoration: `none`,
               }}
             >
               <PlusCircledIcon height="20" width="20" style={{ height: 20 }} />

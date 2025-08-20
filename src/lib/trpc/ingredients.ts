@@ -55,7 +55,7 @@ export const ingredientsRouter = router({
           content: `You are an ingredient information assistant. Extract ingredient details.
 
 IMPORTANT: For grocery_section, you MUST use exactly one of these values:
-${grocerySectionSchema.options.join(", ")}
+${grocerySectionSchema.options.join(`, `)}
 
 Do NOT use underscores or any other variations. Use the exact capitalization and spacing shown above.`,
         },
@@ -116,7 +116,7 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
               },
               {
                 role: `user`,
-                content: `Please try again. Extract the ingredient description and grocery section. Use only the allowed grocery sections: ${grocerySectionSchema.options.join(", ")}`,
+                content: `Please try again. Extract the ingredient description and grocery section. Use only the allowed grocery sections: ${grocerySectionSchema.options.join(`, `)}`,
               }
             )
           }
@@ -144,16 +144,16 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
             user_id: ctx.session.user.id,
             tracking_type: input.tracking_type,
             fill_level:
-              input.tracking_type === "fill_level"
-                ? input.fill_level ?? 100
-                : input.tracking_type === "pantry_staple"
+              input.tracking_type === `fill_level`
+                ? (input.fill_level ?? 100)
+                : input.tracking_type === `pantry_staple`
                   ? 100
                   : 0,
-            count: input.tracking_type === "count" ? 1 : 0,
+            count: input.tracking_type === `count` ? 1 : 0,
             is_reviewed: true,
             // Pantry staples don't expire, set to far future date
             expiration_date:
-              input.tracking_type === "pantry_staple"
+              input.tracking_type === `pantry_staple`
                 ? new Date(Date.now() + 365 * 10 * 24 * 60 * 60 * 1000) // 10 years from now
                 : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
           })
@@ -216,7 +216,7 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
           .returning()
 
         if (!updatedIngredient) {
-          throw new Error("Ingredient not found or not owned by user")
+          throw new Error(`Ingredient not found or not owned by user`)
         }
 
         return { ingredient: updatedIngredient, txid }
@@ -241,7 +241,7 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
           .returning()
 
         if (!deletedIngredient) {
-          throw new Error("Ingredient not found or not owned by user")
+          throw new Error(`Ingredient not found or not owned by user`)
         }
 
         return { ingredient: deletedIngredient, txid }

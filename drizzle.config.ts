@@ -7,6 +7,8 @@ export default defineConfig({
   dialect: `postgresql`,
   casing: `snake_case`,
   dbCredentials: {
-    url: process.env.DATABASE_URL || "postgresql://postgres:password@localhost:54321/kitchen_ai",
+    url:
+      process.env.DATABASE_URL ||
+      `postgresql://postgres:password@localhost:54321/kitchen_ai`,
   },
 })

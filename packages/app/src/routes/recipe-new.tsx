@@ -46,9 +46,9 @@ const handleSubmit = async (
   const response = await fetch(new URL(`/recipes/process`, API_URL), {
     method: `POST`,
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": `application/json`,
     },
-    body: JSON.stringify(formProps)
+    body: JSON.stringify(formProps),
   })
 
   const body = await response.json()
@@ -103,8 +103,7 @@ export default function RecipeNew() {
         <Flex direction="column" gap="4">
           <Flex direction="column" gap="2">
             <Text as="label">URL</Text>
-            <TextField.Root required name="url">
-            </TextField.Root>
+            <TextField.Root required name="url"></TextField.Root>
           </Flex>
           <Flex direction="column" gap="2">
             <Text as="label">

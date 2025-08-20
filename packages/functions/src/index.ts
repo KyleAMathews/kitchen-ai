@@ -187,11 +187,19 @@ app.post(`/recipes/process`, async (c) => {
             )
             return parsed as returnType // Successfully parsed
           } catch (e: unknown) {
-            console.error(`Attempt ${attempt}: Failed to parse OpenAI response arguments.`, e)
-            console.error(`Attempt ${attempt}: Raw arguments from OpenAI:`, func.arguments)
+            console.error(
+              `Attempt ${attempt}: Failed to parse OpenAI response arguments.`,
+              e
+            )
+            console.error(
+              `Attempt ${attempt}: Raw arguments from OpenAI:`,
+              func.arguments
+            )
 
             if (attempt >= maxAttempts) {
-              throw new Error(`Failed to parse arguments from OpenAI after ${maxAttempts} attempts: ${(e instanceof Error ? e.message : String(e))}`)
+              throw new Error(
+                `Failed to parse arguments from OpenAI after ${maxAttempts} attempts: ${e instanceof Error ? e.message : String(e)}`
+              )
             }
 
             // Add model's previous (incorrect) response as a system message for context
@@ -207,9 +215,14 @@ app.post(`/recipes/process`, async (c) => {
             // Loop will continue for the next attempt
           }
         } else {
-          console.error(`Attempt ${attempt}: OpenAI did not call the expected function or no tool_calls were made.`, message)
+          console.error(
+            `Attempt ${attempt}: OpenAI did not call the expected function or no tool_calls were made.`,
+            message
+          )
           if (attempt >= maxAttempts) {
-            throw new Error(`OpenAI did not return the expected function call after multiple attempts.`)
+            throw new Error(
+              `OpenAI did not return the expected function call after multiple attempts.`
+            )
           }
           // Add a user message asking to retry with correct adherence to schema
           messages.push({
@@ -219,7 +232,9 @@ app.post(`/recipes/process`, async (c) => {
         }
       }
       // This line should ideally not be reached if logic is correct, but as a fallback:
-      throw new Error(`Exceeded maximum OpenAI call attempts (${maxAttempts}) without a successful parse.`)
+      throw new Error(
+        `Exceeded maximum OpenAI call attempts (${maxAttempts}) without a successful parse.`
+      )
     }
 
     const parsed = await callOpenAIWithRetry()

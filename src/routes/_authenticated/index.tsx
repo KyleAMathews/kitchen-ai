@@ -19,7 +19,7 @@ import { ingredientsCollection, recipesCollection } from "@/lib/collections"
 import RecipeCard from "@/components/recipe-card"
 import IngredientCard from "@/components/ingredient-card"
 
-export const Route = createFileRoute("/_authenticated/")({
+export const Route = createFileRoute(`/_authenticated/`)({
   component: Dashboard,
   ssr: false,
   loader: async () => {
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/_authenticated/")({
 function Dashboard() {
   console.log(`dashboard`)
   const navigate = useNavigate()
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState(``)
 
   // Get all recipes and ingredients for dashboard
   const { data: recipes } = useLiveQuery((q) =>
@@ -66,15 +66,15 @@ function Dashboard() {
     (q) =>
       searchQuery.length > 0
         ? q
-          .from({ recipesCollection })
-          .where(({ recipesCollection }) =>
-            or(
-              ilike(recipesCollection.name, `%${searchQuery}%`),
-              ilike(recipesCollection.description, `%${searchQuery}%`)
+            .from({ recipesCollection })
+            .where(({ recipesCollection }) =>
+              or(
+                ilike(recipesCollection.name, `%${searchQuery}%`),
+                ilike(recipesCollection.description, `%${searchQuery}%`)
+              )
             )
-          )
         : // .limit(3)
-        q.from({ recipesCollection }),
+          q.from({ recipesCollection }),
     [searchQuery]
   )
 
@@ -82,12 +82,12 @@ function Dashboard() {
     (q) =>
       searchQuery.length > 0
         ? q
-          .from({ ingredientsCollection })
-          .where(({ ingredientsCollection }) =>
-            ilike(ingredientsCollection.name, `%${searchQuery}%`)
-          )
+            .from({ ingredientsCollection })
+            .where(({ ingredientsCollection }) =>
+              ilike(ingredientsCollection.name, `%${searchQuery}%`)
+            )
         : // .limit(3)
-        q.from({ ingredientsCollection }),
+          q.from({ ingredientsCollection }),
     [searchQuery]
   )
 
@@ -99,7 +99,7 @@ function Dashboard() {
 
   return (
     <div className="p-6">
-      <Flex direction="column" gap={isSearching ? "5" : "6"}>
+      <Flex direction="column" gap={isSearching ? `5` : `6`}>
         {/* Search */}
         <form onSubmit={(e) => e.preventDefault()}>
           <TextField.Root
@@ -115,10 +115,10 @@ function Dashboard() {
           </TextField.Root>
         </form>
 
-        <Flex direction="column" gap={isSearching ? "5" : "7"}>
+        <Flex direction="column" gap={isSearching ? `5` : `7`}>
           {/* Recipes Section */}
-          <Flex direction="column" gap={isSearching ? "3" : "6"}>
-            <Heading size={isSearching ? "3" : "5"}>
+          <Flex direction="column" gap={isSearching ? `3` : `6`}>
+            <Heading size={isSearching ? `3` : `5`}>
               <Link
                 to="/recipes"
                 style={{
@@ -139,8 +139,8 @@ function Dashboard() {
                     position: `relative`,
                     top: 3,
                     left: 8,
-                    color: "inherit",
-                    textDecoration: "none",
+                    color: `inherit`,
+                    textDecoration: `none`,
                   }}
                 >
                   <PlusCircledIcon
@@ -172,14 +172,14 @@ function Dashboard() {
               </>
             ) : (
               <Text color="gray">
-                {isSearching ? "No results" : "Add your first recipe!"}
+                {isSearching ? `No results` : `Add your first recipe!`}
               </Text>
             )}
           </Flex>
 
           {/* Ingredients Section */}
-          <Flex direction="column" gap={isSearching ? "3" : "6"}>
-            <Heading size={isSearching ? "3" : "5"}>
+          <Flex direction="column" gap={isSearching ? `3` : `6`}>
+            <Heading size={isSearching ? `3` : `5`}>
               <Link
                 to="/ingredients"
                 style={{ color: `inherit`, textDecoration: `none` }}
@@ -195,8 +195,8 @@ function Dashboard() {
                     position: `relative`,
                     top: 3,
                     left: 4,
-                    color: "inherit",
-                    textDecoration: "none",
+                    color: `inherit`,
+                    textDecoration: `none`,
                   }}
                 >
                   <CameraIcon height="20" width="20" />
@@ -224,7 +224,7 @@ function Dashboard() {
               </>
             ) : (
               <Text color="gray">
-                {isSearching ? "No results" : "Add ingredients to get started!"}
+                {isSearching ? `No results` : `Add ingredients to get started!`}
               </Text>
             )}
           </Flex>

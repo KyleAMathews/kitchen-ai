@@ -14,10 +14,7 @@ const queries = ({ db }: { db: Electric[`db`] }) => {
 IngredientsList.queries = queries
 export default function IngredientsList() {
   const { data: ingredients } = useLiveQuery((q) =>
-    q
-      .from({ ingredientsCollection })
-      .select(`@*`)
-      .orderBy(`@updated_at`)
+    q.from({ ingredientsCollection }).select(`@*`).orderBy(`@updated_at`)
   )
 
   return (

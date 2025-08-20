@@ -1,4 +1,9 @@
-import { createFileRoute, useParams, Link, useNavigate } from "@tanstack/react-router"
+import {
+  createFileRoute,
+  useParams,
+  Link,
+  useNavigate,
+} from "@tanstack/react-router"
 import { useLiveQuery, eq } from "@tanstack/react-db"
 import { useState } from "react"
 import { z } from "zod"
@@ -29,7 +34,7 @@ import {
 import { cosineSimilarity, isExpiredSoon, isRunningLow } from "@/lib/utils"
 import ExpirationDateEdit from "@/components/expiration-date-edit"
 
-export const Route = createFileRoute("/_authenticated/recipes/$id")({
+export const Route = createFileRoute(`/_authenticated/recipes/$id`)({
   component: RecipeDetail,
   ssr: false,
   loader: async () => {
@@ -87,7 +92,7 @@ function AddIngredientsToShoppingListButton({
           }
 
           // TODO: Implement shopping list API endpoint
-          console.log("Shopping list items:", cardDescription)
+          console.log(`Shopping list items:`, cardDescription)
 
           setOpen(true)
           setWorking(false)
@@ -154,18 +159,18 @@ function AlreadyHaveIngredient({
           </Box>
           <Flex gap="1" pl="5">
             {isRunningLow(matchedIngred) &&
-              matchedIngred.tracking_type !== "pantry_staple" && (
+              matchedIngred.tracking_type !== `pantry_staple` && (
                 <Badge color="crimson" variant="soft" size="1">
                   Running Low
                 </Badge>
               )}
             {isExpiredSoon(matchedIngred) &&
-              matchedIngred.tracking_type !== "pantry_staple" && (
+              matchedIngred.tracking_type !== `pantry_staple` && (
                 <Badge color="orange" variant="soft" size="1">
                   Expired
                 </Badge>
               )}
-            {matchedIngred.tracking_type === "pantry_staple" && (
+            {matchedIngred.tracking_type === `pantry_staple` && (
               <Badge color="green" variant="soft" size="1">
                 Pantry Staple
               </Badge>
@@ -280,7 +285,7 @@ function AddIngredient({ ingredient }: { ingredient: any }) {
                     <Slider
                       defaultValue={[0]}
                       name="fill_level"
-                      onValueCommit={(val) => { }}
+                      onValueCommit={(val) => {}}
                     />
                     <Flex justify="between">
                       <Text size="1" color="gray">
@@ -337,7 +342,8 @@ function DeleteRecipeButton({ recipe }: { recipe: any }) {
       <Dialog.Content style={{ maxWidth: 450 }}>
         <Dialog.Title>Delete Recipe</Dialog.Title>
         <Dialog.Description size="2" mb="4">
-          Are you sure you want to delete "{recipe.name}"? This action cannot be undone.
+          Are you sure you want to delete "{recipe.name}"? This action cannot be
+          undone.
         </Dialog.Description>
 
         <Flex gap="3" mt="4" justify="end">
@@ -355,15 +361,15 @@ function DeleteRecipeButton({ recipe }: { recipe: any }) {
               setDeleting(true)
               try {
                 recipesCollection.delete(recipe.id)
-                navigate({ to: "/recipes" })
+                navigate({ to: `/recipes` })
               } catch (error) {
-                console.error("Failed to delete recipe:", error)
+                console.error(`Failed to delete recipe:`, error)
                 setDeleting(false)
               }
             }}
             disabled={deleting}
           >
-            {deleting ? "Deleting..." : "Delete"}
+            {deleting ? `Deleting...` : `Delete`}
           </Button>
         </Flex>
       </Dialog.Content>
@@ -372,7 +378,7 @@ function DeleteRecipeButton({ recipe }: { recipe: any }) {
 }
 
 export default function RecipeDetail() {
-  const { id } = useParams({ from: "/_authenticated/recipes/$id" })
+  const { id } = useParams({ from: `/_authenticated/recipes/$id` })
   const [checked, setChecked] = useState<Record<string, boolean>>({})
 
   // Get recipe data
@@ -438,8 +444,8 @@ export default function RecipeDetail() {
         matches.length === 0
           ? null
           : matches.reduce((prev: any, current: any) => {
-            return prev.distance > current.distance ? prev : current
-          })
+              return prev.distance > current.distance ? prev : current
+            })
     })
   }
 

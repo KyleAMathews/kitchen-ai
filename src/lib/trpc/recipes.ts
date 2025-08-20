@@ -34,9 +34,9 @@ export const recipesRouter = router({
         const [newRecipe] = await tx
           .insert(recipes)
           .values({
-            name: "Processing...",
-            description: "AI processing in progress",
-            url: "",
+            name: `Processing...`,
+            description: `AI processing in progress`,
+            url: ``,
             user_id: ctx.session.user.id,
           })
           .returning()
@@ -48,7 +48,7 @@ export const recipesRouter = router({
           ctx.session.user.id,
           ctx.db
         ).catch((err) => {
-          console.error("Failed to process recipe with AI:", err)
+          console.error(`Failed to process recipe with AI:`, err)
         })
 
         return { recipe: newRecipe, txid }
@@ -82,7 +82,7 @@ export const recipesRouter = router({
           .returning()
 
         if (!updatedRecipe) {
-          throw new Error("Recipe not found or not owned by user")
+          throw new Error(`Recipe not found or not owned by user`)
         }
 
         return { recipe: updatedRecipe, txid }
@@ -107,7 +107,7 @@ export const recipesRouter = router({
           .returning()
 
         if (!deletedRecipe) {
-          throw new Error("Recipe not found or not owned by user")
+          throw new Error(`Recipe not found or not owned by user`)
         }
 
         return { recipe: deletedRecipe, txid }
@@ -122,7 +122,10 @@ export const recipesRouter = router({
         .select()
         .from(recipes)
         .where(
-          and(eq(recipes.id, input.id), eq(recipes.user_id, ctx.session.user.id))
+          and(
+            eq(recipes.id, input.id),
+            eq(recipes.user_id, ctx.session.user.id)
+          )
         )
         .limit(1)
 
@@ -152,7 +155,7 @@ export const recipesRouter = router({
           )
 
         if (!recipe) {
-          throw new Error("Recipe not found or not owned by user")
+          throw new Error(`Recipe not found or not owned by user`)
         }
 
         // Insert ingredients

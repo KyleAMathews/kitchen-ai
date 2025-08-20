@@ -18,15 +18,15 @@ export const Route = createFileRoute(`/login`)({
 })
 
 function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState(``)
+  const [password, setPassword] = useState(``)
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
+  const [error, setError] = useState(``)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    setError("")
+    setError(``)
 
     try {
       // Try to sign up first (auto-create accounts in dev)
@@ -38,7 +38,7 @@ function LoginPage() {
         },
         {
           onSuccess: () => {
-            window.location.href = "/"
+            window.location.href = `/`
           },
         }
       )
@@ -53,7 +53,7 @@ function LoginPage() {
           },
           {
             onSuccess: async () => {
-              window.location.href = "/"
+              window.location.href = `/`
             },
           }
         )
@@ -63,12 +63,12 @@ function LoginPage() {
       }
 
       if (error) {
-        console.error("Authentication error:", error)
-        setError(error.message || "Authentication failed")
+        console.error(`Authentication error:`, error)
+        setError(error.message || `Authentication failed`)
       }
     } catch (err) {
-      console.error("Unexpected error:", err)
-      setError("An unexpected error occurred")
+      console.error(`Unexpected error:`, err)
+      setError(`An unexpected error occurred`)
     } finally {
       setIsLoading(false)
     }
@@ -79,9 +79,9 @@ function LoginPage() {
       direction="column"
       align="center"
       justify="center"
-      style={{ minHeight: "100vh", padding: "2rem" }}
+      style={{ minHeight: `100vh`, padding: `2rem` }}
     >
-      <Card size="3" style={{ width: "100%", maxWidth: "500px" }}>
+      <Card size="3" style={{ width: `100%`, maxWidth: `500px` }}>
         <Flex direction="column" gap="6">
           <Flex direction="column" gap="3" align="center">
             <Heading size="6" align="center">
@@ -92,7 +92,7 @@ function LoginPage() {
             </Text>
           </Flex>
 
-          {process.env.NODE_ENV === "development" && (
+          {process.env.NODE_ENV === `development` && (
             <Callout.Root color="blue">
               <Callout.Icon>
                 <InfoCircledIcon />
@@ -134,9 +134,9 @@ function LoginPage() {
                 type="submit"
                 disabled={isLoading}
                 size="3"
-                style={{ width: "100%" }}
+                style={{ width: `100%` }}
               >
-                {isLoading ? "Signing in..." : "Sign in"}
+                {isLoading ? `Signing in...` : `Sign in`}
               </Button>
             </Flex>
           </form>

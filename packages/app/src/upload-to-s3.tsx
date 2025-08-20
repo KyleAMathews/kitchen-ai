@@ -49,7 +49,9 @@ function FileUploadToS3({
       //     state: `uploading`,
       //   },
       // })
-      console.log({ /* newUpload */ })
+      console.log({
+        /* newUpload */
+      })
     } catch (e) {
       console.log(`failed to insert new photo upload`, e)
       throw e

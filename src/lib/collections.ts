@@ -11,7 +11,7 @@ import { trpc } from "@/lib/trpc-client"
 
 export const usersCollection = createCollection(
   electricCollectionOptions({
-    id: "users",
+    id: `users`,
     shapeOptions: {
       url: new URL(
         `/api/users`,
@@ -30,7 +30,7 @@ export const usersCollection = createCollection(
 
 export const ingredientsCollection = createCollection(
   electricCollectionOptions({
-    id: "ingredients",
+    id: `ingredients`,
     shapeOptions: {
       url: new URL(
         `/api/ingredients`,
@@ -87,7 +87,7 @@ export const ingredientsCollection = createCollection(
 
 export const recipesCollection = createCollection(
   electricCollectionOptions({
-    id: "recipes",
+    id: `recipes`,
     shapeOptions: {
       url: new URL(
         `/api/recipes`,
@@ -107,7 +107,7 @@ export const recipesCollection = createCollection(
 
       // pastedText is required for recipe creation
       if (!metadata?.pastedText) {
-        throw new Error("pastedText is required to create a recipe")
+        throw new Error(`pastedText is required to create a recipe`)
       }
 
       const result = await trpc.recipes.create.mutate({
@@ -146,7 +146,7 @@ export const recipesCollection = createCollection(
 
 export const recipeIngredientsCollection = createCollection(
   electricCollectionOptions({
-    id: "recipe_ingredients",
+    id: `recipe_ingredients`,
     shapeOptions: {
       url: new URL(
         `/api/recipe-ingredients`,

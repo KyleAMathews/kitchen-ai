@@ -9,7 +9,7 @@ interface Ingredient {
   description: string
   isReviewed: boolean
   embedding: string
-  trackingType: "fill_level" | "count" | null
+  trackingType: `fill_level` | `count` | null
   fillLevel: number
   grocerySection: string
   count: number

@@ -11,14 +11,14 @@ import {
   Separator,
 } from "@radix-ui/themes"
 
-export const Route = createFileRoute("/_authenticated")({
+export const Route = createFileRoute(`/_authenticated`)({
   component: AuthenticatedLayout,
   ssr: false,
   beforeLoad: async ({ location }) => {
     const { data: session } = await authClient.getSession()
 
     if (!session) {
-      throw new Error("Not authenticated")
+      throw new Error(`Not authenticated`)
     }
 
     return { session }
@@ -28,8 +28,8 @@ export const Route = createFileRoute("/_authenticated")({
       const { data: session } = authClient.useSession()
 
       // Only redirect to login if user is not authenticated
-      if (!session && typeof window !== "undefined") {
-        window.location.href = "/login"
+      if (!session && typeof window !== `undefined`) {
+        window.location.href = `/login`
         return null
       }
 
@@ -46,7 +46,7 @@ export const Route = createFileRoute("/_authenticated")({
             Error
           </Heading>
           <Text color="gray">
-            {error?.message || "An unexpected error occurred"}
+            {error?.message || `An unexpected error occurred`}
           </Text>
           <Button onClick={() => window.location.reload()} variant="soft">
             Retry
@@ -65,7 +65,7 @@ function AuthenticatedLayout() {
 
   const handleLogout = async () => {
     await authClient.signOut()
-    navigate({ to: "/login" })
+    navigate({ to: `/login` })
   }
 
   if (isPending) {
@@ -89,9 +89,9 @@ function AuthenticatedLayout() {
     <Container maxWidth="440px">
       <Flex style={{ height: `100vh`, maxWidth: 440 }} direction="column">
         {/* Header */}
-        <Flex asChild p="4" justify="between" align="center" >
+        <Flex asChild p="4" justify="between" align="center">
           <nav>
-            <Link to="/" >
+            <Link to="/">
               <Heading size="5">Kitchen AI</Heading>
             </Link>
             <Flex align="center" gap="4">
