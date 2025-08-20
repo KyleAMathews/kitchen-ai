@@ -14,7 +14,9 @@ export const Route = createFileRoute("/_authenticated/ingredients/")({
 
 export default function IngredientsList() {
   const { data: ingredients } = useLiveQuery((q) =>
-    q.from({ ingredientsCollection }).orderBy({ updatedAt: "desc" })
+    q
+      .from({ ingredientsCollection })
+      .orderBy(({ ingredientsCollection }) => ingredientsCollection.name)
   )
 
   return (
@@ -24,7 +26,7 @@ export default function IngredientsList() {
         {ingredients && ingredients.length > 0 ? (
           <Flex direction="column" gap="4">
             {ingredients.map((ingredient, i: number) => {
-              if (ingredient.isReviewed) {
+              if (ingredient.is_reviewed) {
                 return (
                   <div key={ingredient.id}>
                     <IngredientCard ingredient={ingredient} />

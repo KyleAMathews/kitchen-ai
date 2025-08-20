@@ -63,20 +63,11 @@ export const ingredientsCollection = createCollection(
     },
 
     onUpdate: async ({ transaction }) => {
-      const { modified: updatedIngredient } = transaction.mutations[0]
+      const { original, changes: updatedIngredient } = transaction.mutations[0]
       const result = await trpc.ingredients.update.mutate({
-        id: updatedIngredient.id,
+        id: original.id,
         data: {
-          name: updatedIngredient.name,
-          description: updatedIngredient.description,
-          isReviewed: updatedIngredient.is_reviewed,
-          trackingType: updatedIngredient.tracking_type,
-          fillLevel: updatedIngredient.fill_level,
-          grocerySection: updatedIngredient.grocery_section,
-          count: updatedIngredient.count,
-          expirationDate: updatedIngredient.expiration_date,
-          ingredientsPhotoUploadsId:
-            updatedIngredient.ingredients_photo_uploads_id,
+          ...updatedIngredient,
         },
       })
 

@@ -1,0 +1,1 @@
+ALTER TYPE "public"."ingredients_tracking_type" ADD VALUE 'pantry_staple';

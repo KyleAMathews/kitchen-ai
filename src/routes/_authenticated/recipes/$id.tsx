@@ -1,13 +1,15 @@
 import { createFileRoute, useParams, Link } from "@tanstack/react-router"
 import { useLiveQuery, eq } from "@tanstack/react-db"
 import { useState } from "react"
+import { z } from "zod"
+import { ingredientsTrackingTypeSchema } from "@/db/zod-schemas"
+import { trpc } from "@/lib/trpc-client"
 import {
   Heading,
   Flex,
   Text,
   Link as RadixLink,
   Badge,
-  Separator,
   Box,
   Button,
   Checkbox,
@@ -16,9 +18,7 @@ import {
   TextField,
   RadioGroup,
   Slider,
-  Em,
 } from "@radix-ui/themes"
-import { UpdateIcon } from "@radix-ui/react-icons"
 import * as Toast from "@radix-ui/react-toast"
 import { groupBy, mapValues } from "lodash-es"
 import {
@@ -26,7 +26,7 @@ import {
   recipeIngredientsCollection,
   ingredientsCollection,
 } from "@/lib/collections"
-import { timeAgo, cosineSimilarity, isExpiredSoon, isRunningLow } from "@/lib/utils"
+import { cosineSimilarity, isExpiredSoon, isRunningLow } from "@/lib/utils"
 import ExpirationDateEdit from "@/components/expiration-date-edit"
 
 export const Route = createFileRoute("/_authenticated/recipes/$id")({
@@ -40,22 +40,6 @@ export const Route = createFileRoute("/_authenticated/recipes/$id")({
     ])
   },
 })
-
-function Working({
-  isWorking,
-  style,
-}: {
-  isWorking: boolean
-  style: React.CSSProperties
-}) {
-  if (isWorking) {
-    return (
-      <UpdateIcon style={style} height="14" width="14" className="icon-spin" />
-    )
-  } else {
-    return null
-  }
-}
 
 function AddIngredientsToShoppingListButton({
   possibleMatches,
@@ -103,7 +87,7 @@ function AddIngredientsToShoppingListButton({
           }
 
           // TODO: Implement shopping list API endpoint
-          console.log('Shopping list items:', cardDescription)
+          console.log("Shopping list items:", cardDescription)
 
           setOpen(true)
           setWorking(false)
@@ -157,7 +141,8 @@ function AlreadyHaveIngredient({
             <Text color="gray" size="1">
               matches:{` `}"
               <Link
-                to={`/ingredients/${matchedIngred.id}`}
+                to={`/ingredients/$id`}
+                params={{ id: matchedIngred.id }}
                 style={{ color: `var(--teal-a11)`, textDecoration: `none` }}
               >
                 {matchedIngred.name}
@@ -168,22 +153,27 @@ function AlreadyHaveIngredient({
             </Text>
           </Box>
           <Flex gap="1" pl="5">
-            {isRunningLow(matchedIngred) && (
-              <Badge color="crimson" variant="soft" size="1">
-                Running Low
-              </Badge>
-            )}
-            {isExpiredSoon(matchedIngred) && (
-              <Badge color="orange" variant="soft" size="1">
-                Expired
+            {isRunningLow(matchedIngred) &&
+              matchedIngred.tracking_type !== "pantry_staple" && (
+                <Badge color="crimson" variant="soft" size="1">
+                  Running Low
+                </Badge>
+              )}
+            {isExpiredSoon(matchedIngred) &&
+              matchedIngred.tracking_type !== "pantry_staple" && (
+                <Badge color="orange" variant="soft" size="1">
+                  Expired
+                </Badge>
+              )}
+            {matchedIngred.tracking_type === "pantry_staple" && (
+              <Badge color="green" variant="soft" size="1">
+                Pantry Staple
               </Badge>
             )}
           </Flex>
         </>
       )}
-      {!matchedIngred && (
-        <AddIngredient ingredient={ingredient} />
-      )}
+      {!matchedIngred && <AddIngredient ingredient={ingredient} />}
     </Flex>
   )
 }
@@ -211,8 +201,13 @@ function AddIngredient({ ingredient }: { ingredient: any }) {
               const formData = new FormData(target)
               const formProps = Object.fromEntries(formData)
 
-              // TODO: Implement ingredient creation via tRPC
-              console.log('Create ingredient:', formProps)
+              await trpc.ingredients.createWithAI.mutate({
+                fill_level: parseInt(formProps.fill_level as string, 10),
+                name: formProps.name as string,
+                tracking_type: formProps.tracking_type as z.infer<
+                  typeof ingredientsTrackingTypeSchema
+                >,
+              })
 
               // Close dialog after submission
               setOpen(false)
@@ -220,16 +215,18 @@ function AddIngredient({ ingredient }: { ingredient: any }) {
           >
             <Flex direction="column" gap="5">
               <label>
-                <Text size="1">Ingredient Name</Text>
-                <TextField.Input
-                  name="name"
-                  defaultValue={ingredient.extracted_name}
-                  placeholder="Enter the ingredient name"
-                />
+                <Flex direction="column" gap="1">
+                  <Text size="1">Ingredient Name</Text>
+                  <TextField.Root
+                    name="name"
+                    defaultValue={ingredient.extracted_name}
+                    placeholder="Enter the ingredient name"
+                  />
+                </Flex>
               </label>
               <label>
-                <Flex direction="column" gap="3">
-                  <Text size="2" as="p">
+                <Flex direction="column" gap="1">
+                  <Text size="1" as="p">
                     Track ingredient by "fill level" or by "count"
                   </Text>
                   <Box py="1">
@@ -254,6 +251,12 @@ function AddIngredient({ ingredient }: { ingredient: any }) {
                             of cans)
                           </Flex>
                         </Text>
+                        <Text as="label" size="2">
+                          <Flex gap="2">
+                            <RadioGroup.Item value="pantry_staple" /> Pantry
+                            Staple (always have)
+                          </Flex>
+                        </Text>
                       </Flex>
                     </RadioGroup.Root>
                   </Box>
@@ -264,20 +267,20 @@ function AddIngredient({ ingredient }: { ingredient: any }) {
                   <Text as="div" size="1" mb="1">
                     Count
                   </Text>
-                  <TextField.Input
+                  <TextField.Root
                     type="number"
                     name="count"
                     placeholder="How many of this ingredient do you have?"
                   />
                 </label>
-              ) : (
+              ) : type === `fill_level` ? (
                 <label>
                   <Flex direction="column" gap="2">
                     <Text size="1">Fill Level</Text>
                     <Slider
                       defaultValue={[0]}
                       name="fill_level"
-                      onValueCommit={(val) => { }}
+                      onValueCommit={(val) => {}}
                     />
                     <Flex justify="between">
                       <Text size="1" color="gray">
@@ -289,11 +292,13 @@ function AddIngredient({ ingredient }: { ingredient: any }) {
                     </Flex>
                   </Flex>
                 </label>
+              ) : null}
+              {type !== `pantry_staple` && (
+                <ExpirationDateEdit
+                  onValueChange={setExpirationDate}
+                  expirationDate={expirationDate}
+                />
               )}
-              <ExpirationDateEdit
-                onValueChange={setExpirationDate}
-                expirationDate={expirationDate}
-              />
             </Flex>
 
             <Flex gap="3" mt="4" justify="end">
@@ -379,11 +384,12 @@ export default function RecipeDetail() {
         })
         .filter(Boolean)
 
-      possibleMatches[ri.id] = matches.length === 0
-        ? null
-        : matches.reduce((prev: any, current: any) => {
-          return prev.distance > current.distance ? prev : current
-        })
+      possibleMatches[ri.id] =
+        matches.length === 0
+          ? null
+          : matches.reduce((prev: any, current: any) => {
+              return prev.distance > current.distance ? prev : current
+            })
     })
   }
 
@@ -415,7 +421,11 @@ export default function RecipeDetail() {
       </Flex>
 
       {recipe.description && (
-        <ScrollArea scrollbars="vertical" style={{ maxHeight: 180 }} type="auto">
+        <ScrollArea
+          scrollbars="vertical"
+          style={{ maxHeight: 180 }}
+          type="auto"
+        >
           <Box pr="6">
             <Text>{recipe.description}</Text>
           </Box>

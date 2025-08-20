@@ -36,6 +36,7 @@ export const grocerySectionEnum = pgEnum("grocery_section", [
 export const ingredientsTrackingTypeEnum = pgEnum("ingredients_tracking_type", [
   "fill_level",
   "count",
+  "pantry_staple",
 ])
 
 export const jobsStateEnum = pgEnum("jobs_state", ["working", "done", "error"])

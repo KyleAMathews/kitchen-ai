@@ -1,5 +1,5 @@
 import { createFileRoute, useParams } from "@tanstack/react-router"
-import { useLiveQuery } from "@tanstack/react-db"
+import { useLiveQuery, eq } from "@tanstack/react-db"
 import {
   Heading,
   Flex,
@@ -23,10 +23,12 @@ export const Route = createFileRoute("/_authenticated/ingredients/$id")({
 export default function IngredientDetail() {
   const { id } = useParams({ from: "/_authenticated/ingredients/$id" })
 
-  const { data: ingredients } = useLiveQuery((q) =>
-    q
-      .from({ ingredientsCollection })
-      .where(({ ingredientsCollection }) => q.eq(ingredientsCollection.id, id))
+  const { data: ingredients } = useLiveQuery(
+    (q) =>
+      q
+        .from({ ingredientsCollection })
+        .where(({ ingredientsCollection }) => eq(ingredientsCollection.id, id)),
+    [id]
   )
 
   const ingredient = ingredients?.[0]
@@ -39,8 +41,8 @@ export default function IngredientDetail() {
     )
   }
 
-  const expiredDate = new Date(ingredient.expirationDate)
-  const expiresInFuture = ingredient.expirationDate > new Date()
+  const expiredDate = new Date(ingredient.expiration_date)
+  const expiresInFuture = ingredient.expiration_date > new Date()
 
   return (
     <div className="p-6">
@@ -54,46 +56,47 @@ export default function IngredientDetail() {
         )}
 
         <Flex direction="column" gap="4">
-          <Flex direction="column" gap="2">
-            <Text weight="medium">Expiration</Text>
-            <Text
-              color={isExpiredSoon(ingredient) ? "crimson" : "gray"}
-              weight={isExpiredSoon(ingredient) ? "medium" : "regular"}
-            >
-              {expiresInFuture ? "Expires" : "Expired"}{" "}
-              {timeAgo.format(expiredDate)}
-            </Text>
-          </Flex>
+          {ingredient.tracking_type !== "pantry_staple" && (
+            <Flex direction="column" gap="2">
+              <Text weight="medium">Expiration</Text>
+              <Text
+                color={isExpiredSoon(ingredient) ? "crimson" : "gray"}
+                weight={isExpiredSoon(ingredient) ? "medium" : "regular"}
+              >
+                {expiresInFuture ? "Expires" : "Expired"}{" "}
+                {timeAgo.format(expiredDate)}
+              </Text>
+            </Flex>
+          )}
 
           <Flex direction="column" gap="2">
             <Text weight="medium">Grocery Section</Text>
-            <Badge variant="soft">{ingredient.grocerySection}</Badge>
+            <Badge variant="soft">{ingredient.grocery_section}</Badge>
           </Flex>
 
-          {ingredient.trackingType === "fill_level" && (
+          {ingredient.tracking_type === "fill_level" && (
             <Flex direction="column" gap="2">
               <Text weight="medium">Fill Level</Text>
               <Box style={{ width: 200 }}>
                 <Slider
                   variant="soft"
-                  value={[ingredient.fillLevel]}
+                  value={[ingredient.fill_level]}
                   onValueChange={(values) => {
                     // Update ingredient fill level optimistically
-                    ingredientsCollection.update({
-                      ...ingredient,
-                      fillLevel: values[0],
-                      updatedAt: new Date(),
+                    ingredientsCollection.update(ingredient.id, (draft) => {
+                      draft.fill_level = values[0]
+                      draft.updated_at = new Date()
                     })
                   }}
                 />
               </Box>
               <Text size="2" color="gray">
-                {ingredient.fillLevel}%
+                {ingredient.fill_level}%
               </Text>
             </Flex>
           )}
 
-          {ingredient.trackingType === "count" && (
+          {ingredient.tracking_type === "count" && (
             <Flex direction="column" gap="2">
               <Text weight="medium">Count</Text>
               <Flex gap="2" align="center">
@@ -101,10 +104,9 @@ export default function IngredientDetail() {
                   size="1"
                   variant="soft"
                   onClick={() => {
-                    ingredientsCollection.update({
-                      ...ingredient,
-                      count: Math.max(0, ingredient.count - 1),
-                      updatedAt: new Date(),
+                    ingredientsCollection.update(ingredient.id, (draft) => {
+                      draft.count = Math.max(0, ingredient.count - 1)
+                      draft.updated_at = new Date()
                     })
                   }}
                 >
@@ -115,10 +117,9 @@ export default function IngredientDetail() {
                   size="1"
                   variant="soft"
                   onClick={() => {
-                    ingredientsCollection.update({
-                      ...ingredient,
-                      count: ingredient.count + 1,
-                      updatedAt: new Date(),
+                    ingredientsCollection.update(ingredient.id, (draft) => {
+                      draft.count = ingredient.count + 1
+                      draft.updated_at = new Date()
                     })
                   }}
                 >
@@ -128,11 +129,21 @@ export default function IngredientDetail() {
             </Flex>
           )}
 
-          {isRunningLow(ingredient) && (
-            <Badge color="crimson" variant="soft">
-              Running Low
-            </Badge>
+          {ingredient.tracking_type === "pantry_staple" && (
+            <Flex direction="column" gap="2">
+              <Text weight="medium">Status</Text>
+              <Badge color="green" variant="soft">
+                Pantry Staple - Always Available
+              </Badge>
+            </Flex>
           )}
+
+          {isRunningLow(ingredient) &&
+            ingredient.tracking_type !== "pantry_staple" && (
+              <Badge color="crimson" variant="soft">
+                Running Low
+              </Badge>
+            )}
         </Flex>
       </Flex>
     </div>

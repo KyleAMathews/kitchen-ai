@@ -1,4 +1,4 @@
-import { createSelectSchema } from "drizzle-zod"
+import { createSelectSchema, createInsertSchema, createUpdateSchema } from "drizzle-zod"
 import { z } from "zod"
 import {
   users,
@@ -36,6 +36,37 @@ export const selectIngredientEventsSchema = createSelectSchema(ingredientEvents)
 export const selectRecipesSchema = createSelectSchema(recipes)
 export const selectRecipeIngredientsSchema = createSelectSchema(recipeIngredients)
 export const selectJobsSchema = createSelectSchema(jobs)
+
+// Date coercion helper - transforms string dates to Date objects
+// Needed because tRPC stringifies dates during HTTP transport
+const dateCoercion = z.preprocess((val) => {
+  if (typeof val === 'string' || typeof val === 'number') {
+    return new Date(val)
+  }
+  return val
+}, z.date())
+
+// Insert and update schemas for mutations
+export const insertIngredientsSchema = createInsertSchema(ingredients, {
+  expiration_date: dateCoercion,
+  created_at: dateCoercion.optional(),
+  updated_at: dateCoercion.optional(),
+})
+export const updateIngredientsSchema = createUpdateSchema(ingredients, {
+  expiration_date: dateCoercion.optional(),
+  updated_at: dateCoercion.optional(),
+})
+
+export const insertRecipesSchema = createInsertSchema(recipes, {
+  created_at: dateCoercion.optional(),
+  updated_at: dateCoercion.optional(),
+})
+export const updateRecipesSchema = createUpdateSchema(recipes, {
+  updated_at: dateCoercion.optional(),
+})
+
+export const insertRecipeIngredientsSchema = createInsertSchema(recipeIngredients)
+export const updateRecipeIngredientsSchema = createUpdateSchema(recipeIngredients)
 
 // Re-export enum schemas for convenience
 export const grocerySectionSchema = z.enum(grocerySectionEnum.enumValues)

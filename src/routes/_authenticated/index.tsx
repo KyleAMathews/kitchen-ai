@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
-import { useLiveQuery } from "@tanstack/react-db"
+import { useLiveQuery, or, ilike } from "@tanstack/react-db"
 import {
   Flex,
   Heading,
@@ -66,15 +66,15 @@ function Dashboard() {
     (q) =>
       searchQuery.length > 0
         ? q
-            .from({ recipesCollection })
-            .where(({ recipesCollection }) =>
-              q.or(
-                q.like(recipesCollection.name, `%${searchQuery}%`),
-                q.like(recipesCollection.description, `%${searchQuery}%`)
-              )
+          .from({ recipesCollection })
+          .where(({ recipesCollection }) =>
+            or(
+              ilike(recipesCollection.name, `%${searchQuery}%`),
+              ilike(recipesCollection.description, `%${searchQuery}%`)
             )
+          )
         : // .limit(3)
-          q.from({ recipesCollection }),
+        q.from({ recipesCollection }),
     [searchQuery]
   )
 
@@ -82,12 +82,12 @@ function Dashboard() {
     (q) =>
       searchQuery.length > 0
         ? q
-            .from({ ingredientsCollection })
-            .where(({ ingredientsCollection }) =>
-              q.like(ingredientsCollection.name, `%${searchQuery}%`)
-            )
+          .from({ ingredientsCollection })
+          .where(({ ingredientsCollection }) =>
+            ilike(ingredientsCollection.name, `%${searchQuery}%`)
+          )
         : // .limit(3)
-          q.from({ ingredientsCollection }),
+        q.from({ ingredientsCollection }),
     [searchQuery]
   )
 

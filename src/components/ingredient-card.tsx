@@ -1,13 +1,6 @@
 import { isRunningLow, isExpiredSoon, timeAgo } from "@/lib/utils"
 import { Link, useNavigate } from "@tanstack/react-router"
-import {
-  Flex,
-  Heading,
-  Box,
-  Text,
-  Slider,
-  Badge,
-} from "@radix-ui/themes"
+import { Flex, Heading, Box, Text, Slider, Badge } from "@radix-ui/themes"
 import { CaretRightIcon } from "@radix-ui/react-icons"
 
 interface Ingredient {
@@ -33,8 +26,8 @@ interface IngredientCardProps {
 
 export default function IngredientCard({ ingredient }: IngredientCardProps) {
   const navigate = useNavigate()
-  const expiredDate = new Date(ingredient.expirationDate)
-  const expiresInFuture = ingredient.expirationDate > new Date()
+  const expiredDate = new Date(ingredient.expiration_date)
+  const expiresInFuture = ingredient.expiration_date > new Date()
 
   return (
     <Flex
@@ -49,8 +42,7 @@ export default function IngredientCard({ ingredient }: IngredientCardProps) {
       <Flex gap="2" direction="column">
         <Heading size="3" weight="medium">
           {ingredient.name}
-          {ingredient.trackingType === `count` &&
-            ` (` + ingredient.count + `)`}
+          {ingredient.trackingType === `count` && ` (` + ingredient.count + `)`}
         </Heading>
         <Text
           size="2"

@@ -29,13 +29,23 @@ export function cosineSimilarity(vec1: number[], vec2: number[]): number {
 
 // Helper functions for ingredient status
 export function isRunningLow(ingredient: any): boolean {
-  return ingredient.trackingType === `fill_level`
-    ? ingredient.fillLevel < 33
+  // Pantry staples are never running low
+  if (ingredient.tracking_type === 'pantry_staple') {
+    return false
+  }
+  
+  return ingredient.tracking_type === `fill_level`
+    ? ingredient.fill_level < 33
     : ingredient.count < 2
 }
 
 export function isExpiredSoon(ingredient: any): boolean {
-  const expiredDate = new Date(ingredient.expirationDate)
+  // Pantry staples never expire
+  if (ingredient.tracking_type === 'pantry_staple') {
+    return false
+  }
+  
+  const expiredDate = new Date(ingredient.expiration_date)
   const oneMonthFromNow = new Date()
   oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1)
   return oneMonthFromNow > expiredDate

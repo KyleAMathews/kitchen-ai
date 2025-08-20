@@ -51,6 +51,21 @@ This command will also report linter errors that were not automatically fixable.
 - **Testing**: Vitest with @testing-library/react for component tests
 - **file names** should always use kebab-case
 
+## Schema Conventions
+
+**IMPORTANT: Database fields use snake_case, which must be used consistently throughout the app.**
+
+- **Database fields**: Always use snake_case (e.g., `tracking_type`, `fill_level`, `expiration_date`)
+- **Centralized schemas**: All Zod schemas are defined in `src/db/zod-schemas.ts`
+  - Use `createInsertSchema()` for insert operations (auto-handles defaults and optional fields)
+  - Use `createUpdateSchema()` for update operations (all fields optional)
+  - Use `createSelectSchema()` for select/read operations
+- **tRPC handlers**: 
+  - Import schemas from `@/db/zod-schemas` - NEVER redefine them locally
+  - Use snake_case in input/output schemas to match database
+- **Electric sync**: Automatically syncs snake_case fields from database
+- **UI components**: Access fields using snake_case (e.g., `ingredient.tracking_type`, NOT `ingredient.trackingType`)
+
 ## tRPC Integration
 
 - tRPC routers are defined in `src/lib/trpc/` directory
