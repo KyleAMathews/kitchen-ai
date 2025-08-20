@@ -66,7 +66,11 @@ export default [
     },
 
     rules: {
-      quotes: [`error`, `backtick`],
+      quotes: [
+        `error`,
+        `backtick`,
+        { avoidEscape: true, allowTemplateLiterals: true },
+      ],
       "no-unused-vars": `off`,
       "@typescript-eslint/triple-slash-reference": `off`,
       "import/no-unresolved": `error`,

@@ -17,7 +17,8 @@ export const createRouter = () => {
 }
 
 // Register the router instance for type safety
-declare module `@tanstack/react-router` {
+// eslint-disable-next-line
+declare module "@tanstack/react-router" {
   interface Register {
     router: ReturnType<typeof createRouter>
   }
