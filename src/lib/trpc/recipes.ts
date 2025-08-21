@@ -6,6 +6,7 @@ import { eq, and } from "drizzle-orm"
 import { processRecipeWithAI } from "./ai"
 
 const createRecipeSchema = z.object({
+  url: z.string().optional(),
   pastedText: z.string(), // Required - we'll process this with AI
 })
 
@@ -36,7 +37,7 @@ export const recipesRouter = router({
           .values({
             name: `Processing...`,
             description: `AI processing in progress`,
-            url: ``,
+            url: input.url || ``,
             user_id: ctx.session.user.id,
           })
           .returning()
@@ -45,6 +46,7 @@ export const recipesRouter = router({
         processRecipeWithAI(
           newRecipe.id,
           input.pastedText,
+          input.url,
           ctx.session.user.id,
           ctx.db
         ).catch((err) => {

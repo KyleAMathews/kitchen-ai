@@ -51,6 +51,7 @@ type RecipeExtraction = z.infer<typeof recipeExtractionSchema>
 export async function processRecipeWithAI(
   recipeId: string,
   pastedText: string,
+  url: string | undefined,
   userId: string,
   db: any
 ) {
@@ -137,7 +138,7 @@ Do NOT use underscores, hyphens, or any other variations. Use the exact capitali
       },
       {
         role: `user`,
-        content: `Extract the recipe details from this text:\n\n${pastedText}`,
+        content: `Extract the recipe details from this text${url ? ` (source: ${url})` : ``}:\n\n${pastedText}`,
       },
     ]
 

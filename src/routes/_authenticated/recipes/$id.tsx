@@ -7,7 +7,11 @@ import {
 import { useLiveQuery, eq } from "@tanstack/react-db"
 import { useState } from "react"
 import { z } from "zod"
-import { ingredientsTrackingTypeSchema } from "@/db/zod-schemas"
+import {
+  ingredientsTrackingTypeSchema,
+  type SelectRecipeIngredient,
+  type SelectRecipe,
+} from "@/db/zod-schemas"
 import { trpc } from "@/lib/trpc-client"
 import {
   Heading,
@@ -50,10 +54,12 @@ function AddIngredientsToShoppingListButton({
   possibleMatches,
   checked,
   recipe,
+  recipeIngredients,
 }: {
   possibleMatches: Record<string, any>
   checked: Record<string, boolean>
-  recipe: any
+  recipe: SelectRecipe
+  recipeIngredients: SelectRecipeIngredient[]
 }) {
   const [working, setWorking] = useState(false)
   const [open, setOpen] = useState(false)
@@ -72,9 +78,9 @@ function AddIngredientsToShoppingListButton({
                 (typeof checked[ingredient_id] === `undefined` &&
                   possibleMatches[ingredient_id] === null)
               ) {
-                const ingredient = recipe.recipe_ingredients.find(
-                  (i: any) => i.id === ingredient_id
-                )
+                const ingredient = recipeIngredients.find(
+                  (i) => i.id === ingredient_id
+                )!
                 return {
                   ingredient: ingredient.listing,
                   section: ingredient.grocery_section,
@@ -187,6 +193,8 @@ function AddIngredient({ ingredient }: { ingredient: any }) {
   const [type, setType] = useState(`fill_level`)
   const [open, setOpen] = useState(false)
   const [expirationDate, setExpirationDate] = useState(new Date())
+  const [fillLevel, setFillLevel] = useState(50)
+  const [count, setCount] = useState(1)
 
   return (
     <Box pl="5">
@@ -207,11 +215,19 @@ function AddIngredient({ ingredient }: { ingredient: any }) {
               const formProps = Object.fromEntries(formData)
 
               await trpc.ingredients.createWithAI.mutate({
-                fill_level: parseInt(formProps.fill_level as string, 10),
                 name: formProps.name as string,
-                tracking_type: formProps.tracking_type as z.infer<
+                tracking_type: type as z.infer<
                   typeof ingredientsTrackingTypeSchema
                 >,
+                fill_level:
+                  type === `fill_level`
+                    ? fillLevel
+                    : type === `pantry_staple`
+                      ? 100
+                      : 0,
+                count: type === `count` ? count : 0,
+                expiration_date:
+                  type !== `pantry_staple` ? expirationDate : undefined,
               })
 
               // Close dialog after submission
@@ -275,6 +291,10 @@ function AddIngredient({ ingredient }: { ingredient: any }) {
                   <TextField.Root
                     type="number"
                     name="count"
+                    value={String(count)}
+                    onChange={(e) =>
+                      setCount(parseInt(e.target.value, 10) || 0)
+                    }
                     placeholder="How many of this ingredient do you have?"
                   />
                 </label>
@@ -283,13 +303,16 @@ function AddIngredient({ ingredient }: { ingredient: any }) {
                   <Flex direction="column" gap="2">
                     <Text size="1">Fill Level</Text>
                     <Slider
-                      defaultValue={[0]}
+                      value={[fillLevel]}
                       name="fill_level"
-                      onValueCommit={(val) => {}}
+                      onValueChange={(val) => setFillLevel(val[0])}
                     />
                     <Flex justify="between">
                       <Text size="1" color="gray">
                         0%
+                      </Text>
+                      <Text size="1" color="gray">
+                        {fillLevel}%
                       </Text>
                       <Text size="1" color="gray">
                         100%
@@ -417,9 +440,6 @@ export default function RecipeDetail() {
     )
   }
 
-  // Attach recipe ingredients to recipe object
-  recipe.recipe_ingredients = recipeIngredients || []
-
   // Calculate ingredient matches using cosine similarity
   const possibleMatches: Record<string, any> = {}
 
@@ -459,6 +479,7 @@ export default function RecipeDetail() {
     }
   )
 
+  console.log({ recipe })
   return (
     <Flex direction="column" gap="5">
       <RadixLink asChild size="2">
@@ -502,9 +523,9 @@ export default function RecipeDetail() {
           </Text>
         </Flex>
         {neededIngredients.map((ingredient_id: string) => {
-          const ingredient = recipe.recipe_ingredients.find(
-            (i: any) => i.id === ingredient_id
-          )
+          const ingredient = recipeIngredients?.find(
+            (i) => i.id === ingredient_id
+          )!
           return (
             <Text
               key={ingredient_id}
@@ -532,6 +553,7 @@ export default function RecipeDetail() {
         <AddIngredientsToShoppingListButton
           possibleMatches={possibleMatches}
           recipe={recipe}
+          recipeIngredients={recipeIngredients || []}
           checked={checked}
         />
       </Flex>
@@ -548,8 +570,8 @@ export default function RecipeDetail() {
             (typeof checked[ingredient_id] === `undefined` &&
               possibleMatches[ingredient_id] !== null)
           ) {
-            const ingredient = recipe.recipe_ingredients.find(
-              (i: any) => i.id === ingredient_id
+            const ingredient = recipeIngredients?.find(
+              (i) => i.id === ingredient_id
             )
             return (
               <AlreadyHaveIngredient

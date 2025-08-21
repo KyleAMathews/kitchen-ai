@@ -86,3 +86,16 @@ export const ingredientPhotoUploadStateSchema = z.enum(
   ingredientPhotoUploadStateEnum.enumValues
 )
 export const jobsStateSchema = z.enum(jobsStateEnum.enumValues)
+
+// Type inference from schemas - use these for type annotations
+export type SelectUser = z.infer<typeof selectUsersSchema>
+export type SelectIngredient = z.infer<typeof selectIngredientsSchema>
+export type SelectRecipe = z.infer<typeof selectRecipesSchema>
+export type SelectRecipeIngredient = z.infer<
+  typeof selectRecipeIngredientsSchema
+>
+export type SelectIngredientEvent = z.infer<typeof selectIngredientEventsSchema>
+export type SelectJob = z.infer<typeof selectJobsSchema>
+export type SelectIngredientsPhotoUpload = z.infer<
+  typeof selectIngredientsPhotoUploadsSchema
+>

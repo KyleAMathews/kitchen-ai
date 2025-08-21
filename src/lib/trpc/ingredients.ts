@@ -38,6 +38,8 @@ export const ingredientsRouter = router({
         name: z.string(),
         tracking_type: ingredientsTrackingTypeSchema,
         fill_level: z.number().min(0).max(100).optional().nullable(),
+        count: z.number().optional().nullable(),
+        expiration_date: z.date().optional().nullable(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -145,17 +147,18 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
             tracking_type: input.tracking_type,
             fill_level:
               input.tracking_type === `fill_level`
-                ? (input.fill_level ?? 100)
+                ? (input.fill_level ?? 50)
                 : input.tracking_type === `pantry_staple`
                   ? 100
                   : 0,
-            count: input.tracking_type === `count` ? 1 : 0,
+            count: input.tracking_type === `count` ? (input.count ?? 1) : 0,
             is_reviewed: true,
-            // Pantry staples don't expire, set to far future date
+            // Use provided expiration date or default based on type
             expiration_date:
               input.tracking_type === `pantry_staple`
                 ? new Date(Date.now() + 365 * 10 * 24 * 60 * 60 * 1000) // 10 years from now
-                : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+                : (input.expiration_date ??
+                  new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)), // 30 days from now or provided date
           })
           .returning()
 
