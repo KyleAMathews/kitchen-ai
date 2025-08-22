@@ -5,9 +5,6 @@ export default {
   externals: {
     trace: false,
   },
-  experimental: {
-    wasm: false,
-  },
   alias: {
     debug: "./src/polyfills/debug.js",
   },
