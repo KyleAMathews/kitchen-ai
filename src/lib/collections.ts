@@ -111,11 +111,10 @@ export const recipesCollection = createCollection(
       }
 
       const result = await trpc.recipes.create.mutate({
-        pastedText: metadata.pastedText,
-        url: metadata.url,
+        id: newRecipe.id,
+        pastedText: metadata?.pastedText,
+        url: metadata?.url,
       })
-
-      console.log(`recipe created`, result)
 
       return { txid: result.txid }
     },

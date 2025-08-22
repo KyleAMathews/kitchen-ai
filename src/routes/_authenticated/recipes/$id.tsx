@@ -464,8 +464,8 @@ export default function RecipeDetail() {
         matches.length === 0
           ? null
           : matches.reduce((prev: any, current: any) => {
-              return prev.distance > current.distance ? prev : current
-            })
+            return prev.distance > current.distance ? prev : current
+          })
     })
   }
 
@@ -479,7 +479,6 @@ export default function RecipeDetail() {
     }
   )
 
-  console.log({ recipe })
   return (
     <Flex direction="column" gap="5">
       <RadixLink asChild size="2">

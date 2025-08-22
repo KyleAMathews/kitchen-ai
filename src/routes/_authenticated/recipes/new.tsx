@@ -71,35 +71,10 @@ export default function NewRecipe() {
         }
       )
 
-      console.log(1)
-
       // Wait for the insert to persist
       await insertResult.isPersisted.promise
-      console.log(2)
 
-      // Subscribe to changes for this specific recipe
-      const unsubscribe = recipesCollection.subscribeChanges((recipe) => {
-        console.log(3)
-        console.log({ recipe })
-        // Check if the recipe has been processed (name changed from "Processing...")
-        if (recipe && recipe.name !== `Processing...`) {
-          console.log(4)
-          unsubscribe()
-          // Navigate to the recipe page
-          navigate({ to: `/recipes/$id`, params: { id: recipeId } })
-        }
-      })
-
-      // Set a timeout in case processing takes too long
-      setTimeout(() => {
-        unsubscribe()
-        if (isProcessing) {
-          setError(
-            `Recipe processing is taking longer than expected. You can check back later.`
-          )
-          setIsProcessing(false)
-        }
-      }, 60000) // 60 second timeout
+      navigate({ to: `/recipes/$id`, params: { id: recipeId } })
     } catch (err: any) {
       console.error(`Recipe processing error:`, err)
       setError(err.message || `Failed to process recipe`)

@@ -53,7 +53,7 @@ export async function processRecipeWithAI(
   pastedText: string,
   url: string | undefined,
   userId: string,
-  db: any
+  tx: any
 ) {
   const startTime = Date.now()
 
@@ -155,46 +155,42 @@ Do NOT use underscores, hyphens, or any other variations. Use the exact capitali
     })
   )
 
-  // Update the recipe and add ingredients in the database
+  // Update the recipe and add ingredients using the provided transaction
   try {
-    await db.transaction(async (tx: any) => {
-      const txid = await generateTxId(tx)
+    console.log(`Updating recipe with:`, {
+      name: parsed.name,
+      description: parsed.description,
+    })
 
-      console.log(`Updating recipe with:`, {
+    // Update recipe with processed data
+    await tx
+      .update(recipes)
+      .set({
         name: parsed.name,
         description: parsed.description,
+        updated_at: new Date(),
       })
+      .where(and(eq(recipes.id, recipeId), eq(recipes.user_id, userId)))
 
-      // Update recipe with processed data
-      await tx
-        .update(recipes)
-        .set({
-          name: parsed.name,
-          description: parsed.description,
-          updated_at: new Date(),
-        })
-        .where(and(eq(recipes.id, recipeId), eq(recipes.user_id, userId)))
+    console.log(
+      `Inserting ingredients:`,
+      ingredientsWithEmbeddings.map((ing) => ({
+        listing: ing.listing,
+        extracted_name: ing.extracted_name,
+        grocery_section: ing.grocery_section,
+      }))
+    )
 
-      console.log(
-        `Inserting ingredients:`,
-        ingredientsWithEmbeddings.map((ing) => ({
-          listing: ing.listing,
-          extracted_name: ing.extracted_name,
-          grocery_section: ing.grocery_section,
-        }))
-      )
-
-      // Insert ingredients
-      await tx.insert(recipeIngredients).values(
-        ingredientsWithEmbeddings.map((ing) => ({
-          recipe_id: recipeId,
-          listing: ing.listing,
-          extracted_name: ing.extracted_name,
-          embedding: ing.embedding,
-          grocery_section: ing.grocery_section,
-        }))
-      )
-    })
+    // Insert ingredients
+    await tx.insert(recipeIngredients).values(
+      ingredientsWithEmbeddings.map((ing) => ({
+        recipe_id: recipeId,
+        listing: ing.listing,
+        extracted_name: ing.extracted_name,
+        embedding: ing.embedding,
+        grocery_section: ing.grocery_section,
+      }))
+    )
   } catch (dbError) {
     console.error(`Database error during recipe processing:`, dbError)
     console.error(`Parsed data:`, parsed)
