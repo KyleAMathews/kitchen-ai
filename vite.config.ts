@@ -1,7 +1,9 @@
 import { defineConfig } from "vite"
 import { tanstackStart } from "@tanstack/react-start/plugin/vite"
+import react from "@vitejs/plugin-react"
 import viteTsConfigPaths from "vite-tsconfig-paths"
 import { fromFile } from "@capsizecss/unpack"
+import path from "path"
 import { capsizeRadixPlugin } from "vite-plugin-capsize-radix"
 import montserrat from "@capsizecss/metrics/montserrat"
 import arial from "@capsizecss/metrics/arial"
@@ -25,6 +27,8 @@ export default defineConfig(async () => {
       host: true,
     },
     plugins: [
+      // React plugin
+      react(),
       // Path aliases support
       viteTsConfigPaths({
         projects: [`./tsconfig.json`],
@@ -39,13 +43,28 @@ export default defineConfig(async () => {
       }),
       // TanStack Start
       tanstackStart({
+        target: `netlify-edge`,
+        customViteReactPlugin: true,
         spa: {
           enabled: true,
         },
       }),
     ],
+    resolve: {
+      alias: {
+        debug: path.resolve(__dirname, `./src/polyfills/debug.js`),
+      },
+    },
+    ssr: {
+      noExternal: [`debug`, `@tanstack/electric-db-collection`],
+    },
     define: {
       VITE_ELECTRIC_URL: JSON.stringify(process.env.VITE_ELECTRIC_URL),
+    },
+    build: {
+      rollupOptions: {
+        external: [`pg-native`],
+      },
     },
   }
 })

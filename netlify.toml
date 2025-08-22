@@ -1,0 +1,28 @@
+[build]
+  publish = ".output/public"
+  command = "pnpm build"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[plugins]]
+  package = "@netlify/plugin-edge-functions"
+
+[functions]
+  directory = ".output/server"
+
+# Custom domain configuration
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/edge-functions/server"
+  status = 200
+  force = true
+
+# Environment variables (will be set via Netlify dashboard)
+# DATABASE_URL
+# SOURCE_SECRET
+# OPENAI_API_KEY
+# NEON_API_KEY
+# VITE_CLERK_PUBLISHABLE_KEY
+# ELECTRIC_URL
+# SOURCE_ID

@@ -15,3 +15,8 @@ node_modules
 .env*.local
 .env
 test.ts
+
+# Local Netlify folder
+.netlify
+dist
+old-code
