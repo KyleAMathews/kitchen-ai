@@ -43,7 +43,7 @@ export default defineConfig(async () => {
       }),
       // TanStack Start
       tanstackStart({
-        target: `netlify-edge`,
+        target: `netlify`,
         customViteReactPlugin: true,
         spa: {
           enabled: true,
