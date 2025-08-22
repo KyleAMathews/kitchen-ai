@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { useLiveQuery } from "@tanstack/react-db"
-import { Flex, Heading, Separator, Text } from "@radix-ui/themes"
+import { Flex, Heading, Text } from "@radix-ui/themes"
 import { PlusCircledIcon } from "@radix-ui/react-icons"
 import RecipeCard from "@/components/recipe-card"
 import { recipesCollection } from "@/lib/collections"
@@ -16,37 +16,29 @@ export const Route = createFileRoute(`/_authenticated/recipes/`)({
 export default function Recipes() {
   const { data: recipes } = useLiveQuery((q) => q.from({ recipesCollection }))
 
-  console.log({ recipes })
-
   return (
     <div className="p-6">
       <Flex direction="column" gap="7" pt="2">
         <Flex direction="column" gap="5">
           <Heading size="6">
-            Recipes ({recipes?.length || 0})
-            <Link
-              to="/recipes/new"
-              style={{
-                height: 20,
-                display: `inline-block`,
-                position: `relative`,
-                top: 3,
-                left: 8,
-                color: `inherit`,
-                textDecoration: `none`,
-              }}
-            >
-              <PlusCircledIcon height="20" width="20" style={{ height: 20 }} />
-            </Link>
+            <Flex gap="1">
+              Recipes ({recipes?.length || 0})
+              <Link to="/recipes/new">
+                <PlusCircledIcon
+                  height="20"
+                  width="20"
+                  style={{ height: 20 }}
+                />
+              </Link>
+            </Flex>
           </Heading>
         </Flex>
 
         {recipes && recipes.length > 0 ? (
           <Flex direction="column" gap="4">
-            {recipes.map((recipe, i) => (
+            {recipes.map((recipe) => (
               <div key={recipe.id}>
                 <RecipeCard recipe={recipe} />
-                {recipes.length - 1 !== i && <Separator size="4" />}
               </div>
             ))}
           </Flex>

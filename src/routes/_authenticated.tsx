@@ -1,20 +1,12 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router"
-import { useEffect } from "react"
 import { Outlet } from "@tanstack/react-router"
 import { authClient } from "@/lib/auth-client"
-import {
-  Flex,
-  Text,
-  Button,
-  Heading,
-  Container,
-  Separator,
-} from "@radix-ui/themes"
+import { Flex, Text, Button, Heading, Container } from "@radix-ui/themes"
 
 export const Route = createFileRoute(`/_authenticated`)({
   component: AuthenticatedLayout,
   ssr: false,
-  beforeLoad: async ({ location }) => {
+  beforeLoad: async () => {
     const { data: session } = await authClient.getSession()
 
     if (!session) {

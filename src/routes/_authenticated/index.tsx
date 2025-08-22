@@ -92,10 +92,11 @@ function Dashboard() {
   )
 
   const isSearching = searchQuery.length > 0
-  const displayRecipes = isSearching ? searchRecipes || [] : recipes || []
+  const displayRecipes = isSearching ? searchRecipes || [] : allRecipes || []
   const displayIngredients = isSearching
     ? searchIngredients || []
     : ingredients || []
+  console.log({ isSearching, displayRecipes, recipes, allRecipes })
 
   return (
     <div className="p-6">
@@ -158,9 +159,6 @@ function Dashboard() {
                   {displayRecipes.map((recipe, i) => (
                     <div key={recipe.id}>
                       <RecipeCard recipe={recipe} />
-                      {displayRecipes.length - 1 !== i && (
-                        <Separator size="4" />
-                      )}
                     </div>
                   ))}
                 </Flex>
@@ -210,9 +208,6 @@ function Dashboard() {
                   {displayIngredients.map((ingredient, i) => (
                     <div key={ingredient.id}>
                       <IngredientCard ingredient={ingredient} />
-                      {displayIngredients.length - 1 !== i && (
-                        <Separator size="4" />
-                      )}
                     </div>
                   ))}
                 </Flex>

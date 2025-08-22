@@ -573,6 +573,11 @@ export default function RecipeDetail() {
             const ingredient = recipeIngredients?.find(
               (i) => i.id === ingredient_id
             )
+            const matchedIngred = possibleMatches[ingredient_id]
+            // Skip pantry staples here - they'll be shown in their own section
+            if (matchedIngred?.tracking_type === `pantry_staple`) {
+              return null
+            }
             return (
               <AlreadyHaveIngredient
                 key={ingredient_id}
@@ -586,6 +591,84 @@ export default function RecipeDetail() {
           return null
         })}
       </Flex>
+
+      {/* Pantry Staples Section */}
+      {(() => {
+        const pantryStaples = Object.keys(possibleMatches)
+          .filter((ingredient_id: string) => {
+            const matchedIngred = possibleMatches[ingredient_id]
+            return (
+              matchedIngred?.tracking_type === `pantry_staple` &&
+              (checked[ingredient_id] === true ||
+                (typeof checked[ingredient_id] === `undefined` &&
+                  possibleMatches[ingredient_id] !== null))
+            )
+          })
+          .map((ingredient_id) => ({
+            id: ingredient_id,
+            ingredient: recipeIngredients?.find((i) => i.id === ingredient_id),
+            match: possibleMatches[ingredient_id],
+          }))
+
+        if (pantryStaples.length === 0) return null
+
+        return (
+          <details style={{ marginTop: `var(--space-4)` }}>
+            <summary
+              style={{
+                cursor: `pointer`,
+                userSelect: `none`,
+                listStyle: `none`,
+              }}
+            >
+              <Flex direction="column" gap="2">
+                <Flex direction="row" gap="2" align="center">
+                  <Text
+                    size="2"
+                    style={{
+                      display: `inline-block`,
+                      transition: `transform 0.2s`,
+                      transform: `rotate(0deg)`,
+                    }}
+                    className="disclosure-arrow"
+                  >
+                    ▶
+                  </Text>
+                  <Heading size="2">Pantry Staples</Heading>
+                  <Badge color="green" variant="soft" size="1">
+                    {pantryStaples.length} items
+                  </Badge>
+                </Flex>
+                <Flex direction="row" gap="2" wrap="wrap" pl="4">
+                  {pantryStaples.map(({ ingredient }) => (
+                    <Text key={ingredient?.id} size="2" color="gray">
+                      {ingredient?.listing}
+                      {pantryStaples[pantryStaples.length - 1].ingredient
+                        ?.id !== ingredient?.id && `,`}
+                    </Text>
+                  ))}
+                </Flex>
+              </Flex>
+            </summary>
+            <Flex direction="column" gap="4" mt="3">
+              {pantryStaples.map(({ id, ingredient }) => (
+                <AlreadyHaveIngredient
+                  key={id}
+                  setChecked={setChecked}
+                  ingredient={ingredient}
+                  checked={checked}
+                  possibleMatches={possibleMatches}
+                />
+              ))}
+            </Flex>
+            <style>{`
+              details[open] .disclosure-arrow {
+                transform: rotate(90deg) !important;
+              }
+            `}</style>
+          </details>
+        )
+      })()}
     </Flex>
   )
 }

@@ -29,6 +29,8 @@ export default function IngredientCard({ ingredient }: IngredientCardProps) {
   const expiredDate = new Date(ingredient.expiration_date)
   const expiresInFuture = ingredient.expiration_date > new Date()
 
+  console.log({ ingredient })
+
   return (
     <Flex
       key={ingredient.id}
@@ -42,17 +44,24 @@ export default function IngredientCard({ ingredient }: IngredientCardProps) {
       <Flex gap="2" direction="column">
         <Heading size="3" weight="medium">
           {ingredient.name}
-          {ingredient.trackingType === `count` && ` (` + ingredient.count + `)`}
+          {ingredient.tracking_type === `count` &&
+            ` (` + ingredient.count + `)`}
         </Heading>
-        <Text
-          size="2"
-          weight={isExpiredSoon(ingredient) ? `medium` : `regular`}
-          color={isExpiredSoon(ingredient) ? `crimson` : `gray`}
-        >
-          {expiresInFuture ? `Expires` : `Expired`}
-          {` `}
-          {timeAgo.format(new Date(expiredDate))}
-        </Text>
+        {ingredient.tracking_type !== `pantry_staple` ? (
+          <Text
+            size="2"
+            weight={isExpiredSoon(ingredient) ? `medium` : `regular`}
+            color={isExpiredSoon(ingredient) ? `crimson` : `gray`}
+          >
+            {expiresInFuture ? `Expires` : `Expired`}
+            {` `}
+            {timeAgo.format(new Date(expiredDate))}
+          </Text>
+        ) : (
+          <Badge variant="soft" color="blue">
+            Pantry Staple
+          </Badge>
+        )}
       </Flex>
       <Flex direction="column" gap="1" ml="auto">
         {ingredient.trackingType === `fill_level` && (

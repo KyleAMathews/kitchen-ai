@@ -5,7 +5,8 @@
       "Bash(mkdir:*)",
       "Bash(git add:*)",
       "Bash(find:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(rg:*)"
     ],
     "deny": []
   }

@@ -30,9 +30,6 @@ export default function IngredientsList() {
                 return (
                   <div key={ingredient.id}>
                     <IngredientCard ingredient={ingredient} />
-                    {i !== ingredients.length - 1 && (
-                      <Separator orientation="horizontal" size="4" />
-                    )}
                   </div>
                 )
               }

@@ -2,29 +2,17 @@ import { Link } from "@tanstack/react-router"
 import { CaretRightIcon } from "@radix-ui/react-icons"
 import { Flex, Heading, Text } from "@radix-ui/themes"
 import { timeAgo } from "@/lib/utils"
+import { type SelectRecipe } from "@/db/zod-schemas"
 
-interface Recipe {
-  id: string
-  name: string
-  description: string
-  url: string
-  userId: string
-  createdAt: Date
-  updatedAt: Date
-}
-
-interface RecipeCardProps {
-  recipe: Recipe
-}
-
-export default function RecipeCard({ recipe }: RecipeCardProps) {
+export default function RecipeCard({ recipe }: { recipe: SelectRecipe }) {
   console.log({ recipe })
   return (
     <Flex>
       <Flex direction="column" gap="3">
         <Heading size="3" weight="medium">
           <Link
-            to={`/recipes/${recipe.id}`}
+            to={`/recipes/$id`}
+            params={{ id: recipe.id }}
             style={{
               color: `inherit`,
               textDecoration: `none`,
