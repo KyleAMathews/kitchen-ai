@@ -5,18 +5,8 @@
 [build.environment]
   NODE_VERSION = "20"
 
-[[plugins]]
-  package = "@netlify/plugin-edge-functions"
-
 [functions]
   directory = ".output/server"
-
-# Custom domain configuration
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/edge-functions/server"
-  status = 200
-  force = true
 
 # Environment variables (will be set via Netlify dashboard)
 # DATABASE_URL
