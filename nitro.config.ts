@@ -8,5 +8,8 @@ export default {
   experimental: {
     wasm: false,
   },
+  alias: {
+    debug: "./src/polyfills/debug.js",
+  },
 }
 
