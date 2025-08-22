@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit:*)",
+      "Bash(mkdir:*)",
+      "Bash(git add:*)",
+      "Bash(find:*)",
+      "WebSearch",
+      "Bash(rg:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm wrangler secret put:*)",
+      "Bash(pnpm build:*)"
+    ],
+    "deny": []
+  }
+}

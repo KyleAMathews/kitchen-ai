@@ -1,0 +1,14 @@
+kitchen-ai.localhost {
+  reverse_proxy localhost:5173
+  encode {
+    gzip
+  }
+}
+
+# Network access
+192.168.1.238 {
+  reverse_proxy localhost:5173
+  encode {
+    gzip
+  }
+}
