@@ -63,6 +63,7 @@ function AddIngredientsToShoppingListButton({
 }) {
   const [working, setWorking] = useState(false)
   const [open, setOpen] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   return (
     <Toast.Provider swipeDirection="right">
@@ -70,7 +71,9 @@ function AddIngredientsToShoppingListButton({
         disabled={working}
         onClick={async () => {
           setOpen(false)
+          setError(null)
           setWorking(true)
+          
           const createObjects = Object.keys(possibleMatches)
             .map((ingredient_id: string) => {
               if (
@@ -89,19 +92,24 @@ function AddIngredientsToShoppingListButton({
             })
             .filter((i) => i)
 
-          const cardDescription = {
-            url: recipe.url,
-            checklists: mapValues(
-              groupBy(createObjects, (o) => o?.section),
-              (sectionVals) => sectionVals.map((s) => s?.ingredient)
-            ),
+          const checklists = mapValues(
+            groupBy(createObjects, (o) => o?.section),
+            (sectionVals) => sectionVals.map((s) => s?.ingredient)
+          )
+
+          try {
+            await trpc.shoppingList.addToShoppingList.mutate({
+              recipeName: recipe.name,
+              url: recipe.url,
+              checklists,
+            })
+            setOpen(true)
+          } catch (err) {
+            console.error(`Failed to add items to shopping list:`, err)
+            setError(`Failed to add items to shopping list`)
+          } finally {
+            setWorking(false)
           }
-
-          // TODO: Implement shopping list API endpoint
-          console.log(`Shopping list items:`, cardDescription)
-
-          setOpen(true)
-          setWorking(false)
         }}
       >
         Add items to Shopping List
@@ -109,7 +117,9 @@ function AddIngredientsToShoppingListButton({
       <Toast.Root className="ToastRoot" open={open} onOpenChange={setOpen}>
         <Toast.Title className="ToastTitle">
           <Flex p="4">
-            <Text>Ingredients added to shopping list</Text>
+            <Text>
+              {error ? error : `Ingredients added to shopping list`}
+            </Text>
           </Flex>
         </Toast.Title>
       </Toast.Root>

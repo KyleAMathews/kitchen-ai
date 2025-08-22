@@ -4,6 +4,7 @@ import { router } from "@/lib/trpc"
 import { ingredientsRouter } from "@/lib/trpc/ingredients"
 import { recipesRouter } from "@/lib/trpc/recipes"
 import { aiRouter } from "@/lib/trpc/ai"
+import { shoppingListRouter } from "@/lib/trpc/shopping-list"
 import { db } from "@/db/connection"
 import { auth } from "@/lib/auth"
 
@@ -11,6 +12,7 @@ export const appRouter = router({
   ingredients: ingredientsRouter,
   recipes: recipesRouter,
   ai: aiRouter,
+  shoppingList: shoppingListRouter,
 })
 
 export type AppRouter = typeof appRouter
