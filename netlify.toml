@@ -6,7 +6,7 @@
   NODE_VERSION = "20"
 
 [functions]
-  directory = ".output/server"
+  directory = ".netlify/functions-internal"
 
 # Environment variables (will be set via Netlify dashboard)
 # DATABASE_URL

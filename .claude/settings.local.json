@@ -9,7 +9,8 @@
       "Bash(rg:*)",
       "Bash(pnpm add:*)",
       "Bash(pnpm wrangler secret put:*)",
-      "Bash(pnpm build:*)"
+      "Bash(pnpm build:*)",
+      "Bash(pnpm netlify env:*)"
     ],
     "deny": []
   }

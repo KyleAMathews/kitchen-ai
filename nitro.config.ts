@@ -1,9 +1,12 @@
 export default {
   rollupConfig: {
-    external: [`pg-native`, `cloudflare:sockets`],
+    external: [`pg-native`, `cloudflare:sockets`, `pg`],
   },
   externals: {
-    traceInclude: [`pg`],
+    trace: false,
+  },
+  experimental: {
+    wasm: false,
   },
 }
 

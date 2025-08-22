@@ -63,7 +63,7 @@ export default defineConfig(async () => {
     },
     build: {
       rollupOptions: {
-        external: [`pg-native`],
+        external: [`pg-native`, `pg`, `cloudflare:sockets`],
       },
     },
   }
