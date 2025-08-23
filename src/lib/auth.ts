@@ -38,6 +38,7 @@ export const auth = betterAuth({
     `https://${networkIP}`,
     `http://localhost:5173`, // fallback for direct Vite access
     `https://kitchen-ai.bricolage.io`, // production domain
+    `https://kitchen-ai.netlify.app`, // netlfy domain
   ],
   secret:
     process.env.BETTER_AUTH_SECRET || `dev-secret-key-change-in-production`,
