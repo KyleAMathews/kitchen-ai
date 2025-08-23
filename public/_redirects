@@ -1,8 +1,5 @@
-# Allow server functions
-/_serverFn/* /_serverFn/:splat 200
-
-# Allow API routes  
+# Allow API routes (server routes)
 /api/* /api/:splat 200
 
-# Catch-all redirect to SPA shell
+# Catch-all redirect to SPA shell  
 /* /_shell.html 200
