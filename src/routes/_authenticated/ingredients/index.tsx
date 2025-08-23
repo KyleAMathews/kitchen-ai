@@ -6,7 +6,6 @@ import IngredientCard from "@/components/ingredient-card"
 
 export const Route = createFileRoute(`/_authenticated/ingredients/`)({
   component: IngredientsList,
-  ssr: false,
   loader: async () => {
     await ingredientsCollection.preload()
   },

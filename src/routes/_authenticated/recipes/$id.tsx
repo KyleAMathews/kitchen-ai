@@ -40,7 +40,6 @@ import ExpirationDateEdit from "@/components/expiration-date-edit"
 
 export const Route = createFileRoute(`/_authenticated/recipes/$id`)({
   component: RecipeDetail,
-  ssr: false,
   loader: async () => {
     await Promise.all([
       recipesCollection.preload(),
@@ -73,7 +72,7 @@ function AddIngredientsToShoppingListButton({
           setOpen(false)
           setError(null)
           setWorking(true)
-          
+
           const createObjects = Object.keys(possibleMatches)
             .map((ingredient_id: string) => {
               if (

@@ -19,7 +19,6 @@ import { Link } from "@tanstack/react-router"
 import appCss from "../styles.css?url"
 
 export const Route = createRootRoute({
-  ssr: false,
   head: () => ({
     meta: [
       {

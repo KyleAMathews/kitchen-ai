@@ -14,7 +14,6 @@ import { InfoCircledIcon } from "@radix-ui/react-icons"
 
 export const Route = createFileRoute(`/login`)({
   component: LoginPage,
-  ssr: false,
 })
 
 function LoginPage() {

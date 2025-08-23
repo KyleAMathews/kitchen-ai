@@ -21,7 +21,6 @@ import IngredientCard from "@/components/ingredient-card"
 
 export const Route = createFileRoute(`/_authenticated/`)({
   component: Dashboard,
-  ssr: false,
   loader: async () => {
     await Promise.all([
       recipesCollection.preload(),
@@ -66,15 +65,15 @@ function Dashboard() {
     (q) =>
       searchQuery.length > 0
         ? q
-            .from({ recipesCollection })
-            .where(({ recipesCollection }) =>
-              or(
-                ilike(recipesCollection.name, `%${searchQuery}%`),
-                ilike(recipesCollection.description, `%${searchQuery}%`)
-              )
+          .from({ recipesCollection })
+          .where(({ recipesCollection }) =>
+            or(
+              ilike(recipesCollection.name, `%${searchQuery}%`),
+              ilike(recipesCollection.description, `%${searchQuery}%`)
             )
+          )
         : // .limit(3)
-          q.from({ recipesCollection }),
+        q.from({ recipesCollection }),
     [searchQuery]
   )
 
@@ -82,12 +81,12 @@ function Dashboard() {
     (q) =>
       searchQuery.length > 0
         ? q
-            .from({ ingredientsCollection })
-            .where(({ ingredientsCollection }) =>
-              ilike(ingredientsCollection.name, `%${searchQuery}%`)
-            )
+          .from({ ingredientsCollection })
+          .where(({ ingredientsCollection }) =>
+            ilike(ingredientsCollection.name, `%${searchQuery}%`)
+          )
         : // .limit(3)
-          q.from({ ingredientsCollection }),
+        q.from({ ingredientsCollection }),
     [searchQuery]
   )
 

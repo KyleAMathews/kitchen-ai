@@ -4,7 +4,6 @@ import { CheckIcon } from "@radix-ui/react-icons"
 
 export const Route = createFileRoute(`/_authenticated/review`)({
   component: Review,
-  ssr: false,
 })
 
 export default function Review() {

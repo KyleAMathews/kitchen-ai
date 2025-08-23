@@ -4,7 +4,6 @@ import { CameraIcon } from "@radix-ui/react-icons"
 
 export const Route = createFileRoute(`/_authenticated/upload-photos`)({
   component: UploadPhotos,
-  ssr: false,
 })
 
 export default function UploadPhotos() {

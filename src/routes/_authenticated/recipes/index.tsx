@@ -7,7 +7,6 @@ import { recipesCollection } from "@/lib/collections"
 
 export const Route = createFileRoute(`/_authenticated/recipes/`)({
   component: Recipes,
-  ssr: false,
   loader: async () => {
     await recipesCollection.preload()
   },

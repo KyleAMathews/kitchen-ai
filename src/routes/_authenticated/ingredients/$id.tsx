@@ -32,7 +32,6 @@ import { z } from "zod"
 
 export const Route = createFileRoute(`/_authenticated/ingredients/$id`)({
   component: IngredientDetail,
-  ssr: false,
   loader: async () => {
     await ingredientsCollection.preload()
   },

@@ -5,7 +5,6 @@ import { Flex, Text, Button, Heading, Container } from "@radix-ui/themes"
 
 export const Route = createFileRoute(`/_authenticated`)({
   component: AuthenticatedLayout,
-  ssr: false,
   beforeLoad: async () => {
     const { data: session } = await authClient.getSession()
 
