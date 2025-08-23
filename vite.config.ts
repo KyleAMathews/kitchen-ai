@@ -47,6 +47,9 @@ export default defineConfig(async () => {
         customViteReactPlugin: true,
         spa: {
           enabled: true,
+          prerender: {
+            crawlLinks: false, // Don't crawl links for pure SPA
+          },
         },
       }),
     ],
