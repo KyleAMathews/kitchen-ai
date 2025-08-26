@@ -20,6 +20,10 @@ for (const name of Object.keys(nets)) {
   }
 }
 
+// Allowed emails for production (comma-separated in env var)
+const allowedEmails =
+  process.env.ALLOWED_EMAILS?.split(`,`).map((e) => e.trim()) || []
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: `pg`,
@@ -33,12 +37,42 @@ export const auth = betterAuth({
     disableSignUp: process.env.NODE_ENV === `production`,
     minPasswordLength: process.env.NODE_ENV === `production` ? 8 : 1,
   },
+  socialProviders: {
+    google: {
+      enabled:
+        process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+          ? true
+          : false,
+      clientId: process.env.GOOGLE_CLIENT_ID || ``,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || ``,
+      prompt: `select_account`,
+      mapProfileToUser: (profile) => {
+        // Check email restrictions in production
+        if (process.env.NODE_ENV === `production` && allowedEmails.length > 0) {
+          if (!allowedEmails.includes(profile.email)) {
+            throw new Error(
+              `Access restricted. Your email ${profile.email} is not authorized.`
+            )
+          }
+        }
+
+        // Map Google profile fields to user
+        return {
+          email: profile.email,
+          name: profile.name,
+          emailVerified: profile.email_verified,
+          image: profile.picture,
+        }
+      },
+    },
+  },
   trustedOrigins: [
     `https://kitchen-ai.localhost`,
     `https://${networkIP}`,
     `http://localhost:5173`, // fallback for direct Vite access
     `https://kitchen-ai.bricolage.io`, // production domain
     `https://kitchen-ai.netlify.app`, // netlfy domain
+    `https://kitchen-ai.fly.dev`, // fly.io domain
   ],
   secret:
     process.env.BETTER_AUTH_SECRET || `dev-secret-key-change-in-production`,

@@ -11,7 +11,8 @@
       "Bash(pnpm wrangler secret put:*)",
       "Bash(pnpm build:*)",
       "Bash(pnpm netlify env:*)",
-      "WebFetch(domain:tanstack.com)"
+      "WebFetch(domain:tanstack.com)",
+      "WebFetch(domain:www.better-auth.com)"
     ],
     "deny": []
   }

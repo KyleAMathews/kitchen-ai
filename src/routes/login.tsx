@@ -9,8 +9,10 @@ import {
   Button,
   Heading,
   Callout,
+  Separator,
 } from "@radix-ui/themes"
 import { InfoCircledIcon } from "@radix-ui/react-icons"
+import { FaGoogle } from "react-icons/fa"
 
 export const Route = createFileRoute(`/login`)({
   component: LoginPage,
@@ -73,6 +75,23 @@ function LoginPage() {
     }
   }
 
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true)
+    setError(``)
+    
+    try {
+      await authClient.signIn.social({
+        provider: `google`,
+        callbackURL: `/`,
+        errorCallbackURL: `/login?error=google_failed`,
+      })
+    } catch (err) {
+      console.error(`Google sign-in error:`, err)
+      setError(`Google sign-in failed`)
+      setIsLoading(false)
+    }
+  }
+
   return (
     <Flex
       direction="column"
@@ -104,6 +123,28 @@ function LoginPage() {
             </Callout.Root>
           )}
 
+          {/* Google Sign In (if configured) */}
+          {process.env.GOOGLE_CLIENT_ID && (
+            <>
+              <Button
+                onClick={handleGoogleSignIn}
+                disabled={isLoading}
+                size="3"
+                variant="soft"
+                style={{ width: `100%` }}
+              >
+                <FaGoogle />
+                Sign in with Google
+              </Button>
+              
+              <Flex align="center" gap="3">
+                <Separator size="4" />
+                <Text size="2" color="gray">OR</Text>
+                <Separator size="4" />
+              </Flex>
+            </>
+          )}
+
           <form onSubmit={handleSubmit}>
             <Flex direction="column" gap="4">
               <Flex direction="column" gap="2">
@@ -113,6 +154,7 @@ function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading}
                 />
                 <TextField.Root
                   placeholder="Password"
@@ -120,6 +162,7 @@ function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
                 />
               </Flex>
 
@@ -135,7 +178,7 @@ function LoginPage() {
                 size="3"
                 style={{ width: `100%` }}
               >
-                {isLoading ? `Signing in...` : `Sign in`}
+                {isLoading ? `Signing in...` : `Sign in with Email`}
               </Button>
             </Flex>
           </form>

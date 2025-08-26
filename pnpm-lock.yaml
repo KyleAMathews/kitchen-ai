@@ -83,6 +83,9 @@ importers:
       dotenv:
         specifier: ^17.2.1
         version: 17.2.1
+      drizzle-kit:
+        specifier: ^0.31.4
+        version: 0.31.4
       drizzle-orm:
         specifier: ^0.44.3
         version: 0.44.4(@opentelemetry/api@1.8.0)(@types/pg@8.15.5)(kysely@0.28.5)(pg@8.16.3)
@@ -183,9 +186,6 @@ importers:
       concurrently:
         specifier: ^9.2.1
         version: 9.2.1
-      drizzle-kit:
-        specifier: ^0.31.4
-        version: 0.31.4
       eslint:
         specifier: ^9.34.0
         version: 9.34.0(jiti@2.5.1)

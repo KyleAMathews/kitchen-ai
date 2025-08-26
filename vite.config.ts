@@ -43,7 +43,7 @@ export default defineConfig(async () => {
       }),
       // TanStack Start
       tanstackStart({
-        target: `netlify`,
+        target: `node-server`,
         customViteReactPlugin: true,
         spa: {
           enabled: true,
