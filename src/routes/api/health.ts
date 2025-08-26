@@ -20,4 +20,3 @@ const healthCheck = async ({ request }: { request: Request }) => {
 export const ServerRoute = createServerFileRoute(`/api/health`).methods({
   GET: healthCheck,
 })
-

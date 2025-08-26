@@ -45,7 +45,7 @@ export const recipesRouter = router({
           .returning()
 
         console.log({ input, newRecipe })
-        
+
         // Process with AI in the same transaction
         await processRecipeWithAI(
           newRecipe.id,
@@ -57,7 +57,7 @@ export const recipesRouter = router({
 
         return { recipe: newRecipe, txid }
       })
-      
+
       return result
     }),
 

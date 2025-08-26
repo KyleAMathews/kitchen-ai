@@ -144,9 +144,8 @@ function LoginPage() {
               <Callout.Text size="2">{error}</Callout.Text>
             </Callout.Root>
           )}
-
         </Flex>
-      </Card >
-    </Flex >
+      </Card>
+    </Flex>
   )
 }

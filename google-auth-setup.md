@@ -5,6 +5,7 @@ This guide explains how to enable Google Sign-In for your Kitchen AI app in prod
 ## Overview
 
 The implementation allows users to sign in with Google while:
+
 - Restricting access to a whitelist of approved emails
 - Automatically creating accounts on first sign-in (conflating sign-in and sign-up)
 - Falling back to email/password authentication when needed
@@ -59,7 +60,7 @@ socialProviders: {
           throw new Error(`Access restricted. Your email ${profile.email} is not authorized.`)
         }
       }
-      
+
       return {
         email: profile.email,
         name: profile.name,
@@ -74,6 +75,7 @@ socialProviders: {
 ### Client-side (`src/routes/login.tsx`)
 
 The login page:
+
 1. Shows a "Sign in with Google" button when Google OAuth is configured
 2. Falls back to email/password authentication
 3. Handles errors gracefully
@@ -96,11 +98,13 @@ fly secrets unset ALLOWED_EMAILS --app kitchen-ai
 ## Step 5: Testing
 
 ### Local Development
+
 1. Google OAuth is disabled by default in development
 2. Use email/password authentication with any credentials
 3. To test Google OAuth locally, add the environment variables to your local `.env` file
 
 ### Production
+
 1. Deploy your application: `fly deploy --app kitchen-ai`
 2. Navigate to your app URL
 3. Click "Sign in with Google"
@@ -118,41 +122,50 @@ fly secrets unset ALLOWED_EMAILS --app kitchen-ai
 ## Troubleshooting
 
 ### "Access restricted" error
+
 - Check that your email is in the `ALLOWED_EMAILS` list
 - Verify the environment variable is set correctly: `fly secrets list --app kitchen-ai`
 
 ### Google sign-in button not appearing
+
 - Ensure `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set
 - Check the browser console for errors
 
 ### Redirect URI mismatch
+
 - Verify the redirect URI in Google Cloud Console matches your domain
 - Format should be: `https://your-domain.fly.dev/api/auth/callback/google`
 
 ### "Invalid client" error
+
 - Double-check your Client ID and Client Secret
 - Ensure they're from the correct Google Cloud project
 
 ## Advanced Configuration
 
 ### Custom Error Messages
+
 Modify the error message in `mapProfileToUser` to provide more helpful feedback:
 
 ```typescript
-throw new Error(`Please contact admin@company.com to request access for ${profile.email}`)
+throw new Error(
+  `Please contact admin@company.com to request access for ${profile.email}`
+)
 ```
 
 ### Domain-based Restrictions
+
 Instead of individual emails, you can restrict by domain:
 
 ```typescript
-const allowedDomain = '@company.com'
+const allowedDomain = "@company.com"
 if (!profile.email.endsWith(allowedDomain)) {
   throw new Error(`Only ${allowedDomain} emails are allowed`)
 }
 ```
 
 ### Multiple OAuth Providers
+
 You can add additional providers (GitHub, Microsoft, etc.) following the same pattern in the `socialProviders` configuration.
 
 ## Complete Deployment Checklist

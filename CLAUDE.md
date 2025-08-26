@@ -60,7 +60,7 @@ This command will also report linter errors that were not automatically fixable.
   - Use `createInsertSchema()` for insert operations (auto-handles defaults and optional fields)
   - Use `createUpdateSchema()` for update operations (all fields optional)
   - Use `createSelectSchema()` for select/read operations
-- **tRPC handlers**: 
+- **tRPC handlers**:
   - Import schemas from `@/db/zod-schemas` - NEVER redefine them locally
   - Use snake_case in input/output schemas to match database
 - **Electric sync**: Automatically syncs snake_case fields from database
@@ -78,24 +78,30 @@ This command will also report linter errors that were not automatically fixable.
 **IMPORTANT: This project uses TanStack DB, NOT TanStack Query. These are different libraries with different APIs.**
 
 ### Collections and Data Flow
+
 - Collections are defined in `src/lib/collections.ts` using `electricCollectionOptions`
 - Collections automatically persist and sync data between client and server
 - Client state is a reflection of server state - collections always persist
 - All mutations return `{ txid: number }` which is required for Electric sync compatibility
 
 ### Using useLiveQuery
+
 - **Correct syntax**: `const { data: items } = useLiveQuery((q) => q.from({ item: collection }).where(...))`
 - **ALWAYS** destructure `data` from the return value (don't use the return value directly)
 - **Dependencies**: Include reactive dependencies in the second parameter: `useLiveQuery(queryFn, [dependency1, dependency2])`
 - Example with dependencies:
   ```tsx
   const { data: todos } = useLiveQuery(
-    (q) => q.from({ todo: todoCollection }).where(({ todo }) => eq(todo.project_id, projectId)),
+    (q) =>
+      q
+        .from({ todo: todoCollection })
+        .where(({ todo }) => eq(todo.project_id, projectId)),
     [projectId] // Include dependencies here
   )
   ```
 
 ### Data Access Patterns
+
 - **NO** TanStack Query APIs like `useQuery`, `useMutation`, etc.
 - **NO** loading states from query hooks - use the `{ data }` destructuring pattern
 - Use `useLiveQuery` for all data reads
@@ -103,6 +109,7 @@ This command will also report linter errors that were not automatically fixable.
 - Use `eq`, `and`, `or` operators from `@tanstack/react-db` for filtering
 
 ### Route Structure
+
 - TanStack Router supports "pathless routes" (layout routes) using `_` prefix
 - Example: `_authenticated.tsx` is a layout route that wraps authenticated pages
 - Pathless routes don't add URL segments but provide layout/context

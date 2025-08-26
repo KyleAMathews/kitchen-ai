@@ -9,4 +9,3 @@ export default {
     debug: "./src/polyfills/debug.js",
   },
 }
-

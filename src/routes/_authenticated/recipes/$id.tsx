@@ -116,9 +116,7 @@ function AddIngredientsToShoppingListButton({
       <Toast.Root className="ToastRoot" open={open} onOpenChange={setOpen}>
         <Toast.Title className="ToastTitle">
           <Flex p="4">
-            <Text>
-              {error ? error : `Ingredients added to shopping list`}
-            </Text>
+            <Text>{error ? error : `Ingredients added to shopping list`}</Text>
           </Flex>
         </Toast.Title>
       </Toast.Root>
@@ -473,8 +471,8 @@ export default function RecipeDetail() {
         matches.length === 0
           ? null
           : matches.reduce((prev: any, current: any) => {
-            return prev.distance > current.distance ? prev : current
-          })
+              return prev.distance > current.distance ? prev : current
+            })
     })
   }
 

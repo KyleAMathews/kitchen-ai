@@ -32,11 +32,13 @@ fly open --app kitchen-ai
 ## Initial Setup
 
 1. Create your Fly app (one-time setup):
+
 ```bash
 fly apps create kitchen-ai  # Replace with your desired app name
 ```
 
 2. Create a Postgres database on Fly:
+
 ```bash
 fly postgres create --name kitchen-ai-db
 fly postgres attach kitchen-ai-db --app kitchen-ai
@@ -45,6 +47,7 @@ fly postgres attach kitchen-ai-db --app kitchen-ai
 This will automatically set the `DATABASE_URL` secret in your app.
 
 3. Set up required secrets/environment variables:
+
 ```bash
 # Database URL (required - your external Postgres)
 fly secrets set DATABASE_URL="postgresql://user:password@host:5432/dbname" --app kitchen-ai
@@ -69,6 +72,7 @@ fly secrets set AUTH_URL="https://kitchen-ai.fly.dev" --app kitchen-ai
 ## Deployment
 
 Deploy your application:
+
 ```bash
 fly deploy --app kitchen-ai
 ```
@@ -76,21 +80,25 @@ fly deploy --app kitchen-ai
 ## Post-Deployment
 
 1. Check deployment status:
+
 ```bash
 fly status --app kitchen-ai
 ```
 
 2. View logs:
+
 ```bash
 fly logs --app kitchen-ai
 ```
 
 3. SSH into the container (for debugging):
+
 ```bash
 fly ssh console --app kitchen-ai
 ```
 
 4. Scale to zero configuration is already set in fly.toml:
+
 - `auto_stop_machines = true`
 - `auto_start_machines = true`
 - `min_machines_running = 0`
@@ -100,6 +108,7 @@ The app will automatically scale down to zero when not in use and start up when 
 ## Custom Domain (Optional)
 
 1. Add a custom domain:
+
 ```bash
 fly certs add yourdomain.com --app kitchen-ai
 ```
@@ -111,6 +120,7 @@ fly certs add yourdomain.com --app kitchen-ai
 Migrations run automatically on deploy via the `release_command` in fly.toml.
 
 To run migrations manually:
+
 ```bash
 fly ssh console --app kitchen-ai -C "pnpm run migrate"
 ```
@@ -118,6 +128,7 @@ fly ssh console --app kitchen-ai -C "pnpm run migrate"
 ## Monitoring
 
 View metrics and monitoring:
+
 ```bash
 fly dashboard --app kitchen-ai
 ```
@@ -125,6 +136,7 @@ fly dashboard --app kitchen-ai
 ## Troubleshooting
 
 If deployment fails:
+
 1. Check logs: `fly logs --app kitchen-ai`
 2. Verify secrets are set: `fly secrets list --app kitchen-ai`
 3. Test build locally: `docker build -t kitchen-ai .`
