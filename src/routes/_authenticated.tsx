@@ -4,14 +4,23 @@ import { authClient } from "@/lib/auth-client"
 import { Flex, Text, Button, Heading, Container } from "@radix-ui/themes"
 
 export const Route = createFileRoute(`/_authenticated`)({
+  ssr: false, // Disable SSR - run beforeLoad only on client
   component: AuthenticatedLayout,
   beforeLoad: async () => {
-    const { data: session } = await authClient.getSession()
-
-    if (!session) {
+    console.log('beforeLoad started - checking auth (client-side)')
+    
+    const result = await authClient.getSession()
+    console.log('getSession result:', JSON.stringify(result, null, 2))
+    
+    const { data: session, isPending } = result
+    console.log('Parsed session:', { session, isPending })
+    
+    if (!session && !isPending) {
+      console.log('No session found!')
       throw new Error(`Not authenticated`)
     }
 
+    console.log('Authentication successful!')
     return { session }
   },
   errorComponent: ({ error }) => {

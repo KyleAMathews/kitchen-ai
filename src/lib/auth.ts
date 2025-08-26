@@ -76,4 +76,18 @@ export const auth = betterAuth({
   ],
   secret:
     process.env.BETTER_AUTH_SECRET || `dev-secret-key-change-in-production`,
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60, // 5 minutes
+    },
+  },
+  cookies: {
+    sessionToken: {
+      name: `better-auth.session-token`,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === `production`,
+      sameSite: `lax`,
+    },
+  },
 })

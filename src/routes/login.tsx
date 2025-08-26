@@ -78,7 +78,7 @@ function LoginPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true)
     setError(``)
-    
+
     try {
       await authClient.signIn.social({
         provider: `google`,
@@ -124,7 +124,7 @@ function LoginPage() {
           )}
 
           {/* Google Sign In (if configured) */}
-          {process.env.GOOGLE_CLIENT_ID && (
+          {process.env.NODE_ENV === `production` && (
             <>
               <Button
                 onClick={handleGoogleSignIn}
@@ -136,54 +136,17 @@ function LoginPage() {
                 <FaGoogle />
                 Sign in with Google
               </Button>
-              
-              <Flex align="center" gap="3">
-                <Separator size="4" />
-                <Text size="2" color="gray">OR</Text>
-                <Separator size="4" />
-              </Flex>
             </>
           )}
 
-          <form onSubmit={handleSubmit}>
-            <Flex direction="column" gap="4">
-              <Flex direction="column" gap="2">
-                <TextField.Root
-                  placeholder="Email address"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={isLoading}
-                />
-                <TextField.Root
-                  placeholder="Password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={isLoading}
-                />
-              </Flex>
+          {error && (
+            <Callout.Root color="red">
+              <Callout.Text size="2">{error}</Callout.Text>
+            </Callout.Root>
+          )}
 
-              {error && (
-                <Callout.Root color="red">
-                  <Callout.Text size="2">{error}</Callout.Text>
-                </Callout.Root>
-              )}
-
-              <Button
-                type="submit"
-                disabled={isLoading}
-                size="3"
-                style={{ width: `100%` }}
-              >
-                {isLoading ? `Signing in...` : `Sign in with Email`}
-              </Button>
-            </Flex>
-          </form>
         </Flex>
-      </Card>
-    </Flex>
+      </Card >
+    </Flex >
   )
 }
