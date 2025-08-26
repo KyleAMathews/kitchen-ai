@@ -23,8 +23,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.859.0",
-    "@aws-sdk/s3-request-presigner": "^3.859.0",
     "@capsizecss/core": "^4.1.0",
     "@capsizecss/metrics": "^3.5.0",
     "@capsizecss/unpack": "^3.0.0",
