@@ -12,7 +12,8 @@
       "Bash(pnpm build:*)",
       "Bash(pnpm netlify env:*)",
       "WebFetch(domain:tanstack.com)",
-      "WebFetch(domain:www.better-auth.com)"
+      "WebFetch(domain:www.better-auth.com)",
+      "Bash(pnpm ls:*)"
     ],
     "deny": []
   }

@@ -1,27 +1,22 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router"
 import { Outlet } from "@tanstack/react-router"
-import { authClient } from "@/lib/auth-client"
+import { authClient, authStateCollection } from "@/lib/auth-client"
 import { Flex, Text, Button, Heading, Container } from "@radix-ui/themes"
 
 export const Route = createFileRoute(`/_authenticated`)({
   ssr: false, // Disable SSR - run beforeLoad only on client
   component: AuthenticatedLayout,
   beforeLoad: async () => {
-    console.log("beforeLoad started - checking auth (client-side)")
-
-    const result = await authClient.getSession()
-    console.log("getSession result:", JSON.stringify(result, null, 2))
-
-    const { data: session, isPending } = result
-    console.log("Parsed session:", { session, isPending })
-
-    if (!session && !isPending) {
-      console.log("No session found!")
-      throw new Error(`Not authenticated`)
+    if (
+      authStateCollection.get(`auth`) &&
+      authStateCollection.get(`auth`)?.session.expiresAt > new Date()
+    ) {
+      return authStateCollection.get(`auth`)!
+    } else {
+      const result = await authClient.getSession()
+      authStateCollection.insert({ id: `auth`, ...result.data })
+      return result.data
     }
-
-    console.log("Authentication successful!")
-    return { session }
   },
   errorComponent: ({ error }) => {
     const ErrorComponent = () => {

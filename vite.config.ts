@@ -27,19 +27,9 @@ export default defineConfig(async () => {
       host: true,
     },
     plugins: [
-      // React plugin
-      react(),
       // Path aliases support
       viteTsConfigPaths({
         projects: [`./tsconfig.json`],
-      }),
-      // Local HTTPS with Caddy
-      caddyPlugin(),
-      // Typography optimization
-      capsizeRadixPlugin({
-        outputPath: `./src/typography.css`,
-        defaultFontStack: [generalSansMetrics, arial],
-        headingFontStack: [montserrat, arial],
       }),
       // TanStack Start
       tanstackStart({
@@ -51,6 +41,16 @@ export default defineConfig(async () => {
             crawlLinks: false, // Don't crawl links for pure SPA
           },
         },
+      }),
+      // React plugin
+      react(),
+      // Local HTTPS with Caddy
+      caddyPlugin(),
+      // Typography optimization
+      capsizeRadixPlugin({
+        outputPath: `./src/typography.css`,
+        defaultFontStack: [generalSansMetrics, arial],
+        headingFontStack: [montserrat, arial],
       }),
     ],
     resolve: {

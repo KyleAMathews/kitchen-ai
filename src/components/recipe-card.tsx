@@ -5,7 +5,6 @@ import { timeAgo } from "@/lib/utils"
 import { type SelectRecipe } from "@/db/zod-schemas"
 
 export default function RecipeCard({ recipe }: { recipe: SelectRecipe }) {
-  console.log({ recipe })
   return (
     <Flex>
       <Flex direction="column" gap="3">
