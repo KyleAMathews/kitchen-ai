@@ -39,7 +39,7 @@ export const ingredientsRouter = router({
         tracking_type: ingredientsTrackingTypeSchema,
         fill_level: z.number().min(0).max(100).optional().nullable(),
         count: z.number().optional().nullable(),
-        expiration_date: z.date().optional().nullable(),
+        expiration_date: z.coerce.date().optional().nullable(),
       })
     )
     .mutation(async ({ ctx, input }) => {

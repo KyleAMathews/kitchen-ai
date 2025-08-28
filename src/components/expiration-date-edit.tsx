@@ -23,7 +23,6 @@ export default function ExpirationDateEdit({
   onValueChange?: ((date: Date) => void) | null
   expirationDate: Date
 }) {
-  console.log({ expirationDate })
   const months_until_expiration = diffInMonths(new Date(), expirationDate)
   return (
     <Flex direction="column" gap="2">

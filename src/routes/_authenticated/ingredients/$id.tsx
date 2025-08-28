@@ -207,9 +207,6 @@ export default function IngredientDetail() {
     )
   }
 
-  const expiredDate = new Date(ingredient.expiration_date)
-  const expiresInFuture = ingredient.expiration_date > new Date()
-
   return (
     <div className="p-6">
       <Flex direction="column" gap="6">
