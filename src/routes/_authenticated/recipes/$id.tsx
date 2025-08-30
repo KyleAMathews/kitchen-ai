@@ -850,7 +850,7 @@ function CommentCard({
   return (
     <Card>
       <Flex direction="column" gap="2">
-        <Flex justify="between" align="start">
+        <Flex justify="between" align="center">
           <Flex gap="2" align="center">
             <Avatar
               size="1"
