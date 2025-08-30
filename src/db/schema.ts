@@ -154,7 +154,7 @@ export const recipeComments = pgTable(`recipe_comments`, {
   user_id: text(`user_id`)
     .notNull()
     .references(() => users.id, { onDelete: `cascade` }),
-  made_it: boolean(`made_it`).notNull().default(true), // Always true - indicates they made the recipe
+  made_it: boolean(`made_it`).notNull().default(false), // Whether they actually made the recipe
   rating: integer(`rating`), // Optional: 1-5 stars
   comment: text(`comment`), // Optional: review, notes, modifications, etc.
   created_at: timestamp(`created_at`, { withTimezone: true })

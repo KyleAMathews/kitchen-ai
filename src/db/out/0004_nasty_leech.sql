@@ -1,0 +1,1 @@
+ALTER TABLE "recipe_comments" ALTER COLUMN "made_it" SET DEFAULT false;

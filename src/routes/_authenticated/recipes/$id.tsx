@@ -711,6 +711,7 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
   const [showCommentForm, setShowCommentForm] = useState(false)
   const [rating, setRating] = useState(0)
   const [comment, setComment] = useState(``)
+  const [madeIt, setMadeIt] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
   // Get comments for this recipe
@@ -731,7 +732,7 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
 
   // Calculate stats
   const stats = {
-    madeCount: comments?.length ?? 0,
+    madeCount: comments?.filter((c) => c.made_it).length ?? 0,
     avgRating: comments?.length
       ? comments.reduce((sum, c) => sum + (c.rating ?? 0), 0) /
       comments.filter((c) => c.rating !== null).length
@@ -752,18 +753,19 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!comment.trim() && rating === 0) return
+    if (!comment.trim() && rating === 0 && !madeIt) return
 
     setSubmitting(true)
     try {
       await trpc.recipeComments.create.mutate({
         recipe_id: recipeId,
-        made_it: true,
+        made_it: madeIt,
         rating: rating > 0 ? rating : null,
         comment: comment.trim() || null,
       })
       setComment(``)
       setRating(0)
+      setMadeIt(false)
       setShowCommentForm(false)
     } catch (error) {
       console.error(`Failed to submit comment:`, error)
@@ -821,7 +823,22 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
       {showCommentForm && (
         <Card>
           <form onSubmit={handleSubmitComment}>
-            <Flex direction="column" gap="3">
+            <Flex direction="column" gap="4">
+              <Flex direction="column" gap="3">
+                <Text size="2" weight="medium">
+                  Did you make this recipe?
+                </Text>
+                <Text as="label" size="2">
+                  <Flex gap="2" align="center">
+                    <Checkbox
+                      checked={madeIt}
+                      onCheckedChange={(checked) => setMadeIt(checked === true)}
+                    />
+                    I made this recipe
+                  </Flex>
+                </Text>
+              </Flex>
+
               <Flex direction="column" gap="2">
                 <Text size="2" weight="medium">
                   Rating (optional)
@@ -853,7 +870,15 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
                 <TextArea
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
-                  placeholder="Share your experience, modifications, or notes..."
+                  onKeyDown={(e) => {
+                    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                      e.preventDefault()
+                      if (!submitting && (comment.trim() || rating > 0 || madeIt)) {
+                        handleSubmitComment(e as unknown as React.FormEvent)
+                      }
+                    }
+                  }}
+                  placeholder="Share your experience, modifications, or notes... (Cmd+Enter to submit)"
                   rows={4}
                 />
               </Flex>
@@ -867,13 +892,14 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
                     setShowCommentForm(false)
                     setComment(``)
                     setRating(0)
+                    setMadeIt(false)
                   }}
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  disabled={submitting || (!comment.trim() && rating === 0)}
+                  disabled={submitting || (!comment.trim() && rating === 0 && !madeIt)}
                 >
                   {submitting ? `Submitting...` : `Submit`}
                 </Button>
@@ -921,9 +947,13 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
 
                   {comment.comment ? (
                     <Text size="2">{comment.comment}</Text>
-                  ) : (
+                  ) : comment.made_it ? (
                     <Text size="2" color="gray" style={{ fontStyle: `italic` }}>
                       Made this recipe
+                    </Text>
+                  ) : (
+                    <Text size="2" color="gray" style={{ fontStyle: `italic` }}>
+                      Left a note
                     </Text>
                   )}
                 </Flex>

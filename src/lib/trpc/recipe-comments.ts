@@ -128,7 +128,7 @@ export const recipeCommentsRouter = router({
           .values({
             recipe_id: input.recipe_id,
             user_id: userId,
-            made_it: true,
+            made_it: true, // Explicitly set to true for "made it" action
           })
           .returning({ id: recipeComments.id })
 
@@ -143,7 +143,7 @@ export const recipeCommentsRouter = router({
     .query(async ({ ctx, input }) => {
       const stats = await ctx.db
         .select({
-          total_made: sql<number>`count(*)::int`,
+          total_made: sql<number>`count(*) filter (where made_it = true)::int`,
           total_ratings: sql<number>`count(${recipeComments.rating})::int`,
           avg_rating: sql<number>`avg(${recipeComments.rating})`,
           total_comments: sql<number>`count(${recipeComments.comment})::int`,

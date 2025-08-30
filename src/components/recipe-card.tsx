@@ -23,7 +23,7 @@ export default function RecipeCard({ recipe }: { recipe: SelectRecipe }) {
 
   // Calculate stats from comments
   const stats = {
-    madeCount: comments?.length ?? 0,
+    madeCount: comments?.filter((c) => c.made_it).length ?? 0,
     avgRating: comments?.length
       ? comments.reduce((sum, c) => sum + (c.rating ?? 0), 0) /
         comments.filter((c) => c.rating !== null).length
