@@ -11,6 +11,7 @@ import {
   ingredientEvents,
   recipes,
   recipeIngredients,
+  recipeComments,
   jobs,
   grocerySectionEnum,
   ingredientsTrackingTypeEnum,
@@ -42,6 +43,7 @@ export const selectIngredientEventsSchema = createSelectSchema(ingredientEvents)
 export const selectRecipesSchema = createSelectSchema(recipes)
 export const selectRecipeIngredientsSchema =
   createSelectSchema(recipeIngredients)
+export const selectRecipeCommentsSchema = createSelectSchema(recipeComments)
 export const selectJobsSchema = createSelectSchema(jobs)
 
 // Date coercion helper - transforms string dates to Date objects
@@ -77,6 +79,14 @@ export const insertRecipeIngredientsSchema =
 export const updateRecipeIngredientsSchema =
   createUpdateSchema(recipeIngredients)
 
+export const insertRecipeCommentsSchema = createInsertSchema(recipeComments, {
+  created_at: dateCoercion.optional(),
+  updated_at: dateCoercion.optional(),
+})
+export const updateRecipeCommentsSchema = createUpdateSchema(recipeComments, {
+  updated_at: dateCoercion.optional(),
+})
+
 // Re-export enum schemas for convenience
 export const grocerySectionSchema = z.enum(grocerySectionEnum.enumValues)
 export const ingredientsTrackingTypeSchema = z.enum(
@@ -94,6 +104,7 @@ export type SelectRecipe = z.infer<typeof selectRecipesSchema>
 export type SelectRecipeIngredient = z.infer<
   typeof selectRecipeIngredientsSchema
 >
+export type SelectRecipeComment = z.infer<typeof selectRecipeCommentsSchema>
 export type SelectIngredientEvent = z.infer<typeof selectIngredientEventsSchema>
 export type SelectJob = z.infer<typeof selectJobsSchema>
 export type SelectIngredientsPhotoUpload = z.infer<

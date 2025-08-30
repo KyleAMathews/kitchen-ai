@@ -11,6 +11,7 @@ import {
   ingredientsTrackingTypeSchema,
   type SelectRecipeIngredient,
   type SelectRecipe,
+  type SelectIngredient,
 } from "@/db/zod-schemas"
 import { trpc } from "@/lib/trpc-client"
 import {
@@ -27,6 +28,10 @@ import {
   TextField,
   RadioGroup,
   Slider,
+  TextArea,
+  Card,
+  Avatar,
+  Separator,
 } from "@radix-ui/themes"
 import * as Toast from "@radix-ui/react-toast"
 import { groupBy, mapValues } from "lodash-es"
@@ -34,9 +39,24 @@ import {
   recipesCollection,
   recipeIngredientsCollection,
   ingredientsCollection,
+  recipeCommentsCollection,
+  usersCollection,
 } from "@/lib/collections"
-import { cosineSimilarity, isExpiredSoon, isRunningLow } from "@/lib/utils"
+import {
+  cosineSimilarity,
+  isExpiredSoon,
+  isRunningLow,
+  timeAgo,
+} from "@/lib/utils"
 import ExpirationDateEdit from "@/components/expiration-date-edit"
+import {
+  StarFilledIcon,
+  StarIcon,
+  CheckIcon,
+  ChatBubbleIcon,
+} from "@radix-ui/react-icons"
+
+type IngredientMatch = (SelectIngredient & { distance: number }) | null
 
 export const Route = createFileRoute(`/_authenticated/recipes/$id`)({
   component: RecipeDetail,
@@ -45,6 +65,8 @@ export const Route = createFileRoute(`/_authenticated/recipes/$id`)({
       recipesCollection.preload(),
       recipeIngredientsCollection.preload(),
       ingredientsCollection.preload(),
+      recipeCommentsCollection.preload(),
+      usersCollection.preload(),
     ])
   },
 })
@@ -55,7 +77,7 @@ function AddIngredientsToShoppingListButton({
   recipe,
   recipeIngredients,
 }: {
-  possibleMatches: Record<string, any>
+  possibleMatches: Record<string, IngredientMatch>
   checked: Record<string, boolean>
   recipe: SelectRecipe
   recipeIngredients: SelectRecipeIngredient[]
@@ -131,10 +153,10 @@ function AlreadyHaveIngredient({
   checked,
   possibleMatches,
 }: {
-  ingredient: any
-  setChecked: (val: any) => void
+  ingredient: SelectRecipeIngredient
+  setChecked: (val: Record<string, boolean>) => void
   checked: Record<string, boolean>
-  possibleMatches: Record<string, any>
+  possibleMatches: Record<string, IngredientMatch>
 }) {
   const matchedIngred = possibleMatches[ingredient.id]
 
@@ -196,7 +218,7 @@ function AlreadyHaveIngredient({
   )
 }
 
-function AddIngredient({ ingredient }: { ingredient: any }) {
+function AddIngredient({ ingredient }: { ingredient: SelectRecipeIngredient }) {
   const [type, setType] = useState(`fill_level`)
   const [open, setOpen] = useState(false)
   const [expirationDate, setExpirationDate] = useState(new Date())
@@ -356,7 +378,7 @@ function AddIngredient({ ingredient }: { ingredient: any }) {
   )
 }
 
-function DeleteRecipeButton({ recipe }: { recipe: any }) {
+function DeleteRecipeButton({ recipe }: { recipe: SelectRecipe }) {
   const [open, setOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const navigate = useNavigate()
@@ -448,7 +470,7 @@ export default function RecipeDetail() {
   }
 
   // Calculate ingredient matches using cosine similarity
-  const possibleMatches: Record<string, any> = {}
+  const possibleMatches: Record<string, IngredientMatch> = {}
 
   if (recipeIngredients && userIngredients) {
     recipeIngredients.forEach((ri) => {
@@ -470,9 +492,11 @@ export default function RecipeDetail() {
       possibleMatches[ri.id] =
         matches.length === 0
           ? null
-          : matches.reduce((prev: any, current: any) => {
-              return prev.distance > current.distance ? prev : current
-            })
+          : matches.reduce((prev, current) => {
+            return (prev?.distance ?? 0) > (current?.distance ?? 0)
+              ? prev
+              : current
+          })
     })
   }
 
@@ -531,7 +555,8 @@ export default function RecipeDetail() {
         {neededIngredients.map((ingredient_id: string) => {
           const ingredient = recipeIngredients?.find(
             (i) => i.id === ingredient_id
-          )!
+          )
+          if (!ingredient) return null
           return (
             <Text
               key={ingredient_id}
@@ -675,6 +700,252 @@ export default function RecipeDetail() {
           </details>
         )
       })()}
+
+      {/* Comments and Reviews Section */}
+      <RecipeCommentsSection recipeId={id} />
+    </Flex>
+  )
+}
+
+function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
+  const [showCommentForm, setShowCommentForm] = useState(false)
+  const [rating, setRating] = useState(0)
+  const [comment, setComment] = useState(``)
+  const [submitting, setSubmitting] = useState(false)
+
+  // Get comments for this recipe
+  const { data: comments } = useLiveQuery(
+    (q) =>
+      q
+        .from({ comment: recipeCommentsCollection })
+        .where(({ comment }) => eq(comment.recipe_id, recipeId))
+        .orderBy(({ comment }) => comment.created_at, `desc`),
+    [recipeId]
+  )
+
+  // Get users for comment authors
+  const { data: users } = useLiveQuery(
+    (q) => q.from({ user: usersCollection }),
+    []
+  )
+
+  // Calculate stats
+  const stats = {
+    madeCount: comments?.length ?? 0,
+    avgRating: comments?.length
+      ? comments.reduce((sum, c) => sum + (c.rating ?? 0), 0) /
+      comments.filter((c) => c.rating !== null).length
+      : null,
+    ratingCount: comments?.filter((c) => c.rating !== null).length ?? 0,
+  }
+
+  const handleMadeIt = async () => {
+    setSubmitting(true)
+    try {
+      await trpc.recipeComments.madeIt.mutate({ recipe_id: recipeId })
+    } catch (error) {
+      console.error(`Failed to mark as made:`, error)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleSubmitComment = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!comment.trim() && rating === 0) return
+
+    setSubmitting(true)
+    try {
+      await trpc.recipeComments.create.mutate({
+        recipe_id: recipeId,
+        made_it: true,
+        rating: rating > 0 ? rating : null,
+        comment: comment.trim() || null,
+      })
+      setComment(``)
+      setRating(0)
+      setShowCommentForm(false)
+    } catch (error) {
+      console.error(`Failed to submit comment:`, error)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <Flex direction="column" gap="4" mt="6">
+      <Separator size="4" />
+
+      {/* Stats Bar */}
+      <Flex gap="4" direction="column">
+        <Flex gap="4" direction="column">
+          <Heading size="4">Reviews & Notes</Heading>
+          {stats.madeCount > 0 && (
+            <Flex gap="3" align="center">
+              <Badge color="green" variant="soft">
+                <CheckIcon width="12" height="12" />
+                Made {stats.madeCount} time{stats.madeCount !== 1 ? `s` : ``}
+              </Badge>
+              {stats.avgRating !== null && stats.ratingCount > 0 && (
+                <Badge color="amber" variant="soft">
+                  <StarFilledIcon width="12" height="12" />
+                  {stats.avgRating.toFixed(1)} ({stats.ratingCount} rating
+                  {stats.ratingCount !== 1 ? `s` : ``})
+                </Badge>
+              )}
+            </Flex>
+          )}
+        </Flex>
+
+        {/* Action Buttons */}
+        <Flex gap="2">
+          <Button
+            variant="soft"
+            color="green"
+            onClick={handleMadeIt}
+            disabled={submitting}
+          >
+            <CheckIcon width="16" height="16" />I Made This
+          </Button>
+          <Button
+            variant="soft"
+            onClick={() => setShowCommentForm(!showCommentForm)}
+          >
+            <ChatBubbleIcon width="16" height="16" />
+            Add Comment
+          </Button>
+        </Flex>
+      </Flex>
+
+      {/* Comment Form */}
+      {showCommentForm && (
+        <Card>
+          <form onSubmit={handleSubmitComment}>
+            <Flex direction="column" gap="3">
+              <Flex direction="column" gap="2">
+                <Text size="2" weight="medium">
+                  Rating (optional)
+                </Text>
+                <Flex gap="1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Button
+                      key={star}
+                      type="button"
+                      variant="ghost"
+                      size="2"
+                      onClick={() => setRating(star === rating ? 0 : star)}
+                      style={{ padding: 4 }}
+                    >
+                      {star <= rating ? (
+                        <StarFilledIcon width="20" height="20" color="gold" />
+                      ) : (
+                        <StarIcon width="20" height="20" />
+                      )}
+                    </Button>
+                  ))}
+                </Flex>
+              </Flex>
+
+              <Flex direction="column" gap="2">
+                <Text size="2" weight="medium">
+                  Comment (optional)
+                </Text>
+                <TextArea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder="Share your experience, modifications, or notes..."
+                  rows={4}
+                />
+              </Flex>
+
+              <Flex gap="2" justify="end">
+                <Button
+                  type="button"
+                  variant="soft"
+                  color="gray"
+                  onClick={() => {
+                    setShowCommentForm(false)
+                    setComment(``)
+                    setRating(0)
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={submitting || (!comment.trim() && rating === 0)}
+                >
+                  {submitting ? `Submitting...` : `Submit`}
+                </Button>
+              </Flex>
+            </Flex>
+          </form>
+        </Card>
+      )}
+
+      {/* Comments List */}
+      {comments && comments.length > 0 && (
+        <Flex direction="column" gap="3">
+          {comments.map((comment) => {
+            const author = users?.find((u) => u.id === comment.user_id)
+            return (
+              <Card key={comment.id}>
+                <Flex direction="column" gap="2">
+                  <Flex justify="between" align="start">
+                    <Flex gap="2" align="center">
+                      <Avatar
+                        size="1"
+                        fallback={author?.name?.[0] || `?`}
+                        src={author?.image || undefined}
+                      />
+                      <Text size="2" weight="medium">
+                        {author?.name || `Anonymous`}
+                      </Text>
+                      {comment.rating && (
+                        <Flex gap="0">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <StarFilledIcon
+                              key={star}
+                              width="12"
+                              height="12"
+                              color={star <= comment.rating! ? `gold` : `gray`}
+                            />
+                          ))}
+                        </Flex>
+                      )}
+                    </Flex>
+                    <Text size="1" color="gray">
+                      {timeAgo.format(comment.created_at)}
+                    </Text>
+                  </Flex>
+
+                  {comment.comment ? (
+                    <Text size="2">{comment.comment}</Text>
+                  ) : (
+                    <Text size="2" color="gray" style={{ fontStyle: `italic` }}>
+                      Made this recipe
+                    </Text>
+                  )}
+                </Flex>
+              </Card>
+            )
+          })}
+        </Flex>
+      )}
+
+      {/* Empty State */}
+      {(!comments || comments.length === 0) && !showCommentForm && (
+        <Card>
+          <Flex direction="column" align="center" gap="2" py="4">
+            <Text size="2" color="gray">
+              No reviews or notes yet
+            </Text>
+            <Text size="1" color="gray">
+              Be the first to share your experience!
+            </Text>
+          </Flex>
+        </Card>
+      )}
     </Flex>
   )
 }
