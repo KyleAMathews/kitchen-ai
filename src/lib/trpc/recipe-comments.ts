@@ -6,7 +6,7 @@ import {
   insertRecipeCommentsSchema,
   updateRecipeCommentsSchema,
 } from "@/db/zod-schemas"
-import { eq, and, sql, desc } from "drizzle-orm"
+import { eq, and } from "drizzle-orm"
 
 export const recipeCommentsRouter = router({
   // Add a comment/rating/made-it entry
@@ -137,40 +137,4 @@ export const recipeCommentsRouter = router({
       })
     }),
 
-  // Get aggregated stats for a recipe
-  getStats: authedProcedure
-    .input(z.object({ recipe_id: z.string().uuid() }))
-    .query(async ({ ctx, input }) => {
-      const stats = await ctx.db
-        .select({
-          total_made: sql<number>`count(*) filter (where made_it = true)::int`,
-          total_ratings: sql<number>`count(${recipeComments.rating})::int`,
-          avg_rating: sql<number>`avg(${recipeComments.rating})`,
-          total_comments: sql<number>`count(${recipeComments.comment})::int`,
-        })
-        .from(recipeComments)
-        .where(eq(recipeComments.recipe_id, input.recipe_id))
-
-      return (
-        stats[0] || {
-          total_made: 0,
-          total_ratings: 0,
-          avg_rating: null,
-          total_comments: 0,
-        }
-      )
-    }),
-
-  // Get all comments for a recipe
-  getComments: authedProcedure
-    .input(z.object({ recipe_id: z.string().uuid() }))
-    .query(async ({ ctx, input }) => {
-      const comments = await ctx.db
-        .select()
-        .from(recipeComments)
-        .where(eq(recipeComments.recipe_id, input.recipe_id))
-        .orderBy(desc(recipeComments.created_at))
-
-      return comments
-    }),
 })
