@@ -56,7 +56,6 @@ export const ingredientsCollection = createCollection(
         grocerySection: newIngredient.grocery_section,
         count: newIngredient.count,
         expirationDate: newIngredient.expiration_date,
-        ingredientsPhotoUploadsId: newIngredient.ingredients_photo_uploads_id,
       })
 
       return { txid: result.txid }

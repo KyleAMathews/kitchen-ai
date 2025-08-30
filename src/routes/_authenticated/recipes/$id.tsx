@@ -501,10 +501,10 @@ export default function RecipeDetail() {
         matches.length === 0
           ? null
           : matches.reduce((prev, current) => {
-            return (prev?.distance ?? 0) > (current?.distance ?? 0)
-              ? prev
-              : current
-          })
+              return (prev?.distance ?? 0) > (current?.distance ?? 0)
+                ? prev
+                : current
+            })
     })
   }
 
@@ -806,9 +806,7 @@ function CommentCard({
                 onKeyDown={(e) => {
                   if ((e.metaKey || e.ctrlKey) && e.key === `Enter`) {
                     e.preventDefault()
-                    if (
-                      (editComment.trim() || editRating > 0 || editMadeIt)
-                    ) {
+                    if (editComment.trim() || editRating > 0 || editMadeIt) {
                       handleEdit(e as unknown as React.FormEvent)
                     }
                   }
@@ -900,7 +898,9 @@ function CommentCard({
         </Flex>
 
         {comment.comment ? (
-          <Text size="2" style={{ whiteSpace: 'pre-wrap' }}>{comment.comment}</Text>
+          <Text size="2" style={{ whiteSpace: `pre-wrap` }}>
+            {comment.comment}
+          </Text>
         ) : comment.made_it ? (
           <Text size="2" color="gray" style={{ fontStyle: `italic` }}>
             Made this recipe
@@ -943,7 +943,7 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
     madeCount: comments?.filter((c) => c.made_it).length ?? 0,
     avgRating: comments?.length
       ? comments.reduce((sum, c) => sum + (c.rating ?? 0), 0) /
-      comments.filter((c) => c.rating !== null).length
+        comments.filter((c) => c.rating !== null).length
       : null,
     ratingCount: comments?.filter((c) => c.rating !== null).length ?? 0,
   }
@@ -1078,9 +1078,7 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
                   onKeyDown={(e) => {
                     if ((e.metaKey || e.ctrlKey) && e.key === `Enter`) {
                       e.preventDefault()
-                      if (
-                        (comment.trim() || rating > 0 || madeIt)
-                      ) {
+                      if (comment.trim() || rating > 0 || madeIt) {
                         handleSubmitComment(e as unknown as React.FormEvent)
                       }
                     }
@@ -1106,9 +1104,7 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={
-                    !comment.trim() && rating === 0 && !madeIt
-                  }
+                  disabled={!comment.trim() && rating === 0 && !madeIt}
                 >
                   Submit
                 </Button>

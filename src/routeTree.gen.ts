@@ -14,7 +14,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
-import { Route as AuthenticatedUploadPhotosRouteImport } from './routes/_authenticated/upload-photos'
 import { Route as AuthenticatedReviewRouteImport } from './routes/_authenticated/review'
 import { Route as AuthenticatedRecipesIndexRouteImport } from './routes/_authenticated/recipes/index'
 import { Route as AuthenticatedIngredientsIndexRouteImport } from './routes/_authenticated/ingredients/index'
@@ -46,12 +45,6 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedUploadPhotosRoute =
-  AuthenticatedUploadPhotosRouteImport.update({
-    id: '/upload-photos',
-    path: '/upload-photos',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
 const AuthenticatedReviewRoute = AuthenticatedReviewRouteImport.update({
   id: '/review',
   path: '/review',
@@ -130,7 +123,6 @@ const ApiTrpcSplatServerRoute = ApiTrpcSplatServerRouteImport.update({
 export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/review': typeof AuthenticatedReviewRoute
-  '/upload-photos': typeof AuthenticatedUploadPhotosRoute
   '/': typeof AuthenticatedIndexRoute
   '/ingredients/$id': typeof AuthenticatedIngredientsIdRoute
   '/recipes/$id': typeof AuthenticatedRecipesIdRoute
@@ -141,7 +133,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/review': typeof AuthenticatedReviewRoute
-  '/upload-photos': typeof AuthenticatedUploadPhotosRoute
   '/': typeof AuthenticatedIndexRoute
   '/ingredients/$id': typeof AuthenticatedIngredientsIdRoute
   '/recipes/$id': typeof AuthenticatedRecipesIdRoute
@@ -154,7 +145,6 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authenticated/review': typeof AuthenticatedReviewRoute
-  '/_authenticated/upload-photos': typeof AuthenticatedUploadPhotosRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/ingredients/$id': typeof AuthenticatedIngredientsIdRoute
   '/_authenticated/recipes/$id': typeof AuthenticatedRecipesIdRoute
@@ -167,7 +157,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/login'
     | '/review'
-    | '/upload-photos'
     | '/'
     | '/ingredients/$id'
     | '/recipes/$id'
@@ -178,7 +167,6 @@ export interface FileRouteTypes {
   to:
     | '/login'
     | '/review'
-    | '/upload-photos'
     | '/'
     | '/ingredients/$id'
     | '/recipes/$id'
@@ -190,7 +178,6 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/login'
     | '/_authenticated/review'
-    | '/_authenticated/upload-photos'
     | '/_authenticated/'
     | '/_authenticated/ingredients/$id'
     | '/_authenticated/recipes/$id'
@@ -301,13 +288,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/upload-photos': {
-      id: '/_authenticated/upload-photos'
-      path: '/upload-photos'
-      fullPath: '/upload-photos'
-      preLoaderRoute: typeof AuthenticatedUploadPhotosRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/review': {
       id: '/_authenticated/review'
       path: '/review'
@@ -415,7 +395,6 @@ declare module '@tanstack/react-start/server' {
 
 interface AuthenticatedRouteChildren {
   AuthenticatedReviewRoute: typeof AuthenticatedReviewRoute
-  AuthenticatedUploadPhotosRoute: typeof AuthenticatedUploadPhotosRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedIngredientsIdRoute: typeof AuthenticatedIngredientsIdRoute
   AuthenticatedRecipesIdRoute: typeof AuthenticatedRecipesIdRoute
@@ -426,7 +405,6 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedReviewRoute: AuthenticatedReviewRoute,
-  AuthenticatedUploadPhotosRoute: AuthenticatedUploadPhotosRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedIngredientsIdRoute: AuthenticatedIngredientsIdRoute,
   AuthenticatedRecipesIdRoute: AuthenticatedRecipesIdRoute,
