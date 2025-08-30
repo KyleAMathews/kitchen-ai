@@ -4,6 +4,7 @@ import {
   selectIngredientsSchema,
   selectRecipesSchema,
   selectRecipeIngredientsSchema,
+  selectRecipeCommentsSchema,
   selectUsersSchema,
 } from "@/db/zod-schemas"
 import { trpc } from "@/lib/trpc-client"
@@ -159,5 +160,55 @@ export const recipeIngredientsCollection = createCollection(
 
     // Note: Recipe ingredients are typically managed through the recipes.addIngredients tRPC procedure
     // But we can still provide optimistic updates for direct operations
+  })
+)
+
+export const recipeCommentsCollection = createCollection(
+  electricCollectionOptions({
+    id: `recipe_comments`,
+    shapeOptions: {
+      url: new URL(
+        `/api/recipe-comments`,
+        typeof window !== `undefined`
+          ? window.location.origin
+          : `http://localhost:5173`
+      ).toString(),
+      parser: {
+        timestamptz: (date: string) => new Date(date),
+      },
+    },
+    schema: selectRecipeCommentsSchema,
+    getKey: (item) => item.id,
+
+    onInsert: async ({ transaction }) => {
+      const { modified: newComment } = transaction.mutations[0]
+      const result = await trpc.recipeComments.create.mutate({
+        recipe_id: newComment.recipe_id,
+        made_it: newComment.made_it,
+        rating: newComment.rating,
+        comment: newComment.comment,
+      })
+
+      return { txid: result.txid }
+    },
+
+    onUpdate: async ({ transaction }) => {
+      const { original, changes } = transaction.mutations[0]
+      const result = await trpc.recipeComments.update.mutate({
+        id: original.id,
+        data: changes,
+      })
+
+      return { txid: result.txid }
+    },
+
+    onDelete: async ({ transaction }) => {
+      const { original: deletedComment } = transaction.mutations[0]
+      const result = await trpc.recipeComments.delete.mutate({
+        id: deletedComment.id,
+      })
+
+      return { txid: result.txid }
+    },
   })
 )

@@ -143,6 +143,28 @@ export const jobs = pgTable(`jobs`, {
   result: jsonb(`result`),
 })
 
+// Recipe comments, ratings, and "made it" tracking
+// Users can create multiple entries per recipe (e.g., made it multiple times, recipe notes, reviews)
+// Entries can be just "made it" (no rating/comment) or full comments with ratings
+export const recipeComments = pgTable(`recipe_comments`, {
+  id: uuid(`id`).primaryKey().defaultRandom(),
+  recipe_id: uuid(`recipe_id`)
+    .notNull()
+    .references(() => recipes.id, { onDelete: `cascade` }),
+  user_id: text(`user_id`)
+    .notNull()
+    .references(() => users.id, { onDelete: `cascade` }),
+  made_it: boolean(`made_it`).notNull().default(true), // Always true - indicates they made the recipe
+  rating: integer(`rating`), // Optional: 1-5 stars
+  comment: text(`comment`), // Optional: review, notes, modifications, etc.
+  created_at: timestamp(`created_at`, { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updated_at: timestamp(`updated_at`, { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+})
+
 // Export all tables for migrations and relations
 export const schema = {
   users,
@@ -151,5 +173,6 @@ export const schema = {
   ingredientEvents,
   recipes,
   recipeIngredients,
+  recipeComments,
   jobs,
 }
