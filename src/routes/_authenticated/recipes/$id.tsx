@@ -1133,16 +1133,14 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
 
       {/* Empty State */}
       {(!comments || comments.length === 0) && !showCommentForm && (
-        <Card>
-          <Flex direction="column" align="center" gap="2" py="4">
-            <Text size="2" color="gray">
-              No reviews or notes yet
-            </Text>
-            <Text size="1" color="gray">
-              Be the first to share your experience!
-            </Text>
-          </Flex>
-        </Card>
+        <Flex direction="column" align="start" gap="2" py="4">
+          <Text size="2" color="gray">
+            No reviews or notes yet
+          </Text>
+          <Text size="1" color="gray">
+            Be the first to share your experience!
+          </Text>
+        </Flex>
       )}
     </Flex>
   )
