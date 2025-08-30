@@ -25,9 +25,9 @@ const serve = async ({ request }: { request: Request }) => {
   })
 
   originUrl.searchParams.set(`table`, `users`)
-  // User can only see their own user record
-  const filter = `id = '${session.user.id}'`
-  originUrl.searchParams.set(`where`, filter)
+  // // User can only see their own user record
+  // const filter = `id = '${session.user.id}'`
+  // originUrl.searchParams.set(`where`, filter)
 
   // Add Electric Cloud authentication if configured
   if (process.env.ELECTRIC_SOURCE_ID && process.env.ELECTRIC_SOURCE_SECRET) {
