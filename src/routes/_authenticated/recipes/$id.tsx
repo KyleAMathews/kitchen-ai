@@ -900,7 +900,7 @@ function CommentCard({
         </Flex>
 
         {comment.comment ? (
-          <Text size="2">{comment.comment}</Text>
+          <Text size="2" style={{ whiteSpace: 'pre-wrap' }}>{comment.comment}</Text>
         ) : comment.made_it ? (
           <Text size="2" color="gray" style={{ fontStyle: `italic` }}>
             Made this recipe
