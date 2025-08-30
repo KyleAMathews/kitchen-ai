@@ -12,6 +12,8 @@ import {
   type SelectRecipeIngredient,
   type SelectRecipe,
   type SelectIngredient,
+  type SelectRecipeComment,
+  type SelectUser,
 } from "@/db/zod-schemas"
 import { trpc } from "@/lib/trpc-client"
 import {
@@ -32,6 +34,8 @@ import {
   Card,
   Avatar,
   Separator,
+  DropdownMenu,
+  IconButton,
 } from "@radix-ui/themes"
 import * as Toast from "@radix-ui/react-toast"
 import { groupBy, mapValues } from "lodash-es"
@@ -54,7 +58,11 @@ import {
   StarIcon,
   CheckIcon,
   ChatBubbleIcon,
+  DotsVerticalIcon,
+  Pencil1Icon,
+  TrashIcon,
 } from "@radix-ui/react-icons"
+import { authClient } from "@/lib/auth-client"
 
 type IngredientMatch = (SelectIngredient & { distance: number }) | null
 
@@ -493,10 +501,10 @@ export default function RecipeDetail() {
         matches.length === 0
           ? null
           : matches.reduce((prev, current) => {
-            return (prev?.distance ?? 0) > (current?.distance ?? 0)
-              ? prev
-              : current
-          })
+              return (prev?.distance ?? 0) > (current?.distance ?? 0)
+                ? prev
+                : current
+            })
     })
   }
 
@@ -707,6 +715,225 @@ export default function RecipeDetail() {
   )
 }
 
+function CommentCard({
+  comment,
+  users,
+}: {
+  comment: SelectRecipeComment
+  users: SelectUser[]
+}) {
+  const [editing, setEditing] = useState(false)
+  const [editRating, setEditRating] = useState(comment.rating || 0)
+  const [editComment, setEditComment] = useState(comment.comment || ``)
+  const [editMadeIt, setEditMadeIt] = useState(comment.made_it)
+  const [submitting, setSubmitting] = useState(false)
+  const { data: session } = authClient.useSession()
+
+  const author = users?.find((u) => u.id === comment.user_id)
+  const isOwner = session?.user.id === comment.user_id
+
+  const handleEdit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editComment.trim() && editRating === 0 && !editMadeIt) return
+
+    setSubmitting(true)
+    try {
+      await trpc.recipeComments.update.mutate({
+        id: comment.id,
+        data: {
+          rating: editRating > 0 ? editRating : null,
+          comment: editComment.trim() || null,
+          made_it: editMadeIt,
+        },
+      })
+      setEditing(false)
+    } catch (error) {
+      console.error(`Failed to update comment:`, error)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    setSubmitting(true)
+    try {
+      await trpc.recipeComments.delete.mutate({ id: comment.id })
+    } catch (error) {
+      console.error(`Failed to delete comment:`, error)
+      setSubmitting(false)
+    }
+  }
+
+  if (editing) {
+    return (
+      <Card>
+        <form onSubmit={handleEdit}>
+          <Flex direction="column" gap="3">
+            <Flex direction="column" gap="2">
+              <Text size="2" weight="medium">
+                Did you make this recipe?
+              </Text>
+              <Text as="label" size="2">
+                <Flex gap="2" align="center">
+                  <Checkbox
+                    checked={editMadeIt}
+                    onCheckedChange={(checked) =>
+                      setEditMadeIt(checked === true)
+                    }
+                  />
+                  I made this recipe
+                </Flex>
+              </Text>
+            </Flex>
+
+            <Flex direction="column" gap="2">
+              <Text size="2" weight="medium">
+                Rating (optional)
+              </Text>
+              <Flex gap="1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Button
+                    key={star}
+                    type="button"
+                    variant="ghost"
+                    size="2"
+                    onClick={() =>
+                      setEditRating(star === editRating ? 0 : star)
+                    }
+                    style={{ padding: 4 }}
+                  >
+                    {star <= editRating ? (
+                      <StarFilledIcon width="20" height="20" color="gold" />
+                    ) : (
+                      <StarIcon width="20" height="20" />
+                    )}
+                  </Button>
+                ))}
+              </Flex>
+            </Flex>
+
+            <Flex direction="column" gap="2">
+              <Text size="2" weight="medium">
+                Comment (optional)
+              </Text>
+              <TextArea
+                value={editComment}
+                onChange={(e) => setEditComment(e.target.value)}
+                onKeyDown={(e) => {
+                  if ((e.metaKey || e.ctrlKey) && e.key === `Enter`) {
+                    e.preventDefault()
+                    if (
+                      !submitting &&
+                      (editComment.trim() || editRating > 0 || editMadeIt)
+                    ) {
+                      handleEdit(e as unknown as React.FormEvent)
+                    }
+                  }
+                }}
+                placeholder="Share your experience, modifications, or notes... (Cmd+Enter to submit)"
+                rows={4}
+              />
+            </Flex>
+
+            <Flex gap="2" justify="end">
+              <Button
+                type="button"
+                variant="soft"
+                color="gray"
+                onClick={() => {
+                  setEditing(false)
+                  setEditComment(comment.comment || ``)
+                  setEditRating(comment.rating || 0)
+                  setEditMadeIt(comment.made_it)
+                }}
+                disabled={submitting}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={
+                  submitting ||
+                  (!editComment.trim() && editRating === 0 && !editMadeIt)
+                }
+              >
+                {submitting ? `Saving...` : `Save`}
+              </Button>
+            </Flex>
+          </Flex>
+        </form>
+      </Card>
+    )
+  }
+
+  return (
+    <Card>
+      <Flex direction="column" gap="2">
+        <Flex justify="between" align="start">
+          <Flex gap="2" align="center">
+            <Avatar
+              size="1"
+              fallback={author?.name?.[0] || `?`}
+              src={author?.image || undefined}
+            />
+            <Text size="2" weight="medium">
+              {author?.name || `Anonymous`}
+            </Text>
+            {comment.rating && (
+              <Flex gap="0">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <StarFilledIcon
+                    key={star}
+                    width="12"
+                    height="12"
+                    color={star <= comment.rating! ? `gold` : `gray`}
+                  />
+                ))}
+              </Flex>
+            )}
+          </Flex>
+          <Flex gap="2" align="center">
+            <Text size="1" color="gray">
+              {timeAgo.format(comment.created_at)}
+            </Text>
+            {isOwner && (
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger>
+                  <IconButton variant="ghost" size="1">
+                    <DotsVerticalIcon width="14" height="14" />
+                  </IconButton>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content>
+                  <DropdownMenu.Item onClick={() => setEditing(true)}>
+                    <Pencil1Icon width="14" height="14" />
+                    Edit
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item color="red" onClick={handleDelete}>
+                    <TrashIcon width="14" height="14" />
+                    Delete
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            )}
+          </Flex>
+        </Flex>
+
+        {comment.comment ? (
+          <Text size="2">{comment.comment}</Text>
+        ) : comment.made_it ? (
+          <Text size="2" color="gray" style={{ fontStyle: `italic` }}>
+            Made this recipe
+          </Text>
+        ) : (
+          <Text size="2" color="gray" style={{ fontStyle: `italic` }}>
+            Left a note
+          </Text>
+        )}
+      </Flex>
+    </Card>
+  )
+}
+
 function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
   const [showCommentForm, setShowCommentForm] = useState(false)
   const [rating, setRating] = useState(0)
@@ -735,7 +962,7 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
     madeCount: comments?.filter((c) => c.made_it).length ?? 0,
     avgRating: comments?.length
       ? comments.reduce((sum, c) => sum + (c.rating ?? 0), 0) /
-      comments.filter((c) => c.rating !== null).length
+        comments.filter((c) => c.rating !== null).length
       : null,
     ratingCount: comments?.filter((c) => c.rating !== null).length ?? 0,
   }
@@ -871,9 +1098,12 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   onKeyDown={(e) => {
-                    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                    if ((e.metaKey || e.ctrlKey) && e.key === `Enter`) {
                       e.preventDefault()
-                      if (!submitting && (comment.trim() || rating > 0 || madeIt)) {
+                      if (
+                        !submitting &&
+                        (comment.trim() || rating > 0 || madeIt)
+                      ) {
                         handleSubmitComment(e as unknown as React.FormEvent)
                       }
                     }
@@ -899,7 +1129,9 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={submitting || (!comment.trim() && rating === 0 && !madeIt)}
+                  disabled={
+                    submitting || (!comment.trim() && rating === 0 && !madeIt)
+                  }
                 >
                   {submitting ? `Submitting...` : `Submit`}
                 </Button>
@@ -912,54 +1144,13 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
       {/* Comments List */}
       {comments && comments.length > 0 && (
         <Flex direction="column" gap="3">
-          {comments.map((comment) => {
-            const author = users?.find((u) => u.id === comment.user_id)
-            return (
-              <Card key={comment.id}>
-                <Flex direction="column" gap="2">
-                  <Flex justify="between" align="start">
-                    <Flex gap="2" align="center">
-                      <Avatar
-                        size="1"
-                        fallback={author?.name?.[0] || `?`}
-                        src={author?.image || undefined}
-                      />
-                      <Text size="2" weight="medium">
-                        {author?.name || `Anonymous`}
-                      </Text>
-                      {comment.rating && (
-                        <Flex gap="0">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <StarFilledIcon
-                              key={star}
-                              width="12"
-                              height="12"
-                              color={star <= comment.rating! ? `gold` : `gray`}
-                            />
-                          ))}
-                        </Flex>
-                      )}
-                    </Flex>
-                    <Text size="1" color="gray">
-                      {timeAgo.format(comment.created_at)}
-                    </Text>
-                  </Flex>
-
-                  {comment.comment ? (
-                    <Text size="2">{comment.comment}</Text>
-                  ) : comment.made_it ? (
-                    <Text size="2" color="gray" style={{ fontStyle: `italic` }}>
-                      Made this recipe
-                    </Text>
-                  ) : (
-                    <Text size="2" color="gray" style={{ fontStyle: `italic` }}>
-                      Left a note
-                    </Text>
-                  )}
-                </Flex>
-              </Card>
-            )
-          })}
+          {comments.map((comment) => (
+            <CommentCard
+              key={comment.id}
+              comment={comment}
+              users={users || []}
+            />
+          ))}
         </Flex>
       )}
 
