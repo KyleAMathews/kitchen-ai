@@ -7,17 +7,11 @@ import {
   uuid,
   pgEnum,
   jsonb,
-  real,
 } from "drizzle-orm/pg-core"
 export * from "./auth-schema"
 import { users } from "./auth-schema"
 
 // Enums
-export const ingredientPhotoUploadStateEnum = pgEnum(
-  `ingredient_photo_upload_state`,
-  [`uploading`, `ai_processing`, `reviewing`, `done`]
-)
-
 export const grocerySectionEnum = pgEnum(`grocery_section`, [
   `Produce`, // Fresh fruits and vegetables
   `Meat & Seafood`, // Fresh meat, poultry, fish
@@ -41,22 +35,6 @@ export const ingredientsTrackingTypeEnum = pgEnum(`ingredients_tracking_type`, [
 
 export const jobsStateEnum = pgEnum(`jobs_state`, [`working`, `done`, `error`])
 
-// Photo upload system
-export const ingredientsPhotoUploads = pgTable(`ingredients_photo_uploads`, {
-  id: uuid(`id`).primaryKey().defaultRandom(),
-  user_id: text(`user_id`)
-    .notNull()
-    .references(() => users.id, { onDelete: `cascade` }),
-  created_at: timestamp(`created_at`, { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  uploaded_at: timestamp(`uploaded_at`, { withTimezone: true }),
-  state: ingredientPhotoUploadStateEnum(`state`).notNull(),
-  upload_duration_sec: real(`upload_duration_sec`),
-  ai_processing_duration_sec: real(`ai_processing_duration_sec`),
-  photo_url: text(`photo_url`),
-})
-
 // Ingredients system
 export const ingredients = pgTable(`ingredients`, {
   id: uuid(`id`).primaryKey().defaultRandom(),
@@ -71,9 +49,6 @@ export const ingredients = pgTable(`ingredients`, {
   expiration_date: timestamp(`expiration_date`, {
     withTimezone: true,
   }).notNull(),
-  ingredients_photo_uploads_id: uuid(`ingredients_photo_uploads_id`).references(
-    () => ingredientsPhotoUploads.id
-  ),
   user_id: text(`user_id`)
     .notNull()
     .references(() => users.id, { onDelete: `cascade` }), // Add user ownership
@@ -168,7 +143,6 @@ export const recipeComments = pgTable(`recipe_comments`, {
 // Export all tables for migrations and relations
 export const schema = {
   users,
-  ingredientsPhotoUploads,
   ingredients,
   ingredientEvents,
   recipes,

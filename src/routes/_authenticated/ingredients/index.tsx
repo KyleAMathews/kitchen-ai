@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useLiveQuery } from "@tanstack/react-db"
-import { Heading, Flex, Separator, Text } from "@radix-ui/themes"
+import { Heading, Flex, Text } from "@radix-ui/themes"
 import { ingredientsCollection } from "@/lib/collections"
 import IngredientCard from "@/components/ingredient-card"
 
@@ -36,9 +36,7 @@ export default function IngredientsList() {
             })}
           </Flex>
         ) : (
-          <Text color="gray">
-            No ingredients yet. Start by uploading photos!
-          </Text>
+          <Text color="gray">No ingredients yet. Add them from recipes!</Text>
         )}
       </Flex>
     </div>

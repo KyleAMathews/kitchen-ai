@@ -1,21 +1,22 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import { useState } from "react"
 import { useLiveQuery, or, ilike } from "@tanstack/react-db"
 import {
   Flex,
   Heading,
   Text,
-  Button,
-  Separator,
   TextField,
 } from "@radix-ui/themes"
 import {
   MagnifyingGlassIcon,
   PlusCircledIcon,
   ArrowRightIcon,
-  CameraIcon,
 } from "@radix-ui/react-icons"
-import { ingredientsCollection, recipesCollection, recipeCommentsCollection } from "@/lib/collections"
+import {
+  ingredientsCollection,
+  recipesCollection,
+  recipeCommentsCollection,
+} from "@/lib/collections"
 import RecipeCard from "@/components/recipe-card"
 import IngredientCard from "@/components/ingredient-card"
 
@@ -32,7 +33,6 @@ export const Route = createFileRoute(`/_authenticated/`)({
 
 function Dashboard() {
   console.log(`dashboard`)
-  const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState(``)
 
   // Get all recipes and ingredients for dashboard
@@ -184,22 +184,6 @@ function Dashboard() {
               >
                 Ingredients{!isSearching && ` (${allIngredients?.length || 0})`}
               </Link>
-              {!isSearching && (
-                <Link
-                  to="/upload-photos"
-                  style={{
-                    height: 20,
-                    display: `inline-block`,
-                    position: `relative`,
-                    top: 3,
-                    left: 4,
-                    color: `inherit`,
-                    textDecoration: `none`,
-                  }}
-                >
-                  <CameraIcon height="20" width="20" />
-                </Link>
-              )}
             </Heading>
 
             {displayIngredients.length > 0 ? (

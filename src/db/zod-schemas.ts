@@ -6,7 +6,6 @@ import {
 import { z } from "zod"
 import {
   users,
-  ingredientsPhotoUploads,
   ingredients,
   ingredientEvents,
   recipes,
@@ -15,7 +14,6 @@ import {
   jobs,
   grocerySectionEnum,
   ingredientsTrackingTypeEnum,
-  ingredientPhotoUploadStateEnum,
   jobsStateEnum,
 } from "./schema"
 
@@ -35,9 +33,6 @@ export const selectUsersSchema = baseSelectUsersSchema.transform((data) => ({
 }))
 
 // Other schemas are already in snake_case in the Drizzle schema
-export const selectIngredientsPhotoUploadsSchema = createSelectSchema(
-  ingredientsPhotoUploads
-)
 export const selectIngredientsSchema = createSelectSchema(ingredients)
 export const selectIngredientEventsSchema = createSelectSchema(ingredientEvents)
 export const selectRecipesSchema = createSelectSchema(recipes)
@@ -92,9 +87,6 @@ export const grocerySectionSchema = z.enum(grocerySectionEnum.enumValues)
 export const ingredientsTrackingTypeSchema = z.enum(
   ingredientsTrackingTypeEnum.enumValues
 )
-export const ingredientPhotoUploadStateSchema = z.enum(
-  ingredientPhotoUploadStateEnum.enumValues
-)
 export const jobsStateSchema = z.enum(jobsStateEnum.enumValues)
 
 // Type inference from schemas - use these for type annotations
@@ -107,6 +99,3 @@ export type SelectRecipeIngredient = z.infer<
 export type SelectRecipeComment = z.infer<typeof selectRecipeCommentsSchema>
 export type SelectIngredientEvent = z.infer<typeof selectIngredientEventsSchema>
 export type SelectJob = z.infer<typeof selectJobsSchema>
-export type SelectIngredientsPhotoUpload = z.infer<
-  typeof selectIngredientsPhotoUploadsSchema
->
