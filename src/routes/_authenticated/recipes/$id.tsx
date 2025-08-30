@@ -501,10 +501,10 @@ export default function RecipeDetail() {
         matches.length === 0
           ? null
           : matches.reduce((prev, current) => {
-              return (prev?.distance ?? 0) > (current?.distance ?? 0)
-                ? prev
-                : current
-            })
+            return (prev?.distance ?? 0) > (current?.distance ?? 0)
+              ? prev
+              : current
+          })
     })
   }
 
@@ -807,7 +807,6 @@ function CommentCard({
                   if ((e.metaKey || e.ctrlKey) && e.key === `Enter`) {
                     e.preventDefault()
                     if (
-                      !submitting &&
                       (editComment.trim() || editRating > 0 || editMadeIt)
                     ) {
                       handleEdit(e as unknown as React.FormEvent)
@@ -944,7 +943,7 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
     madeCount: comments?.filter((c) => c.made_it).length ?? 0,
     avgRating: comments?.length
       ? comments.reduce((sum, c) => sum + (c.rating ?? 0), 0) /
-        comments.filter((c) => c.rating !== null).length
+      comments.filter((c) => c.rating !== null).length
       : null,
     ratingCount: comments?.filter((c) => c.rating !== null).length ?? 0,
   }
@@ -1080,7 +1079,6 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
                     if ((e.metaKey || e.ctrlKey) && e.key === `Enter`) {
                       e.preventDefault()
                       if (
-                        !submitting &&
                         (comment.trim() || rating > 0 || madeIt)
                       ) {
                         handleSubmitComment(e as unknown as React.FormEvent)
@@ -1109,10 +1107,10 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
                 <Button
                   type="submit"
                   disabled={
-                    submitting || (!comment.trim() && rating === 0 && !madeIt)
+                    !comment.trim() && rating === 0 && !madeIt
                   }
                 >
-                  {submitting ? `Submitting...` : `Submit`}
+                  Submit
                 </Button>
               </Flex>
             </Flex>
