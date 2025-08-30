@@ -24,6 +24,7 @@ import { Route as AuthenticatedIngredientsIdRouteImport } from './routes/_authen
 import { ServerRoute as ApiUsersServerRouteImport } from './routes/api/users'
 import { ServerRoute as ApiRecipesServerRouteImport } from './routes/api/recipes'
 import { ServerRoute as ApiRecipeIngredientsServerRouteImport } from './routes/api/recipe-ingredients'
+import { ServerRoute as ApiRecipeCommentsServerRouteImport } from './routes/api/recipe-comments'
 import { ServerRoute as ApiIngredientsServerRouteImport } from './routes/api/ingredients'
 import { ServerRoute as ApiHealthServerRouteImport } from './routes/api/health'
 import { ServerRoute as ApiAuthServerRouteImport } from './routes/api/auth'
@@ -100,6 +101,11 @@ const ApiRecipeIngredientsServerRoute =
     path: '/api/recipe-ingredients',
     getParentRoute: () => rootServerRouteImport,
   } as any)
+const ApiRecipeCommentsServerRoute = ApiRecipeCommentsServerRouteImport.update({
+  id: '/api/recipe-comments',
+  path: '/api/recipe-comments',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
 const ApiIngredientsServerRoute = ApiIngredientsServerRouteImport.update({
   id: '/api/ingredients',
   path: '/api/ingredients',
@@ -201,6 +207,7 @@ export interface FileServerRoutesByFullPath {
   '/api/auth': typeof ApiAuthServerRoute
   '/api/health': typeof ApiHealthServerRoute
   '/api/ingredients': typeof ApiIngredientsServerRoute
+  '/api/recipe-comments': typeof ApiRecipeCommentsServerRoute
   '/api/recipe-ingredients': typeof ApiRecipeIngredientsServerRoute
   '/api/recipes': typeof ApiRecipesServerRoute
   '/api/users': typeof ApiUsersServerRoute
@@ -210,6 +217,7 @@ export interface FileServerRoutesByTo {
   '/api/auth': typeof ApiAuthServerRoute
   '/api/health': typeof ApiHealthServerRoute
   '/api/ingredients': typeof ApiIngredientsServerRoute
+  '/api/recipe-comments': typeof ApiRecipeCommentsServerRoute
   '/api/recipe-ingredients': typeof ApiRecipeIngredientsServerRoute
   '/api/recipes': typeof ApiRecipesServerRoute
   '/api/users': typeof ApiUsersServerRoute
@@ -220,6 +228,7 @@ export interface FileServerRoutesById {
   '/api/auth': typeof ApiAuthServerRoute
   '/api/health': typeof ApiHealthServerRoute
   '/api/ingredients': typeof ApiIngredientsServerRoute
+  '/api/recipe-comments': typeof ApiRecipeCommentsServerRoute
   '/api/recipe-ingredients': typeof ApiRecipeIngredientsServerRoute
   '/api/recipes': typeof ApiRecipesServerRoute
   '/api/users': typeof ApiUsersServerRoute
@@ -231,6 +240,7 @@ export interface FileServerRouteTypes {
     | '/api/auth'
     | '/api/health'
     | '/api/ingredients'
+    | '/api/recipe-comments'
     | '/api/recipe-ingredients'
     | '/api/recipes'
     | '/api/users'
@@ -240,6 +250,7 @@ export interface FileServerRouteTypes {
     | '/api/auth'
     | '/api/health'
     | '/api/ingredients'
+    | '/api/recipe-comments'
     | '/api/recipe-ingredients'
     | '/api/recipes'
     | '/api/users'
@@ -249,6 +260,7 @@ export interface FileServerRouteTypes {
     | '/api/auth'
     | '/api/health'
     | '/api/ingredients'
+    | '/api/recipe-comments'
     | '/api/recipe-ingredients'
     | '/api/recipes'
     | '/api/users'
@@ -259,6 +271,7 @@ export interface RootServerRouteChildren {
   ApiAuthServerRoute: typeof ApiAuthServerRoute
   ApiHealthServerRoute: typeof ApiHealthServerRoute
   ApiIngredientsServerRoute: typeof ApiIngredientsServerRoute
+  ApiRecipeCommentsServerRoute: typeof ApiRecipeCommentsServerRoute
   ApiRecipeIngredientsServerRoute: typeof ApiRecipeIngredientsServerRoute
   ApiRecipesServerRoute: typeof ApiRecipesServerRoute
   ApiUsersServerRoute: typeof ApiUsersServerRoute
@@ -362,6 +375,13 @@ declare module '@tanstack/react-start/server' {
       preLoaderRoute: typeof ApiRecipeIngredientsServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
+    '/api/recipe-comments': {
+      id: '/api/recipe-comments'
+      path: '/api/recipe-comments'
+      fullPath: '/api/recipe-comments'
+      preLoaderRoute: typeof ApiRecipeCommentsServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
     '/api/ingredients': {
       id: '/api/ingredients'
       path: '/api/ingredients'
@@ -430,6 +450,7 @@ const rootServerRouteChildren: RootServerRouteChildren = {
   ApiAuthServerRoute: ApiAuthServerRoute,
   ApiHealthServerRoute: ApiHealthServerRoute,
   ApiIngredientsServerRoute: ApiIngredientsServerRoute,
+  ApiRecipeCommentsServerRoute: ApiRecipeCommentsServerRoute,
   ApiRecipeIngredientsServerRoute: ApiRecipeIngredientsServerRoute,
   ApiRecipesServerRoute: ApiRecipesServerRoute,
   ApiUsersServerRoute: ApiUsersServerRoute,

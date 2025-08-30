@@ -6,6 +6,6 @@ export default {
     trace: false,
   },
   alias: {
-    debug: "./src/polyfills/debug.js",
+    debug: `./src/polyfills/debug.js`,
   },
 }

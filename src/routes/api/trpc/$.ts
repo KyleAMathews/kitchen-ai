@@ -3,6 +3,7 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch"
 import { router } from "@/lib/trpc"
 import { ingredientsRouter } from "@/lib/trpc/ingredients"
 import { recipesRouter } from "@/lib/trpc/recipes"
+import { recipeCommentsRouter } from "@/lib/trpc/recipe-comments"
 import { aiRouter } from "@/lib/trpc/ai"
 import { shoppingListRouter } from "@/lib/trpc/shopping-list"
 import { db } from "@/db/connection"
@@ -11,6 +12,7 @@ import { auth } from "@/lib/auth"
 export const appRouter = router({
   ingredients: ingredientsRouter,
   recipes: recipesRouter,
+  recipeComments: recipeCommentsRouter,
   ai: aiRouter,
   shoppingList: shoppingListRouter,
 })

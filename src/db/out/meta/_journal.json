@@ -22,6 +22,20 @@
       "when": 1755637443157,
       "tag": "0002_keen_omega_red",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1756567305717,
+      "tag": "0003_nosy_penance",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1756569401373,
+      "tag": "0004_nasty_leech",
+      "breakpoints": true
     }
   ]
 }
