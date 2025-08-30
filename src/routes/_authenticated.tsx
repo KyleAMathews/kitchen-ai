@@ -63,20 +63,7 @@ function AuthenticatedLayout() {
     navigate({ to: `/login` })
   }
 
-  if (isPending) {
-    return (
-      <Flex
-        direction="column"
-        align="center"
-        justify="center"
-        minHeight="100vh"
-      >
-        <Text color="gray">Loading...</Text>
-      </Flex>
-    )
-  }
-
-  if (!session) {
+  if (isPending || !session) {
     return null
   }
 
