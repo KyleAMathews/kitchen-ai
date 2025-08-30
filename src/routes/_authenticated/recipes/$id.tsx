@@ -1011,15 +1011,15 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
 
         {/* Action Buttons */}
         <Flex gap="2">
-          <Button variant="soft" color="green" onClick={handleMadeIt}>
-            <CheckIcon width="16" height="16" />I Made This
-          </Button>
           <Button
             variant="soft"
             onClick={() => setShowCommentForm(!showCommentForm)}
           >
             <ChatBubbleIcon width="16" height="16" />
             Add Comment
+          </Button>
+          <Button variant="soft" color="green" onClick={handleMadeIt}>
+            <CheckIcon width="16" height="16" />I Made This
           </Button>
         </Flex>
       </Flex>
