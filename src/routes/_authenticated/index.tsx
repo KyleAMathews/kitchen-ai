@@ -15,7 +15,7 @@ import {
   ArrowRightIcon,
   CameraIcon,
 } from "@radix-ui/react-icons"
-import { ingredientsCollection, recipesCollection } from "@/lib/collections"
+import { ingredientsCollection, recipesCollection, recipeCommentsCollection } from "@/lib/collections"
 import RecipeCard from "@/components/recipe-card"
 import IngredientCard from "@/components/ingredient-card"
 
@@ -25,6 +25,7 @@ export const Route = createFileRoute(`/_authenticated/`)({
     await Promise.all([
       recipesCollection.preload(),
       ingredientsCollection.preload(),
+      recipeCommentsCollection.preload(),
     ])
   },
 })

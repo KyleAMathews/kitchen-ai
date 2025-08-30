@@ -3,12 +3,15 @@ import { useLiveQuery } from "@tanstack/react-db"
 import { Flex, Heading, Text } from "@radix-ui/themes"
 import { PlusCircledIcon } from "@radix-ui/react-icons"
 import RecipeCard from "@/components/recipe-card"
-import { recipesCollection } from "@/lib/collections"
+import { recipesCollection, recipeCommentsCollection } from "@/lib/collections"
 
 export const Route = createFileRoute(`/_authenticated/recipes/`)({
   component: Recipes,
   loader: async () => {
-    await recipesCollection.preload()
+    await Promise.all([
+      recipesCollection.preload(),
+      recipeCommentsCollection.preload(),
+    ])
   },
 })
 
