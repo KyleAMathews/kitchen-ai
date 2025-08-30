@@ -115,26 +115,4 @@ export const recipeCommentsRouter = router({
         return { txid }
       })
     }),
-
-  // Quick "made it" action - creates entry with just made_it=true
-  madeIt: authedProcedure
-    .input(z.object({ recipe_id: z.string().uuid() }))
-    .mutation(async ({ ctx, input }) => {
-      const userId = ctx.session.user.id
-
-      return await ctx.db.transaction(async (tx) => {
-        const [result] = await tx
-          .insert(recipeComments)
-          .values({
-            recipe_id: input.recipe_id,
-            user_id: userId,
-            made_it: true, // Explicitly set to true for "made it" action
-          })
-          .returning({ id: recipeComments.id })
-
-        const txid = await generateTxId(tx)
-        return { id: result.id, txid }
-      })
-    }),
-
 })

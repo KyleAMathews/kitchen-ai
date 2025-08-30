@@ -738,13 +738,11 @@ function CommentCard({
 
     setSubmitting(true)
     try {
-      await trpc.recipeComments.update.mutate({
-        id: comment.id,
-        data: {
-          rating: editRating > 0 ? editRating : null,
-          comment: editComment.trim() || null,
-          made_it: editMadeIt,
-        },
+      recipeCommentsCollection.update(comment.id, (draft) => {
+        draft.rating = editRating > 0 ? editRating : null
+        draft.comment = editComment.trim() || null
+        draft.made_it = editMadeIt
+        draft.updated_at = new Date()
       })
       setEditing(false)
     } catch (error) {
@@ -757,7 +755,7 @@ function CommentCard({
   const handleDelete = async () => {
     setSubmitting(true)
     try {
-      await trpc.recipeComments.delete.mutate({ id: comment.id })
+      recipeCommentsCollection.delete(comment.id)
     } catch (error) {
       console.error(`Failed to delete comment:`, error)
       setSubmitting(false)
@@ -940,6 +938,7 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
   const [comment, setComment] = useState(``)
   const [madeIt, setMadeIt] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const { data: session } = authClient.useSession()
 
   // Get comments for this recipe
   const { data: comments } = useLiveQuery(
@@ -968,9 +967,20 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
   }
 
   const handleMadeIt = async () => {
+    if (!session?.user.id) return
+    
     setSubmitting(true)
     try {
-      await trpc.recipeComments.madeIt.mutate({ recipe_id: recipeId })
+      recipeCommentsCollection.insert({
+        id: crypto.randomUUID(),
+        recipe_id: recipeId,
+        user_id: session.user.id,
+        made_it: true,
+        rating: null,
+        comment: null,
+        created_at: new Date(),
+        updated_at: new Date(),
+      })
     } catch (error) {
       console.error(`Failed to mark as made:`, error)
     } finally {
@@ -981,14 +991,19 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!comment.trim() && rating === 0 && !madeIt) return
+    if (!session?.user.id) return
 
     setSubmitting(true)
     try {
-      await trpc.recipeComments.create.mutate({
+      recipeCommentsCollection.insert({
+        id: crypto.randomUUID(),
         recipe_id: recipeId,
+        user_id: session.user.id,
         made_it: madeIt,
         rating: rating > 0 ? rating : null,
         comment: comment.trim() || null,
+        created_at: new Date(),
+        updated_at: new Date(),
       })
       setComment(``)
       setRating(0)
