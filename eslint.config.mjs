@@ -21,6 +21,8 @@ export default [
     ignores: [
       `**/node_modules/**/*`,
       `**/dist/**/*`,
+      `**/.output/**/*`,
+      `**/.tanstack/**/*`,
       `**/tsup.config.ts`,
       `**/vitest.config.ts`,
       `**/database.d.ts`,

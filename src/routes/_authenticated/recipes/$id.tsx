@@ -726,40 +726,26 @@ function CommentCard({
   const [editRating, setEditRating] = useState(comment.rating || 0)
   const [editComment, setEditComment] = useState(comment.comment || ``)
   const [editMadeIt, setEditMadeIt] = useState(comment.made_it)
-  const [submitting, setSubmitting] = useState(false)
   const { data: session } = authClient.useSession()
 
   const author = users?.find((u) => u.id === comment.user_id)
   const isOwner = session?.user.id === comment.user_id
 
-  const handleEdit = async (e: React.FormEvent) => {
+  const handleEdit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!editComment.trim() && editRating === 0 && !editMadeIt) return
 
-    setSubmitting(true)
-    try {
-      recipeCommentsCollection.update(comment.id, (draft) => {
-        draft.rating = editRating > 0 ? editRating : null
-        draft.comment = editComment.trim() || null
-        draft.made_it = editMadeIt
-        draft.updated_at = new Date()
-      })
-      setEditing(false)
-    } catch (error) {
-      console.error(`Failed to update comment:`, error)
-    } finally {
-      setSubmitting(false)
-    }
+    recipeCommentsCollection.update(comment.id, (draft) => {
+      draft.rating = editRating > 0 ? editRating : null
+      draft.comment = editComment.trim() || null
+      draft.made_it = editMadeIt
+      draft.updated_at = new Date()
+    })
+    setEditing(false)
   }
 
-  const handleDelete = async () => {
-    setSubmitting(true)
-    try {
-      recipeCommentsCollection.delete(comment.id)
-    } catch (error) {
-      console.error(`Failed to delete comment:`, error)
-      setSubmitting(false)
-    }
+  const handleDelete = () => {
+    recipeCommentsCollection.delete(comment.id)
   }
 
   if (editing) {
@@ -844,18 +830,16 @@ function CommentCard({
                   setEditRating(comment.rating || 0)
                   setEditMadeIt(comment.made_it)
                 }}
-                disabled={submitting}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={
-                  submitting ||
-                  (!editComment.trim() && editRating === 0 && !editMadeIt)
+                  !editComment.trim() && editRating === 0 && !editMadeIt
                 }
               >
-                {submitting ? `Saving...` : `Save`}
+                Save
               </Button>
             </Flex>
           </Flex>
@@ -937,7 +921,6 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
   const [rating, setRating] = useState(0)
   const [comment, setComment] = useState(``)
   const [madeIt, setMadeIt] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
   const { data: session } = authClient.useSession()
 
   // Get comments for this recipe
@@ -966,54 +949,40 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
     ratingCount: comments?.filter((c) => c.rating !== null).length ?? 0,
   }
 
-  const handleMadeIt = async () => {
+  const handleMadeIt = () => {
     if (!session?.user.id) return
-    
-    setSubmitting(true)
-    try {
-      recipeCommentsCollection.insert({
-        id: crypto.randomUUID(),
-        recipe_id: recipeId,
-        user_id: session.user.id,
-        made_it: true,
-        rating: null,
-        comment: null,
-        created_at: new Date(),
-        updated_at: new Date(),
-      })
-    } catch (error) {
-      console.error(`Failed to mark as made:`, error)
-    } finally {
-      setSubmitting(false)
-    }
+
+    recipeCommentsCollection.insert({
+      id: crypto.randomUUID(),
+      recipe_id: recipeId,
+      user_id: session.user.id,
+      made_it: true,
+      rating: null,
+      comment: null,
+      created_at: new Date(),
+      updated_at: new Date(),
+    })
   }
 
-  const handleSubmitComment = async (e: React.FormEvent) => {
+  const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault()
     if (!comment.trim() && rating === 0 && !madeIt) return
     if (!session?.user.id) return
 
-    setSubmitting(true)
-    try {
-      recipeCommentsCollection.insert({
-        id: crypto.randomUUID(),
-        recipe_id: recipeId,
-        user_id: session.user.id,
-        made_it: madeIt,
-        rating: rating > 0 ? rating : null,
-        comment: comment.trim() || null,
-        created_at: new Date(),
-        updated_at: new Date(),
-      })
-      setComment(``)
-      setRating(0)
-      setMadeIt(false)
-      setShowCommentForm(false)
-    } catch (error) {
-      console.error(`Failed to submit comment:`, error)
-    } finally {
-      setSubmitting(false)
-    }
+    recipeCommentsCollection.insert({
+      id: crypto.randomUUID(),
+      recipe_id: recipeId,
+      user_id: session.user.id,
+      made_it: madeIt,
+      rating: rating > 0 ? rating : null,
+      comment: comment.trim() || null,
+      created_at: new Date(),
+      updated_at: new Date(),
+    })
+    setComment(``)
+    setRating(0)
+    setMadeIt(false)
+    setShowCommentForm(false)
   }
 
   return (
@@ -1043,12 +1012,7 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
 
         {/* Action Buttons */}
         <Flex gap="2">
-          <Button
-            variant="soft"
-            color="green"
-            onClick={handleMadeIt}
-            disabled={submitting}
-          >
+          <Button variant="soft" color="green" onClick={handleMadeIt}>
             <CheckIcon width="16" height="16" />I Made This
           </Button>
           <Button

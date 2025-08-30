@@ -48,6 +48,8 @@ const serve = async ({ request }: { request: Request }) => {
   })
 }
 
-export const ServerRoute = createServerFileRoute(`/api/recipe-comments`).methods({
+export const ServerRoute = createServerFileRoute(
+  `/api/recipe-comments`
+).methods({
   GET: serve,
 })

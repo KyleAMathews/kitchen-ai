@@ -23,10 +23,15 @@ export default function RecipeCard({ recipe }: { recipe: SelectRecipe }) {
 
   // Calculate stats from comments
   const madeItComments = comments?.filter((c) => c.made_it) ?? []
-  const lastMadeAt = madeItComments.length > 0 
-    ? new Date(Math.max(...madeItComments.map(c => new Date(c.created_at).getTime())))
-    : null
-  
+  const lastMadeAt =
+    madeItComments.length > 0
+      ? new Date(
+          Math.max(
+            ...madeItComments.map((c) => new Date(c.created_at).getTime())
+          )
+        )
+      : null
+
   const stats = {
     madeCount: madeItComments.length,
     avgRating: comments?.length
@@ -68,10 +73,9 @@ export default function RecipeCard({ recipe }: { recipe: SelectRecipe }) {
             </Badge>
           )}
           <Text color="gray" size="2">
-            {stats.lastMadeAt 
+            {stats.lastMadeAt
               ? `Last made ${timeAgo.format(stats.lastMadeAt)}`
-              : `Not yet made`
-            }
+              : `Not yet made`}
           </Text>
         </Flex>
       </Flex>
