@@ -386,54 +386,55 @@ function AddIngredient({ ingredient }: { ingredient: SelectRecipeIngredient }) {
   )
 }
 
-function DeleteRecipeButton({ recipe }: { recipe: SelectRecipe }) {
-  const [open, setOpen] = useState(false)
-  const [deleting, setDeleting] = useState(false)
+function RecipeActionsMenu({ recipe }: { recipe: SelectRecipe }) {
+  const [deleteOpen, setDeleteOpen] = useState(false)
   const navigate = useNavigate()
 
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger>
-        <Button variant="soft" color="red" size="2">
-          Delete Recipe
-        </Button>
-      </Dialog.Trigger>
+    <>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>
+          <IconButton variant="ghost" size="2">
+            <DotsVerticalIcon />
+          </IconButton>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content>
+          <DropdownMenu.Item color="red" onClick={() => setDeleteOpen(true)}>
+            <TrashIcon width="14" height="14" />
+            Delete Recipe
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
 
-      <Dialog.Content style={{ maxWidth: 450 }}>
-        <Dialog.Title>Delete Recipe</Dialog.Title>
-        <Dialog.Description size="2" mb="4">
-          Are you sure you want to delete "{recipe.name}"? This action cannot be
-          undone.
-        </Dialog.Description>
+      <Dialog.Root open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <Dialog.Content style={{ maxWidth: 450 }}>
+          <Dialog.Title>Delete Recipe</Dialog.Title>
+          <Dialog.Description size="2" mb="4">
+            Are you sure you want to delete "{recipe.name}"? This action cannot
+            be undone.
+          </Dialog.Description>
 
-        <Flex gap="3" mt="4" justify="end">
-          <Button
-            variant="soft"
-            color="gray"
-            onClick={() => setOpen(false)}
-            disabled={deleting}
-          >
-            Cancel
-          </Button>
-          <Button
-            color="red"
-            onClick={async () => {
-              setDeleting(true)
-              try {
+          <Flex gap="3" mt="4" justify="end">
+            <Button
+              variant="soft"
+              color="gray"
+              onClick={() => setDeleteOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              color="red"
+              onClick={() => {
                 recipesCollection.delete(recipe.id)
                 navigate({ to: `/recipes` })
-              } catch (error) {
-                console.error(`Failed to delete recipe:`, error)
-                setDeleting(false)
-              }
-            }}
-            disabled={deleting}
-          >
-            {deleting ? `Deleting...` : `Delete`}
-          </Button>
-        </Flex>
-      </Dialog.Content>
-    </Dialog.Root>
+              }}
+            >
+              Delete
+            </Button>
+          </Flex>
+        </Dialog.Content>
+      </Dialog.Root>
+    </>
   )
 }
 
@@ -527,7 +528,7 @@ export default function RecipeDetail() {
       <Flex direction="column" gap="3">
         <Flex justify="between" align="start">
           <Heading>{recipe.name}</Heading>
-          <DeleteRecipeButton recipe={recipe} />
+          <RecipeActionsMenu recipe={recipe} />
         </Flex>
         {recipe.url && (
           <RadixLink size="2" asChild>
