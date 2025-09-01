@@ -74,9 +74,9 @@ export default function NewRecipe() {
       await insertResult.isPersisted.promise
 
       navigate({ to: `/recipes/$id`, params: { id: recipeId } })
-    } catch (err: any) {
+    } catch (err) {
       console.error(`Recipe processing error:`, err)
-      setError(err.message || `Failed to process recipe`)
+      setError((err as Error).message || `Failed to process recipe`)
       setIsProcessing(false)
     }
   }

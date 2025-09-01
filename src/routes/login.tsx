@@ -1,16 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { authClient } from "@/lib/auth-client"
 import { useState } from "react"
-import {
-  Card,
-  Flex,
-  Text,
-  TextField,
-  Button,
-  Heading,
-  Callout,
-  Separator,
-} from "@radix-ui/themes"
+import { Card, Flex, Text, Button, Heading, Callout } from "@radix-ui/themes"
 import { InfoCircledIcon } from "@radix-ui/react-icons"
 import { FaGoogle } from "react-icons/fa"
 
@@ -19,12 +10,12 @@ export const Route = createFileRoute(`/login`)({
 })
 
 function LoginPage() {
-  const [email, setEmail] = useState(``)
-  const [password, setPassword] = useState(``)
+  const [_email, _setEmail] = useState(``)
+  const [_password, _setPassword] = useState(``)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(``)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const _handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError(``)
@@ -33,9 +24,9 @@ function LoginPage() {
       // Try to sign up first (auto-create accounts in dev)
       let { data, error } = await authClient.signUp.email(
         {
-          email,
-          password,
-          name: email, // Use email as default name
+          email: _email,
+          password: _password,
+          name: _email, // Use email as default name
         },
         {
           onSuccess: () => {
@@ -49,8 +40,8 @@ function LoginPage() {
       if (error?.code === `USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL`) {
         const result = await authClient.signIn.email(
           {
-            email,
-            password,
+            email: _email,
+            password: _password,
           },
           {
             onSuccess: async () => {

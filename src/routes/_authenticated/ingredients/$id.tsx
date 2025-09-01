@@ -19,12 +19,7 @@ import {
   recipeIngredientsCollection,
   recipesCollection,
 } from "@/lib/collections"
-import {
-  isRunningLow,
-  isExpiredSoon,
-  timeAgo,
-  cosineSimilarity,
-} from "@/lib/utils"
+import { isRunningLow, cosineSimilarity } from "@/lib/utils"
 import { useMemo } from "react"
 import ExpirationDateEdit from "@/components/expiration-date-edit"
 import { ingredientsTrackingTypeSchema } from "@/db/zod-schemas"
@@ -37,7 +32,16 @@ export const Route = createFileRoute(`/_authenticated/ingredients/$id`)({
   },
 })
 
-function TrackingTypeEditor({ ingredient }: { ingredient: any }) {
+function TrackingTypeEditor({
+  ingredient,
+}: {
+  ingredient: {
+    id: string
+    tracking_type: string
+    fill_level?: number
+    count?: number
+  }
+}) {
   const [open, setOpen] = useState(false)
   const [selectedType, setSelectedType] = useState(ingredient.tracking_type)
 
@@ -150,11 +154,11 @@ export default function IngredientDetail() {
     const matches: Array<{
       recipe_id: string
       similarity: number
-      recipe: any
+      recipe: { id: string; name: string; description: string }
     }> = []
 
     // Group recipe ingredients by recipe_id
-    const recipeIngredientsMap = new Map<string, any[]>()
+    const recipeIngredientsMap = new Map<string, typeof allRecipeIngredients>()
     allRecipeIngredients.forEach((ri) => {
       if (!recipeIngredientsMap.has(ri.recipe_id)) {
         recipeIngredientsMap.set(ri.recipe_id, [])

@@ -1,10 +1,11 @@
 import TimeAgo from "javascript-time-ago"
 import en from "javascript-time-ago/locale/en"
+import type { SelectIngredient } from "@/db/zod-schemas"
 
 // Only add locale if it hasn't been added yet
 try {
   TimeAgo.addDefaultLocale(en)
-} catch (error) {
+} catch (_error) {
   // Locale already added, ignore
 }
 
@@ -28,7 +29,9 @@ export function cosineSimilarity(vec1: number[], vec2: number[]): number {
 }
 
 // Helper functions for ingredient status
-export function isRunningLow(ingredient: any): boolean {
+export function isRunningLow(
+  ingredient: Pick<SelectIngredient, `tracking_type` | `fill_level` | `count`>
+): boolean {
   // Pantry staples are never running low
   if (ingredient.tracking_type === `pantry_staple`) {
     return false
@@ -39,7 +42,9 @@ export function isRunningLow(ingredient: any): boolean {
     : ingredient.count < 2
 }
 
-export function isExpiredSoon(ingredient: any): boolean {
+export function isExpiredSoon(
+  ingredient: Pick<SelectIngredient, `tracking_type` | `expiration_date`>
+): boolean {
   // Pantry staples never expire
   if (ingredient.tracking_type === `pantry_staple`) {
     return false

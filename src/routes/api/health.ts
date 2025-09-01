@@ -1,6 +1,6 @@
 import { createServerFileRoute } from "@tanstack/react-start/server"
 
-const healthCheck = async ({ request }: { request: Request }) => {
+const healthCheck = async ({ _request }: { _request: Request }) => {
   return new Response(
     JSON.stringify({
       status: `ok`,

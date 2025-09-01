@@ -1,12 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { useState } from "react"
 import { useLiveQuery, or, ilike } from "@tanstack/react-db"
-import {
-  Flex,
-  Heading,
-  Text,
-  TextField,
-} from "@radix-ui/themes"
+import { Flex, Heading, Text, TextField } from "@radix-ui/themes"
 import {
   MagnifyingGlassIcon,
   PlusCircledIcon,
@@ -66,15 +61,15 @@ function Dashboard() {
     (q) =>
       searchQuery.length > 0
         ? q
-          .from({ recipesCollection })
-          .where(({ recipesCollection }) =>
-            or(
-              ilike(recipesCollection.name, `%${searchQuery}%`),
-              ilike(recipesCollection.description, `%${searchQuery}%`)
+            .from({ recipesCollection })
+            .where(({ recipesCollection }) =>
+              or(
+                ilike(recipesCollection.name, `%${searchQuery}%`),
+                ilike(recipesCollection.description, `%${searchQuery}%`)
+              )
             )
-          )
         : // .limit(3)
-        q.from({ recipesCollection }),
+          q.from({ recipesCollection }),
     [searchQuery]
   )
 
@@ -82,12 +77,12 @@ function Dashboard() {
     (q) =>
       searchQuery.length > 0
         ? q
-          .from({ ingredientsCollection })
-          .where(({ ingredientsCollection }) =>
-            ilike(ingredientsCollection.name, `%${searchQuery}%`)
-          )
+            .from({ ingredientsCollection })
+            .where(({ ingredientsCollection }) =>
+              ilike(ingredientsCollection.name, `%${searchQuery}%`)
+            )
         : // .limit(3)
-        q.from({ ingredientsCollection }),
+          q.from({ ingredientsCollection }),
     [searchQuery]
   )
 
@@ -156,7 +151,7 @@ function Dashboard() {
             {displayRecipes.length > 0 ? (
               <>
                 <Flex direction="column" gap="4">
-                  {displayRecipes.map((recipe, i) => (
+                  {displayRecipes.map((recipe) => (
                     <div key={recipe.id}>
                       <RecipeCard recipe={recipe} />
                     </div>
@@ -189,7 +184,7 @@ function Dashboard() {
             {displayIngredients.length > 0 ? (
               <>
                 <Flex direction="column" gap="4">
-                  {displayIngredients.map((ingredient, i) => (
+                  {displayIngredients.map((ingredient) => (
                     <div key={ingredient.id}>
                       <IngredientCard ingredient={ingredient} />
                     </div>
@@ -202,9 +197,7 @@ function Dashboard() {
                 )}
               </>
             ) : (
-              <Text color="gray">
-                {isSearching ? `No results` : ``}
-              </Text>
+              <Text color="gray">{isSearching ? `No results` : ``}</Text>
             )}
           </Flex>
         </Flex>

@@ -24,7 +24,7 @@ export default function IngredientsList() {
         <Heading>Ingredients ({ingredients?.length || 0})</Heading>
         {ingredients && ingredients.length > 0 ? (
           <Flex direction="column" gap="4">
-            {ingredients.map((ingredient, i: number) => {
+            {ingredients.map((ingredient) => {
               if (ingredient.is_reviewed) {
                 return (
                   <div key={ingredient.id}>

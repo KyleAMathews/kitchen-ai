@@ -17,7 +17,7 @@ export default defineConfig(async () => {
       `./public/GeneralSans_Complete/Fonts/WEB/fonts/GeneralSans-Regular.ttf`
     )
     generalSansMetrics.familyName = `GeneralSans`
-  } catch (error) {
+  } catch (_error) {
     console.warn(`GeneralSans font not found, falling back to system fonts`)
     generalSansMetrics = arial // fallback
   }

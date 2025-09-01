@@ -10,12 +10,6 @@ function getDateString() {
   return `Shopping ${year}/${month}/${day}`
 }
 
-const cardSchema = z.object({
-  cardName: z.string().min(10).startsWith(`Shopping`).default(getDateString()),
-  url: z.string().optional(),
-  checklists: z.record(z.string(), z.array(z.string().min(3))),
-})
-
 const makeTrelloRequest = async ({
   url,
   method = `GET`,
@@ -24,8 +18,8 @@ const makeTrelloRequest = async ({
 }: {
   url: string
   method?: string
-  body?: any
-  queryParams?: Record<string, any>
+  body?: unknown
+  queryParams?: Record<string, unknown>
 }) => {
   const trelloKey = process.env.TRELLO_KEY
   const trelloToken = process.env.TRELLO_TOKEN
@@ -72,7 +66,9 @@ const findCardByName = async (listId: string, cardName: string) => {
       fields: [`name`, `id`, `desc`],
     },
   })
-  return cards.find((card: any) => card.name === cardName)
+  return cards.find(
+    (card: unknown) => (card as { name: string }).name === cardName
+  )
 }
 
 const createCard = async (listId: string, cardName: string, url?: string) => {
@@ -97,7 +93,7 @@ const createCard = async (listId: string, cardName: string, url?: string) => {
   }
 }
 
-const updateCard = async (cardId: string, updates: any) => {
+const updateCard = async (cardId: string, updates: Record<string, unknown>) => {
   return makeTrelloRequest({
     url: `https://api.trello.com/1/cards/${cardId}`,
     method: `PUT`,
@@ -111,7 +107,10 @@ const findChecklistOnCard = async (cardId: string, checklistTitle: string) => {
   const checklists = await makeTrelloRequest({
     url: `https://api.trello.com/1/cards/${cardId}/checklists`,
   })
-  return checklists.find((checklist: any) => checklist.name === checklistTitle)
+  return checklists.find(
+    (checklist: unknown) =>
+      (checklist as { name: string }).name === checklistTitle
+  )
 }
 
 const createChecklist = async (cardId: string, checklistTitle: string) => {
@@ -183,7 +182,7 @@ export const shoppingListRouter = router({
         checklists: z.record(z.string(), z.array(z.string())),
       })
     )
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input, _ctx }) => {
       const listId = process.env.TRELLO_LIST_ID || `5c01a492714a091d514fde21`
 
       const cardDetails = {

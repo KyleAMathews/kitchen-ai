@@ -1,11 +1,12 @@
 import { z } from "zod"
-import { router, authedProcedure, generateTxId } from "@/lib/trpc"
+import { router } from "@/lib/trpc"
 import { recipes, recipeIngredients } from "@/db/schema"
 import { grocerySectionSchema } from "@/db/zod-schemas"
 import { eq, and } from "drizzle-orm"
+import { db } from "@/db/connection"
 import OpenAI from "openai"
 import pkg from "openai-zod-functions"
-const { ZodFunctionDef, toTool, parseArguments } = pkg
+const { toTool, parseArguments } = pkg
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_KEY,
@@ -53,11 +54,11 @@ export async function processRecipeWithAI(
   pastedText: string,
   url: string | undefined,
   userId: string,
-  tx: any
+  tx: Parameters<Parameters<typeof db.transaction>[0]>[0]
 ) {
   const startTime = Date.now()
 
-  const functions: ZodFunctionDef[] = [
+  const functions = [
     {
       name: `extract_recipe`,
       description: `Extract recipe name, description, and ingredients from pasted text`,

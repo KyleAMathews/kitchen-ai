@@ -23,6 +23,7 @@ export default [
       `**/dist/**/*`,
       `**/.output/**/*`,
       `**/.tanstack/**/*`,
+      `**/.nitro/**/*`,
       `**/tsup.config.ts`,
       `**/vitest.config.ts`,
       `**/database.d.ts`,

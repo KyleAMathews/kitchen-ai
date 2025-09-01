@@ -11,7 +11,7 @@ import { eq, and } from "drizzle-orm"
 import OpenAI from "openai"
 import pkg from "openai-zod-functions"
 import { getEmbedding } from "@/lib/trpc/ai"
-const { ZodFunctionDef, toTool, parseArguments } = pkg
+const { toTool, parseArguments } = pkg
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_KEY,

@@ -1,5 +1,5 @@
 import { isRunningLow, isExpiredSoon, timeAgo } from "@/lib/utils"
-import { Link, useNavigate } from "@tanstack/react-router"
+import { useNavigate } from "@tanstack/react-router"
 import { Flex, Heading, Box, Text, Slider, Badge } from "@radix-ui/themes"
 import { CaretRightIcon } from "@radix-ui/react-icons"
 
