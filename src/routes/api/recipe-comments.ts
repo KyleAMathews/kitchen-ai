@@ -1,5 +1,6 @@
 import { createServerFileRoute } from "@tanstack/react-start/server"
 import { auth } from "@/lib/auth"
+import { prepareElectricUrl, proxyElectricRequest } from "@/lib/electric-proxy"
 
 const serve = async ({ request }: { request: Request }) => {
   const session = await auth.api.getSession({ headers: request.headers })
@@ -10,42 +11,10 @@ const serve = async ({ request }: { request: Request }) => {
     })
   }
 
-  const url = new URL(request.url)
-  const electricUrl =
-    process.env.NODE_ENV === `production`
-      ? `https://api.electric-sql.cloud`
-      : `http://localhost:3000`
-  const originUrl = new URL(`${electricUrl}/v1/shape`)
-
-  // Copy Electric-specific query params
-  url.searchParams.forEach((value, key) => {
-    if ([`live`, `table`, `handle`, `offset`, `cursor`].includes(key)) {
-      originUrl.searchParams.set(key, value)
-    }
-  })
-
+  const originUrl = prepareElectricUrl(request.url)
   originUrl.searchParams.set(`table`, `recipe_comments`)
 
-  // Add Electric Cloud authentication if configured
-  if (process.env.ELECTRIC_SOURCE_ID && process.env.ELECTRIC_SOURCE_SECRET) {
-    originUrl.searchParams.set(`source_id`, process.env.ELECTRIC_SOURCE_ID)
-    originUrl.searchParams.set(
-      `source_secret`,
-      process.env.ELECTRIC_SOURCE_SECRET
-    )
-  }
-
-  const response = await fetch(originUrl)
-  const headers = new Headers(response.headers)
-  headers.delete(`content-encoding`)
-  headers.delete(`content-length`)
-  headers.set(`vary`, `cookie`)
-
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers,
-  })
+  return proxyElectricRequest(originUrl)
 }
 
 export const ServerRoute = createServerFileRoute(
