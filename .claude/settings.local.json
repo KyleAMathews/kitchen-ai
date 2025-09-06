@@ -14,8 +14,10 @@
       "WebFetch(domain:tanstack.com)",
       "WebFetch(domain:www.better-auth.com)",
       "Bash(pnpm ls:*)",
-      "Bash(pnpm lint:*)"
+      "Bash(pnpm lint:*)",
+      "Bash(git log:*)"
     ],
     "deny": []
   }
 }
+

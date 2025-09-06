@@ -1,7 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { authClient } from "@/lib/auth-client"
 import { useState } from "react"
-import { Card, Flex, Text, Button, Heading, Callout } from "@radix-ui/themes"
+import {
+  Card,
+  Flex,
+  Text,
+  TextField,
+  Button,
+  Heading,
+  Callout,
+  Separator,
+} from "@radix-ui/themes"
 import { InfoCircledIcon } from "@radix-ui/react-icons"
 import { FaGoogle } from "react-icons/fa"
 
@@ -10,12 +19,12 @@ export const Route = createFileRoute(`/login`)({
 })
 
 function LoginPage() {
-  const [_email, _setEmail] = useState(``)
-  const [_password, _setPassword] = useState(``)
+  const [email, setEmail] = useState(``)
+  const [password, setPassword] = useState(``)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(``)
 
-  const _handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError(``)
@@ -24,9 +33,9 @@ function LoginPage() {
       // Try to sign up first (auto-create accounts in dev)
       let { data, error } = await authClient.signUp.email(
         {
-          email: _email,
-          password: _password,
-          name: _email, // Use email as default name
+          email,
+          password,
+          name: email, // Use email as default name
         },
         {
           onSuccess: () => {
@@ -40,8 +49,8 @@ function LoginPage() {
       if (error?.code === `USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL`) {
         const result = await authClient.signIn.email(
           {
-            email: _email,
-            password: _password,
+            email,
+            password,
           },
           {
             onSuccess: async () => {
@@ -130,10 +139,44 @@ function LoginPage() {
             </>
           )}
 
-          {error && (
-            <Callout.Root color="red">
-              <Callout.Text size="2">{error}</Callout.Text>
-            </Callout.Root>
+          {process.env.NODE_ENV === `development` && (
+            <form onSubmit={handleSubmit}>
+              <Flex direction="column" gap="4">
+                <Flex direction="column" gap="2">
+                  <TextField.Root
+                    placeholder="Email address"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading}
+                  />
+                  <TextField.Root
+                    placeholder="Password"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading}
+                  />
+                </Flex>
+
+                {error && (
+                  <Callout.Root color="red">
+                    <Callout.Text size="2">{error}</Callout.Text>
+                  </Callout.Root>
+                )}
+
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  size="3"
+                  style={{ width: `100%` }}
+                >
+                  {isLoading ? `Signing in...` : `Sign in with Email`}
+                </Button>
+              </Flex>
+            </form>
           )}
         </Flex>
       </Card>

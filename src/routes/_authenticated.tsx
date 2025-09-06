@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router"
+import { createFileRoute, redirect, useNavigate, Link } from "@tanstack/react-router"
 import { Outlet } from "@tanstack/react-router"
 import { authClient, authStateCollection } from "@/lib/auth-client"
 import { Flex, Text, Button, Heading, Container } from "@radix-ui/themes"
@@ -15,6 +15,11 @@ export const Route = createFileRoute(`/_authenticated`)({
     } else {
       const result = await authClient.getSession()
       authStateCollection.insert({ id: `auth`, ...result.data })
+      if (!result.data) {
+        throw redirect({
+          to: '/login',
+        })
+      }
       return result.data
     }
   },
