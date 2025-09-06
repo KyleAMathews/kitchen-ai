@@ -1,4 +1,9 @@
-import { createFileRoute, useParams, Link } from "@tanstack/react-router"
+import {
+  createFileRoute,
+  useParams,
+  Link,
+  useNavigate,
+} from "@tanstack/react-router"
 import { useLiveQuery, eq } from "@tanstack/react-db"
 import { useState } from "react"
 import {
@@ -13,7 +18,12 @@ import {
   ScrollArea,
   Select,
   Dialog,
+  DropdownMenu,
+  IconButton,
+  TextField,
+  TextArea,
 } from "@radix-ui/themes"
+import { DotsVerticalIcon, TrashIcon, Pencil1Icon } from "@radix-ui/react-icons"
 import {
   ingredientsCollection,
   recipeIngredientsCollection,
@@ -120,6 +130,164 @@ function TrackingTypeEditor({
   )
 }
 
+function EditNameDescriptionDialog({
+  ingredient,
+  open,
+  onOpenChange,
+}: {
+  ingredient: {
+    id: string
+    name: string
+    description: string
+  }
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
+  const [name, setName] = useState(ingredient.name)
+  const [description, setDescription] = useState(ingredient.description)
+
+  const handleSave = () => {
+    ingredientsCollection.update(ingredient.id, (draft) => {
+      draft.name = name.trim()
+      draft.description = description.trim()
+      draft.updated_at = new Date()
+    })
+    onOpenChange(false)
+  }
+
+  // Reset form when dialog opens
+  const handleOpenChange = (newOpen: boolean) => {
+    if (newOpen) {
+      setName(ingredient.name)
+      setDescription(ingredient.description)
+    }
+    onOpenChange(newOpen)
+  }
+
+  return (
+    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
+      <Dialog.Content style={{ maxWidth: 450 }}>
+        <Dialog.Title>Edit Ingredient</Dialog.Title>
+        <Dialog.Description size="2" mb="4">
+          Update the name and description for this ingredient.
+        </Dialog.Description>
+
+        <Flex direction="column" gap="4">
+          <label>
+            <Text as="div" size="2" mb="2" weight="bold">
+              Name
+            </Text>
+            <TextField.Root
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Ingredient name"
+            />
+          </label>
+
+          <label>
+            <Text as="div" size="2" mb="2" weight="bold">
+              Description
+            </Text>
+            <TextArea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Ingredient description"
+              rows={3}
+            />
+          </label>
+        </Flex>
+
+        <Flex gap="3" mt="4" justify="end">
+          <Button
+            variant="soft"
+            color="gray"
+            onClick={() => onOpenChange(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSave}
+            disabled={!name.trim() || !description.trim()}
+          >
+            Save Changes
+          </Button>
+        </Flex>
+      </Dialog.Content>
+    </Dialog.Root>
+  )
+}
+
+function IngredientActionsMenu({
+  ingredient,
+}: {
+  ingredient: {
+    id: string
+    name: string
+    description: string
+  }
+}) {
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
+  const navigate = useNavigate()
+
+  return (
+    <>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>
+          <IconButton variant="ghost" size="2">
+            <DotsVerticalIcon />
+          </IconButton>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content>
+          <DropdownMenu.Item onClick={() => setEditOpen(true)}>
+            <Pencil1Icon width="14" height="14" />
+            Edit Name & Description
+          </DropdownMenu.Item>
+          <DropdownMenu.Item color="red" onClick={() => setDeleteOpen(true)}>
+            <TrashIcon width="14" height="14" />
+            Delete Ingredient
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
+
+      <Dialog.Root open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <Dialog.Content style={{ maxWidth: 450 }}>
+          <Dialog.Title>Delete Ingredient</Dialog.Title>
+          <Dialog.Description size="2" mb="4">
+            Are you sure you want to delete "{ingredient.name}"? This action
+            cannot be undone.
+          </Dialog.Description>
+
+          <Flex gap="3" mt="4" justify="end">
+            <Button
+              variant="soft"
+              color="gray"
+              onClick={() => setDeleteOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              color="red"
+              onClick={() => {
+                ingredientsCollection.delete(ingredient.id)
+                navigate({ to: `/ingredients` })
+              }}
+            >
+              Delete
+            </Button>
+          </Flex>
+        </Dialog.Content>
+      </Dialog.Root>
+
+      <EditNameDescriptionDialog
+        ingredient={ingredient}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+      />
+    </>
+  )
+}
+
 export default function IngredientDetail() {
   const { id } = useParams({ from: `/_authenticated/ingredients/$id` })
 
@@ -214,7 +382,23 @@ export default function IngredientDetail() {
   return (
     <div className="p-6">
       <Flex direction="column" gap="6">
-        <Heading size="6">{ingredient.name}</Heading>
+        <Link
+          to="/ingredients"
+          style={{
+            color: `var(--gray-11)`,
+            textDecoration: `none`,
+            fontSize: `14px`,
+          }}
+        >
+          ← All Ingredients
+        </Link>
+
+        <Flex direction="column" gap="3">
+          <Flex justify="between" align="start">
+            <Heading size="6">{ingredient.name}</Heading>
+            <IngredientActionsMenu ingredient={ingredient} />
+          </Flex>
+        </Flex>
 
         {ingredient.description && (
           <Text size="3" color="gray">
