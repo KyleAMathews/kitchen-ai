@@ -9,7 +9,6 @@ import {
   Button,
   Heading,
   Callout,
-  Separator,
 } from "@radix-ui/themes"
 import { InfoCircledIcon } from "@radix-ui/react-icons"
 import { FaGoogle } from "react-icons/fa"

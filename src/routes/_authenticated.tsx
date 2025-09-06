@@ -1,4 +1,9 @@
-import { createFileRoute, redirect, useNavigate, Link } from "@tanstack/react-router"
+import {
+  createFileRoute,
+  redirect,
+  useNavigate,
+  Link,
+} from "@tanstack/react-router"
 import { Outlet } from "@tanstack/react-router"
 import { authClient, authStateCollection } from "@/lib/auth-client"
 import { Flex, Text, Button, Heading, Container } from "@radix-ui/themes"
@@ -17,7 +22,7 @@ export const Route = createFileRoute(`/_authenticated`)({
       authStateCollection.insert({ id: `auth`, ...result.data })
       if (!result.data) {
         throw redirect({
-          to: '/login',
+          to: `/login`,
         })
       }
       return result.data
