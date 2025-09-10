@@ -45,8 +45,8 @@ importers:
         specifier: ^3.2.1
         version: 3.2.1(@types/react-dom@19.1.9(@types/react@19.1.12))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@tanstack/electric-db-collection':
-        specifier: ^0.1.16
-        version: 0.1.16(@electric-sql/client@1.0.10)(typescript@5.9.2)
+        specifier: ^0.1.17
+        version: 0.1.17(@electric-sql/client@1.0.10)(typescript@5.9.2)
       '@tanstack/react-db':
         specifier: ^0.1.15
         version: 0.1.15(react@19.1.1)(typescript@5.9.2)
@@ -2863,8 +2863,8 @@ packages:
     peerDependencies:
       vite: '>=6.0.0'
 
-  '@tanstack/electric-db-collection@0.1.16':
-    resolution: {integrity: sha512-2w9r6tutkHB2FmR+1KthfArFbmHOzRHhJBW3Tr16P1HopR/LATj2aYBs0kJ36G/oP8U/SunpPo5rGwxV29hYug==}
+  '@tanstack/electric-db-collection@0.1.17':
+    resolution: {integrity: sha512-tHZI2rVDfWB1n1ehjDH9Zl+7YEbVN2kQR0OD/BFm50uIb86L/2RPP7gREBeF8VbkCbN4x46NBAUFSBTgdn0oeg==}
     peerDependencies:
       '@electric-sql/client': '>=1.0.0'
       typescript: '>=4.7'
@@ -10710,7 +10710,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/electric-db-collection@0.1.16(@electric-sql/client@1.0.10)(typescript@5.9.2)':
+  '@tanstack/electric-db-collection@0.1.17(@electric-sql/client@1.0.10)(typescript@5.9.2)':
     dependencies:
       '@electric-sql/client': 1.0.10
       '@standard-schema/spec': 1.0.0
