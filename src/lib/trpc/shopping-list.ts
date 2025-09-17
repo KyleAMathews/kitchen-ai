@@ -2,12 +2,43 @@ import { router, authedProcedure } from "@/lib/trpc"
 import { z } from "zod"
 import { TRPCError } from "@trpc/server"
 
-function getDateString() {
-  const today = new Date()
-  const year = today.getFullYear()
-  const month = (today.getMonth() + 1).toString().padStart(2, `0`)
-  const day = today.getDate().toString().padStart(2, `0`)
+function getDateString(date?: Date) {
+  const targetDate = date || new Date()
+  const year = targetDate.getFullYear()
+  const month = (targetDate.getMonth() + 1).toString().padStart(2, `0`)
+  const day = targetDate.getDate().toString().padStart(2, `0`)
   return `Shopping ${year}/${month}/${day}`
+}
+
+async function findRecentShoppingCard(listId: string) {
+  const cards = await makeTrelloRequest<
+    { id: string; name: string; desc: string }[]
+  >(`lists/${listId}/cards`, `GET`)
+
+  const today = new Date()
+  const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
+
+  // Filter cards that match the Shopping YYYY/MM/DD pattern from the last week
+  const shoppingCardPattern = /^Shopping \d{4}\/\d{2}\/\d{2}$/
+  const recentShoppingCards = cards
+    .filter((card) => shoppingCardPattern.test(card.name))
+    .filter((card) => {
+      // Extract date from card name
+      const dateMatch = card.name.match(/(\d{4})\/(\d{2})\/(\d{2})/)
+      if (!dateMatch) return false
+
+      const [, year, month, day] = dateMatch
+      const cardDate = new Date(
+        parseInt(year),
+        parseInt(month) - 1,
+        parseInt(day)
+      )
+
+      return cardDate >= oneWeekAgo && cardDate <= today
+    })
+    .sort((a, b) => b.name.localeCompare(a.name)) // Sort by date descending (most recent first)
+
+  return recentShoppingCards.length > 0 ? recentShoppingCards[0] : null
 }
 
 const makeTrelloRequest = async ({
@@ -153,11 +184,25 @@ const createOrUpdateCardWithChecklists = async (
 ) => {
   const { cardName, url, checklists } = cardDetails
 
+  // First, check if there's a card with today's date
   let card = await findCardByName(listId, cardName)
+
+  // If no card for today, check for a recent shopping card from the last week
+  if (!card) {
+    card = await findRecentShoppingCard(listId)
+
+    // If we found a recent card, we'll use it
+    if (card && url) {
+      card = await updateCard(card.id, { desc: card.desc + `\n- ${url}` })
+    }
+  } else if (url) {
+    // Card exists for today, just update it
+    card = await updateCard(card.id, { desc: card.desc + `\n- ${url}` })
+  }
+
+  // If still no card (no card today and no recent cards), create a new one
   if (!card) {
     card = await createCard(listId, cardName, url)
-  } else if (url) {
-    card = await updateCard(card.id, { desc: card.desc + `\n- ${url}` })
   }
 
   for (const [checklistTitle, items] of Object.entries(checklists)) {
