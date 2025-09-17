@@ -13,7 +13,9 @@ function getDateString(date?: Date) {
 async function findRecentShoppingCard(listId: string) {
   const cards = await makeTrelloRequest<
     { id: string; name: string; desc: string }[]
-  >(`lists/${listId}/cards`, `GET`)
+  >({
+    url: `https://api.trello.com/1/lists/${listId}/cards`,
+  })
 
   const today = new Date()
   const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
