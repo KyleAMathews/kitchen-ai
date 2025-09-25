@@ -288,7 +288,7 @@ function IngredientActionsMenu({
   )
 }
 
-export default function IngredientDetail() {
+function IngredientDetail() {
   const { id } = useParams({ from: `/_authenticated/ingredients/$id` })
 
   const { data: ingredients } = useLiveQuery(

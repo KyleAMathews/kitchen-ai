@@ -297,7 +297,7 @@ function RecipeActionsMenu({ recipe }: { recipe: SelectRecipe }) {
   )
 }
 
-export default function RecipeDetail() {
+function RecipeDetail() {
   const { id } = useParams({ from: `/_authenticated/recipes/$id` })
   const [checked, setChecked] = useState<Record<string, boolean>>({})
 

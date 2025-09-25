@@ -15,7 +15,7 @@ export const Route = createFileRoute(`/_authenticated/recipes/`)({
   },
 })
 
-export default function Recipes() {
+function Recipes() {
   const { data: recipes } = useLiveQuery((q) => q.from({ recipesCollection }))
 
   return (

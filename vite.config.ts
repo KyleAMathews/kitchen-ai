@@ -33,7 +33,9 @@ export default defineConfig(async () => {
       }),
       // TanStack Start
       tanstackStart({
-        target: `node-server`,
+        srcDirectory: `src`,
+        start: { entry: `./start.tsx` },
+        server: { entry: `./server.ts` },
         customViteReactPlugin: true,
         spa: {
           enabled: true,

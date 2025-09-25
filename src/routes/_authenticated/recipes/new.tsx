@@ -34,7 +34,7 @@ function Working({
   }
 }
 
-export default function NewRecipe() {
+function NewRecipe() {
   const navigate = useNavigate()
   const [url, setUrl] = useState(``)
   const [pastedText, setPastedText] = useState(``)

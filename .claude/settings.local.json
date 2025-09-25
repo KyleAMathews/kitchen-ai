@@ -15,9 +15,10 @@
       "WebFetch(domain:www.better-auth.com)",
       "Bash(pnpm ls:*)",
       "Bash(pnpm lint:*)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Read(//Users/kylemathews/Desktop/**)",
+      "Bash(node:*)"
     ],
     "deny": []
   }
 }
-

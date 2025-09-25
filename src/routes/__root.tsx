@@ -40,17 +40,19 @@ export const Route = createRootRoute({
     ],
   }),
 
+  shellComponent: RootDocument,
+
   component: () => (
-    <RootDocument>
+    <>
       <Theme>
         <Outlet />
       </Theme>
       {process.env.NODE_ENV === `development` && <TanStackRouterDevtools />}
-    </RootDocument>
+    </>
   ),
 
   notFoundComponent: () => (
-    <RootDocument>
+    <>
       <Theme>
         <Flex
           direction="column"
@@ -69,7 +71,7 @@ export const Route = createRootRoute({
         </Flex>
       </Theme>
       {process.env.NODE_ENV === `development` && <TanStackRouterDevtools />}
-    </RootDocument>
+    </>
   ),
 })
 

@@ -6,7 +6,7 @@ export const Route = createFileRoute(`/_authenticated/review`)({
   component: Review,
 })
 
-export default function Review() {
+function Review() {
   return (
     <div className="p-6">
       <Flex

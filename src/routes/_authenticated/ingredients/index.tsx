@@ -27,7 +27,7 @@ export const Route = createFileRoute(`/_authenticated/ingredients/`)({
   },
 })
 
-export default function IngredientsList() {
+function IngredientsList() {
   const [searchQuery, setSearchQuery] = useState(``)
 
   const { data: ingredients } = useLiveQuery(
