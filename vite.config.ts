@@ -36,16 +36,8 @@ export default defineConfig(async () => {
         srcDirectory: `src`,
         start: { entry: `./start.tsx` },
         server: { entry: `./server.ts` },
-        customViteReactPlugin: true,
-        prerender: {
-          enabled: false, // Completely disable all prerendering
-        },
         spa: {
           enabled: true,
-          prerender: {
-            enabled: false, // Disable SPA prerendering
-            crawlLinks: false, // Disable link crawling
-          },
         },
       }),
       // React plugin

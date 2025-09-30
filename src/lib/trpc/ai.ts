@@ -6,15 +6,13 @@ import { eq, and } from "drizzle-orm"
 import { db } from "@/db/connection"
 import OpenAI from "openai"
 import pkg from "openai-zod-functions"
+import { getOpenAIClient } from "@/lib/openai"
 const { toTool, parseArguments } = pkg
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_KEY,
-})
 
 // Helper function to get embeddings
 export async function getEmbedding(text: string) {
-  const result = await openai.embeddings.create({
+  const client = getOpenAIClient()
+  const result = await client.embeddings.create({
     input: text,
     model: `text-embedding-3-small`,
     dimensions: 256,
@@ -74,7 +72,8 @@ export async function processRecipeWithAI(
       console.log(`OpenAI extraction attempt ${attempt}/${maxAttempts}`)
 
       try {
-        const response = await openai.chat.completions.create({
+        const client = getOpenAIClient()
+        const response = await client.chat.completions.create({
           model: `gpt-4o`,
           max_tokens: 2048,
           messages,

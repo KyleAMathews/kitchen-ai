@@ -11,11 +11,8 @@ import { eq, and } from "drizzle-orm"
 import OpenAI from "openai"
 import pkg from "openai-zod-functions"
 import { getEmbedding } from "@/lib/trpc/ai"
+import { getOpenAIClient } from "@/lib/openai"
 const { toTool, parseArguments } = pkg
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_KEY,
-})
 
 // Schema for AI-extracted ingredient info
 const aiIngredientSchema = z.object({
@@ -76,7 +73,8 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
           )
 
           try {
-            const response = await openai.chat.completions.create({
+            const client = getOpenAIClient()
+            const response = await client.chat.completions.create({
               model: `gpt-3.5-turbo-0125`,
               max_tokens: 1024,
               messages,
