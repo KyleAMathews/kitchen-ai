@@ -1,5 +1,6 @@
 import { defineConfig } from "vite"
 import { tanstackStart } from "@tanstack/react-start/plugin/vite"
+import { nitroV2Plugin } from "@tanstack/nitro-v2-vite-plugin"
 import react from "@vitejs/plugin-react"
 import viteTsConfigPaths from "vite-tsconfig-paths"
 import { fromFile } from "@capsizecss/unpack"
@@ -40,6 +41,8 @@ export default defineConfig(async () => {
           enabled: true,
         },
       }),
+      // Nitro for Node.js deployment
+      nitroV2Plugin(),
       // React plugin
       react(),
       // Local HTTPS with Caddy

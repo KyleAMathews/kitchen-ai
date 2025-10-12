@@ -35,8 +35,8 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 # Copy built application from builder
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/public ./public
+COPY --from=builder /app/.output ./.output
+COPY --from=builder /app/dist/client ./dist/client
 
 # Copy migration-related files for release command
 COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts

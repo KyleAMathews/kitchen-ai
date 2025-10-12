@@ -2,7 +2,7 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 
 app = "kitchen-ai" # Replace with your app name
-primary_region = "lax" # Denver region, adjust as needed
+primary_region = "lax" # Los Angelas
 
 [build]
   dockerfile = "Dockerfile"
