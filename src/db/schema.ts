@@ -46,6 +46,7 @@ export const ingredients = pgTable(`ingredients`, {
   fill_level: integer(`fill_level`).notNull().default(0),
   grocery_section: grocerySectionEnum(`grocery_section`).notNull(),
   count: integer(`count`).notNull().default(0),
+  trello_add_count: integer(`trello_add_count`).notNull().default(0),
   expiration_date: timestamp(`expiration_date`, {
     withTimezone: true,
   }).notNull(),

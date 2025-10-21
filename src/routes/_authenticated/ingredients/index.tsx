@@ -38,9 +38,19 @@ function IngredientsList() {
             .where(({ ingredientsCollection }) =>
               ilike(ingredientsCollection.name, `%${searchQuery}%`)
             )
+            .orderBy(
+              ({ ingredientsCollection }) =>
+                ingredientsCollection.trello_add_count,
+              `desc`
+            )
             .orderBy(({ ingredientsCollection }) => ingredientsCollection.name)
         : q
             .from({ ingredientsCollection })
+            .orderBy(
+              ({ ingredientsCollection }) =>
+                ingredientsCollection.trello_add_count,
+              `desc`
+            )
             .orderBy(({ ingredientsCollection }) => ingredientsCollection.name),
     [searchQuery]
   )
@@ -72,9 +82,13 @@ function IngredientsList() {
         checklists[section].push(ingredient.name)
       })
 
+      // Extract ingredient IDs for tracking
+      const ingredientIds = selectedIngredientsList.map((i) => i.id)
+
       await trpc.shoppingList.addToShoppingList.mutate({
         recipeName: `Manual Ingredients`,
         checklists,
+        ingredientIds,
       })
 
       // Clear selection

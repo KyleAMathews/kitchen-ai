@@ -227,6 +227,7 @@ export const shoppingListRouter = router({
         recipeName: z.string(),
         url: z.string().optional(),
         checklists: z.record(z.string(), z.array(z.string())),
+        ingredientIds: z.array(z.string()).optional(),
       })
     )
     .mutation(async ({ input, _ctx }) => {
@@ -240,6 +241,25 @@ export const shoppingListRouter = router({
 
       try {
         const card = await createOrUpdateCardWithChecklists(listId, cardDetails)
+
+        // Track ingredient additions by incrementing trello_add_count
+        if (input.ingredientIds && input.ingredientIds.length > 0) {
+          const { db, ingredients } = await import(`@/db`)
+          const { eq, sql } = await import(`drizzle-orm`)
+
+          // Increment counter for each ingredient
+          await Promise.all(
+            input.ingredientIds.map((ingredientId) =>
+              db
+                .update(ingredients)
+                .set({
+                  trello_add_count: sql`${ingredients.trello_add_count} + 1`,
+                })
+                .where(eq(ingredients.id, ingredientId))
+            )
+          )
+        }
+
         return {
           success: true,
           cardId: card.id,
