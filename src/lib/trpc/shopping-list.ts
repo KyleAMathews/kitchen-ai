@@ -1,6 +1,9 @@
 import { router, authedProcedure } from "@/lib/trpc"
 import { z } from "zod"
 import { TRPCError } from "@trpc/server"
+import { db } from "@/db/connection"
+import { ingredients } from "@/db/schema"
+import { eq, sql } from "drizzle-orm"
 
 function getDateString(date?: Date) {
   const targetDate = date || new Date()
@@ -227,6 +230,7 @@ export const shoppingListRouter = router({
         recipeName: z.string(),
         url: z.string().optional(),
         checklists: z.record(z.string(), z.array(z.string())),
+        ingredientIds: z.array(z.string()).optional(),
       })
     )
     .mutation(async ({ input, _ctx }) => {
@@ -240,6 +244,26 @@ export const shoppingListRouter = router({
 
       try {
         const card = await createOrUpdateCardWithChecklists(listId, cardDetails)
+
+        // Track ingredient additions by incrementing trello_add_count (fire-and-forget)
+        if (input.ingredientIds && input.ingredientIds.length > 0) {
+          // Increment counter for each ingredient atomically
+          // Don't await - this is best effort tracking
+          Promise.all(
+            input.ingredientIds.map((ingredientId) =>
+              db
+                .update(ingredients)
+                .set({
+                  trello_add_count: sql`${ingredients.trello_add_count} + 1`,
+                })
+                .where(eq(ingredients.id, ingredientId))
+            )
+          ).catch((err) => {
+            // Log but don't fail the request if tracking fails
+            console.error(`Failed to update ingredient tracking:`, err)
+          })
+        }
+
         return {
           success: true,
           cardId: card.id,
