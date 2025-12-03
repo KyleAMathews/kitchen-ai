@@ -33,11 +33,19 @@ export const selectUsersSchema = baseSelectUsersSchema.transform((data) => ({
 }))
 
 // Other schemas are already in snake_case in the Drizzle schema
-export const selectIngredientsSchema = createSelectSchema(ingredients)
+// Override enum fields to use explicit z.enum() to avoid Zod v4 compatibility issues
+export const selectIngredientsSchema = createSelectSchema(ingredients, {
+  grocery_section: z.enum(grocerySectionEnum.enumValues),
+  tracking_type: z.enum(ingredientsTrackingTypeEnum.enumValues).nullable(),
+})
 export const selectIngredientEventsSchema = createSelectSchema(ingredientEvents)
 export const selectRecipesSchema = createSelectSchema(recipes)
-export const selectRecipeIngredientsSchema =
-  createSelectSchema(recipeIngredients)
+export const selectRecipeIngredientsSchema = createSelectSchema(
+  recipeIngredients,
+  {
+    grocery_section: z.enum(grocerySectionEnum.enumValues),
+  }
+)
 export const selectRecipeCommentsSchema = createSelectSchema(recipeComments)
 export const selectJobsSchema = createSelectSchema(jobs)
 
