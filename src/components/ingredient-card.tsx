@@ -2,26 +2,10 @@ import { isRunningLow, isExpiredSoon, timeAgo } from "@/lib/utils"
 import { useNavigate } from "@tanstack/react-router"
 import { Flex, Heading, Box, Text, Slider, Badge } from "@radix-ui/themes"
 import { CaretRightIcon } from "@radix-ui/react-icons"
-
-interface Ingredient {
-  id: string
-  name: string
-  description: string
-  isReviewed: boolean
-  embedding: string
-  trackingType: `fill_level` | `count` | null
-  fillLevel: number
-  grocerySection: string
-  count: number
-  expirationDate: Date
-  ingredientsPhotoUploadsId: string | null
-  userId: string
-  createdAt: Date
-  updatedAt: Date
-}
+import type { SelectIngredient } from "@/db/zod-schemas"
 
 interface IngredientCardProps {
-  ingredient: Ingredient
+  ingredient: SelectIngredient
 }
 
 export default function IngredientCard({ ingredient }: IngredientCardProps) {
@@ -64,12 +48,12 @@ export default function IngredientCard({ ingredient }: IngredientCardProps) {
         )}
       </Flex>
       <Flex direction="column" gap="1" ml="auto">
-        {ingredient.trackingType === `fill_level` && (
+        {ingredient.tracking_type === `fill_level` && (
           <Box style={{ minWidth: 100 }}>
             <Slider
               variant="soft"
               className="no-thumb"
-              value={[ingredient.fillLevel]}
+              value={[ingredient.fill_level]}
             />
           </Box>
         )}

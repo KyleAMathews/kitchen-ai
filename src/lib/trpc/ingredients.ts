@@ -9,10 +9,9 @@ import {
 } from "@/db/zod-schemas"
 import { eq, and } from "drizzle-orm"
 import OpenAI from "openai"
-import pkg from "openai-zod-functions"
+import { zodFunction } from "openai/helpers/zod"
 import { getEmbedding } from "@/lib/trpc/ai"
 import { getOpenAIClient } from "@/lib/openai"
-const { toTool, parseArguments } = pkg
 
 // Schema for AI-extracted ingredient info
 const aiIngredientSchema = z.object({
@@ -40,13 +39,11 @@ export const ingredientsRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const functions: ZodFunctionDef[] = [
-        {
-          name: `get_ingredient`,
-          description: `Get ingredient arguments from name of ingredient`,
-          schema: aiIngredientSchema,
-        },
-      ]
+      const tool = zodFunction({
+        name: `get_ingredient`,
+        description: `Get ingredient arguments from name of ingredient`,
+        parameters: aiIngredientSchema,
+      })
 
       const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
         {
@@ -78,7 +75,7 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
               model: `gpt-3.5-turbo-0125`,
               max_tokens: 1024,
               messages,
-              tools: functions.map(toTool),
+              tools: [tool],
               tool_choice: {
                 type: `function`,
                 function: { name: `get_ingredient` },
@@ -91,14 +88,12 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
               throw new Error(`No function call in response`)
             }
 
-            const func = message.tool_calls[0].function
-            const parsed = parseArguments(
-              func.name,
-              func.arguments,
-              aiIngredientSchema
+            const toolCall = message.tool_calls[0]
+            const parsed = aiIngredientSchema.parse(
+              JSON.parse(toolCall.function.arguments)
             )
 
-            return parsed as AIIngredientInfo
+            return parsed
           } catch (error) {
             console.error(`Attempt ${attempt} failed:`, error)
 

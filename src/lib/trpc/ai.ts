@@ -5,9 +5,8 @@ import { grocerySectionSchema } from "@/db/zod-schemas"
 import { eq, and } from "drizzle-orm"
 import { db } from "@/db/connection"
 import OpenAI from "openai"
-import pkg from "openai-zod-functions"
+import { zodFunction } from "openai/helpers/zod"
 import { getOpenAIClient } from "@/lib/openai"
-const { toTool, parseArguments } = pkg
 
 // Helper function to get embeddings
 export async function getEmbedding(text: string) {
@@ -56,13 +55,11 @@ export async function processRecipeWithAI(
 ) {
   const startTime = Date.now()
 
-  const functions = [
-    {
-      name: `extract_recipe`,
-      description: `Extract recipe name, description, and ingredients from pasted text`,
-      schema: recipeExtractionSchema,
-    },
-  ]
+  const tool = zodFunction({
+    name: `extract_recipe`,
+    description: `Extract recipe name, description, and ingredients from pasted text`,
+    parameters: recipeExtractionSchema,
+  })
 
   async function extractRecipeWithRetry(
     messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
@@ -77,7 +74,7 @@ export async function processRecipeWithAI(
           model: `gpt-4o`,
           max_tokens: 2048,
           messages,
-          tools: functions.map(toTool),
+          tools: [tool],
           tool_choice: {
             type: `function`,
             function: { name: `extract_recipe` },
@@ -90,14 +87,12 @@ export async function processRecipeWithAI(
           throw new Error(`No function call in response`)
         }
 
-        const func = message.tool_calls[0].function
-        const parsed = parseArguments(
-          func.name,
-          func.arguments,
-          recipeExtractionSchema
+        const toolCall = message.tool_calls[0]
+        const parsed = recipeExtractionSchema.parse(
+          JSON.parse(toolCall.function.arguments)
         )
 
-        return parsed as RecipeExtraction
+        return parsed
       } catch (error) {
         console.error(`Attempt ${attempt} failed:`, error)
 

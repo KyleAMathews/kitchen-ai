@@ -17,7 +17,10 @@
       "Bash(pnpm lint:*)",
       "Bash(git log:*)",
       "Read(//Users/kylemathews/Desktop/**)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm typecheck:*)",
+      "WebFetch(domain:zod.dev)"
     ],
     "deny": []
   }
