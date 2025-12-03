@@ -178,18 +178,54 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const result = await ctx.db.transaction(async (tx) => {
-        const txid = await generateTxId(tx)
-        const [newIngredient] = await tx
-          .insert(ingredients)
-          .values({
+      try {
+        console.log(`[ingredients.create] Starting insert for:`, {
+          name: input.name,
+          user_id: ctx.session.user.id,
+          tracking_type: input.tracking_type,
+          grocery_section: input.grocery_section,
+        })
+
+        const result = await ctx.db.transaction(async (tx) => {
+          const txid = await generateTxId(tx)
+
+          console.log(`[ingredients.create] Generated txid:`, txid)
+          console.log(`[ingredients.create] Full input values:`, {
             ...input,
             user_id: ctx.session.user.id,
+            embedding_length: input.embedding?.length,
           })
-          .returning()
-        return { ingredient: newIngredient, txid }
-      })
-      return result
+
+          const [newIngredient] = await tx
+            .insert(ingredients)
+            .values({
+              ...input,
+              user_id: ctx.session.user.id,
+            })
+            .returning()
+
+          console.log(`[ingredients.create] Successfully inserted:`, {
+            id: newIngredient.id,
+            name: newIngredient.name,
+          })
+
+          return { ingredient: newIngredient, txid }
+        })
+        return result
+      } catch (error) {
+        console.error(`[ingredients.create] ERROR:`, error)
+        console.error(`[ingredients.create] Error details:`, {
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+          input: {
+            name: input.name,
+            user_id: ctx.session.user.id,
+            tracking_type: input.tracking_type,
+            grocery_section: input.grocery_section,
+          },
+        })
+        throw error
+      }
     }),
 
   update: authedProcedure

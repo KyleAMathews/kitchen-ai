@@ -8,7 +8,17 @@ export type Context = {
   db: typeof db
 }
 
-const t = initTRPC.context<Context>().create()
+const t = initTRPC.context<Context>().create({
+  errorFormatter({ shape, error }) {
+    console.error(`[tRPC Error] ${error.code}:`, {
+      message: error.message,
+      cause: error.cause,
+      stack: error.stack,
+      path: shape.data.path,
+    })
+    return shape
+  },
+})
 
 export const router = t.router
 export const procedure = t.procedure
