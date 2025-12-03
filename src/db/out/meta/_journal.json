@@ -36,6 +36,13 @@
       "when": 1756569401373,
       "tag": "0004_nasty_leech",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1764802407351,
+      "tag": "0005_thin_thena",
+      "breakpoints": true
     }
   ]
 }

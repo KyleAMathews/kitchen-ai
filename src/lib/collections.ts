@@ -60,7 +60,7 @@ export const ingredientsCollection = createCollection(
         expiration_date: newIngredient.expiration_date,
       })
 
-      return { txid: result.txid }
+      return { txid: Number(result.txid) }
     },
 
     onUpdate: async ({ transaction }) => {
@@ -72,7 +72,7 @@ export const ingredientsCollection = createCollection(
         },
       })
 
-      return { txid: result.txid }
+      return { txid: Number(result.txid) }
     },
 
     onDelete: async ({ transaction }) => {
@@ -81,7 +81,7 @@ export const ingredientsCollection = createCollection(
         id: deletedIngredient.id,
       })
 
-      return { txid: result.txid }
+      return { txid: Number(result.txid) }
     },
   })
 )
@@ -107,17 +107,20 @@ export const recipesCollection = createCollection(
       const { modified: newRecipe, metadata } = transaction.mutations[0]
 
       // pastedText is required for recipe creation
-      if (!metadata?.pastedText) {
+      const recipeMetadata = metadata as
+        | { pastedText: string; url?: string }
+        | undefined
+      if (!recipeMetadata?.pastedText) {
         throw new Error(`pastedText is required to create a recipe`)
       }
 
       const result = await trpc.recipes.create.mutate({
         id: newRecipe.id,
-        pastedText: metadata?.pastedText,
-        url: metadata?.url,
+        pastedText: recipeMetadata.pastedText,
+        url: recipeMetadata.url,
       })
 
-      return { txid: result.txid }
+      return { txid: Number(result.txid) }
     },
 
     onUpdate: async ({ transaction }) => {
@@ -131,7 +134,7 @@ export const recipesCollection = createCollection(
         },
       })
 
-      return { txid: result.txid }
+      return { txid: Number(result.txid) }
     },
 
     onDelete: async ({ transaction }) => {
@@ -140,7 +143,7 @@ export const recipesCollection = createCollection(
         id: deletedRecipe.id,
       })
 
-      return { txid: result.txid }
+      return { txid: Number(result.txid) }
     },
   })
 )
@@ -190,7 +193,7 @@ export const recipeCommentsCollection = createCollection(
         comment: newComment.comment,
       })
 
-      return { txid: result.txid }
+      return { txid: Number(result.txid) }
     },
 
     onUpdate: async ({ transaction }) => {
@@ -200,7 +203,7 @@ export const recipeCommentsCollection = createCollection(
         data: changes,
       })
 
-      return { txid: result.txid }
+      return { txid: Number(result.txid) }
     },
 
     onDelete: async ({ transaction }) => {
@@ -209,7 +212,7 @@ export const recipeCommentsCollection = createCollection(
         id: deletedComment.id,
       })
 
-      return { txid: result.txid }
+      return { txid: Number(result.txid) }
     },
   })
 )

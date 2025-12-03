@@ -90,6 +90,9 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
             }
 
             const toolCall = message.tool_calls[0]
+            if (toolCall.type !== `function`) {
+              throw new Error(`Expected function tool call`)
+            }
             const parsed = aiIngredientSchema.parse(
               JSON.parse(toolCall.function.arguments)
             )
@@ -174,7 +177,7 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
     .output(
       z.object({
         ingredient: selectIngredientsSchema,
-        txid: z.string(),
+        txid: z.number(),
       })
     )
     .mutation(async ({ ctx, input }) => {

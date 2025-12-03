@@ -88,6 +88,9 @@ export async function processRecipeWithAI(
         }
 
         const toolCall = message.tool_calls[0]
+        if (toolCall.type !== `function`) {
+          throw new Error(`Expected function tool call`)
+        }
         const parsed = recipeExtractionSchema.parse(
           JSON.parse(toolCall.function.arguments)
         )

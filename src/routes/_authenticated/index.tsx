@@ -34,7 +34,7 @@ function Dashboard() {
   const { data: recipes } = useLiveQuery((q) =>
     q
       .from({ recipesCollection })
-      .orderBy(({ recipesCollection }) => recipesCollection.updatedAt)
+      .orderBy(({ recipesCollection }) => recipesCollection.updated_at)
       .limit(3)
   )
 
@@ -42,7 +42,7 @@ function Dashboard() {
     q
       .from({ ingredientsCollection })
       .orderBy(
-        ({ ingredientsCollection }) => ingredientsCollection.updatedAt,
+        ({ ingredientsCollection }) => ingredientsCollection.updated_at,
         `desc`
       )
       .limit(3)
