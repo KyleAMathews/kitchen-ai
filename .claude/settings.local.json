@@ -20,7 +20,8 @@
       "Bash(node:*)",
       "Bash(pnpm install:*)",
       "Bash(pnpm typecheck:*)",
-      "WebFetch(domain:zod.dev)"
+      "WebFetch(domain:zod.dev)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }

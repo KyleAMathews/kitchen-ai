@@ -6,6 +6,7 @@ import {
   ingredientsTrackingTypeSchema,
   insertIngredientsSchema,
   updateIngredientsSchema,
+  selectIngredientsSchema,
 } from "@/db/zod-schemas"
 import { eq, and } from "drizzle-orm"
 import OpenAI from "openai"
@@ -168,6 +169,12 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
         user_id: true,
         created_at: true,
         updated_at: true,
+      })
+    )
+    .output(
+      z.object({
+        ingredient: selectIngredientsSchema,
+        txid: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
