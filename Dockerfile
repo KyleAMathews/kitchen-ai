@@ -34,9 +34,8 @@ COPY package.json pnpm-lock.yaml ./
 # Install all dependencies (needed for migration tools in release command)
 RUN pnpm install --frozen-lockfile
 
-# Copy built application from builder
+# Copy built application from builder (Nitro v3 bundles everything in .output)
 COPY --from=builder /app/.output ./.output
-COPY --from=builder /app/dist/client ./dist/client
 
 # Copy migration-related files for release command
 COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
