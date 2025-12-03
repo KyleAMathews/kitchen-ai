@@ -27,8 +27,8 @@ importers:
         specifier: ^5.2.8
         version: 5.2.8
       '@hono/zod-validator':
-        specifier: ^0.4.3
-        version: 0.4.3(hono@4.9.4)(zod@3.25.76)
+        specifier: ^0.7.5
+        version: 0.7.5(hono@4.9.4)(zod@4.1.13)
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
@@ -85,7 +85,7 @@ importers:
         version: 0.44.7(@opentelemetry/api@1.8.0)(@types/pg@8.15.6)(kysely@0.28.7)(pg@8.16.3)
       drizzle-zod:
         specifier: ^0.7.1
-        version: 0.7.1(drizzle-orm@0.44.7(@opentelemetry/api@1.8.0)(@types/pg@8.15.6)(kysely@0.28.7)(pg@8.16.3))(zod@3.25.76)
+        version: 0.7.1(drizzle-orm@0.44.7(@opentelemetry/api@1.8.0)(@types/pg@8.15.6)(kysely@0.28.7)(pg@8.16.3))(zod@4.1.13)
       i:
         specifier: ^0.3.7
         version: 0.3.7
@@ -102,11 +102,11 @@ importers:
         specifier: ^11.6.4
         version: 11.6.4
       openai:
-        specifier: ^5.23.2
-        version: 5.23.2(ws@8.18.3)(zod@3.25.76)
+        specifier: ^6.9.1
+        version: 6.9.1(ws@8.18.3)(zod@4.1.13)
       openai-zod-functions:
         specifier: ^0.1.2
-        version: 0.1.2(openai@5.23.2(ws@8.18.3)(zod@3.25.76))
+        version: 0.1.2(openai@6.9.1(ws@8.18.3)(zod@4.1.13))
       pg:
         specifier: ^8.16.3
         version: 8.16.3
@@ -132,8 +132,8 @@ importers:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.9.3)(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.21.0)(yaml@2.8.2))
       zod:
-        specifier: ^3.25.76
-        version: 3.25.76
+        specifier: ^4.1.13
+        version: 4.1.13
     devDependencies:
       '@eslint/compat':
         specifier: ^1.4.1
@@ -1444,11 +1444,11 @@ packages:
   '@fontsource/montserrat@5.2.8':
     resolution: {integrity: sha512-xTjLxSbSfCycDB0pwmNsfNvdfWPaDaRQ2LC6yt/ZI7SdvXG52zHnzNYC/09mzuAuWNJyShkteutfCoDgym56hQ==}
 
-  '@hono/zod-validator@0.4.3':
-    resolution: {integrity: sha512-xIgMYXDyJ4Hj6ekm9T9Y27s080Nl9NXHcJkOvkXPhubOLj8hZkOL8pDnnXfvCf5xEE8Q4oMFenQUZZREUY2gqQ==}
+  '@hono/zod-validator@0.7.5':
+    resolution: {integrity: sha512-n4l4hutkfYU07PzRUHBOVzUEn38VSfrh+UVE5d0w4lyfWDOEhzxIupqo5iakRiJL44c3vTuFJBvcmUl8b9agIA==}
     peerDependencies:
       hono: '>=3.9.0'
-      zod: ^3.19.1
+      zod: ^3.25.0 || ^4.0.0
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -7072,12 +7072,12 @@ packages:
     peerDependencies:
       openai: '>= 4.20.0'
 
-  openai@5.23.2:
-    resolution: {integrity: sha512-MQBzmTulj+MM5O8SKEk/gL8a7s5mktS9zUtAkU257WjvobGc9nKcBuVwjyEEcb9SI8a8Y2G/mzn3vm9n1Jlleg==}
+  openai@6.9.1:
+    resolution: {integrity: sha512-vQ5Rlt0ZgB3/BNmTa7bIijYFhz3YBceAA3Z4JuoMSBftBF9YqFHIEhZakSs+O/Ad7EaoEimZvHxD5ylRjN11Lg==}
     hasBin: true
     peerDependencies:
       ws: ^8.18.0
-      zod: ^3.23.8
+      zod: ^3.25 || ^4.0
     peerDependenciesMeta:
       ws:
         optional: true
@@ -9173,7 +9173,7 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
 
-  '@better-auth/core@1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@3.25.76))(jose@6.1.0)(kysely@0.28.7)(nanostores@1.0.1)':
+  '@better-auth/core@1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@4.1.13))(jose@6.1.0)(kysely@0.28.7)(nanostores@1.0.1)':
     dependencies:
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.18
@@ -9184,9 +9184,9 @@ snapshots:
       nanostores: 1.0.1
       zod: 4.1.13
 
-  '@better-auth/telemetry@1.4.5(@better-auth/core@1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@3.25.76))(jose@6.1.0)(kysely@0.28.7)(nanostores@1.0.1))':
+  '@better-auth/telemetry@1.4.5(@better-auth/core@1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@4.1.13))(jose@6.1.0)(kysely@0.28.7)(nanostores@1.0.1))':
     dependencies:
-      '@better-auth/core': 1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@3.25.76))(jose@6.1.0)(kysely@0.28.7)(nanostores@1.0.1)
+      '@better-auth/core': 1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@4.1.13))(jose@6.1.0)(kysely@0.28.7)(nanostores@1.0.1)
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.18
 
@@ -9843,10 +9843,10 @@ snapshots:
 
   '@fontsource/montserrat@5.2.8': {}
 
-  '@hono/zod-validator@0.4.3(hono@4.9.4)(zod@3.25.76)':
+  '@hono/zod-validator@0.7.5(hono@4.9.4)(zod@4.1.13)':
     dependencies:
       hono: 4.9.4
-      zod: 3.25.76
+      zod: 4.1.13
 
   '@humanfs/core@0.19.1': {}
 
@@ -12932,8 +12932,8 @@ snapshots:
 
   better-auth@1.4.5(@tanstack/react-start@1.139.14(crossws@0.4.1(srvx@0.9.7))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.21.0)(yaml@2.8.2)))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(solid-js@1.9.9):
     dependencies:
-      '@better-auth/core': 1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@3.25.76))(jose@6.1.0)(kysely@0.28.7)(nanostores@1.0.1)
-      '@better-auth/telemetry': 1.4.5(@better-auth/core@1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@3.25.76))(jose@6.1.0)(kysely@0.28.7)(nanostores@1.0.1))
+      '@better-auth/core': 1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@4.1.13))(jose@6.1.0)(kysely@0.28.7)(nanostores@1.0.1)
+      '@better-auth/telemetry': 1.4.5(@better-auth/core@1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@4.1.13))(jose@6.1.0)(kysely@0.28.7)(nanostores@1.0.1))
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.18
       '@noble/ciphers': 2.0.1
@@ -13614,10 +13614,10 @@ snapshots:
       kysely: 0.28.7
       pg: 8.16.3
 
-  drizzle-zod@0.7.1(drizzle-orm@0.44.7(@opentelemetry/api@1.8.0)(@types/pg@8.15.6)(kysely@0.28.7)(pg@8.16.3))(zod@3.25.76):
+  drizzle-zod@0.7.1(drizzle-orm@0.44.7(@opentelemetry/api@1.8.0)(@types/pg@8.15.6)(kysely@0.28.7)(pg@8.16.3))(zod@4.1.13):
     dependencies:
       drizzle-orm: 0.44.7(@opentelemetry/api@1.8.0)(@types/pg@8.15.6)(kysely@0.28.7)(pg@8.16.3)
-      zod: 3.25.76
+      zod: 4.1.13
 
   dunder-proto@1.0.1:
     dependencies:
@@ -15888,17 +15888,17 @@ snapshots:
       is-inside-container: 1.0.0
       wsl-utils: 0.1.0
 
-  openai-zod-functions@0.1.2(openai@5.23.2(ws@8.18.3)(zod@3.25.76)):
+  openai-zod-functions@0.1.2(openai@6.9.1(ws@8.18.3)(zod@4.1.13)):
     dependencies:
-      openai: 5.23.2(ws@8.18.3)(zod@3.25.76)
+      openai: 6.9.1(ws@8.18.3)(zod@4.1.13)
       zod: 3.25.76
       zod-to-json-schema: 3.24.6(zod@3.25.76)
       zod-validation-error: 2.1.0(zod@3.25.76)
 
-  openai@5.23.2(ws@8.18.3)(zod@3.25.76):
+  openai@6.9.1(ws@8.18.3)(zod@4.1.13):
     optionalDependencies:
       ws: 8.18.3
-      zod: 3.25.76
+      zod: 4.1.13
 
   optionator@0.9.4:
     dependencies:
