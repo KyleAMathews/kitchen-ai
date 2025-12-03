@@ -1,6 +1,6 @@
 import { defineConfig } from "vite"
 import { tanstackStart } from "@tanstack/react-start/plugin/vite"
-import { nitroV2Plugin } from "@tanstack/nitro-v2-vite-plugin"
+import { nitro } from "nitro/vite"
 import react from "@vitejs/plugin-react"
 import viteTsConfigPaths from "vite-tsconfig-paths"
 import { fromFile } from "@capsizecss/unpack"
@@ -28,23 +28,12 @@ export default defineConfig(async () => {
       host: true,
     },
     plugins: [
+      // Nitro for Node.js deployment
+      nitro(),
       // Path aliases support
       viteTsConfigPaths({
         projects: [`./tsconfig.json`],
       }),
-      // TanStack Start
-      tanstackStart({
-        srcDirectory: `src`,
-        start: { entry: `./start.tsx` },
-        server: { entry: `./server.ts` },
-        spa: {
-          enabled: true,
-        },
-      }),
-      // Nitro for Node.js deployment
-      nitroV2Plugin(),
-      // React plugin
-      react(),
       // Local HTTPS with Caddy
       caddyPlugin(),
       // Typography optimization
@@ -53,6 +42,14 @@ export default defineConfig(async () => {
         defaultFontStack: [generalSansMetrics, arial],
         headingFontStack: [montserrat, arial],
       }),
+      // TanStack Start
+      tanstackStart({
+        router: {
+          srcDirectory: `src`,
+        },
+      }),
+      // React plugin
+      react(),
     ],
     resolve: {
       alias: {
