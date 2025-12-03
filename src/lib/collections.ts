@@ -51,11 +51,13 @@ export const ingredientsCollection = createCollection(
         name: newIngredient.name,
         description: newIngredient.description,
         embedding: newIngredient.embedding,
-        trackingType: newIngredient.tracking_type,
-        fillLevel: newIngredient.fill_level,
-        grocerySection: newIngredient.grocery_section,
+        tracking_type: newIngredient.tracking_type,
+        fill_level: newIngredient.fill_level,
+        grocery_section: newIngredient.grocery_section,
         count: newIngredient.count,
-        expirationDate: newIngredient.expiration_date,
+        trello_add_count: newIngredient.trello_add_count,
+        is_reviewed: newIngredient.is_reviewed,
+        expiration_date: newIngredient.expiration_date,
       })
 
       return { txid: result.txid }
