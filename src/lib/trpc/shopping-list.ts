@@ -178,15 +178,15 @@ const updateChecklistItems = async (checklistId: string, items: string[]) => {
   }
 }
 
-const cardSchema = z.object({
-  cardName: z.string(),
-  url: z.string().optional(),
-  checklists: z.record(z.string(), z.array(z.string())),
-})
+type CardDetails = {
+  cardName: string
+  url?: string
+  checklists: Record<string, string[]>
+}
 
 const createOrUpdateCardWithChecklists = async (
   listId: string,
-  cardDetails: z.infer<typeof cardSchema>
+  cardDetails: CardDetails
 ) => {
   const { cardName, url, checklists } = cardDetails
 

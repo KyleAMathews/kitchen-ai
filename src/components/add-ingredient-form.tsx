@@ -46,7 +46,11 @@ export default function AddIngredientForm({
         name: formProps.name as string,
         tracking_type: type as z.infer<typeof ingredientsTrackingTypeSchema>,
         fill_level:
-          type === `fill_level` ? fillLevel : type === `pantry_staple` ? 100 : 0,
+          type === `fill_level`
+            ? fillLevel
+            : type === `pantry_staple`
+              ? 100
+              : 0,
         count: type === `count` ? count : 0,
         expiration_date: type !== `pantry_staple` ? expirationDate : undefined,
       })
@@ -54,9 +58,7 @@ export default function AddIngredientForm({
       onSuccess?.()
       onClose()
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : `Failed to add ingredient`
-      )
+      setError(err instanceof Error ? err.message : `Failed to add ingredient`)
     } finally {
       setIsLoading(false)
     }
