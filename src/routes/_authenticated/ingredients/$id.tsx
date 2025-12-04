@@ -47,13 +47,15 @@ function TrackingTypeEditor({
 }: {
   ingredient: {
     id: string
-    tracking_type: string
+    tracking_type: string | null
     fill_level?: number
     count?: number
   }
 }) {
   const [open, setOpen] = useState(false)
-  const [selectedType, setSelectedType] = useState(ingredient.tracking_type)
+  const [selectedType, setSelectedType] = useState(
+    ingredient.tracking_type ?? undefined
+  )
 
   const trackingTypeOptions = [
     { value: `fill_level`, label: `Fill Level (0-100%)` },

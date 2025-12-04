@@ -185,7 +185,10 @@ ${networkIP} {
       })
 
       const originalListen = server.listen
-      server.listen = function (port?: number, ...args: unknown[]) {
+      server.listen = function (
+        port?: number,
+        ...args: (string | number | (() => void) | undefined)[]
+      ) {
         if (port) {
           vitePort = port
         }

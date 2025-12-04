@@ -13,10 +13,10 @@ function getDateString(date?: Date) {
   return `Shopping ${year}/${month}/${day}`
 }
 
+type TrelloCard = { id: string; name: string; desc: string }
+
 async function findRecentShoppingCard(listId: string) {
-  const cards = await makeTrelloRequest<
-    { id: string; name: string; desc: string }[]
-  >({
+  const cards = await makeTrelloRequest<TrelloCard[]>({
     url: `https://api.trello.com/1/lists/${listId}/cards`,
   })
 
@@ -26,8 +26,8 @@ async function findRecentShoppingCard(listId: string) {
   // Filter cards that match the Shopping YYYY/MM/DD pattern from the last week
   const shoppingCardPattern = /^Shopping \d{4}\/\d{2}\/\d{2}$/
   const recentShoppingCards = cards
-    .filter((card) => shoppingCardPattern.test(card.name))
-    .filter((card) => {
+    .filter((card: TrelloCard) => shoppingCardPattern.test(card.name))
+    .filter((card: TrelloCard) => {
       // Extract date from card name
       const dateMatch = card.name.match(/(\d{4})\/(\d{2})\/(\d{2})/)
       if (!dateMatch) return false
@@ -41,12 +41,12 @@ async function findRecentShoppingCard(listId: string) {
 
       return cardDate >= oneWeekAgo && cardDate <= today
     })
-    .sort((a, b) => b.name.localeCompare(a.name)) // Sort by date descending (most recent first)
+    .sort((a: TrelloCard, b: TrelloCard) => b.name.localeCompare(a.name)) // Sort by date descending (most recent first)
 
   return recentShoppingCards.length > 0 ? recentShoppingCards[0] : null
 }
 
-const makeTrelloRequest = async ({
+const makeTrelloRequest = async <T = unknown>({
   url,
   method = `GET`,
   body = null,
@@ -92,19 +92,17 @@ const makeTrelloRequest = async ({
     })
   }
 
-  return response.json()
+  return response.json() as Promise<T>
 }
 
 const findCardByName = async (listId: string, cardName: string) => {
-  const cards = await makeTrelloRequest({
+  const cards = await makeTrelloRequest<TrelloCard[]>({
     url: `https://api.trello.com/1/lists/${listId}/cards`,
     queryParams: {
       fields: [`name`, `id`, `desc`],
     },
   })
-  return cards.find(
-    (card: unknown) => (card as { name: string }).name === cardName
-  )
+  return cards.find((card: TrelloCard) => card.name === cardName)
 }
 
 const createCard = async (listId: string, cardName: string, url?: string) => {
@@ -140,13 +138,10 @@ const updateCard = async (cardId: string, updates: Record<string, unknown>) => {
 }
 
 const findChecklistOnCard = async (cardId: string, checklistTitle: string) => {
-  const checklists = await makeTrelloRequest({
+  const checklists = await makeTrelloRequest<{ id: string; name: string }[]>({
     url: `https://api.trello.com/1/cards/${cardId}/checklists`,
   })
-  return checklists.find(
-    (checklist: unknown) =>
-      (checklist as { name: string }).name === checklistTitle
-  )
+  return checklists.find((checklist) => checklist.name === checklistTitle)
 }
 
 const createChecklist = async (cardId: string, checklistTitle: string) => {
@@ -183,6 +178,12 @@ const updateChecklistItems = async (checklistId: string, items: string[]) => {
   }
 }
 
+const cardSchema = z.object({
+  cardName: z.string(),
+  url: z.string().optional(),
+  checklists: z.record(z.string(), z.array(z.string())),
+})
+
 const createOrUpdateCardWithChecklists = async (
   listId: string,
   cardDetails: z.infer<typeof cardSchema>
@@ -217,7 +218,10 @@ const createOrUpdateCardWithChecklists = async (
       checklist = await createChecklist(card.id, title)
     }
 
-    await updateChecklistItems(checklist.id, items)
+    await updateChecklistItems(
+      (checklist as { id: string }).id,
+      items as string[]
+    )
   }
 
   return card
@@ -233,7 +237,7 @@ export const shoppingListRouter = router({
         ingredientIds: z.array(z.string()).optional(),
       })
     )
-    .mutation(async ({ input, _ctx }) => {
+    .mutation(async ({ input }) => {
       const listId = process.env.TRELLO_LIST_ID || `5c01a492714a091d514fde21`
 
       const cardDetails = {
