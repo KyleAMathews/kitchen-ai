@@ -8,6 +8,7 @@ import {
   Slider,
   Box,
   Button,
+  Callout,
 } from "@radix-ui/themes"
 import { ingredientsTrackingTypeSchema } from "@/db/zod-schemas"
 import { trpc } from "@/lib/trpc-client"
@@ -28,29 +29,47 @@ export default function AddIngredientForm({
   const [expirationDate, setExpirationDate] = useState(new Date())
   const [fillLevel, setFillLevel] = useState(50)
   const [count, setCount] = useState(1)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const target = event.target as HTMLFormElement
-    const formData = new FormData(target)
-    const formProps = Object.fromEntries(formData)
+    setIsLoading(true)
+    setError(null)
 
-    await trpc.ingredients.createWithAI.mutate({
-      name: formProps.name as string,
-      tracking_type: type as z.infer<typeof ingredientsTrackingTypeSchema>,
-      fill_level:
-        type === `fill_level` ? fillLevel : type === `pantry_staple` ? 100 : 0,
-      count: type === `count` ? count : 0,
-      expiration_date: type !== `pantry_staple` ? expirationDate : undefined,
-    })
+    try {
+      const target = event.target as HTMLFormElement
+      const formData = new FormData(target)
+      const formProps = Object.fromEntries(formData)
 
-    onSuccess?.()
-    onClose()
+      await trpc.ingredients.createWithAI.mutate({
+        name: formProps.name as string,
+        tracking_type: type as z.infer<typeof ingredientsTrackingTypeSchema>,
+        fill_level:
+          type === `fill_level` ? fillLevel : type === `pantry_staple` ? 100 : 0,
+        count: type === `count` ? count : 0,
+        expiration_date: type !== `pantry_staple` ? expirationDate : undefined,
+      })
+
+      onSuccess?.()
+      onClose()
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : `Failed to add ingredient`
+      )
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
     <form onSubmit={handleSubmit}>
       <Flex direction="column" gap="5">
+        {error && (
+          <Callout.Root color="red">
+            <Callout.Text>{error}</Callout.Text>
+          </Callout.Root>
+        )}
         <label>
           <Flex direction="column" gap="1">
             <Text size="1">Ingredient Name</Text>
@@ -59,6 +78,7 @@ export default function AddIngredientForm({
               defaultValue={defaultName}
               placeholder="Enter the ingredient name"
               required
+              disabled={isLoading}
             />
           </Flex>
         </label>
@@ -74,6 +94,7 @@ export default function AddIngredientForm({
                 onValueChange={(value) => {
                   setType(value)
                 }}
+                disabled={isLoading}
               >
                 <Flex gap="2" direction="column">
                   <Text as="label" size="2">
@@ -111,6 +132,7 @@ export default function AddIngredientForm({
               value={String(count)}
               onChange={(e) => setCount(parseInt(e.target.value, 10) || 0)}
               placeholder="How many of this ingredient do you have?"
+              disabled={isLoading}
             />
           </label>
         ) : type === `fill_level` ? (
@@ -121,6 +143,7 @@ export default function AddIngredientForm({
                 value={[fillLevel]}
                 name="fill_level"
                 onValueChange={(val) => setFillLevel(val[0])}
+                disabled={isLoading}
               />
               <Flex justify="between">
                 <Text size="1" color="gray">
@@ -152,10 +175,13 @@ export default function AddIngredientForm({
             e.preventDefault()
             onClose()
           }}
+          disabled={isLoading}
         >
           Cancel
         </Button>
-        <Button type="submit">Save</Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? `Adding...` : `Save`}
+        </Button>
       </Flex>
     </form>
   )
