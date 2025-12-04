@@ -81,6 +81,11 @@ export default function AddIngredientForm({
               placeholder="Enter the ingredient name"
               required
               disabled={isLoading}
+              onKeyDown={(e) => {
+                if (e.key === `Enter`) {
+                  e.preventDefault()
+                }
+              }}
             />
           </Flex>
         </label>
@@ -135,6 +140,11 @@ export default function AddIngredientForm({
               onChange={(e) => setCount(parseInt(e.target.value, 10) || 0)}
               placeholder="How many of this ingredient do you have?"
               disabled={isLoading}
+              onKeyDown={(e) => {
+                if (e.key === `Enter`) {
+                  e.preventDefault()
+                }
+              }}
             />
           </label>
         ) : type === `fill_level` ? (
