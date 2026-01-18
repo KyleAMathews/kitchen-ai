@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { useState } from "react"
-import { useLiveQuery, or, ilike } from "@tanstack/react-db"
+import { useLiveQuery, or, ilike, eq, count, max } from "@tanstack/react-db"
 import { Flex, Heading, Text, TextField } from "@radix-ui/themes"
 import {
   MagnifyingGlassIcon,
@@ -27,16 +27,8 @@ export const Route = createFileRoute(`/_authenticated/`)({
 })
 
 function Dashboard() {
-  console.log(`dashboard`)
   const [searchQuery, setSearchQuery] = useState(``)
-
-  // Get all recipes and ingredients for dashboard
-  const { data: recipes } = useLiveQuery((q) =>
-    q
-      .from({ recipesCollection })
-      .orderBy(({ recipesCollection }) => recipesCollection.updated_at)
-      .limit(3)
-  )
+  const isSearching = searchQuery.length > 0
 
   const { data: ingredients } = useLiveQuery((q) =>
     q
@@ -48,50 +40,70 @@ function Dashboard() {
       .limit(3)
   )
 
-  const { data: allRecipes } = useLiveQuery((q) =>
-    q.from({ recipesCollection })
-  )
-
   const { data: allIngredients } = useLiveQuery((q) =>
     q.from({ ingredientsCollection })
   )
 
-  // Search functionality
-  const { data: searchRecipes } = useLiveQuery(
-    (q) =>
-      searchQuery.length > 0
-        ? q
-            .from({ recipesCollection })
-            .where(({ recipesCollection }) =>
-              or(
-                ilike(recipesCollection.name, `%${searchQuery}%`),
-                ilike(recipesCollection.description, `%${searchQuery}%`)
-              )
-            )
-        : // .limit(3)
-          q.from({ recipesCollection }),
-    [searchQuery]
-  )
-
   const { data: searchIngredients } = useLiveQuery(
     (q) =>
-      searchQuery.length > 0
+      isSearching
         ? q
             .from({ ingredientsCollection })
             .where(({ ingredientsCollection }) =>
               ilike(ingredientsCollection.name, `%${searchQuery}%`)
             )
-        : // .limit(3)
-          q.from({ ingredientsCollection }),
+        : q.from({ ingredientsCollection }),
     [searchQuery]
   )
 
-  const isSearching = searchQuery.length > 0
-  const displayRecipes = isSearching ? searchRecipes || [] : allRecipes || []
+  // Join recipes with made_it comments to compute times_made and last_made_at
+  // Orders by most recently made, then by times made count
+  const { data: recipes } = useLiveQuery(
+    (q) => {
+      const madeItComments = q
+        .from({ c: recipeCommentsCollection })
+        .where(({ c }) => eq(c.made_it, true))
+
+      let query = q
+        .from({ r: recipesCollection })
+        .leftJoin({ mc: madeItComments }, ({ r, mc }) => eq(r.id, mc.recipe_id))
+
+      if (isSearching) {
+        query = query.where(({ r }) =>
+          or(
+            ilike(r.name, `%${searchQuery}%`),
+            ilike(r.description, `%${searchQuery}%`)
+          )
+        )
+      }
+
+      return query
+        .groupBy(({ r }) => r.id)
+        .select(({ r, mc }) => ({
+          id: r.id,
+          name: r.name,
+          description: r.description,
+          url: r.url,
+          user_id: r.user_id,
+          created_at: r.created_at,
+          updated_at: r.updated_at,
+          times_made: count(mc.id),
+          last_made_at: max(mc.created_at),
+        }))
+        .orderBy(({ $selected }) => $selected.last_made_at, {
+          direction: `desc`,
+          nulls: `last`,
+        })
+        .orderBy(({ $selected }) => $selected.times_made, `desc`)
+        .limit(isSearching ? 50 : 10)
+    },
+    [searchQuery]
+  )
+
+  const displayRecipes = recipes || []
   const displayIngredients = isSearching
     ? searchIngredients || []
     : ingredients || []
-  console.log({ isSearching, displayRecipes, recipes, allRecipes })
 
   return (
     <div className="p-6">
@@ -124,7 +136,7 @@ function Dashboard() {
                   display: `inline-block`,
                 }}
               >
-                Recipes{!isSearching && ` (${allRecipes?.length || 0}) `}
+                Recipes{!isSearching && ` (${recipes?.length || 0}) `}
               </Link>
               {!isSearching && (
                 <Link
@@ -152,9 +164,7 @@ function Dashboard() {
               <>
                 <Flex direction="column" gap="4">
                   {displayRecipes.map((recipe) => (
-                    <div key={recipe.id}>
-                      <RecipeCard recipe={recipe} />
-                    </div>
+                    <RecipeCard key={recipe.id} recipe={recipe} />
                   ))}
                 </Flex>
                 {!isSearching && (
@@ -185,9 +195,10 @@ function Dashboard() {
               <>
                 <Flex direction="column" gap="4">
                   {displayIngredients.map((ingredient) => (
-                    <div key={ingredient.id}>
-                      <IngredientCard ingredient={ingredient} />
-                    </div>
+                    <IngredientCard
+                      key={ingredient.id}
+                      ingredient={ingredient}
+                    />
                   ))}
                 </Flex>
                 {!isSearching && (
