@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { useLiveQuery } from "@tanstack/react-db"
+import { useLiveQuery, eq, count, max } from "@tanstack/react-db"
 import { Flex, Heading, Text } from "@radix-ui/themes"
 import { PlusCircledIcon } from "@radix-ui/react-icons"
 import RecipeCard from "@/components/recipe-card"
@@ -16,7 +16,42 @@ export const Route = createFileRoute(`/_authenticated/recipes/`)({
 })
 
 function Recipes() {
-  const { data: recipes } = useLiveQuery((q) => q.from({ recipesCollection }))
+  // Join recipes with made_it comments to compute times_made and last_made_at
+  // Orders by most recently made, then by times made count
+  const { data: recipes } = useLiveQuery((q) => {
+    const madeItComments = q
+      .from({ c: recipeCommentsCollection })
+      .where(({ c }) => eq(c.made_it, true))
+
+    return q
+      .from({ r: recipesCollection })
+      .leftJoin({ mc: madeItComments }, ({ r, mc }) => eq(r.id, mc.recipe_id))
+      .groupBy(({ r }) => [
+        r.id,
+        r.name,
+        r.description,
+        r.url,
+        r.user_id,
+        r.created_at,
+        r.updated_at,
+      ])
+      .select(({ r, mc }) => ({
+        id: r.id,
+        name: r.name,
+        description: r.description,
+        url: r.url,
+        user_id: r.user_id,
+        created_at: r.created_at,
+        updated_at: r.updated_at,
+        times_made: count(mc?.id),
+        last_made_at: max(mc?.created_at),
+      }))
+      .orderBy(({ $selected }) => $selected.last_made_at, {
+        direction: `desc`,
+        nulls: `last`,
+      })
+      .orderBy(({ $selected }) => $selected.times_made, `desc`)
+  })
 
   return (
     <div className="p-6">
