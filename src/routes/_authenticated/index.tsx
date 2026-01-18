@@ -78,7 +78,15 @@ function Dashboard() {
       }
 
       return query
-        .groupBy(({ r }) => r.id)
+        .groupBy(({ r }) => [
+          r.id,
+          r.name,
+          r.description,
+          r.url,
+          r.user_id,
+          r.created_at,
+          r.updated_at,
+        ])
         .select(({ r, mc }) => ({
           id: r.id,
           name: r.name,
@@ -87,8 +95,8 @@ function Dashboard() {
           user_id: r.user_id,
           created_at: r.created_at,
           updated_at: r.updated_at,
-          times_made: count(mc.id),
-          last_made_at: max(mc.created_at),
+          times_made: count(mc?.id),
+          last_made_at: max(mc?.created_at),
         }))
         .orderBy(({ $selected }) => $selected.last_made_at, {
           direction: `desc`,
