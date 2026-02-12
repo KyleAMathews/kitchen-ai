@@ -12,8 +12,7 @@ node_modules
 .DS_Store
 
 # local env files
-.env*.local
-.env
+.env*
 test.ts
 
 # Local Netlify folder
