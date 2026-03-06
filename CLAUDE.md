@@ -102,3 +102,20 @@ export const updateRecipeSchema = createUpdateSchema(recipes)
 - **Forms**: Use optimistic updates, no loading states needed
 - **Links**: Use TanStack Router's `Link` component
 - **Auth**: Access via `authClient.useSession()`
+
+<!-- intent-skills:start -->
+# Skill mappings — when working in these areas, load the linked skill file into context.
+skills:
+  - task: "Adding new synced features (new tables, shapes, collections)"
+    load: "node_modules/@electric-sql/client/skills/electric-new-feature/SKILL.md"
+  - task: "Working with useLiveQuery and React components"
+    load:
+      - "node_modules/@tanstack/react-db/skills/react-db/SKILL.md"
+      - "node_modules/@electric-sql/client/skills/electric-shapes/SKILL.md"
+  - task: "Debugging sync issues (shapes not updating, stale data)"
+    load: "node_modules/@electric-sql/client/skills/electric-debugging/SKILL.md"
+  - task: "Writing data with Drizzle ORM and tRPC mutations"
+    load: "node_modules/@electric-sql/client/skills/electric-orm/SKILL.md"
+  - task: "Setting up proxy routes and auth for shapes"
+    load: "node_modules/@electric-sql/client/skills/electric-proxy-auth/SKILL.md"
+<!-- intent-skills:end -->
