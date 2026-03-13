@@ -116,6 +116,7 @@ const AuthenticatedIngredientsIdRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
   '/review': typeof AuthenticatedReviewRoute
   '/api/health': typeof ApiHealthRoute
@@ -124,14 +125,13 @@ export interface FileRoutesByFullPath {
   '/api/recipe-ingredients': typeof ApiRecipeIngredientsRoute
   '/api/recipes': typeof ApiRecipesRoute
   '/api/users': typeof ApiUsersRoute
-  '/': typeof AuthenticatedIndexRoute
   '/ingredients/$id': typeof AuthenticatedIngredientsIdRoute
   '/recipes/$id': typeof AuthenticatedRecipesIdRoute
   '/recipes/new': typeof AuthenticatedRecipesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
-  '/ingredients': typeof AuthenticatedIngredientsIndexRoute
-  '/recipes': typeof AuthenticatedRecipesIndexRoute
+  '/ingredients/': typeof AuthenticatedIngredientsIndexRoute
+  '/recipes/': typeof AuthenticatedRecipesIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -174,6 +174,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/login'
     | '/review'
     | '/api/health'
@@ -182,14 +183,13 @@ export interface FileRouteTypes {
     | '/api/recipe-ingredients'
     | '/api/recipes'
     | '/api/users'
-    | '/'
     | '/ingredients/$id'
     | '/recipes/$id'
     | '/recipes/new'
     | '/api/auth/$'
     | '/api/trpc/$'
-    | '/ingredients'
-    | '/recipes'
+    | '/ingredients/'
+    | '/recipes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -254,7 +254,7 @@ declare module '@tanstack/react-router' {
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -317,14 +317,14 @@ declare module '@tanstack/react-router' {
     '/_authenticated/recipes/': {
       id: '/_authenticated/recipes/'
       path: '/recipes'
-      fullPath: '/recipes'
+      fullPath: '/recipes/'
       preLoaderRoute: typeof AuthenticatedRecipesIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/ingredients/': {
       id: '/_authenticated/ingredients/'
       path: '/ingredients'
-      fullPath: '/ingredients'
+      fullPath: '/ingredients/'
       preLoaderRoute: typeof AuthenticatedIngredientsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
