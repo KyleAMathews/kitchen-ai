@@ -22,3 +22,5 @@ old-code
 .output
 .tanstack
 .nitro
+.opentrace
+.opentrace-index.log

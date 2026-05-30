@@ -1,6 +1,6 @@
 export default {
   rollupConfig: {
-    external: [`pg-native`, `cloudflare:sockets`, `pg`],
+    external: [`pg-native`, `cloudflare:sockets`, `pg`, /^@opentelemetry\//],
   },
   externals: {
     trace: false,

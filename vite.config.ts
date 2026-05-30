@@ -64,7 +64,7 @@ export default defineConfig(async () => {
     },
     build: {
       rollupOptions: {
-        external: [`pg-native`, `pg`, `cloudflare:sockets`],
+        external: [`pg-native`, `pg`, `cloudflare:sockets`, /^@opentelemetry\//],
       },
     },
   }
