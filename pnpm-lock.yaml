@@ -29,6 +29,9 @@ importers:
       '@hono/zod-validator':
         specifier: ^0.7.6
         version: 0.7.6(hono@4.11.4)(zod@4.4.3)
+      '@opentelemetry/semantic-conventions':
+        specifier: 1.41.1
+        version: 1.41.1
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
@@ -218,7 +221,7 @@ importers:
         version: 27.4.0
       netlify-cli:
         specifier: ^23.15.1
-        version: 23.15.1(@swc/core@1.15.11(@swc/helpers@0.5.17))(@swc/wasm@1.13.4)(@types/node@24.12.4)(db0@0.3.4(@electric-sql/pglite@0.3.15)(drizzle-orm@0.44.7(@electric-sql/pglite@0.3.15)(@opentelemetry/api@1.8.0)(@prisma/client@7.4.2(prisma@7.4.2(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.20.0)(kysely@0.28.17)(mysql2@3.15.3)(pg@8.21.0)(postgres@3.4.7)(prisma@7.4.2(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3)))(mysql2@3.15.3))(ioredis@5.8.2)(picomatch@4.0.3)(rollup@4.52.5)
+        version: 23.15.1(@swc/core@1.15.11(@swc/helpers@0.5.17))(@swc/wasm@1.13.4)(@types/node@24.12.4)(db0@0.3.4(@electric-sql/pglite@0.3.15)(drizzle-orm@0.44.7(@electric-sql/pglite@0.3.15)(@opentelemetry/api@1.8.0)(@prisma/client@7.4.2(prisma@7.4.2(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.20.0)(kysely@0.28.17)(mysql2@3.15.3)(pg@8.21.0)(postgres@3.4.7)(prisma@7.4.2(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3)))(mysql2@3.15.3))(ioredis@5.8.2)(picomatch@4.0.4)(rollup@4.52.5)
       nitro:
         specifier: 3.0.1-alpha.1
         version: 3.0.1-alpha.1(@electric-sql/pglite@0.3.15)(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@netlify/blobs@10.1.0)(chokidar@4.0.3)(drizzle-orm@0.44.7(@electric-sql/pglite@0.3.15)(@opentelemetry/api@1.8.0)(@prisma/client@7.4.2(prisma@7.4.2(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.20.0)(kysely@0.28.17)(mysql2@3.15.3)(pg@8.21.0)(postgres@3.4.7)(prisma@7.4.2(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3)))(ioredis@5.8.2)(lru-cache@11.2.6)(mongodb@6.21.0)(mysql2@3.15.3)(rolldown@1.0.2)(rollup@4.52.5)(vite@8.0.14(@types/node@24.12.4)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.44.0)(tsx@4.22.3)(yaml@2.8.2))
@@ -10927,7 +10930,7 @@ snapshots:
       yaml: 2.8.2
       yargs: 17.7.2
 
-  '@netlify/build@35.5.14(@opentelemetry/api@1.8.0)(@swc/core@1.15.11(@swc/helpers@0.5.17))(@swc/wasm@1.13.4)(@types/node@24.12.4)(picomatch@4.0.3)(rollup@4.52.5)':
+  '@netlify/build@35.5.14(@opentelemetry/api@1.8.0)(@swc/core@1.15.11(@swc/helpers@0.5.17))(@swc/wasm@1.13.4)(@types/node@24.12.4)(picomatch@4.0.4)(rollup@4.52.5)':
     dependencies:
       '@bugsnag/js': 8.8.1
       '@netlify/blobs': 10.6.0(supports-color@10.2.2)
@@ -10946,7 +10949,7 @@ snapshots:
       ansis: 4.3.0
       clean-stack: 5.3.0
       execa: 8.0.1
-      fdir: 6.5.0(picomatch@4.0.3)
+      fdir: 6.5.0(picomatch@4.0.4)
       figures: 6.1.0
       filter-obj: 6.1.0
       hot-shots: 11.4.0
@@ -16605,13 +16608,13 @@ snapshots:
 
   negotiator@1.0.0: {}
 
-  netlify-cli@23.15.1(@swc/core@1.15.11(@swc/helpers@0.5.17))(@swc/wasm@1.13.4)(@types/node@24.12.4)(db0@0.3.4(@electric-sql/pglite@0.3.15)(drizzle-orm@0.44.7(@electric-sql/pglite@0.3.15)(@opentelemetry/api@1.8.0)(@prisma/client@7.4.2(prisma@7.4.2(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.20.0)(kysely@0.28.17)(mysql2@3.15.3)(pg@8.21.0)(postgres@3.4.7)(prisma@7.4.2(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3)))(mysql2@3.15.3))(ioredis@5.8.2)(picomatch@4.0.3)(rollup@4.52.5):
+  netlify-cli@23.15.1(@swc/core@1.15.11(@swc/helpers@0.5.17))(@swc/wasm@1.13.4)(@types/node@24.12.4)(db0@0.3.4(@electric-sql/pglite@0.3.15)(drizzle-orm@0.44.7(@electric-sql/pglite@0.3.15)(@opentelemetry/api@1.8.0)(@prisma/client@7.4.2(prisma@7.4.2(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.20.0)(kysely@0.28.17)(mysql2@3.15.3)(pg@8.21.0)(postgres@3.4.7)(prisma@7.4.2(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@5.9.3)))(mysql2@3.15.3))(ioredis@5.8.2)(picomatch@4.0.4)(rollup@4.52.5):
     dependencies:
       '@fastify/static': 9.0.0
       '@netlify/ai': 0.3.4(@netlify/api@14.0.13)
       '@netlify/api': 14.0.13
       '@netlify/blobs': 10.1.0
-      '@netlify/build': 35.5.14(@opentelemetry/api@1.8.0)(@swc/core@1.15.11(@swc/helpers@0.5.17))(@swc/wasm@1.13.4)(@types/node@24.12.4)(picomatch@4.0.3)(rollup@4.52.5)
+      '@netlify/build': 35.5.14(@opentelemetry/api@1.8.0)(@swc/core@1.15.11(@swc/helpers@0.5.17))(@swc/wasm@1.13.4)(@types/node@24.12.4)(picomatch@4.0.4)(rollup@4.52.5)
       '@netlify/build-info': 10.3.0
       '@netlify/config': 24.3.0
       '@netlify/dev-utils': 4.3.2
