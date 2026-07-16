@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 import { Badge } from "@radix-ui/themes"
+import { Link } from "@tanstack/react-router"
 import { useLiveQuery, eq } from "@tanstack/react-db"
 import {
   tagsCollection,
@@ -53,9 +54,25 @@ export default function TagList({
   return (
     <>
       {tagNames.map((name) => (
-        <Badge key={name} color="iris" variant="soft" size={size}>
-          {name}
-        </Badge>
+        <Link
+          key={name}
+          to="/"
+          search={{ q: name }}
+          // Ingredient cards navigate from an onClick on the whole row, so
+          // without this a tag click would fire that too and lose the search.
+          onClick={(e) => e.stopPropagation()}
+          style={{ textDecoration: `none` }}
+          title={`Show recipes and ingredients tagged “${name}”`}
+        >
+          <Badge
+            color="iris"
+            variant="soft"
+            size={size}
+            style={{ cursor: `pointer` }}
+          >
+            {name}
+          </Badge>
+        </Link>
       ))}
     </>
   )

@@ -1,30 +1,29 @@
 import { tagsCollection } from "@/lib/collections"
-import { trpc } from "@/lib/trpc-client"
 import type { SelectTag } from "@/db/zod-schemas"
 
 /**
- * Persists any tags that don't exist yet, and waits for them to commit.
+ * Saves any tags that don't exist yet, and waits for them to be confirmed.
  *
  * TagInput builds new tags locally without saving them, so abandoning a form
  * never leaves stray tags behind. Call this on save, before writing any
- * recipe_tags/ingredient_tags rows: those tRPC handlers verify the tag exists,
- * so the tag has to land first.
+ * recipe_tags/ingredient_tags rows: those tRPC handlers require the tag to
+ * exist, so it has to land first.
  *
- * Tags picked from the existing suggestions are already synced and are skipped.
+ * Goes through the collection (insert -> onInsert -> tRPC -> txid -> synced),
+ * so the tag is optimistically visible immediately and `isPersisted` resolves
+ * only once the write has actually synced back. Awaiting that before writing
+ * the join rows is what guarantees the ordering.
  *
- * This calls tRPC directly rather than tagsCollection.insert() on purpose. The
- * collection resolves its insert only once the write's txid has round-tripped
- * back through the Electric shape stream, which can stall (or time out) when
- * sync is slow or connection-starved. All we actually need before writing the
- * join rows is proof the tag committed in Postgres — and the mutation returning
- * is exactly that. The new tag still arrives in tagsCollection via sync.
+ * Ids are client-generated and the server honours them, so the ids here are the
+ * real ones. TagInput reuses an existing tag when the name already exists (it
+ * syncs the whole global vocabulary), so a duplicate name only happens if two
+ * users create it at the same instant — that rejects the insert, which rolls
+ * back the optimistic tag and skips the join rows rather than mislinking them.
  */
 export async function persistNewTags(tags: SelectTag[]): Promise<void> {
   const newTags = tags.filter((tag) => !tagsCollection.has(tag.id))
 
   await Promise.all(
-    newTags.map((tag) =>
-      trpc.tags.create.mutate({ id: tag.id, name: tag.name })
-    )
+    newTags.map((tag) => tagsCollection.insert(tag).isPersisted.promise)
   )
 }

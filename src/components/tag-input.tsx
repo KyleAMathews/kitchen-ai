@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react"
 import { Flex, Text, Badge } from "@radix-ui/themes"
 import { Cross2Icon } from "@radix-ui/react-icons"
-import { useLiveQuery, eq } from "@tanstack/react-db"
+import { useLiveQuery } from "@tanstack/react-db"
 import { tagsCollection } from "@/lib/collections"
 import { authClient } from "@/lib/auth-client"
 import type { SelectTag } from "@/db/zod-schemas"
@@ -40,14 +40,9 @@ export default function TagInput({
   const [highlight, setHighlight] = useState(0)
   const blurTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // All of the current user's existing tags
-  const { data: allTags } = useLiveQuery(
-    (q) =>
-      q
-        .from({ tag: tagsCollection })
-        .where(({ tag }) => eq(tag.user_id, userId ?? ``)),
-    [userId]
-  )
+  // Every existing tag — the vocabulary is global, so suggestions include
+  // tags created by other users
+  const { data: allTags } = useLiveQuery((q) => q.from({ tag: tagsCollection }))
 
   const selectedIds = useMemo(() => new Set(value.map((t) => t.id)), [value])
   const trimmed = input.trim()
@@ -90,7 +85,7 @@ export default function TagInput({
   // otherwise build a new one. New tags are only saved when the parent form is
   // submitted (see persistNewTags), so abandoning the form leaves nothing behind.
   const commitInput = () => {
-    if (!trimmed || !userId) return
+    if (!trimmed) return
 
     // Already selected (including tags built here but not yet saved)
     const alreadySelected = value.find(
@@ -111,7 +106,8 @@ export default function TagInput({
     addTag({
       id: crypto.randomUUID(),
       name: trimmed,
-      user_id: userId,
+      // Provenance only, and the server sets the real value from the session
+      user_id: userId ?? null,
       created_at: new Date(),
     })
   }

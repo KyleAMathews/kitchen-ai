@@ -11,8 +11,17 @@ import {
 import { eq, and } from "drizzle-orm"
 
 export const tagsRouter = router({
-  // Create a tag (id is client-generated for optimistic sync).
-  // Idempotent: re-running with the same id is a no-op.
+  // Create a tag using the client-generated id.
+  //
+  // Deliberately a plain insert, not an upsert-on-name. The collection confirms
+  // its optimistic row by matching this txid against the synced row, so the
+  // write has to land on the id the client already has. Upserting would touch a
+  // different row and the optimistic tag would never confirm.
+  //
+  // Tags are global and the client syncs the whole vocabulary, so it reuses an
+  // existing tag rather than re-creating a name. A duplicate name therefore only
+  // means two users created it simultaneously: the unique index rejects it, the
+  // collection rolls the optimistic tag back, and no join rows are written.
   create: authedProcedure
     .input(
       z.object({
@@ -24,20 +33,19 @@ export const tagsRouter = router({
       const userId = ctx.session.user.id
 
       return await ctx.db.transaction(async (tx) => {
-        await tx
-          .insert(tags)
-          .values({
-            id: input.id,
-            name: input.name,
-            user_id: userId,
-          })
-          .onConflictDoNothing()
+        await tx.insert(tags).values({
+          id: input.id,
+          name: input.name,
+          user_id: userId,
+        })
 
         const txid = await generateTxId(tx)
         return { id: input.id, txid }
       })
     }),
 
+  // Tags are global, so any signed-in user can rename one — including tags
+  // they didn't create. The rename is visible to everyone.
   update: authedProcedure
     .input(
       z.object({
@@ -46,19 +54,17 @@ export const tagsRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.session.user.id
-
       return await ctx.db.transaction(async (tx) => {
         const [updated] = await tx
           .update(tags)
           .set({ name: input.data.name })
-          .where(and(eq(tags.id, input.id), eq(tags.user_id, userId)))
+          .where(eq(tags.id, input.id))
           .returning({ id: tags.id })
 
         if (!updated) {
           throw new TRPCError({
             code: `NOT_FOUND`,
-            message: `Tag not found or not owned by user`,
+            message: `Tag not found`,
           })
         }
 
@@ -67,22 +73,21 @@ export const tagsRouter = router({
       })
     }),
 
-  // Deleting a tag cascades to its recipe/ingredient join rows.
+  // Deleting a tag cascades to its recipe/ingredient join rows — for every
+  // user, since the vocabulary is global. No UI exposes this today.
   delete: authedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.session.user.id
-
       return await ctx.db.transaction(async (tx) => {
         const [deleted] = await tx
           .delete(tags)
-          .where(and(eq(tags.id, input.id), eq(tags.user_id, userId)))
+          .where(eq(tags.id, input.id))
           .returning({ id: tags.id })
 
         if (!deleted) {
           throw new TRPCError({
             code: `NOT_FOUND`,
-            message: `Tag not found or not owned by user`,
+            message: `Tag not found`,
           })
         }
 
@@ -104,7 +109,8 @@ export const tagsRouter = router({
       const userId = ctx.session.user.id
 
       return await ctx.db.transaction(async (tx) => {
-        // Verify the recipe and tag belong to the user
+        // The recipe must belong to the user; the tag just has to exist,
+        // since tags are global rather than owned.
         const [recipe] = await tx
           .select({ id: recipes.id })
           .from(recipes)
@@ -114,12 +120,12 @@ export const tagsRouter = router({
         const [tag] = await tx
           .select({ id: tags.id })
           .from(tags)
-          .where(and(eq(tags.id, input.tag_id), eq(tags.user_id, userId)))
+          .where(eq(tags.id, input.tag_id))
 
         if (!recipe || !tag) {
           throw new TRPCError({
             code: `NOT_FOUND`,
-            message: `Recipe or tag not found or not owned by user`,
+            message: `Recipe not found (or not yours), or tag does not exist`,
           })
         }
 
@@ -160,6 +166,8 @@ export const tagsRouter = router({
       const userId = ctx.session.user.id
 
       return await ctx.db.transaction(async (tx) => {
+        // The ingredient must belong to the user; the tag just has to exist,
+        // since tags are global rather than owned.
         const [ingredient] = await tx
           .select({ id: ingredients.id })
           .from(ingredients)
@@ -172,12 +180,12 @@ export const tagsRouter = router({
         const [tag] = await tx
           .select({ id: tags.id })
           .from(tags)
-          .where(and(eq(tags.id, input.tag_id), eq(tags.user_id, userId)))
+          .where(eq(tags.id, input.tag_id))
 
         if (!ingredient || !tag) {
           throw new TRPCError({
             code: `NOT_FOUND`,
-            message: `Ingredient or tag not found or not owned by user`,
+            message: `Ingredient not found (or not yours), or tag does not exist`,
           })
         }
 

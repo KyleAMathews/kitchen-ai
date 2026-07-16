@@ -85,7 +85,8 @@ function NewRecipe() {
       // Wait for the insert to persist
       await insertResult.isPersisted.promise
 
-      // Save any newly-typed tags first — the join rows below reference them
+      // Save any newly-typed tags first and wait for them to sync — the join
+      // rows below reference them, and the server requires the tag to exist
       await persistNewTags(selectedTags)
 
       // Attach the selected tags to the new recipe

@@ -143,23 +143,26 @@ export const recipeComments = pgTable(`recipe_comments`, {
 })
 
 // Tags system
-// A shared, per-user tag vocabulary. The same tag can be applied to both
-// recipes and ingredients via the join tables below.
+// A single global tag vocabulary shared by every user. The same tag can be
+// applied to both recipes and ingredients via the join tables below.
 export const tags = pgTable(
   `tags`,
   {
     id: uuid(`id`).primaryKey().defaultRandom(),
     name: text(`name`).notNull(),
-    user_id: text(`user_id`)
-      .notNull()
-      .references(() => users.id, { onDelete: `cascade` }),
+    // Whoever first created the tag. Provenance only — it does not scope
+    // visibility. Nulls out rather than cascading, so removing a user can't
+    // delete a tag (and its links) that everyone else is still using.
+    user_id: text(`user_id`).references(() => users.id, {
+      onDelete: `set null`,
+    }),
     created_at: timestamp(`created_at`, { withTimezone: true })
       .notNull()
       .defaultNow(),
   },
   (table) => [
-    // A user can't have two tags with the same name
-    uniqueIndex(`tags_user_id_name_unique`).on(table.user_id, table.name),
+    // Tags are global: one row per name across all users
+    uniqueIndex(`tags_name_unique`).on(table.name),
   ]
 )
 

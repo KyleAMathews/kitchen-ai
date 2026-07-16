@@ -59,7 +59,8 @@ export default function AddIngredientForm({
         expiration_date: type !== `pantry_staple` ? expirationDate : undefined,
       })
 
-      // Save any newly-typed tags first — the join rows below reference them
+      // Save any newly-typed tags first and wait for them to sync — the join
+      // rows below reference them, and the server requires the tag to exist
       await persistNewTags(selectedTags)
 
       // Attach the selected tags to the new ingredient
