@@ -9,12 +9,23 @@ import {
   TextField,
 } from "@radix-ui/themes"
 import { UpdateIcon } from "@radix-ui/react-icons"
-import { recipesCollection } from "@/lib/collections"
+import {
+  recipesCollection,
+  tagsCollection,
+  recipeTagsCollection,
+} from "@/lib/collections"
+import TagInput from "@/components/tag-input"
+import { persistNewTags } from "@/lib/tags"
+import type { SelectTag } from "@/db/zod-schemas"
 
 export const Route = createFileRoute(`/_authenticated/recipes/new`)({
   component: NewRecipe,
   loader: async () => {
-    return recipesCollection.preload()
+    return Promise.all([
+      recipesCollection.preload(),
+      tagsCollection.preload(),
+      recipeTagsCollection.preload(),
+    ])
   },
 })
 
@@ -38,6 +49,7 @@ function NewRecipe() {
   const navigate = useNavigate()
   const [url, setUrl] = useState(``)
   const [pastedText, setPastedText] = useState(``)
+  const [selectedTags, setSelectedTags] = useState<SelectTag[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState(``)
 
@@ -72,6 +84,19 @@ function NewRecipe() {
 
       // Wait for the insert to persist
       await insertResult.isPersisted.promise
+
+      // Save any newly-typed tags first — the join rows below reference them
+      await persistNewTags(selectedTags)
+
+      // Attach the selected tags to the new recipe
+      for (const tag of selectedTags) {
+        recipeTagsCollection.insert({
+          id: crypto.randomUUID(),
+          recipe_id: recipeId,
+          tag_id: tag.id,
+          created_at: new Date(),
+        })
+      }
 
       navigate({ to: `/recipes/$id`, params: { id: recipeId } })
     } catch (err) {
@@ -117,6 +142,19 @@ function NewRecipe() {
                 onChange={(e) => setPastedText(e.target.value)}
                 rows={10}
                 style={{ minHeight: 200 }}
+              />
+            </Flex>
+
+            <Flex direction="column" gap="2">
+              <Text as="label" weight="medium">
+                Tags
+              </Text>
+              <TagInput
+                value={selectedTags}
+                onChange={setSelectedTags}
+                label=""
+                placeholder="Search or add a tag..."
+                disabled={isProcessing}
               />
             </Flex>
 

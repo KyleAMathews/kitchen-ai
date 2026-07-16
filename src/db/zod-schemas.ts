@@ -12,6 +12,9 @@ import {
   recipeIngredients,
   recipeComments,
   jobs,
+  tags,
+  recipeTags,
+  ingredientTags,
   grocerySectionEnum,
   ingredientsTrackingTypeEnum,
   jobsStateEnum,
@@ -48,6 +51,9 @@ export const selectRecipeIngredientsSchema = createSelectSchema(
 )
 export const selectRecipeCommentsSchema = createSelectSchema(recipeComments)
 export const selectJobsSchema = createSelectSchema(jobs)
+export const selectTagsSchema = createSelectSchema(tags)
+export const selectRecipeTagsSchema = createSelectSchema(recipeTags)
+export const selectIngredientTagsSchema = createSelectSchema(ingredientTags)
 
 // Date coercion helper - transforms string dates to Date objects
 // Needed because tRPC stringifies dates during HTTP transport
@@ -90,6 +96,18 @@ export const updateRecipeCommentsSchema = createUpdateSchema(recipeComments, {
   updated_at: dateCoercion.optional(),
 })
 
+export const insertTagsSchema = createInsertSchema(tags, {
+  created_at: dateCoercion.optional(),
+})
+export const updateTagsSchema = createUpdateSchema(tags)
+
+export const insertRecipeTagsSchema = createInsertSchema(recipeTags, {
+  created_at: dateCoercion.optional(),
+})
+export const insertIngredientTagsSchema = createInsertSchema(ingredientTags, {
+  created_at: dateCoercion.optional(),
+})
+
 // Re-export enum schemas for convenience
 export const grocerySectionSchema = z.enum(grocerySectionEnum.enumValues)
 export const ingredientsTrackingTypeSchema = z.enum(
@@ -107,3 +125,6 @@ export type SelectRecipeIngredient = z.infer<
 export type SelectRecipeComment = z.infer<typeof selectRecipeCommentsSchema>
 export type SelectIngredientEvent = z.infer<typeof selectIngredientEventsSchema>
 export type SelectJob = z.infer<typeof selectJobsSchema>
+export type SelectTag = z.infer<typeof selectTagsSchema>
+export type SelectRecipeTag = z.infer<typeof selectRecipeTagsSchema>
+export type SelectIngredientTag = z.infer<typeof selectIngredientTagsSchema>

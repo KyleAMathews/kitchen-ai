@@ -10,6 +10,7 @@ import { type SelectRecipe } from "@/db/zod-schemas"
 import { useLiveQuery } from "@tanstack/react-db"
 import { recipeCommentsCollection } from "@/lib/collections"
 import { eq } from "@tanstack/react-db"
+import TagList from "@/components/tag-list"
 
 export default function RecipeCard({ recipe }: { recipe: SelectRecipe }) {
   // Get stats for this recipe
@@ -77,6 +78,7 @@ export default function RecipeCard({ recipe }: { recipe: SelectRecipe }) {
               ? `Last made ${timeAgo.format(stats.lastMadeAt)}`
               : `Not yet made`}
           </Text>
+          <TagList entity="recipe" entityId={recipe.id} />
         </Flex>
       </Flex>
       <Flex align="center">

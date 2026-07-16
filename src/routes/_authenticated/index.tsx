@@ -11,6 +11,9 @@ import {
   ingredientsCollection,
   recipesCollection,
   recipeCommentsCollection,
+  tagsCollection,
+  recipeTagsCollection,
+  ingredientTagsCollection,
 } from "@/lib/collections"
 import RecipeCard from "@/components/recipe-card"
 import IngredientCard from "@/components/ingredient-card"
@@ -22,6 +25,9 @@ export const Route = createFileRoute(`/_authenticated/`)({
       recipesCollection.preload(),
       ingredientsCollection.preload(),
       recipeCommentsCollection.preload(),
+      tagsCollection.preload(),
+      recipeTagsCollection.preload(),
+      ingredientTagsCollection.preload(),
     ])
   },
 })

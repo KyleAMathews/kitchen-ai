@@ -10,9 +10,12 @@ import {
   Button,
   Callout,
 } from "@radix-ui/themes"
-import { ingredientsTrackingTypeSchema } from "@/db/zod-schemas"
+import { ingredientsTrackingTypeSchema, type SelectTag } from "@/db/zod-schemas"
 import { trpc } from "@/lib/trpc-client"
+import { ingredientTagsCollection } from "@/lib/collections"
+import { persistNewTags } from "@/lib/tags"
 import ExpirationDateEdit from "@/components/expiration-date-edit"
+import TagInput from "@/components/tag-input"
 
 interface AddIngredientFormProps {
   defaultName?: string
@@ -29,6 +32,7 @@ export default function AddIngredientForm({
   const [expirationDate, setExpirationDate] = useState(new Date())
   const [fillLevel, setFillLevel] = useState(50)
   const [count, setCount] = useState(1)
+  const [selectedTags, setSelectedTags] = useState<SelectTag[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -42,7 +46,7 @@ export default function AddIngredientForm({
       const formData = new FormData(target)
       const formProps = Object.fromEntries(formData)
 
-      await trpc.ingredients.createWithAI.mutate({
+      const result = await trpc.ingredients.createWithAI.mutate({
         name: formProps.name as string,
         tracking_type: type as z.infer<typeof ingredientsTrackingTypeSchema>,
         fill_level:
@@ -54,6 +58,19 @@ export default function AddIngredientForm({
         count: type === `count` ? count : 0,
         expiration_date: type !== `pantry_staple` ? expirationDate : undefined,
       })
+
+      // Save any newly-typed tags first — the join rows below reference them
+      await persistNewTags(selectedTags)
+
+      // Attach the selected tags to the new ingredient
+      for (const tag of selectedTags) {
+        ingredientTagsCollection.insert({
+          id: crypto.randomUUID(),
+          ingredient_id: result.ingredient.id,
+          tag_id: tag.id,
+          created_at: new Date(),
+        })
+      }
 
       onSuccess?.()
       onClose()
@@ -177,6 +194,12 @@ export default function AddIngredientForm({
             expirationDate={expirationDate}
           />
         )}
+        <TagInput
+          value={selectedTags}
+          onChange={setSelectedTags}
+          placeholder="Search or add a tag..."
+          disabled={isLoading}
+        />
       </Flex>
 
       <Flex gap="3" mt="4" justify="end">

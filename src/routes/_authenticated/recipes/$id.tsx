@@ -40,7 +40,10 @@ import {
   ingredientsCollection,
   recipeCommentsCollection,
   usersCollection,
+  tagsCollection,
+  recipeTagsCollection,
 } from "@/lib/collections"
+import TagList from "@/components/tag-list"
 import {
   cosineSimilarity,
   isExpiredSoon,
@@ -70,6 +73,8 @@ export const Route = createFileRoute(`/_authenticated/recipes/$id`)({
       ingredientsCollection.preload(),
       recipeCommentsCollection.preload(),
       usersCollection.preload(),
+      tagsCollection.preload(),
+      recipeTagsCollection.preload(),
     ])
   },
 })
@@ -396,6 +401,9 @@ function RecipeDetail() {
             </a>
           </RadixLink>
         )}
+        <Flex gap="1" wrap="wrap" align="center">
+          <TagList entity="recipe" entityId={recipe.id} size="2" />
+        </Flex>
       </Flex>
 
       {recipe.description && (

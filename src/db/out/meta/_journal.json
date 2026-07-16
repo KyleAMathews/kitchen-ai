@@ -43,6 +43,13 @@
       "when": 1764802407351,
       "tag": "0005_thin_thena",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1784140383487,
+      "tag": "0006_regular_dreaming_celestial",
+      "breakpoints": true
     }
   ]
 }

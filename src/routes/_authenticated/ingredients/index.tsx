@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { useLiveQuery, ilike } from "@tanstack/react-db"
-import { useState } from "react"
+import { useLiveQuery } from "@tanstack/react-db"
+import { useState, useMemo } from "react"
 import {
   Heading,
   Flex,
@@ -10,7 +10,11 @@ import {
   TextField,
   Checkbox,
 } from "@radix-ui/themes"
-import { ingredientsCollection } from "@/lib/collections"
+import {
+  ingredientsCollection,
+  tagsCollection,
+  ingredientTagsCollection,
+} from "@/lib/collections"
 import IngredientCard from "@/components/ingredient-card"
 import AddIngredientForm from "@/components/add-ingredient-form"
 import { trpc } from "@/lib/trpc-client"
@@ -23,37 +27,55 @@ import {
 export const Route = createFileRoute(`/_authenticated/ingredients/`)({
   component: IngredientsList,
   loader: async () => {
-    await ingredientsCollection.preload()
+    await Promise.all([
+      ingredientsCollection.preload(),
+      tagsCollection.preload(),
+      ingredientTagsCollection.preload(),
+    ])
   },
 })
 
 function IngredientsList() {
   const [searchQuery, setSearchQuery] = useState(``)
 
-  const { data: ingredients } = useLiveQuery(
+  const { data: allIngredients } = useLiveQuery(
     (q) =>
-      searchQuery.length > 0
-        ? q
-            .from({ ingredientsCollection })
-            .where(({ ingredientsCollection }) =>
-              ilike(ingredientsCollection.name, `%${searchQuery}%`)
-            )
-            .orderBy(
-              ({ ingredientsCollection }) =>
-                ingredientsCollection.trello_add_count,
-              `desc`
-            )
-            .orderBy(({ ingredientsCollection }) => ingredientsCollection.name)
-        : q
-            .from({ ingredientsCollection })
-            .orderBy(
-              ({ ingredientsCollection }) =>
-                ingredientsCollection.trello_add_count,
-              `desc`
-            )
-            .orderBy(({ ingredientsCollection }) => ingredientsCollection.name),
-    [searchQuery]
+      q
+        .from({ ingredientsCollection })
+        .orderBy(
+          ({ ingredientsCollection }) => ingredientsCollection.trello_add_count,
+          `desc`
+        )
+        .orderBy(({ ingredientsCollection }) => ingredientsCollection.name),
+    []
   )
+  const { data: allTags } = useLiveQuery((q) => q.from({ tag: tagsCollection }))
+  const { data: tagLinks } = useLiveQuery((q) =>
+    q.from({ link: ingredientTagsCollection })
+  )
+
+  // Search matches an ingredient's name OR any of its tag names
+  const ingredients = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase()
+    if (!query) return allIngredients ?? []
+
+    const matchingTagIds = new Set(
+      (allTags ?? [])
+        .filter((tag) => tag.name.toLowerCase().includes(query))
+        .map((tag) => tag.id)
+    )
+    const taggedIngredientIds = new Set(
+      (tagLinks ?? [])
+        .filter((link) => matchingTagIds.has(link.tag_id))
+        .map((link) => link.ingredient_id)
+    )
+
+    return (allIngredients ?? []).filter(
+      (ingredient) =>
+        ingredient.name.toLowerCase().includes(query) ||
+        taggedIngredientIds.has(ingredient.id)
+    )
+  }, [allIngredients, allTags, tagLinks, searchQuery])
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [selectedIngredients, setSelectedIngredients] = useState<Set<string>>(
@@ -204,6 +226,10 @@ function IngredientsList() {
               return null
             })}
           </Flex>
+        ) : searchQuery.trim() ? (
+          <Text color="gray">
+            No ingredients match &ldquo;{searchQuery.trim()}&rdquo;.
+          </Text>
         ) : (
           <Text color="gray">
             No ingredients yet. Add them from recipes or manually!

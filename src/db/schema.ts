@@ -7,6 +7,7 @@ import {
   uuid,
   pgEnum,
   jsonb,
+  uniqueIndex,
 } from "drizzle-orm/pg-core"
 export * from "./auth-schema"
 import { users } from "./auth-schema"
@@ -141,6 +142,71 @@ export const recipeComments = pgTable(`recipe_comments`, {
     .defaultNow(),
 })
 
+// Tags system
+// A shared, per-user tag vocabulary. The same tag can be applied to both
+// recipes and ingredients via the join tables below.
+export const tags = pgTable(
+  `tags`,
+  {
+    id: uuid(`id`).primaryKey().defaultRandom(),
+    name: text(`name`).notNull(),
+    user_id: text(`user_id`)
+      .notNull()
+      .references(() => users.id, { onDelete: `cascade` }),
+    created_at: timestamp(`created_at`, { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    // A user can't have two tags with the same name
+    uniqueIndex(`tags_user_id_name_unique`).on(table.user_id, table.name),
+  ]
+)
+
+export const recipeTags = pgTable(
+  `recipe_tags`,
+  {
+    id: uuid(`id`).primaryKey().defaultRandom(),
+    recipe_id: uuid(`recipe_id`)
+      .notNull()
+      .references(() => recipes.id, { onDelete: `cascade` }),
+    tag_id: uuid(`tag_id`)
+      .notNull()
+      .references(() => tags.id, { onDelete: `cascade` }),
+    created_at: timestamp(`created_at`, { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex(`recipe_tags_recipe_id_tag_id_unique`).on(
+      table.recipe_id,
+      table.tag_id
+    ),
+  ]
+)
+
+export const ingredientTags = pgTable(
+  `ingredient_tags`,
+  {
+    id: uuid(`id`).primaryKey().defaultRandom(),
+    ingredient_id: uuid(`ingredient_id`)
+      .notNull()
+      .references(() => ingredients.id, { onDelete: `cascade` }),
+    tag_id: uuid(`tag_id`)
+      .notNull()
+      .references(() => tags.id, { onDelete: `cascade` }),
+    created_at: timestamp(`created_at`, { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex(`ingredient_tags_ingredient_id_tag_id_unique`).on(
+      table.ingredient_id,
+      table.tag_id
+    ),
+  ]
+)
+
 // Export all tables for migrations and relations
 export const schema = {
   users,
@@ -150,4 +216,7 @@ export const schema = {
   recipeIngredients,
   recipeComments,
   jobs,
+  tags,
+  recipeTags,
+  ingredientTags,
 }

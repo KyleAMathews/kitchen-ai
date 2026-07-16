@@ -28,7 +28,10 @@ import {
   ingredientsCollection,
   recipeIngredientsCollection,
   recipesCollection,
+  tagsCollection,
+  ingredientTagsCollection,
 } from "@/lib/collections"
+import TagList from "@/components/tag-list"
 import { isRunningLow, cosineSimilarity } from "@/lib/utils"
 import { useMemo } from "react"
 import ExpirationDateEdit from "@/components/expiration-date-edit"
@@ -38,7 +41,11 @@ import { z } from "zod"
 export const Route = createFileRoute(`/_authenticated/ingredients/$id`)({
   component: IngredientDetail,
   loader: async () => {
-    await ingredientsCollection.preload()
+    await Promise.all([
+      ingredientsCollection.preload(),
+      tagsCollection.preload(),
+      ingredientTagsCollection.preload(),
+    ])
   },
 })
 
@@ -399,6 +406,9 @@ function IngredientDetail() {
           <Flex justify="between" align="start">
             <Heading size="6">{ingredient.name}</Heading>
             <IngredientActionsMenu ingredient={ingredient} />
+          </Flex>
+          <Flex gap="1" wrap="wrap" align="center">
+            <TagList entity="ingredient" entityId={ingredient.id} size="2" />
           </Flex>
         </Flex>
 
