@@ -39,6 +39,10 @@ export default function TagInput({
   const [open, setOpen] = useState(false)
   const [highlight, setHighlight] = useState(0)
   const blurTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Whether the cursor is in the field. A ref because committing a tag needs to
+  // know this synchronously, and because the commit triggered by clicking away
+  // must not re-open the dropdown on a field that just lost focus.
+  const focusedRef = useRef(false)
 
   // Every existing tag — the vocabulary is global, so suggestions include
   // tags created by other users
@@ -74,7 +78,10 @@ export default function TagInput({
     }
     setInput(``)
     setHighlight(0)
-    setOpen(false)
+    // Stay open while the cursor is still in the field, so committing a tag
+    // leaves it in the same state as first clicking in. Closes only when the
+    // commit came from clicking away.
+    setOpen(focusedRef.current)
   }
 
   const removeTag = (id: string) => {
@@ -141,6 +148,8 @@ export default function TagInput({
       // Backspace on an empty field removes the last tag
       removeTag(value[value.length - 1].id)
     } else if (e.key === `Escape`) {
+      // Note: inside a Radix Dialog this also closes the dialog, since Radix
+      // listens for Escape on the document and gets it first.
       setOpen(false)
     }
   }
@@ -198,9 +207,16 @@ export default function TagInput({
               setOpen(true)
               setHighlight(0)
             }}
-            onFocus={() => setOpen(true)}
+            onFocus={() => {
+              focusedRef.current = true
+              setOpen(true)
+            }}
+            // Clicking an already-focused input fires no focus event, so
+            // without this the dropdown would stay shut after committing a tag.
+            onClick={() => setOpen(true)}
             onKeyDown={handleKeyDown}
             onBlur={() => {
+              focusedRef.current = false
               // Delay so a click on a suggestion still registers.
               blurTimeout.current = setTimeout(() => {
                 setOpen(false)
