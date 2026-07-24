@@ -114,88 +114,92 @@ export default function TagInput({
       }}
     >
       {label && <Text size="1">{label}</Text>}
-      <ComboBox
-        aria-label={label || `Tags`}
-        items={suggestions}
-        inputValue={input}
-        onInputChange={setInput}
-        onSelectionChange={(key) => {
-          if (key == null) return
-          const tag = (allTags ?? []).find((candidate) => candidate.id === key)
-          if (tag) addTag(tag)
+      <div
+        style={{
+          display: `flex`,
+          alignItems: `center`,
+          flexWrap: `wrap`,
+          gap: `var(--space-1)`,
+          minHeight: 36,
+          padding: `4px 6px`,
+          border: `1px solid var(--gray-a7)`,
+          borderRadius: `var(--radius-2)`,
+          background: `var(--color-surface)`,
         }}
-        allowsCustomValue
-        menuTrigger="focus"
-        isDisabled={disabled}
-        defaultFilter={() => true}
-        style={{ position: `relative` }}
       >
-        <div
-          style={{
-            display: `flex`,
-            alignItems: `center`,
-            flexWrap: `wrap`,
-            gap: `var(--space-1)`,
-            minHeight: 36,
-            padding: `4px 6px`,
-            border: `1px solid var(--gray-a7)`,
-            borderRadius: `var(--radius-2)`,
-            background: `var(--color-surface)`,
-          }}
+        <TagGroup
+          aria-label="Selected tags"
+          onRemove={disabled ? undefined : removeTags}
         >
-          <TagGroup
-            aria-label="Selected tags"
-            onRemove={disabled ? undefined : removeTags}
+          <TagList
+            items={value}
+            style={{
+              display: `flex`,
+              alignItems: `center`,
+              flexWrap: `wrap`,
+              gap: `var(--space-1)`,
+            }}
           >
-            <TagList
-              items={value}
-              style={{
-                display: `flex`,
-                alignItems: `center`,
-                flexWrap: `wrap`,
-                gap: `var(--space-1)`,
-              }}
-            >
-              {(tag) => (
-                <Tag
-                  id={tag.id}
-                  textValue={tag.name}
-                  style={({ isFocusVisible }) => ({
+            {(tag) => (
+              <Tag
+                id={tag.id}
+                textValue={tag.name}
+                style={({ isFocusVisible }) => ({
+                  display: `inline-flex`,
+                  alignItems: `center`,
+                  gap: 2,
+                  padding: `2px 6px`,
+                  borderRadius: `max(var(--radius-1), var(--radius-full))`,
+                  background: `var(--iris-a3)`,
+                  color: `var(--iris-a11)`,
+                  fontSize: `var(--font-size-1)`,
+                  lineHeight: `var(--line-height-1)`,
+                  outline: isFocusVisible ? `2px solid var(--focus-8)` : `none`,
+                })}
+              >
+                {tag.name}
+                <Button
+                  slot="remove"
+                  aria-label={`Remove ${tag.name}`}
+                  isDisabled={disabled}
+                  style={{
                     display: `inline-flex`,
                     alignItems: `center`,
-                    gap: 2,
-                    padding: `2px 6px`,
-                    borderRadius: `max(var(--radius-1), var(--radius-full))`,
-                    background: `var(--iris-a3)`,
-                    color: `var(--iris-a11)`,
-                    fontSize: `var(--font-size-1)`,
-                    lineHeight: `var(--line-height-1)`,
-                    outline: isFocusVisible
-                      ? `2px solid var(--focus-8)`
-                      : `none`,
-                  })}
+                    padding: 0,
+                    border: 0,
+                    background: `transparent`,
+                    color: `inherit`,
+                    cursor: `pointer`,
+                  }}
                 >
-                  {tag.name}
-                  <Button
-                    slot="remove"
-                    aria-label={`Remove ${tag.name}`}
-                    isDisabled={disabled}
-                    style={{
-                      display: `inline-flex`,
-                      alignItems: `center`,
-                      padding: 0,
-                      border: 0,
-                      background: `transparent`,
-                      color: `inherit`,
-                      cursor: `pointer`,
-                    }}
-                  >
-                    <Cross2Icon width="11" height="11" />
-                  </Button>
-                </Tag>
-              )}
-            </TagList>
-          </TagGroup>
+                  <Cross2Icon width="11" height="11" />
+                </Button>
+              </Tag>
+            )}
+          </TagList>
+        </TagGroup>
+        <ComboBox
+          aria-label={label || `Tags`}
+          items={suggestions}
+          inputValue={input}
+          onInputChange={setInput}
+          onSelectionChange={(key) => {
+            if (key == null) return
+            const tag = (allTags ?? []).find(
+              (candidate) => candidate.id === key
+            )
+            if (tag) addTag(tag)
+          }}
+          allowsCustomValue
+          menuTrigger="focus"
+          isDisabled={disabled}
+          defaultFilter={() => true}
+          style={{
+            position: `relative`,
+            flex: 1,
+            minWidth: 120,
+          }}
+        >
           <Input
             placeholder={value.length === 0 ? placeholder : ``}
             onKeyDown={(event) => {
@@ -219,8 +223,7 @@ export default function TagInput({
             }}
             onBlur={commitInput}
             style={{
-              flex: 1,
-              minWidth: 120,
+              width: `100%`,
               padding: `2px 4px`,
               border: 0,
               outline: `none`,
@@ -229,42 +232,43 @@ export default function TagInput({
               fontSize: `var(--font-size-2)`,
             }}
           />
-        </div>
-        <Popover
-          placement="bottom start"
-          style={{
-            width: `var(--trigger-width)`,
-            marginTop: 4,
-            overflow: `hidden`,
-            border: `1px solid var(--gray-a6)`,
-            borderRadius: `var(--radius-2)`,
-            background: `var(--color-panel-solid)`,
-            boxShadow: `var(--shadow-4)`,
-          }}
-        >
-          <ListBox<SelectTag>
-            items={suggestions}
-            style={{ maxHeight: 240, overflow: `auto`, outline: `none` }}
+          <Popover
+            placement="bottom start"
+            style={{
+              width: `var(--trigger-width)`,
+              marginTop: 4,
+              overflow: `hidden`,
+              zIndex: 1000,
+              border: `1px solid var(--gray-a6)`,
+              borderRadius: `var(--radius-2)`,
+              backgroundColor: `var(--color-background, #fff)`,
+              boxShadow: `var(--shadow-4)`,
+            }}
           >
-            {(tag) => (
-              <ListBoxItem
-                id={tag.id}
-                textValue={tag.name}
-                style={({ isFocused }) => ({
-                  padding: `6px 10px`,
-                  cursor: `pointer`,
-                  fontSize: `var(--font-size-2)`,
-                  color: `var(--gray-12)`,
-                  background: isFocused ? `var(--gray-a3)` : `transparent`,
-                  outline: `none`,
-                })}
-              >
-                {tag.name}
-              </ListBoxItem>
-            )}
-          </ListBox>
-        </Popover>
-      </ComboBox>
+            <ListBox<SelectTag>
+              items={suggestions}
+              style={{ maxHeight: 240, overflow: `auto`, outline: `none` }}
+            >
+              {(tag) => (
+                <ListBoxItem
+                  id={tag.id}
+                  textValue={tag.name}
+                  style={({ isFocused }) => ({
+                    padding: `6px 10px`,
+                    cursor: `pointer`,
+                    fontSize: `var(--font-size-2)`,
+                    color: `var(--gray-12)`,
+                    background: isFocused ? `var(--gray-a3)` : `transparent`,
+                    outline: `none`,
+                  })}
+                >
+                  {tag.name}
+                </ListBoxItem>
+              )}
+            </ListBox>
+          </Popover>
+        </ComboBox>
+      </div>
       <Text size="1" color="gray">
         Press Enter or Space to create a tag · Shift+Space for a multi-word tag
       </Text>
