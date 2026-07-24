@@ -183,14 +183,6 @@ export default function TagInput({
           items={suggestions}
           inputValue={input}
           onInputChange={setInput}
-          value={null}
-          onChange={(key) => {
-            if (key == null) return
-            const tag = (allTags ?? []).find(
-              (candidate) => candidate.id === key
-            )
-            if (tag) addTag(tag)
-          }}
           allowsCustomValue
           menuTrigger="focus"
           isDisabled={disabled}
@@ -255,6 +247,7 @@ export default function TagInput({
                   <ListBoxItem
                     id={tag.id}
                     textValue={tag.name}
+                    onAction={() => addTag(tag)}
                     style={({ isFocused }) => ({
                       padding: `6px 10px`,
                       cursor: `pointer`,
