@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { Text } from "@radix-ui/themes"
+import { Text, Theme } from "@radix-ui/themes"
 import { Cross2Icon } from "@radix-ui/react-icons"
 import { useLiveQuery } from "@tanstack/react-db"
 import {
@@ -232,41 +232,43 @@ export default function TagInput({
               fontSize: `var(--font-size-2)`,
             }}
           />
-          <Popover
-            placement="bottom start"
-            style={{
-              width: `var(--trigger-width)`,
-              marginTop: 4,
-              overflow: `hidden`,
-              zIndex: 1000,
-              border: `1px solid var(--gray-a6)`,
-              borderRadius: `var(--radius-2)`,
-              backgroundColor: `var(--color-background, #fff)`,
-              boxShadow: `var(--shadow-4)`,
-            }}
-          >
-            <ListBox<SelectTag>
-              items={suggestions}
-              style={{ maxHeight: 240, overflow: `auto`, outline: `none` }}
+          <Theme asChild>
+            <Popover
+              placement="bottom start"
+              style={{
+                width: `var(--trigger-width)`,
+                marginTop: 4,
+                overflow: `hidden`,
+                zIndex: 1000,
+                border: `1px solid var(--gray-a6)`,
+                borderRadius: `var(--radius-2)`,
+                background: `var(--color-panel-solid)`,
+                boxShadow: `var(--shadow-4)`,
+              }}
             >
-              {(tag) => (
-                <ListBoxItem
-                  id={tag.id}
-                  textValue={tag.name}
-                  style={({ isFocused }) => ({
-                    padding: `6px 10px`,
-                    cursor: `pointer`,
-                    fontSize: `var(--font-size-2)`,
-                    color: `var(--gray-12)`,
-                    background: isFocused ? `var(--gray-a3)` : `transparent`,
-                    outline: `none`,
-                  })}
-                >
-                  {tag.name}
-                </ListBoxItem>
-              )}
-            </ListBox>
-          </Popover>
+              <ListBox<SelectTag>
+                items={suggestions}
+                style={{ maxHeight: 240, overflow: `auto`, outline: `none` }}
+              >
+                {(tag) => (
+                  <ListBoxItem
+                    id={tag.id}
+                    textValue={tag.name}
+                    style={({ isFocused }) => ({
+                      padding: `6px 10px`,
+                      cursor: `pointer`,
+                      fontSize: `var(--font-size-2)`,
+                      color: `var(--gray-12)`,
+                      background: isFocused ? `var(--gray-a3)` : `transparent`,
+                      outline: `none`,
+                    })}
+                  >
+                    {tag.name}
+                  </ListBoxItem>
+                )}
+              </ListBox>
+            </Popover>
+          </Theme>
         </ComboBox>
       </div>
       <Text size="1" color="gray">
