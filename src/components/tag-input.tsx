@@ -183,7 +183,8 @@ export default function TagInput({
           items={suggestions}
           inputValue={input}
           onInputChange={setInput}
-          onSelectionChange={(key) => {
+          value={null}
+          onChange={(key) => {
             if (key == null) return
             const tag = (allTags ?? []).find(
               (candidate) => candidate.id === key
