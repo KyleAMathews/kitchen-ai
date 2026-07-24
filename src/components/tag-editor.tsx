@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react"
 import { Pencil1Icon, PlusIcon } from "@radix-ui/react-icons"
 import { Button, Callout, Dialog, Flex } from "@radix-ui/themes"
+import { UNSAFE_PortalProvider } from "react-aria"
 import { eq, useLiveQuery } from "@tanstack/react-db"
 import type { SelectTag } from "@/db/zod-schemas"
 import {
@@ -84,6 +85,9 @@ function TagEditorDialog({
   const [selectedTags, setSelectedTags] = useState<SelectTag[]>(currentTags)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(
+    null
+  )
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (nextOpen) {
@@ -123,7 +127,7 @@ function TagEditorDialog({
           {currentTags.length > 0 ? `Edit tags` : `Add tags`}
         </Button>
       </Dialog.Trigger>
-      <Dialog.Content style={{ maxWidth: 450 }}>
+      <Dialog.Content ref={setPortalContainer} style={{ maxWidth: 450 }}>
         <Dialog.Title>
           {currentTags.length > 0 ? `Edit tags` : `Add tags`}
         </Dialog.Title>
@@ -131,13 +135,15 @@ function TagEditorDialog({
           Tags are shared across recipes and ingredients.
         </Dialog.Description>
 
-        <TagInput
-          value={selectedTags}
-          onChange={setSelectedTags}
-          label=""
-          placeholder="Search or add a tag..."
-          disabled={saving}
-        />
+        <UNSAFE_PortalProvider getContainer={() => portalContainer}>
+          <TagInput
+            value={selectedTags}
+            onChange={setSelectedTags}
+            label=""
+            placeholder="Search or add a tag..."
+            disabled={saving}
+          />
+        </UNSAFE_PortalProvider>
 
         {error && (
           <Callout.Root color="red" mt="3">

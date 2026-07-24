@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { Text, Theme } from "@radix-ui/themes"
 import { Cross2Icon } from "@radix-ui/react-icons"
 import { useLiveQuery } from "@tanstack/react-db"
@@ -44,6 +44,9 @@ export default function TagInput({
   const { data: session } = authClient.useSession()
   const userId = session?.user?.id
   const [input, setInput] = useState(``)
+  // React Aria caches item actions, so they must read the latest selection.
+  const valueRef = useRef(value)
+  valueRef.current = value
 
   // Tags are global, so suggestions include tags created by every user.
   const { data: allTags } = useLiveQuery((q) => q.from({ tag: tagsCollection }))
@@ -66,13 +69,13 @@ export default function TagInput({
 
   const addTag = (tag: SelectTag) => {
     if (
-      !value.some(
+      !valueRef.current.some(
         (selected) =>
           selected.id === tag.id ||
           selected.name.toLowerCase() === tag.name.toLowerCase()
       )
     ) {
-      onChange([...value, tag])
+      onChange([...valueRef.current, tag])
     }
     setInput(``)
   }
