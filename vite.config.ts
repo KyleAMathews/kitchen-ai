@@ -7,6 +7,7 @@ import path from "path"
 import { capsizeRadixPlugin } from "vite-plugin-capsize-radix"
 import montserrat from "@capsizecss/metrics/montserrat"
 import arial from "@capsizecss/metrics/arial"
+import { caddyPlugin } from "./src/vite-plugin-caddy"
 
 export default defineConfig(async () => {
   // Load GeneralSans font metrics (if still available)
@@ -28,6 +29,8 @@ export default defineConfig(async () => {
     plugins: [
       // Nitro for Node.js deployment
       nitro(),
+      // Local HTTPS with Caddy
+      caddyPlugin(),
       // Typography optimization
       capsizeRadixPlugin({
         outputPath: `./src/typography.css`,

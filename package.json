@@ -6,7 +6,7 @@
   "description": "Kitchen AI - Smart ingredient and recipe management",
   "author": "Kyle Mathews <mathews.kyle@gmail.com>",
   "scripts": {
-    "dev": "docker compose up -d && concurrently --kill-others --names vite,caddy \"vite dev --port 3001 --strictPort\" \"caddy run --config Caddyfile\"",
+    "dev": "docker compose up -d && vite dev",
     "start": "node .output/server/index.mjs",
     "build": "vite build",
     "deploy:netlify": "netlify deploy --prod",
