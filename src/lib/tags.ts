@@ -20,8 +20,9 @@ export interface TagWrites {
   }>
 }
 
-interface AttachTagsVariables extends TagWrites {
+interface ChangeTagAssignmentsVariables extends TagWrites {
   target: TagTarget
+  removed_link_ids: string[]
 }
 
 export function prepareTagWrites(tags: SelectTag[]): TagWrites {
@@ -65,13 +66,14 @@ export function optimisticallyInsertTags(
 export async function awaitTagWrites(
   target: TagTarget,
   { new_tags, links }: TagWrites,
-  txid: number
+  txid: number,
+  hasRemovedLinks = false
 ) {
   const syncs: Array<Promise<boolean>> = []
   if (new_tags.length > 0) {
     syncs.push(tagsCollection.utils.awaitTxId(txid))
   }
-  if (links.length > 0) {
+  if (links.length > 0 || hasRemovedLinks) {
     syncs.push(
       target.entity === `recipe`
         ? recipeTagsCollection.utils.awaitTxId(txid)
@@ -81,29 +83,64 @@ export async function awaitTagWrites(
   await Promise.all(syncs)
 }
 
-const attachTagsAction = createOptimisticAction<AttachTagsVariables>({
-  onMutate: ({ target, ...tagWrites }) => {
-    optimisticallyInsertTags(target, tagWrites)
-  },
-  mutationFn: async ({ target, ...tagWrites }) => {
-    const { txid } = await trpc.tags.attach.mutate({
-      target,
-      new_tags: tagWrites.new_tags.map(({ id, name }) => ({ id, name })),
-      links: tagWrites.links.map(({ id, tag_id }) => ({ id, tag_id })),
-    })
+const changeTagAssignmentsAction =
+  createOptimisticAction<ChangeTagAssignmentsVariables>({
+    onMutate: ({ target, removed_link_ids, ...tagWrites }) => {
+      optimisticallyInsertTags(target, tagWrites)
 
-    await awaitTagWrites(target, tagWrites, Number(txid))
-  },
-})
+      if (removed_link_ids.length > 0) {
+        if (target.entity === `recipe`) {
+          recipeTagsCollection.delete(removed_link_ids)
+        } else {
+          ingredientTagsCollection.delete(removed_link_ids)
+        }
+      }
+    },
+    mutationFn: async ({ target, removed_link_ids, ...tagWrites }) => {
+      const { txid } = await trpc.tags.changeAssignments.mutate({
+        target,
+        new_tags: tagWrites.new_tags.map(({ id, name }) => ({ id, name })),
+        links: tagWrites.links.map(({ id, tag_id }) => ({ id, tag_id })),
+        removed_link_ids,
+      })
+
+      await awaitTagWrites(
+        target,
+        tagWrites,
+        Number(txid),
+        removed_link_ids.length > 0
+      )
+    },
+  })
+
+interface CurrentTagLink {
+  id: string
+  tag_id: string
+}
 
 /**
- * Optimistically attaches tags to one entity as a single TanStack transaction.
- * New tags and join rows persist together, and the transaction stays pending
- * until Electric confirms every affected collection.
+ * Replaces the tag assignments for one recipe or ingredient as one optimistic
+ * transaction. Returns null when the selection did not change.
  */
-export function attachTags(target: TagTarget, tags: SelectTag[]) {
-  return attachTagsAction({
+export function changeTagAssignments(
+  target: TagTarget,
+  currentLinks: CurrentTagLink[],
+  selectedTags: SelectTag[]
+) {
+  const currentTagIds = new Set(currentLinks.map((link) => link.tag_id))
+  const selectedTagIds = new Set(selectedTags.map((tag) => tag.id))
+  const addedTags = selectedTags.filter((tag) => !currentTagIds.has(tag.id))
+  const removed_link_ids = currentLinks
+    .filter((link) => !selectedTagIds.has(link.tag_id))
+    .map((link) => link.id)
+
+  if (addedTags.length === 0 && removed_link_ids.length === 0) {
+    return null
+  }
+
+  return changeTagAssignmentsAction({
     target,
-    ...prepareTagWrites(tags),
+    removed_link_ids,
+    ...prepareTagWrites(addedTags),
   })
 }

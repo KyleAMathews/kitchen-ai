@@ -8,10 +8,10 @@ import {
   recipes,
   ingredients,
 } from "@/db/schema"
-import { eq, and } from "drizzle-orm"
+import { eq, and, inArray } from "drizzle-orm"
 import { newTagInputSchema, tagLinkInputSchema } from "@/lib/trpc/tag-schemas"
 
-const attachTagsInput = z.object({
+const changeTagAssignmentsInput = z.object({
   target: z.discriminatedUnion(`entity`, [
     z.object({
       entity: z.literal(`recipe`),
@@ -23,14 +23,15 @@ const attachTagsInput = z.object({
     }),
   ]),
   new_tags: z.array(newTagInputSchema),
-  links: z.array(tagLinkInputSchema).min(1),
+  links: z.array(tagLinkInputSchema),
+  removed_link_ids: z.array(z.string().uuid()),
 })
 
 export const tagsRouter = router({
-  // Persist all new tags and links for one entity in a single transaction.
+  // Persist the complete assignment diff for one entity in one transaction.
   // The one txid is visible in every Electric shape changed by the transaction.
-  attach: authedProcedure
-    .input(attachTagsInput)
+  changeAssignments: authedProcedure
+    .input(changeTagAssignmentsInput)
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session.user.id
 
@@ -81,19 +82,43 @@ export const tagsRouter = router({
         }
 
         if (input.target.entity === `recipe`) {
-          await tx.insert(recipeTags).values(
-            input.links.map((link) => ({
-              ...link,
-              recipe_id: input.target.entity_id,
-            }))
-          )
+          if (input.links.length > 0) {
+            await tx.insert(recipeTags).values(
+              input.links.map((link) => ({
+                ...link,
+                recipe_id: input.target.entity_id,
+              }))
+            )
+          }
+          if (input.removed_link_ids.length > 0) {
+            await tx
+              .delete(recipeTags)
+              .where(
+                and(
+                  eq(recipeTags.recipe_id, input.target.entity_id),
+                  inArray(recipeTags.id, input.removed_link_ids)
+                )
+              )
+          }
         } else {
-          await tx.insert(ingredientTags).values(
-            input.links.map((link) => ({
-              ...link,
-              ingredient_id: input.target.entity_id,
-            }))
-          )
+          if (input.links.length > 0) {
+            await tx.insert(ingredientTags).values(
+              input.links.map((link) => ({
+                ...link,
+                ingredient_id: input.target.entity_id,
+              }))
+            )
+          }
+          if (input.removed_link_ids.length > 0) {
+            await tx
+              .delete(ingredientTags)
+              .where(
+                and(
+                  eq(ingredientTags.ingredient_id, input.target.entity_id),
+                  inArray(ingredientTags.id, input.removed_link_ids)
+                )
+              )
+          }
         }
 
         const txid = await generateTxId(tx)

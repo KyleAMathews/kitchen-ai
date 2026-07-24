@@ -45,6 +45,7 @@ import {
   recipeTagsCollection,
 } from "@/lib/collections"
 import TagList from "@/components/tag-list"
+import TagEditor from "@/components/tag-editor"
 import {
   cosineSimilarity,
   isExpiredSoon,
@@ -408,6 +409,7 @@ function RecipeDetail() {
         )}
         <Flex gap="1" wrap="wrap" align="center">
           <TagList entity="recipe" entityId={recipe.id} size="2" />
+          <TagEditor entity="recipe" entityId={recipe.id} />
         </Flex>
       </Flex>
 

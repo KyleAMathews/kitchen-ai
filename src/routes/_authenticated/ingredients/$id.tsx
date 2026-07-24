@@ -33,6 +33,7 @@ import {
   ingredientTagsCollection,
 } from "@/lib/collections"
 import TagList from "@/components/tag-list"
+import TagEditor from "@/components/tag-editor"
 import { isRunningLow, cosineSimilarity } from "@/lib/utils"
 import { useMemo } from "react"
 import ExpirationDateEdit from "@/components/expiration-date-edit"
@@ -412,6 +413,7 @@ function IngredientDetail() {
           </Flex>
           <Flex gap="1" wrap="wrap" align="center">
             <TagList entity="ingredient" entityId={ingredient.id} size="2" />
+            <TagEditor entity="ingredient" entityId={ingredient.id} />
           </Flex>
         </Flex>
 
