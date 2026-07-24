@@ -86,6 +86,10 @@ export const recipeCommentsCollection = createCollection(
 4. **ALWAYS preload collections** in route loaders
 5. **ALWAYS use snake_case** for database fields throughout the app
 6. **ONLY basic CRUD in tRPC** - No special mutations unless using `createOptimisticAction`
+7. **ALWAYS default to the libraries we use** - Before writing custom JavaScript,
+   CSS, HTML, hooks, or components, check the installed stack and its docs or
+   skills for an existing primitive. Compose or extend library components first;
+   write the smallest custom code only when no suitable library API exists.
 
 ## Schema Management
 
