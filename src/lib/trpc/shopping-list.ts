@@ -3,7 +3,7 @@ import { z } from "zod"
 import { TRPCError } from "@trpc/server"
 import { db } from "@/db/connection"
 import { ingredients } from "@/db/schema"
-import { eq, sql } from "drizzle-orm"
+import { inArray, sql } from "drizzle-orm"
 
 function getDateString(date?: Date) {
   const targetDate = date || new Date()
@@ -14,6 +14,7 @@ function getDateString(date?: Date) {
 }
 
 type TrelloCard = { id: string; name: string; desc: string }
+type TrelloChecklist = { id: string; name: string }
 
 async function findRecentShoppingCard(listId: string) {
   const cards = await makeTrelloRequest<TrelloCard[]>({
@@ -43,7 +44,7 @@ async function findRecentShoppingCard(listId: string) {
     })
     .sort((a: TrelloCard, b: TrelloCard) => b.name.localeCompare(a.name)) // Sort by date descending (most recent first)
 
-  return recentShoppingCards.length > 0 ? recentShoppingCards[0] : null
+  return recentShoppingCards[0]
 }
 
 const makeTrelloRequest = async <T = unknown>({
@@ -106,7 +107,7 @@ const findCardByName = async (listId: string, cardName: string) => {
 }
 
 const createCard = async (listId: string, cardName: string, url?: string) => {
-  await makeTrelloRequest({
+  return makeTrelloRequest<TrelloCard>({
     url: `https://api.trello.com/1/cards`,
     method: `POST`,
     queryParams: {
@@ -115,20 +116,10 @@ const createCard = async (listId: string, cardName: string, url?: string) => {
       idList: listId,
     },
   })
-
-  let card = null
-  while (card === null) {
-    card = await findCardByName(listId, cardName)
-    if (card) {
-      return card
-    } else {
-      await new Promise((resolve) => setTimeout(resolve, Math.random() * 250))
-    }
-  }
 }
 
 const updateCard = async (cardId: string, updates: Record<string, unknown>) => {
-  return makeTrelloRequest({
+  return makeTrelloRequest<TrelloCard>({
     url: `https://api.trello.com/1/cards/${cardId}`,
     method: `PUT`,
     queryParams: {
@@ -138,14 +129,14 @@ const updateCard = async (cardId: string, updates: Record<string, unknown>) => {
 }
 
 const findChecklistOnCard = async (cardId: string, checklistTitle: string) => {
-  const checklists = await makeTrelloRequest<{ id: string; name: string }[]>({
+  const checklists = await makeTrelloRequest<TrelloChecklist[]>({
     url: `https://api.trello.com/1/cards/${cardId}/checklists`,
   })
   return checklists.find((checklist) => checklist.name === checklistTitle)
 }
 
 const createChecklist = async (cardId: string, checklistTitle: string) => {
-  await makeTrelloRequest({
+  return makeTrelloRequest<TrelloChecklist>({
     url: `https://api.trello.com/1/checklists`,
     method: `POST`,
     queryParams: {
@@ -153,29 +144,21 @@ const createChecklist = async (cardId: string, checklistTitle: string) => {
       name: checklistTitle,
     },
   })
-
-  let checklist = null
-  while (checklist === null) {
-    checklist = await findChecklistOnCard(cardId, checklistTitle)
-    if (checklist) {
-      return checklist
-    } else {
-      await new Promise((resolve) => setTimeout(resolve, Math.random() * 250))
-    }
-  }
 }
 
 const updateChecklistItems = async (checklistId: string, items: string[]) => {
-  for (const item of items) {
-    await makeTrelloRequest({
-      url: `https://api.trello.com/1/checklists/${checklistId}/checkItems`,
-      method: `POST`,
-      queryParams: {
-        name: item,
-        checked: `false`,
-      },
-    })
-  }
+  await Promise.all(
+    items.map((item) =>
+      makeTrelloRequest({
+        url: `https://api.trello.com/1/checklists/${checklistId}/checkItems`,
+        method: `POST`,
+        queryParams: {
+          name: item,
+          checked: `false`,
+        },
+      })
+    )
+  )
 }
 
 type CardDetails = {
@@ -218,10 +201,7 @@ const createOrUpdateCardWithChecklists = async (
       checklist = await createChecklist(card.id, title)
     }
 
-    await updateChecklistItems(
-      (checklist as { id: string }).id,
-      items as string[]
-    )
+    await updateChecklistItems(checklist.id, items)
   }
 
   return card
@@ -249,23 +229,13 @@ export const shoppingListRouter = router({
       try {
         const card = await createOrUpdateCardWithChecklists(listId, cardDetails)
 
-        // Track ingredient additions by incrementing trello_add_count (fire-and-forget)
         if (input.ingredientIds && input.ingredientIds.length > 0) {
-          // Increment counter for each ingredient atomically
-          // Don't await - this is best effort tracking
-          Promise.all(
-            input.ingredientIds.map((ingredientId) =>
-              db
-                .update(ingredients)
-                .set({
-                  trello_add_count: sql`${ingredients.trello_add_count} + 1`,
-                })
-                .where(eq(ingredients.id, ingredientId))
-            )
-          ).catch((err) => {
-            // Log but don't fail the request if tracking fails
-            console.error(`Failed to update ingredient tracking:`, err)
-          })
+          await db
+            .update(ingredients)
+            .set({
+              trello_add_count: sql`${ingredients.trello_add_count} + 1`,
+            })
+            .where(inArray(ingredients.id, input.ingredientIds))
         }
 
         return {

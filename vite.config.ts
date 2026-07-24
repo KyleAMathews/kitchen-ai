@@ -2,13 +2,11 @@ import { defineConfig } from "vite"
 import { tanstackStart } from "@tanstack/react-start/plugin/vite"
 import { nitro } from "nitro/vite"
 import react from "@vitejs/plugin-react"
-import viteTsConfigPaths from "vite-tsconfig-paths"
 import { fromFile } from "@capsizecss/unpack"
 import path from "path"
 import { capsizeRadixPlugin } from "vite-plugin-capsize-radix"
 import montserrat from "@capsizecss/metrics/montserrat"
 import arial from "@capsizecss/metrics/arial"
-import { caddyPlugin } from "./src/vite-plugin-caddy"
 
 export default defineConfig(async () => {
   // Load GeneralSans font metrics (if still available)
@@ -30,12 +28,6 @@ export default defineConfig(async () => {
     plugins: [
       // Nitro for Node.js deployment
       nitro(),
-      // Path aliases support
-      viteTsConfigPaths({
-        projects: [`./tsconfig.json`],
-      }),
-      // Local HTTPS with Caddy
-      caddyPlugin(),
       // Typography optimization
       capsizeRadixPlugin({
         outputPath: `./src/typography.css`,
@@ -43,15 +35,12 @@ export default defineConfig(async () => {
         headingFontStack: [montserrat, arial],
       }),
       // TanStack Start
-      tanstackStart({
-        router: {
-          srcDirectory: `src`,
-        },
-      }),
+      tanstackStart(),
       // React plugin
       react(),
     ],
     resolve: {
+      tsconfigPaths: true,
       alias: {
         debug: path.resolve(__dirname, `./src/polyfills/debug.js`),
       },
@@ -64,7 +53,12 @@ export default defineConfig(async () => {
     },
     build: {
       rollupOptions: {
-        external: [`pg-native`, `pg`, `cloudflare:sockets`, /^@opentelemetry\//],
+        external: [
+          `pg-native`,
+          `pg`,
+          `cloudflare:sockets`,
+          /^@opentelemetry\//,
+        ],
       },
     },
   }

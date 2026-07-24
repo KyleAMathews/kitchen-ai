@@ -1,4 +1,3 @@
-import { useMemo } from "react"
 import { Badge } from "@radix-ui/themes"
 import { Link } from "@tanstack/react-router"
 import { useLiveQuery, eq } from "@tanstack/react-db"
@@ -23,46 +22,74 @@ export default function TagList({
   entityId,
   size = `1`,
 }: TagListProps) {
-  const { data: recipeLinks } = useLiveQuery(
+  return entity === `recipe` ? (
+    <RecipeTagList entityId={entityId} size={size} />
+  ) : (
+    <IngredientTagList entityId={entityId} size={size} />
+  )
+}
+
+function RecipeTagList({
+  entityId,
+  size,
+}: Pick<TagListProps, `entityId` | `size`>) {
+  const { data: tags } = useLiveQuery(
     (q) =>
       q
         .from({ link: recipeTagsCollection })
-        .where(({ link }) => eq(link.recipe_id, entityId)),
+        .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
+          eq(link.tag_id, tag.id)
+        )
+        .where(({ link }) => eq(link.recipe_id, entityId))
+        .select(({ tag }) => ({ id: tag.id, name: tag.name }))
+        .orderBy(({ tag }) => tag.name),
     [entityId]
   )
-  const { data: ingredientLinks } = useLiveQuery(
+
+  return <TagBadges tags={tags} size={size} />
+}
+
+function IngredientTagList({
+  entityId,
+  size,
+}: Pick<TagListProps, `entityId` | `size`>) {
+  const { data: tags } = useLiveQuery(
     (q) =>
       q
         .from({ link: ingredientTagsCollection })
-        .where(({ link }) => eq(link.ingredient_id, entityId)),
+        .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
+          eq(link.tag_id, tag.id)
+        )
+        .where(({ link }) => eq(link.ingredient_id, entityId))
+        .select(({ tag }) => ({ id: tag.id, name: tag.name }))
+        .orderBy(({ tag }) => tag.name),
     [entityId]
   )
-  const { data: allTags } = useLiveQuery((q) => q.from({ tag: tagsCollection }))
 
-  const tagNames = useMemo(() => {
-    const links = entity === `recipe` ? recipeLinks : ingredientLinks
-    const byId = new Map((allTags ?? []).map((t) => [t.id, t]))
-    return (links ?? [])
-      .map((link) => byId.get(link.tag_id))
-      .filter((t): t is NonNullable<typeof t> => Boolean(t))
-      .map((t) => t.name)
-      .sort((a, b) => a.localeCompare(b))
-  }, [entity, recipeLinks, ingredientLinks, allTags])
+  return <TagBadges tags={tags} size={size} />
+}
 
-  if (tagNames.length === 0) return null
+function TagBadges({
+  tags,
+  size,
+}: {
+  tags: Array<{ id: string; name: string }> | undefined
+  size: TagListProps[`size`]
+}) {
+  if (!tags?.length) return null
 
   return (
     <>
-      {tagNames.map((name) => (
+      {tags.map((tag) => (
         <Link
-          key={name}
+          key={tag.id}
           to="/"
-          search={{ q: name }}
+          search={{ q: tag.name }}
           // Ingredient cards navigate from an onClick on the whole row, so
           // without this a tag click would fire that too and lose the search.
           onClick={(e) => e.stopPropagation()}
           style={{ textDecoration: `none` }}
-          title={`Show recipes and ingredients tagged “${name}”`}
+          title={`Show recipes and ingredients tagged “${tag.name}”`}
         >
           <Badge
             color="iris"
@@ -70,7 +97,7 @@ export default function TagList({
             size={size}
             style={{ cursor: `pointer` }}
           >
-            {name}
+            {tag.name}
           </Badge>
         </Link>
       ))}

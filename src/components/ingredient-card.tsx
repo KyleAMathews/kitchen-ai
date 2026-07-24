@@ -14,8 +14,6 @@ export default function IngredientCard({ ingredient }: IngredientCardProps) {
   const expiredDate = new Date(ingredient.expiration_date)
   const expiresInFuture = ingredient.expiration_date > new Date()
 
-  console.log({ ingredient })
-
   return (
     <Flex
       key={ingredient.id}

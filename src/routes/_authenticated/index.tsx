@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { useMemo } from "react"
-import { useLiveQuery, eq, count, max } from "@tanstack/react-db"
+import { useLiveQuery, eq, ilike } from "@tanstack/react-db"
 import { Flex, Heading, Text, TextField } from "@radix-ui/themes"
 import {
   MagnifyingGlassIcon,
@@ -17,6 +17,7 @@ import {
 } from "@/lib/collections"
 import RecipeCard from "@/components/recipe-card"
 import IngredientCard from "@/components/ingredient-card"
+import { recipeCardsCollection } from "@/lib/derived-collections"
 
 export const Route = createFileRoute(`/_authenticated/`)({
   component: Dashboard,
@@ -64,77 +65,44 @@ function Dashboard() {
     q.from({ ingredientsCollection })
   )
 
-  // Tag data, so search can match on tag names as well as names/descriptions
-  const { data: allTags } = useLiveQuery((q) => q.from({ tag: tagsCollection }))
-  const { data: recipeTagLinks } = useLiveQuery((q) =>
-    q.from({ link: recipeTagsCollection })
-  )
-  const { data: ingredientTagLinks } = useLiveQuery((q) =>
-    q.from({ link: ingredientTagsCollection })
-  )
-
   const query = searchQuery.trim().toLowerCase()
 
-  // Entity ids whose tags match the search
-  const { taggedRecipeIds, taggedIngredientIds } = useMemo(() => {
-    const matchingTagIds = new Set(
-      (allTags ?? [])
-        .filter((tag) => tag.name.toLowerCase().includes(query))
-        .map((tag) => tag.id)
-    )
-    return {
-      taggedRecipeIds: new Set(
-        (recipeTagLinks ?? [])
-          .filter((link) => matchingTagIds.has(link.tag_id))
-          .map((link) => link.recipe_id)
-      ),
-      taggedIngredientIds: new Set(
-        (ingredientTagLinks ?? [])
-          .filter((link) => matchingTagIds.has(link.tag_id))
-          .map((link) => link.ingredient_id)
-      ),
-    }
-  }, [allTags, recipeTagLinks, ingredientTagLinks, query])
+  const { data: recipeTagMatches } = useLiveQuery(
+    (q) =>
+      isSearching
+        ? q
+            .from({ link: recipeTagsCollection })
+            .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
+              eq(link.tag_id, tag.id)
+            )
+            .where(({ tag }) => ilike(tag.name, `%${query}%`))
+            .select(({ link }) => ({ entity_id: link.recipe_id }))
+        : undefined,
+    [isSearching, query]
+  )
+  const { data: ingredientTagMatches } = useLiveQuery(
+    (q) =>
+      isSearching
+        ? q
+            .from({ link: ingredientTagsCollection })
+            .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
+              eq(link.tag_id, tag.id)
+            )
+            .where(({ tag }) => ilike(tag.name, `%${query}%`))
+            .select(({ link }) => ({ entity_id: link.ingredient_id }))
+        : undefined,
+    [isSearching, query]
+  )
+  const taggedRecipeIds = useMemo(
+    () => new Set((recipeTagMatches ?? []).map((match) => match.entity_id)),
+    [recipeTagMatches]
+  )
+  const taggedIngredientIds = useMemo(
+    () => new Set((ingredientTagMatches ?? []).map((match) => match.entity_id)),
+    [ingredientTagMatches]
+  )
 
-  // Join recipes with made_it comments to compute times_made and last_made_at
-  // Orders by most recently made, then by times made count
-  const { data: recipes } = useLiveQuery((q) => {
-    const madeItComments = q
-      .from({ c: recipeCommentsCollection })
-      .where(({ c }) => eq(c.made_it, true))
-
-    // Not filtered/limited here: search matches tag names too (which live in
-    // another collection), so filtering happens below — limiting here would
-    // drop tag matches before they're considered.
-    return q
-      .from({ r: recipesCollection })
-      .leftJoin({ mc: madeItComments }, ({ r, mc }) => eq(r.id, mc.recipe_id))
-      .groupBy(({ r }) => [
-        r.id,
-        r.name,
-        r.description,
-        r.url,
-        r.user_id,
-        r.created_at,
-        r.updated_at,
-      ])
-      .select(({ r, mc }) => ({
-        id: r.id,
-        name: r.name,
-        description: r.description,
-        url: r.url,
-        user_id: r.user_id,
-        created_at: r.created_at,
-        updated_at: r.updated_at,
-        times_made: count(mc?.id),
-        last_made_at: max(mc?.created_at),
-      }))
-      .orderBy(({ $selected }) => $selected.last_made_at, {
-        direction: `desc`,
-        nulls: `last`,
-      })
-      .orderBy(({ $selected }) => $selected.times_made, `desc`)
-  }, [])
+  const { data: recipes } = useLiveQuery(recipeCardsCollection)
 
   // Search matches a recipe's name, description, or any of its tag names
   const displayRecipes = useMemo(() => {

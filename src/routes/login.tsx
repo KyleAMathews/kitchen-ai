@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { authClient } from "@/lib/auth-client"
 import { useState } from "react"
+import { useForm } from "@tanstack/react-form"
 import {
   Card,
   Flex,
@@ -18,64 +19,58 @@ export const Route = createFileRoute(`/login`)({
 })
 
 function LoginPage() {
-  const [email, setEmail] = useState(``)
-  const [password, setPassword] = useState(``)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isSocialLoading, setIsSocialLoading] = useState(false)
   const [error, setError] = useState(``)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError(``)
-
-    try {
-      // Try to sign up first (auto-create accounts in dev)
-      let { data, error } = await authClient.signUp.email(
-        {
-          email,
-          password,
-          name: email, // Use email as default name
-        },
-        {
-          onSuccess: () => {
-            window.location.href = `/`
-          },
-        }
-      )
-
-      console.log({ data, error, e: JSON.stringify(error, null, 4) })
-      // If user already exists, try to sign in
-      if (error?.code === `USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL`) {
-        const result = await authClient.signIn.email(
+  const form = useForm({
+    defaultValues: {
+      email: ``,
+      password: ``,
+    },
+    onSubmit: async ({ value }) => {
+      setError(``)
+      try {
+        // Try to sign up first (auto-create accounts in development).
+        let result = await authClient.signUp.email(
           {
-            email,
-            password,
+            email: value.email,
+            password: value.password,
+            name: value.email,
           },
           {
-            onSuccess: async () => {
+            onSuccess: () => {
               window.location.href = `/`
             },
           }
         )
 
-        data = result.data
-        error = result.error
-      }
+        if (result.error?.code === `USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL`) {
+          result = await authClient.signIn.email(
+            {
+              email: value.email,
+              password: value.password,
+            },
+            {
+              onSuccess: () => {
+                window.location.href = `/`
+              },
+            }
+          )
+        }
 
-      if (error) {
-        console.error(`Authentication error:`, error)
-        setError(error.message || `Authentication failed`)
+        if (result.error) {
+          console.error(`Authentication error:`, result.error)
+          setError(result.error.message || `Authentication failed`)
+        }
+      } catch (err) {
+        console.error(`Unexpected error:`, err)
+        setError(`An unexpected error occurred`)
       }
-    } catch (err) {
-      console.error(`Unexpected error:`, err)
-      setError(`An unexpected error occurred`)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+    },
+  })
 
   const handleGoogleSignIn = async () => {
-    setIsLoading(true)
+    setIsSocialLoading(true)
     setError(``)
 
     try {
@@ -87,7 +82,7 @@ function LoginPage() {
     } catch (err) {
       console.error(`Google sign-in error:`, err)
       setError(`Google sign-in failed`)
-      setIsLoading(false)
+      setIsSocialLoading(false)
     }
   }
 
@@ -127,7 +122,7 @@ function LoginPage() {
             <>
               <Button
                 onClick={handleGoogleSignIn}
-                disabled={isLoading}
+                disabled={isSocialLoading}
                 size="3"
                 variant="soft"
                 style={{ width: `100%` }}
@@ -139,25 +134,55 @@ function LoginPage() {
           )}
 
           {process.env.NODE_ENV === `development` && (
-            <form onSubmit={handleSubmit}>
+            <form
+              onSubmit={(event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                form.handleSubmit()
+              }}
+            >
               <Flex direction="column" gap="4">
                 <Flex direction="column" gap="2">
-                  <TextField.Root
-                    placeholder="Email address"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    disabled={isLoading}
-                  />
-                  <TextField.Root
-                    placeholder="Password"
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    disabled={isLoading}
-                  />
+                  <form.Field name="email">
+                    {(field) => (
+                      <form.Subscribe selector={(state) => state.isSubmitting}>
+                        {(isSubmitting) => (
+                          <TextField.Root
+                            name={field.name}
+                            placeholder="Email address"
+                            type="email"
+                            required
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(event) =>
+                              field.handleChange(event.target.value)
+                            }
+                            disabled={isSubmitting}
+                          />
+                        )}
+                      </form.Subscribe>
+                    )}
+                  </form.Field>
+                  <form.Field name="password">
+                    {(field) => (
+                      <form.Subscribe selector={(state) => state.isSubmitting}>
+                        {(isSubmitting) => (
+                          <TextField.Root
+                            name={field.name}
+                            placeholder="Password"
+                            type="password"
+                            required
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(event) =>
+                              field.handleChange(event.target.value)
+                            }
+                            disabled={isSubmitting}
+                          />
+                        )}
+                      </form.Subscribe>
+                    )}
+                  </form.Field>
                 </Flex>
 
                 {error && (
@@ -166,14 +191,18 @@ function LoginPage() {
                   </Callout.Root>
                 )}
 
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  size="3"
-                  style={{ width: `100%` }}
-                >
-                  {isLoading ? `Signing in...` : `Sign in with Email`}
-                </Button>
+                <form.Subscribe selector={(state) => state.isSubmitting}>
+                  {(isSubmitting) => (
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      size="3"
+                      style={{ width: `100%` }}
+                    >
+                      {isSubmitting ? `Signing in...` : `Sign in with Email`}
+                    </Button>
+                  )}
+                </form.Subscribe>
               </Flex>
             </form>
           )}

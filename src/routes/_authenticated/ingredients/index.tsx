@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { useLiveQuery } from "@tanstack/react-db"
+import { eq, ilike, useLiveQuery } from "@tanstack/react-db"
 import { useState, useMemo } from "react"
 import {
   Heading,
@@ -49,25 +49,27 @@ function IngredientsList() {
         .orderBy(({ ingredientsCollection }) => ingredientsCollection.name),
     []
   )
-  const { data: allTags } = useLiveQuery((q) => q.from({ tag: tagsCollection }))
-  const { data: tagLinks } = useLiveQuery((q) =>
-    q.from({ link: ingredientTagsCollection })
+  const query = searchQuery.trim().toLowerCase()
+  const { data: tagMatches } = useLiveQuery(
+    (q) =>
+      query
+        ? q
+            .from({ link: ingredientTagsCollection })
+            .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
+              eq(link.tag_id, tag.id)
+            )
+            .where(({ tag }) => ilike(tag.name, `%${query}%`))
+            .select(({ link }) => ({ ingredient_id: link.ingredient_id }))
+        : undefined,
+    [query]
   )
 
   // Search matches an ingredient's name OR any of its tag names
   const ingredients = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase()
     if (!query) return allIngredients ?? []
 
-    const matchingTagIds = new Set(
-      (allTags ?? [])
-        .filter((tag) => tag.name.toLowerCase().includes(query))
-        .map((tag) => tag.id)
-    )
     const taggedIngredientIds = new Set(
-      (tagLinks ?? [])
-        .filter((link) => matchingTagIds.has(link.tag_id))
-        .map((link) => link.ingredient_id)
+      (tagMatches ?? []).map((match) => match.ingredient_id)
     )
 
     return (allIngredients ?? []).filter(
@@ -75,7 +77,7 @@ function IngredientsList() {
         ingredient.name.toLowerCase().includes(query) ||
         taggedIngredientIds.has(ingredient.id)
     )
-  }, [allIngredients, allTags, tagLinks, searchQuery])
+  }, [allIngredients, query, tagMatches])
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [selectedIngredients, setSelectedIngredients] = useState<Set<string>>(
