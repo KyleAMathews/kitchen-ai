@@ -23,7 +23,7 @@ interface TagInputProps {
  * literal space, so multi-word tags are still possible.
  *
  * New tags are built locally and are NOT saved here — the parent form persists
- * them on submit via persistNewTags, so cancelling leaves no stray tags.
+ * them with their entity links on submit, so cancelling leaves no stray tags.
  */
 export default function TagInput({
   value,
@@ -38,7 +38,6 @@ export default function TagInput({
   const [input, setInput] = useState(``)
   const [open, setOpen] = useState(false)
   const [highlight, setHighlight] = useState(0)
-  const blurTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   // Whether the cursor is in the field. A ref because committing a tag needs to
   // know this synchronously, and because the commit triggered by clicking away
   // must not re-open the dropdown on a field that just lost focus.
@@ -90,7 +89,7 @@ export default function TagInput({
 
   // Turn the current input into a tag: reuse an existing one if it matches,
   // otherwise build a new one. New tags are only saved when the parent form is
-  // submitted (see persistNewTags), so abandoning the form leaves nothing behind.
+  // submitted, so abandoning the form leaves nothing behind.
   const commitInput = () => {
     if (!trimmed) return
 
@@ -217,12 +216,11 @@ export default function TagInput({
             onKeyDown={handleKeyDown}
             onBlur={() => {
               focusedRef.current = false
-              // Delay so a click on a suggestion still registers.
-              blurTimeout.current = setTimeout(() => {
-                setOpen(false)
-                // Clicking away turns any typed text into a tag.
-                commitInput()
-              }, 150)
+              setOpen(false)
+              // Commit before a form submit reads the selected tags. Suggestion
+              // clicks do not blur the input because their mousedown is
+              // prevented below.
+              commitInput()
             }}
             style={{
               flex: 1,
@@ -254,7 +252,6 @@ export default function TagInput({
             // Keep focus on the input so blur-commit doesn't fire mid-click.
             onMouseDown={(e) => {
               e.preventDefault()
-              if (blurTimeout.current) clearTimeout(blurTimeout.current)
             }}
           >
             {suggestions.map((tag, i) => (

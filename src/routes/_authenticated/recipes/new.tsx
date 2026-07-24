@@ -15,7 +15,7 @@ import {
   recipeTagsCollection,
 } from "@/lib/collections"
 import TagInput from "@/components/tag-input"
-import { persistNewTags } from "@/lib/tags"
+import { attachTags } from "@/lib/tags"
 import type { SelectTag } from "@/db/zod-schemas"
 
 export const Route = createFileRoute(`/_authenticated/recipes/new`)({
@@ -85,18 +85,11 @@ function NewRecipe() {
       // Wait for the insert to persist
       await insertResult.isPersisted.promise
 
-      // Save any newly-typed tags first and wait for them to sync — the join
-      // rows below reference them, and the server requires the tag to exist
-      await persistNewTags(selectedTags)
-
-      // Attach the selected tags to the new recipe
-      for (const tag of selectedTags) {
-        recipeTagsCollection.insert({
-          id: crypto.randomUUID(),
-          recipe_id: recipeId,
-          tag_id: tag.id,
-          created_at: new Date(),
-        })
+      if (selectedTags.length > 0) {
+        await attachTags(
+          { entity: `recipe`, entity_id: recipeId },
+          selectedTags
+        ).isPersisted.promise
       }
 
       navigate({ to: `/recipes/$id`, params: { id: recipeId } })

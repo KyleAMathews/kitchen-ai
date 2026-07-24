@@ -10,7 +10,108 @@ import {
 } from "@/db/schema"
 import { eq, and } from "drizzle-orm"
 
+const attachTagsInput = z.object({
+  target: z.discriminatedUnion(`entity`, [
+    z.object({
+      entity: z.literal(`recipe`),
+      entity_id: z.string().uuid(),
+    }),
+    z.object({
+      entity: z.literal(`ingredient`),
+      entity_id: z.string().uuid(),
+    }),
+  ]),
+  new_tags: z.array(
+    z.object({
+      id: z.string().uuid(),
+      name: z.string().trim().min(1).max(50),
+    })
+  ),
+  links: z
+    .array(
+      z.object({
+        id: z.string().uuid(),
+        tag_id: z.string().uuid(),
+      })
+    )
+    .min(1),
+})
+
 export const tagsRouter = router({
+  // Persist all new tags and links for one entity in a single transaction.
+  // The one txid is visible in every Electric shape changed by the transaction.
+  attach: authedProcedure
+    .input(attachTagsInput)
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id
+
+      return await ctx.db.transaction(async (tx) => {
+        if (input.target.entity === `recipe`) {
+          const [recipe] = await tx
+            .select({ id: recipes.id })
+            .from(recipes)
+            .where(
+              and(
+                eq(recipes.id, input.target.entity_id),
+                eq(recipes.user_id, userId)
+              )
+            )
+
+          if (!recipe) {
+            throw new TRPCError({
+              code: `NOT_FOUND`,
+              message: `Recipe not found`,
+            })
+          }
+        } else {
+          const [ingredient] = await tx
+            .select({ id: ingredients.id })
+            .from(ingredients)
+            .where(
+              and(
+                eq(ingredients.id, input.target.entity_id),
+                eq(ingredients.user_id, userId)
+              )
+            )
+
+          if (!ingredient) {
+            throw new TRPCError({
+              code: `NOT_FOUND`,
+              message: `Ingredient not found`,
+            })
+          }
+        }
+
+        if (input.new_tags.length > 0) {
+          await tx.insert(tags).values(
+            input.new_tags.map((tag) => ({
+              ...tag,
+              user_id: userId,
+            }))
+          )
+        }
+
+        if (input.target.entity === `recipe`) {
+          await tx.insert(recipeTags).values(
+            input.links.map((link) => ({
+              ...link,
+              recipe_id: input.target.entity_id,
+            }))
+          )
+        } else {
+          await tx.insert(ingredientTags).values(
+            input.links.map((link) => ({
+              ...link,
+              ingredient_id: input.target.entity_id,
+            }))
+          )
+        }
+
+        const txid = await generateTxId(tx)
+        return { txid }
+      })
+    }),
+
   // Create a tag using the client-generated id.
   //
   // Deliberately a plain insert, not an upsert-on-name. The collection confirms

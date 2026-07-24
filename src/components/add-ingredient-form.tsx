@@ -12,8 +12,7 @@ import {
 } from "@radix-ui/themes"
 import { ingredientsTrackingTypeSchema, type SelectTag } from "@/db/zod-schemas"
 import { trpc } from "@/lib/trpc-client"
-import { ingredientTagsCollection } from "@/lib/collections"
-import { persistNewTags } from "@/lib/tags"
+import { attachTags } from "@/lib/tags"
 import ExpirationDateEdit from "@/components/expiration-date-edit"
 import TagInput from "@/components/tag-input"
 
@@ -59,18 +58,11 @@ export default function AddIngredientForm({
         expiration_date: type !== `pantry_staple` ? expirationDate : undefined,
       })
 
-      // Save any newly-typed tags first and wait for them to sync — the join
-      // rows below reference them, and the server requires the tag to exist
-      await persistNewTags(selectedTags)
-
-      // Attach the selected tags to the new ingredient
-      for (const tag of selectedTags) {
-        ingredientTagsCollection.insert({
-          id: crypto.randomUUID(),
-          ingredient_id: result.ingredient.id,
-          tag_id: tag.id,
-          created_at: new Date(),
-        })
+      if (selectedTags.length > 0) {
+        await attachTags(
+          { entity: `ingredient`, entity_id: result.ingredient.id },
+          selectedTags
+        ).isPersisted.promise
       }
 
       onSuccess?.()
@@ -204,6 +196,9 @@ export default function AddIngredientForm({
       </Flex>
 
       <Flex gap="3" mt="4" justify="end">
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? `Adding...` : `Save`}
+        </Button>
         <Button
           variant="soft"
           color="gray"
@@ -214,9 +209,6 @@ export default function AddIngredientForm({
           disabled={isLoading}
         >
           Cancel
-        </Button>
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? `Adding...` : `Save`}
         </Button>
       </Flex>
     </form>

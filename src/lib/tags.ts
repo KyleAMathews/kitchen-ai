@@ -1,29 +1,83 @@
-import { tagsCollection } from "@/lib/collections"
+import { createOptimisticAction } from "@tanstack/react-db"
+import {
+  tagsCollection,
+  recipeTagsCollection,
+  ingredientTagsCollection,
+} from "@/lib/collections"
 import type { SelectTag } from "@/db/zod-schemas"
+import { trpc } from "@/lib/trpc-client"
+
+type TagTarget =
+  | { entity: `recipe`; entity_id: string }
+  | { entity: `ingredient`; entity_id: string }
+
+interface AttachTagsVariables {
+  target: TagTarget
+  new_tags: SelectTag[]
+  links: Array<{
+    id: string
+    tag_id: string
+    created_at: Date
+  }>
+}
+
+const attachTagsAction = createOptimisticAction<AttachTagsVariables>({
+  onMutate: ({ target, new_tags, links }) => {
+    for (const tag of new_tags) {
+      tagsCollection.insert(tag)
+    }
+
+    if (target.entity === `recipe`) {
+      for (const link of links) {
+        recipeTagsCollection.insert({
+          ...link,
+          recipe_id: target.entity_id,
+        })
+      }
+    } else {
+      for (const link of links) {
+        ingredientTagsCollection.insert({
+          ...link,
+          ingredient_id: target.entity_id,
+        })
+      }
+    }
+  },
+  mutationFn: async ({ target, new_tags, links }) => {
+    const { txid } = await trpc.tags.attach.mutate({
+      target,
+      new_tags: new_tags.map(({ id, name }) => ({ id, name })),
+      links: links.map(({ id, tag_id }) => ({ id, tag_id })),
+    })
+
+    const syncs: Array<Promise<boolean>> = []
+    if (new_tags.length > 0) {
+      syncs.push(tagsCollection.utils.awaitTxId(Number(txid)))
+    }
+    syncs.push(
+      target.entity === `recipe`
+        ? recipeTagsCollection.utils.awaitTxId(Number(txid))
+        : ingredientTagsCollection.utils.awaitTxId(Number(txid))
+    )
+    await Promise.all(syncs)
+  },
+})
 
 /**
- * Saves any tags that don't exist yet, and waits for them to be confirmed.
- *
- * TagInput builds new tags locally without saving them, so abandoning a form
- * never leaves stray tags behind. Call this on save, before writing any
- * recipe_tags/ingredient_tags rows: those tRPC handlers require the tag to
- * exist, so it has to land first.
- *
- * Goes through the collection (insert -> onInsert -> tRPC -> txid -> synced),
- * so the tag is optimistically visible immediately and `isPersisted` resolves
- * only once the write has actually synced back. Awaiting that before writing
- * the join rows is what guarantees the ordering.
- *
- * Ids are client-generated and the server honours them, so the ids here are the
- * real ones. TagInput reuses an existing tag when the name already exists (it
- * syncs the whole global vocabulary), so a duplicate name only happens if two
- * users create it at the same instant — that rejects the insert, which rolls
- * back the optimistic tag and skips the join rows rather than mislinking them.
+ * Optimistically attaches tags to one entity as a single TanStack transaction.
+ * New tags and join rows persist together, and the transaction stays pending
+ * until Electric confirms every affected collection.
  */
-export async function persistNewTags(tags: SelectTag[]): Promise<void> {
-  const newTags = tags.filter((tag) => !tagsCollection.has(tag.id))
+export function attachTags(target: TagTarget, tags: SelectTag[]) {
+  const now = new Date()
 
-  await Promise.all(
-    newTags.map((tag) => tagsCollection.insert(tag).isPersisted.promise)
-  )
+  return attachTagsAction({
+    target,
+    new_tags: tags.filter((tag) => !tagsCollection.has(tag.id)),
+    links: tags.map((tag) => ({
+      id: crypto.randomUUID(),
+      tag_id: tag.id,
+      created_at: now,
+    })),
+  })
 }
