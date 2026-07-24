@@ -9,6 +9,7 @@ import {
   jsonb,
   uniqueIndex,
 } from "drizzle-orm/pg-core"
+import { sql } from "drizzle-orm"
 export * from "./auth-schema"
 import { users } from "./auth-schema"
 
@@ -162,7 +163,7 @@ export const tags = pgTable(
   },
   (table) => [
     // Tags are global: one row per name across all users
-    uniqueIndex(`tags_name_unique`).on(table.name),
+    uniqueIndex(`tags_name_unique`).on(sql`lower(${table.name})`),
   ]
 )
 

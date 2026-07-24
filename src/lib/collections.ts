@@ -109,18 +109,24 @@ export const recipesCollection = createCollection(
     onInsert: async ({ transaction }) => {
       const { modified: newRecipe, metadata } = transaction.mutations[0]
 
-      // pastedText is required for recipe creation
-      const recipeMetadata = metadata as
-        | { pastedText: string; url?: string }
-        | undefined
-      if (!recipeMetadata?.pastedText) {
+      if (
+        typeof metadata !== `object` ||
+        metadata === null ||
+        !(`pastedText` in metadata) ||
+        typeof metadata.pastedText !== `string` ||
+        !metadata.pastedText
+      ) {
         throw new Error(`pastedText is required to create a recipe`)
       }
+      const url =
+        `url` in metadata && typeof metadata.url === `string`
+          ? metadata.url
+          : undefined
 
       const result = await trpc.recipes.create.mutate({
         id: newRecipe.id,
-        pastedText: recipeMetadata.pastedText,
-        url: recipeMetadata.url,
+        pastedText: metadata.pastedText,
+        url,
       })
 
       return { txid: Number(result.txid) }

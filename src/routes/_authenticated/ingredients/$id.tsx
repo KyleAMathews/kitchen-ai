@@ -44,6 +44,8 @@ export const Route = createFileRoute(`/_authenticated/ingredients/$id`)({
   loader: async () => {
     await Promise.all([
       ingredientsCollection.preload(),
+      recipeIngredientsCollection.preload(),
+      recipesCollection.preload(),
       tagsCollection.preload(),
       ingredientTagsCollection.preload(),
     ])

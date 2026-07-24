@@ -25,22 +25,24 @@ const grocerySectionEnum = grocerySectionSchema
 const recipeExtractionSchema = z.object({
   name: z.string().describe(`Recipe name in Title Case`),
   description: z.string().describe(`One sentence description of the recipe`),
-  ingredients: z.array(
-    z.object({
-      listing: z
-        .string()
-        .max(140)
-        .describe(
-          `The complete ingredient line as written (e.g., "2 cups flour, sifted")`
+  ingredients: z
+    .array(
+      z.object({
+        listing: z
+          .string()
+          .max(140)
+          .describe(
+            `The complete ingredient line as written (e.g., "2 cups flour, sifted")`
+          ),
+        extracted_name: z
+          .string()
+          .describe(`Core ingredient name only (e.g., "flour")`),
+        grocery_section: grocerySectionEnum.describe(
+          `Grocery store section. Use the exact values provided (e.g., 'Pantry', 'Meat & Seafood', 'Spices & Baking')`
         ),
-      extracted_name: z
-        .string()
-        .describe(`Core ingredient name only (e.g., "flour")`),
-      grocery_section: grocerySectionEnum.describe(
-        `Grocery store section. Use the exact values provided (e.g., 'Pantry', 'Meat & Seafood', 'Spices & Baking')`
-      ),
-    })
-  ),
+      })
+    )
+    .min(1),
 })
 
 type RecipeExtraction = z.infer<typeof recipeExtractionSchema>

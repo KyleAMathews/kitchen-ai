@@ -12,11 +12,12 @@ import {
 import { UpdateIcon } from "@radix-ui/react-icons"
 import {
   recipesCollection,
+  recipeIngredientsCollection,
   tagsCollection,
   recipeTagsCollection,
 } from "@/lib/collections"
 import TagInput from "@/components/tag-input"
-import { attachTags } from "@/lib/tags"
+import { createRecipe } from "@/lib/create-actions"
 import type { SelectTag } from "@/db/zod-schemas"
 
 export const Route = createFileRoute(`/_authenticated/recipes/new`)({
@@ -24,6 +25,7 @@ export const Route = createFileRoute(`/_authenticated/recipes/new`)({
   loader: async () => {
     return Promise.all([
       recipesCollection.preload(),
+      recipeIngredientsCollection.preload(),
       tagsCollection.preload(),
       recipeTagsCollection.preload(),
     ])
@@ -49,53 +51,35 @@ function Working({
 function NewRecipe() {
   const navigate = useNavigate()
   const [error, setError] = useState(``)
+  const defaultValues: {
+    url: string
+    pastedText: string
+    tags: SelectTag[]
+  } = {
+    url: ``,
+    pastedText: ``,
+    tags: [],
+  }
 
   const form = useForm({
-    defaultValues: {
-      url: ``,
-      pastedText: ``,
-      tags: [] as SelectTag[],
-    },
+    defaultValues,
     onSubmit: async ({ value }) => {
-      if (!value.url.trim() && !value.pastedText.trim()) {
-        setError(`Please provide either a URL or paste recipe text`)
+      if (!value.pastedText.trim()) {
+        setError(`Please paste the recipe text`)
         return
       }
 
       setError(``)
       try {
-        const recipeId = crypto.randomUUID()
-        const insertResult = recipesCollection.insert(
-          {
-            id: recipeId,
-            name: `Processing...`,
-            description: `AI processing in progress`,
-            url: value.url,
-            user_id: ``, // The backend sets this from the session.
-            created_at: new Date(),
-            updated_at: new Date(),
-          },
-          {
-            metadata: {
-              url: value.url,
-              pastedText: value.pastedText,
-            },
-          }
-        )
-
-        await insertResult.isPersisted.promise
-
-        if (value.tags.length > 0) {
-          await attachTags(
-            { entity: `recipe`, entity_id: recipeId },
-            value.tags
-          ).isPersisted.promise
-        }
+        const { id: recipeId, transaction } = createRecipe(value)
+        await transaction.isPersisted.promise
 
         navigate({ to: `/recipes/$id`, params: { id: recipeId } })
       } catch (err) {
         console.error(`Recipe processing error:`, err)
-        setError((err as Error).message || `Failed to process recipe`)
+        setError(
+          err instanceof Error ? err.message : `Failed to process recipe`
+        )
       }
     },
   })
@@ -128,7 +112,7 @@ function NewRecipe() {
               {(field) => (
                 <Flex direction="column" gap="2">
                   <Text as="label" weight="medium">
-                    URL
+                    Source URL (optional)
                   </Text>
                   <TextField.Root
                     name={field.name}
@@ -190,9 +174,7 @@ function NewRecipe() {
 
             <form.Subscribe
               selector={(state) => ({
-                canSubmit:
-                  Boolean(state.values.url.trim()) ||
-                  Boolean(state.values.pastedText.trim()),
+                canSubmit: Boolean(state.values.pastedText.trim()),
                 isSubmitting: state.isSubmitting,
               })}
             >

@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { router, authedProcedure, generateTxId } from "@/lib/trpc"
-import { ingredients } from "@/db/schema"
+import { ingredientTags, ingredients, tags } from "@/db/schema"
 import {
   grocerySectionSchema,
   ingredientsTrackingTypeSchema,
@@ -13,6 +13,7 @@ import OpenAI from "openai"
 import { zodFunction } from "openai/helpers/zod"
 import { getEmbedding } from "@/lib/trpc/ai"
 import { getOpenAIClient } from "@/lib/openai"
+import { newTagInputSchema, tagLinkInputSchema } from "@/lib/trpc/tag-schemas"
 
 // Schema for AI-extracted ingredient info
 const aiIngredientSchema = z.object({
@@ -32,11 +33,14 @@ export const ingredientsRouter = router({
   createWithAI: authedProcedure
     .input(
       z.object({
+        id: z.string().uuid(),
         name: z.string(),
         tracking_type: ingredientsTrackingTypeSchema,
         fill_level: z.number().min(0).max(100).optional().nullable(),
         count: z.number().optional().nullable(),
         expiration_date: z.coerce.date().optional().nullable(),
+        new_tags: z.array(newTagInputSchema),
+        links: z.array(tagLinkInputSchema),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -131,11 +135,10 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
 
       // Save to database
       const result = await ctx.db.transaction(async (tx) => {
-        const txid = await generateTxId(tx)
-
         const [newIngredient] = await tx
           .insert(ingredients)
           .values({
+            id: input.id,
             name: input.name,
             description: parsed.description,
             grocery_section: parsed.grocery_section,
@@ -159,6 +162,25 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
           })
           .returning()
 
+        if (input.new_tags.length > 0) {
+          await tx.insert(tags).values(
+            input.new_tags.map((tag) => ({
+              ...tag,
+              user_id: ctx.session.user.id,
+            }))
+          )
+        }
+
+        if (input.links.length > 0) {
+          await tx.insert(ingredientTags).values(
+            input.links.map((link) => ({
+              ...link,
+              ingredient_id: input.id,
+            }))
+          )
+        }
+
+        const txid = await generateTxId(tx)
         return { ingredient: newIngredient, txid }
       })
 

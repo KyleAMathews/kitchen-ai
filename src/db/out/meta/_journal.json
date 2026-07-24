@@ -57,6 +57,13 @@
       "when": 1784241502511,
       "tag": "0007_moaning_butterfly",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1784930687340,
+      "tag": "0008_tiresome_warbound",
+      "breakpoints": true
     }
   ]
 }

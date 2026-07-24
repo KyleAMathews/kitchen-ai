@@ -1,14 +1,17 @@
 import { z } from "zod"
 import { router, authedProcedure, generateTxId } from "@/lib/trpc"
-import { recipes, recipeIngredients } from "@/db/schema"
+import { recipeTags, recipes, recipeIngredients, tags } from "@/db/schema"
 import { grocerySectionSchema } from "@/db/zod-schemas"
 import { eq, and } from "drizzle-orm"
 import { processRecipeWithAI } from "./ai"
+import { newTagInputSchema, tagLinkInputSchema } from "@/lib/trpc/tag-schemas"
 
 const createRecipeSchema = z.object({
   id: z.string().uuid(),
   url: z.string().optional(),
   pastedText: z.string(), // Required - we'll process this with AI
+  new_tags: z.array(newTagInputSchema).default([]),
+  links: z.array(tagLinkInputSchema).default([]),
 })
 
 const updateRecipeSchema = z.object({
@@ -30,8 +33,6 @@ export const recipesRouter = router({
     .input(createRecipeSchema)
     .mutation(async ({ ctx, input }) => {
       const result = await ctx.db.transaction(async (tx) => {
-        const txid = await generateTxId(tx)
-
         // Create a placeholder recipe first
         const [newRecipe] = await tx
           .insert(recipes)
@@ -55,6 +56,25 @@ export const recipesRouter = router({
           tx // Pass the transaction instead of ctx.db
         )
 
+        if (input.new_tags.length > 0) {
+          await tx.insert(tags).values(
+            input.new_tags.map((tag) => ({
+              ...tag,
+              user_id: ctx.session.user.id,
+            }))
+          )
+        }
+
+        if (input.links.length > 0) {
+          await tx.insert(recipeTags).values(
+            input.links.map((link) => ({
+              ...link,
+              recipe_id: input.id,
+            }))
+          )
+        }
+
+        const txid = await generateTxId(tx)
         return { recipe: newRecipe, txid }
       })
 

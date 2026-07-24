@@ -10,9 +10,12 @@ import {
   Button,
   Callout,
 } from "@radix-ui/themes"
-import type { SelectTag } from "@/db/zod-schemas"
-import { trpc } from "@/lib/trpc-client"
-import { attachTags } from "@/lib/tags"
+import {
+  ingredientsTrackingTypeSchema,
+  type SelectIngredient,
+  type SelectTag,
+} from "@/db/zod-schemas"
+import { createIngredient } from "@/lib/create-actions"
 import ExpirationDateEdit from "@/components/expiration-date-edit"
 import TagInput from "@/components/tag-input"
 
@@ -22,26 +25,41 @@ interface AddIngredientFormProps {
   onSuccess?: () => void
 }
 
+interface AddIngredientFormValues {
+  name: string
+  tracking_type: NonNullable<SelectIngredient[`tracking_type`]>
+  expiration_date: Date
+  fill_level: number
+  count: number
+  tags: SelectTag[]
+}
+
 export default function AddIngredientForm({
   defaultName = ``,
   onClose,
   onSuccess,
 }: AddIngredientFormProps) {
   const [error, setError] = useState<string | null>(null)
+  const defaultValues: AddIngredientFormValues = {
+    name: defaultName,
+    tracking_type: `fill_level`,
+    expiration_date: new Date(),
+    fill_level: 50,
+    count: 1,
+    tags: [],
+  }
 
   const form = useForm({
-    defaultValues: {
-      name: defaultName,
-      tracking_type: `fill_level` as `fill_level` | `count` | `pantry_staple`,
-      expiration_date: new Date(),
-      fill_level: 50,
-      count: 1,
-      tags: [] as SelectTag[],
-    },
+    defaultValues,
     onSubmit: async ({ value }) => {
       setError(null)
       try {
-        const result = await trpc.ingredients.createWithAI.mutate({
+        const expirationDate =
+          value.tracking_type === `pantry_staple`
+            ? new Date(Date.now() + 365 * 10 * 24 * 60 * 60 * 1000)
+            : value.expiration_date
+
+        await createIngredient({
           name: value.name,
           tracking_type: value.tracking_type,
           fill_level:
@@ -51,18 +69,9 @@ export default function AddIngredientForm({
                 ? 100
                 : 0,
           count: value.tracking_type === `count` ? value.count : 0,
-          expiration_date:
-            value.tracking_type !== `pantry_staple`
-              ? value.expiration_date
-              : undefined,
-        })
-
-        if (value.tags.length > 0) {
-          await attachTags(
-            { entity: `ingredient`, entity_id: result.ingredient.id },
-            value.tags
-          ).isPersisted.promise
-        }
+          expiration_date: expirationDate,
+          tags: value.tags,
+        }).isPersisted.promise
 
         onSuccess?.()
         onClose()
@@ -131,7 +140,9 @@ export default function AddIngredientForm({
                         value={field.state.value}
                         name={field.name}
                         onValueChange={(value) =>
-                          field.handleChange(value as typeof field.state.value)
+                          field.handleChange(
+                            ingredientsTrackingTypeSchema.parse(value)
+                          )
                         }
                         disabled={isSubmitting}
                       >

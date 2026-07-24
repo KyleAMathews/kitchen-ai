@@ -22,10 +22,18 @@ function getNetworkIp() {
 
 function getProjectName() {
   try {
-    const packageJson = JSON.parse(
+    const packageJson: unknown = JSON.parse(
       readFileSync(`${process.cwd()}/package.json`, `utf8`)
-    ) as { name?: string }
-    return packageJson.name || `app`
+    )
+    if (
+      typeof packageJson === `object` &&
+      packageJson !== null &&
+      `name` in packageJson &&
+      typeof packageJson.name === `string`
+    ) {
+      return packageJson.name
+    }
+    return `app`
   } catch {
     console.warn(`Could not read package.json; using "app" for the local host`)
     return `app`

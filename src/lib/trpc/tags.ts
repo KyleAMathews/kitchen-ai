@@ -9,6 +9,7 @@ import {
   ingredients,
 } from "@/db/schema"
 import { eq, and } from "drizzle-orm"
+import { newTagInputSchema, tagLinkInputSchema } from "@/lib/trpc/tag-schemas"
 
 const attachTagsInput = z.object({
   target: z.discriminatedUnion(`entity`, [
@@ -21,20 +22,8 @@ const attachTagsInput = z.object({
       entity_id: z.string().uuid(),
     }),
   ]),
-  new_tags: z.array(
-    z.object({
-      id: z.string().uuid(),
-      name: z.string().trim().min(1).max(50),
-    })
-  ),
-  links: z
-    .array(
-      z.object({
-        id: z.string().uuid(),
-        tag_id: z.string().uuid(),
-      })
-    )
-    .min(1),
+  new_tags: z.array(newTagInputSchema),
+  links: z.array(tagLinkInputSchema).min(1),
 })
 
 export const tagsRouter = router({
@@ -124,12 +113,7 @@ export const tagsRouter = router({
   // means two users created it simultaneously: the unique index rejects it, the
   // collection rolls the optimistic tag back, and no join rows are written.
   create: authedProcedure
-    .input(
-      z.object({
-        id: z.string().uuid(),
-        name: z.string().trim().min(1).max(50),
-      })
-    )
+    .input(newTagInputSchema)
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session.user.id
 
