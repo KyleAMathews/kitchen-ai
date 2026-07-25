@@ -16,6 +16,7 @@ import {
 import { tagsCollection } from "@/lib/collections"
 import { authClient } from "@/lib/auth-client"
 import type { SelectTag } from "@/db/zod-schemas"
+import { MAX_TAG_NAME_LENGTH, tagNameSchema } from "@/lib/trpc/tag-schemas"
 
 interface TagInputProps {
   value: SelectTag[]
@@ -81,8 +82,9 @@ export default function TagInput({
   }
 
   const commitInput = () => {
-    const name = input.trim()
-    if (!name) return
+    const parsedName = tagNameSchema.safeParse(input)
+    if (!parsedName.success) return
+    const name = parsedName.data
 
     const existing =
       value.find((tag) => tag.name.toLowerCase() === name.toLowerCase()) ??
@@ -198,6 +200,7 @@ export default function TagInput({
         >
           <Input
             placeholder={value.length === 0 ? placeholder : ``}
+            maxLength={MAX_TAG_NAME_LENGTH}
             onKeyDown={(event) => {
               const isSpace = event.key === ` `
               if (isSpace && event.shiftKey) return

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { eq, ilike, useLiveQuery } from "@tanstack/react-db"
+import { eq, useLiveQuery } from "@tanstack/react-db"
 import { useState, useMemo } from "react"
 import {
   Heading,
@@ -58,7 +58,7 @@ function IngredientsList() {
             .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
               eq(link.tag_id, tag.id)
             )
-            .where(({ tag }) => ilike(tag.name, `%${query}%`))
+            .fn.where(({ tag }) => tag.name.toLowerCase().includes(query))
             .select(({ link }) => ({ ingredient_id: link.ingredient_id }))
         : undefined,
     [query]

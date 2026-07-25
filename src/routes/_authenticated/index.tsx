@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { useMemo } from "react"
-import { useLiveQuery, eq, ilike } from "@tanstack/react-db"
+import { useLiveQuery, eq } from "@tanstack/react-db"
 import { Flex, Heading, Text, TextField } from "@radix-ui/themes"
 import {
   MagnifyingGlassIcon,
@@ -75,7 +75,7 @@ function Dashboard() {
             .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
               eq(link.tag_id, tag.id)
             )
-            .where(({ tag }) => ilike(tag.name, `%${query}%`))
+            .fn.where(({ tag }) => tag.name.toLowerCase().includes(query))
             .select(({ link }) => ({ entity_id: link.recipe_id }))
         : undefined,
     [isSearching, query]
@@ -88,7 +88,7 @@ function Dashboard() {
             .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
               eq(link.tag_id, tag.id)
             )
-            .where(({ tag }) => ilike(tag.name, `%${query}%`))
+            .fn.where(({ tag }) => tag.name.toLowerCase().includes(query))
             .select(({ link }) => ({ entity_id: link.ingredient_id }))
         : undefined,
     [isSearching, query]

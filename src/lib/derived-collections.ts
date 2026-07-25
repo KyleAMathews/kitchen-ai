@@ -3,7 +3,9 @@ import {
   count,
   createLiveQueryCollection,
   eq,
+  isNull,
   max,
+  not,
 } from "@tanstack/react-db"
 import { recipeCommentsCollection, recipesCollection } from "@/lib/collections"
 
@@ -26,6 +28,7 @@ export const recipeCardsCollection = createLiveQueryCollection({
 
     const ratingStats = q
       .from({ comment: recipeCommentsCollection })
+      .where(({ comment }) => not(isNull(comment.rating)))
       .groupBy(({ comment }) => comment.recipe_id)
       .select(({ comment }) => ({
         recipe_id: comment.recipe_id,
