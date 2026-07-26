@@ -257,6 +257,7 @@ export default function AddIngredientForm({
                 type="button"
                 variant="soft"
                 color="gray"
+                onPointerDown={(event) => event.preventDefault()}
                 onClick={onClose}
                 disabled={isSubmitting}
               >

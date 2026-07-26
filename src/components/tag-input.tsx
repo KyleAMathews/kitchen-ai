@@ -187,7 +187,9 @@ export default function TagInput({
           aria-label={label || `Tags`}
           items={suggestions}
           inputValue={input}
-          onInputChange={setInput}
+          onInputChange={(value) =>
+            setInput(value.slice(0, MAX_TAG_NAME_LENGTH))
+          }
           allowsCustomValue
           menuTrigger="focus"
           isDisabled={disabled}

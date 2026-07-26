@@ -158,6 +158,7 @@ function TagEditorDialog({
           <Button
             variant="soft"
             color="gray"
+            onPointerDown={(event) => event.preventDefault()}
             onClick={() => setOpen(false)}
             disabled={saving}
           >
