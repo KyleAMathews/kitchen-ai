@@ -25,6 +25,7 @@ import {
   Checkbox,
   ScrollArea,
   Dialog,
+  AlertDialog,
   TextArea,
   Card,
   Avatar,
@@ -40,7 +41,11 @@ import {
   ingredientsCollection,
   recipeCommentsCollection,
   usersCollection,
+  tagsCollection,
+  recipeTagsCollection,
 } from "@/lib/collections"
+import TagList from "@/components/tag-list"
+import TagEditor from "@/components/tag-editor"
 import {
   cosineSimilarity,
   isExpiredSoon,
@@ -70,6 +75,8 @@ export const Route = createFileRoute(`/_authenticated/recipes/$id`)({
       ingredientsCollection.preload(),
       recipeCommentsCollection.preload(),
       usersCollection.preload(),
+      tagsCollection.preload(),
+      recipeTagsCollection.preload(),
     ])
   },
 })
@@ -98,27 +105,31 @@ function AddIngredientsToShoppingListButton({
           setError(null)
           setWorking(true)
 
-          const createObjects = Object.keys(possibleMatches)
-            .map((ingredient_id: string) => {
-              if (
+          const createObjects = Object.keys(possibleMatches).flatMap(
+            (ingredient_id: string) => {
+              const needsIngredient =
                 checked[ingredient_id] === false ||
                 (typeof checked[ingredient_id] === `undefined` &&
                   possibleMatches[ingredient_id] === null)
-              ) {
-                const ingredient = recipeIngredients.find(
-                  (i) => i.id === ingredient_id
-                )!
-                return {
-                  ingredient: ingredient.listing,
-                  section: ingredient.grocery_section,
-                }
-              }
-            })
-            .filter((i) => i)
+              if (!needsIngredient) return []
+
+              const ingredient = recipeIngredients.find(
+                (item) => item.id === ingredient_id
+              )
+              return ingredient
+                ? [
+                    {
+                      ingredient: ingredient.listing,
+                      section: ingredient.grocery_section,
+                    },
+                  ]
+                : []
+            }
+          )
 
           const checklists = mapValues(
-            groupBy(createObjects, (o) => o?.section),
-            (sectionVals) => sectionVals.map((s) => s?.ingredient)
+            groupBy(createObjects, (item) => item.section),
+            (sectionValues) => sectionValues.map((item) => item.ingredient)
           )
 
           try {
@@ -265,34 +276,34 @@ function RecipeActionsMenu({ recipe }: { recipe: SelectRecipe }) {
         </DropdownMenu.Content>
       </DropdownMenu.Root>
 
-      <Dialog.Root open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <Dialog.Content style={{ maxWidth: 450 }}>
-          <Dialog.Title>Delete Recipe</Dialog.Title>
-          <Dialog.Description size="2" mb="4">
+      <AlertDialog.Root open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialog.Content style={{ maxWidth: 450 }}>
+          <AlertDialog.Title>Delete Recipe</AlertDialog.Title>
+          <AlertDialog.Description size="2" mb="4">
             Are you sure you want to delete "{recipe.name}"? This action cannot
             be undone.
-          </Dialog.Description>
+          </AlertDialog.Description>
 
           <Flex gap="3" mt="4" justify="end">
-            <Button
-              variant="soft"
-              color="gray"
-              onClick={() => setDeleteOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              color="red"
-              onClick={() => {
-                recipesCollection.delete(recipe.id)
-                navigate({ to: `/recipes` })
-              }}
-            >
-              Delete
-            </Button>
+            <AlertDialog.Cancel>
+              <Button variant="soft" color="gray">
+                Cancel
+              </Button>
+            </AlertDialog.Cancel>
+            <AlertDialog.Action>
+              <Button
+                color="red"
+                onClick={() => {
+                  recipesCollection.delete(recipe.id)
+                  navigate({ to: `/recipes` })
+                }}
+              >
+                Delete
+              </Button>
+            </AlertDialog.Action>
           </Flex>
-        </Dialog.Content>
-      </Dialog.Root>
+        </AlertDialog.Content>
+      </AlertDialog.Root>
     </>
   )
 }
@@ -396,6 +407,10 @@ function RecipeDetail() {
             </a>
           </RadixLink>
         )}
+        <Flex gap="1" wrap="wrap" align="center">
+          <TagList entity="recipe" entityId={recipe.id} size="2" />
+          <TagEditor entity="recipe" entityId={recipe.id} />
+        </Flex>
       </Flex>
 
       {recipe.description && (
@@ -472,6 +487,7 @@ function RecipeDetail() {
             const ingredient = recipeIngredients?.find(
               (i) => i.id === ingredient_id
             )
+            if (!ingredient) return null
             const matchedIngred = possibleMatches[ingredient_id]
             // Skip pantry staples here - they'll be shown in their own section
             if (matchedIngred?.tracking_type === `pantry_staple`) {
@@ -503,11 +519,20 @@ function RecipeDetail() {
                   possibleMatches[ingredient_id] !== null))
             )
           })
-          .map((ingredient_id) => ({
-            id: ingredient_id,
-            ingredient: recipeIngredients?.find((i) => i.id === ingredient_id),
-            match: possibleMatches[ingredient_id],
-          }))
+          .flatMap((ingredient_id) => {
+            const ingredient = recipeIngredients?.find(
+              (item) => item.id === ingredient_id
+            )
+            return ingredient
+              ? [
+                  {
+                    id: ingredient_id,
+                    ingredient,
+                    match: possibleMatches[ingredient_id],
+                  },
+                ]
+              : []
+          })
 
         if (pantryStaples.length === 0) return null
 
@@ -591,8 +616,7 @@ function CommentCard({
   const author = users?.find((u) => u.id === comment.user_id)
   const isOwner = session?.user.id === comment.user_id
 
-  const handleEdit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleEdit = () => {
     if (!editComment.trim() && editRating === 0 && !editMadeIt) return
 
     recipeCommentsCollection.update(comment.id, (draft) => {
@@ -611,7 +635,12 @@ function CommentCard({
   if (editing) {
     return (
       <Card>
-        <form onSubmit={handleEdit}>
+        <form
+          onSubmit={(event) => {
+            event.preventDefault()
+            handleEdit()
+          }}
+        >
           <Flex direction="column" gap="3">
             <Flex direction="column" gap="2">
               <Text size="2" weight="medium">
@@ -667,7 +696,7 @@ function CommentCard({
                   if ((e.metaKey || e.ctrlKey) && e.key === `Enter`) {
                     e.preventDefault()
                     if (editComment.trim() || editRating > 0 || editMadeIt) {
-                      handleEdit(e as unknown as React.FormEvent)
+                      handleEdit()
                     }
                   }
                 }}
@@ -823,8 +852,7 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
     })
   }
 
-  const handleSubmitComment = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmitComment = () => {
     if (!comment.trim() && rating === 0 && !madeIt) return
     if (!session?.user.id) return
 
@@ -887,7 +915,12 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
       {/* Comment Form */}
       {showCommentForm && (
         <Card>
-          <form onSubmit={handleSubmitComment}>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault()
+              handleSubmitComment()
+            }}
+          >
             <Flex direction="column" gap="4">
               <Flex direction="column" gap="3">
                 <Text size="2" weight="medium">
@@ -939,7 +972,7 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
                     if ((e.metaKey || e.ctrlKey) && e.key === `Enter`) {
                       e.preventDefault()
                       if (comment.trim() || rating > 0 || madeIt) {
-                        handleSubmitComment(e as unknown as React.FormEvent)
+                        handleSubmitComment()
                       }
                     }
                   }}

@@ -18,6 +18,7 @@ import {
   ScrollArea,
   Select,
   Dialog,
+  AlertDialog,
   DropdownMenu,
   IconButton,
   TextField,
@@ -28,7 +29,11 @@ import {
   ingredientsCollection,
   recipeIngredientsCollection,
   recipesCollection,
+  tagsCollection,
+  ingredientTagsCollection,
 } from "@/lib/collections"
+import TagList from "@/components/tag-list"
+import TagEditor from "@/components/tag-editor"
 import { isRunningLow, cosineSimilarity } from "@/lib/utils"
 import { useMemo } from "react"
 import ExpirationDateEdit from "@/components/expiration-date-edit"
@@ -38,7 +43,13 @@ import { z } from "zod"
 export const Route = createFileRoute(`/_authenticated/ingredients/$id`)({
   component: IngredientDetail,
   loader: async () => {
-    await ingredientsCollection.preload()
+    await Promise.all([
+      ingredientsCollection.preload(),
+      recipeIngredientsCollection.preload(),
+      recipesCollection.preload(),
+      tagsCollection.preload(),
+      ingredientTagsCollection.preload(),
+    ])
   },
 })
 
@@ -119,7 +130,7 @@ function TrackingTypeEditor({
             variant="soft"
             color="gray"
             onClick={() => {
-              setSelectedType(ingredient.tracking_type)
+              setSelectedType(ingredient.tracking_type ?? undefined)
               setOpen(false)
             }}
           >
@@ -252,34 +263,34 @@ function IngredientActionsMenu({
         </DropdownMenu.Content>
       </DropdownMenu.Root>
 
-      <Dialog.Root open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <Dialog.Content style={{ maxWidth: 450 }}>
-          <Dialog.Title>Delete Ingredient</Dialog.Title>
-          <Dialog.Description size="2" mb="4">
+      <AlertDialog.Root open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialog.Content style={{ maxWidth: 450 }}>
+          <AlertDialog.Title>Delete Ingredient</AlertDialog.Title>
+          <AlertDialog.Description size="2" mb="4">
             Are you sure you want to delete "{ingredient.name}"? This action
             cannot be undone.
-          </Dialog.Description>
+          </AlertDialog.Description>
 
           <Flex gap="3" mt="4" justify="end">
-            <Button
-              variant="soft"
-              color="gray"
-              onClick={() => setDeleteOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              color="red"
-              onClick={() => {
-                ingredientsCollection.delete(ingredient.id)
-                navigate({ to: `/ingredients` })
-              }}
-            >
-              Delete
-            </Button>
+            <AlertDialog.Cancel>
+              <Button variant="soft" color="gray">
+                Cancel
+              </Button>
+            </AlertDialog.Cancel>
+            <AlertDialog.Action>
+              <Button
+                color="red"
+                onClick={() => {
+                  ingredientsCollection.delete(ingredient.id)
+                  navigate({ to: `/ingredients` })
+                }}
+              >
+                Delete
+              </Button>
+            </AlertDialog.Action>
           </Flex>
-        </Dialog.Content>
-      </Dialog.Root>
+        </AlertDialog.Content>
+      </AlertDialog.Root>
 
       <EditNameDescriptionDialog
         ingredient={ingredient}
@@ -399,6 +410,10 @@ function IngredientDetail() {
           <Flex justify="between" align="start">
             <Heading size="6">{ingredient.name}</Heading>
             <IngredientActionsMenu ingredient={ingredient} />
+          </Flex>
+          <Flex gap="1" wrap="wrap" align="center">
+            <TagList entity="ingredient" entityId={ingredient.id} size="2" />
+            <TagEditor entity="ingredient" entityId={ingredient.id} />
           </Flex>
         </Flex>
 

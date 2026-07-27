@@ -3,6 +3,8 @@
 @import "@radix-ui/colors/mauve.css";
 @import "@radix-ui/colors/slate.css";
 @import "@radix-ui/colors/violet.css";
+@import "react-date-picker/dist/DatePicker.css";
+@import "react-calendar/dist/Calendar.css";
 
 /* Define a keyframe animation for spinning */
 @keyframes spin {
@@ -126,4 +128,26 @@
 
 .rt-Badge:where(.rt-r-size-1) {
   padding-bottom: 3px;
+}
+
+.expiration-date-picker {
+  width: 100%;
+}
+
+.expiration-date-picker .react-date-picker__wrapper {
+  min-height: var(--space-7);
+  padding: 0 var(--space-2);
+  border: 1px solid var(--gray-a7);
+  border-radius: var(--radius-2);
+  background: var(--color-surface);
+  color: var(--gray-12);
+}
+
+.expiration-date-picker .react-date-picker__inputGroup__input,
+.expiration-date-picker button {
+  color: inherit;
+}
+
+.expiration-date-picker .react-date-picker__calendar {
+  z-index: 30;
 }

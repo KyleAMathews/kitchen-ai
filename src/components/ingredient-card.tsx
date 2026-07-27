@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router"
 import { Flex, Heading, Box, Text, Slider, Badge } from "@radix-ui/themes"
 import { CaretRightIcon } from "@radix-ui/react-icons"
 import type { SelectIngredient } from "@/db/zod-schemas"
+import TagList from "@/components/tag-list"
 
 interface IngredientCardProps {
   ingredient: SelectIngredient
@@ -12,8 +13,6 @@ export default function IngredientCard({ ingredient }: IngredientCardProps) {
   const navigate = useNavigate()
   const expiredDate = new Date(ingredient.expiration_date)
   const expiresInFuture = ingredient.expiration_date > new Date()
-
-  console.log({ ingredient })
 
   return (
     <Flex
@@ -46,6 +45,9 @@ export default function IngredientCard({ ingredient }: IngredientCardProps) {
             Pantry Staple
           </Badge>
         )}
+        <Flex gap="1" wrap="wrap">
+          <TagList entity="ingredient" entityId={ingredient.id} />
+        </Flex>
       </Flex>
       <Flex direction="column" gap="1" ml="auto">
         {ingredient.tracking_type === `fill_level` && (

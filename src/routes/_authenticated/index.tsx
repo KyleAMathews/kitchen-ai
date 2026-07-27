@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
-import { useState } from "react"
-import { useLiveQuery, or, ilike, eq, count, max } from "@tanstack/react-db"
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
+import { useMemo } from "react"
+import { useLiveQuery, eq } from "@tanstack/react-db"
 import { Flex, Heading, Text, TextField } from "@radix-ui/themes"
 import {
   MagnifyingGlassIcon,
@@ -11,24 +11,45 @@ import {
   ingredientsCollection,
   recipesCollection,
   recipeCommentsCollection,
+  tagsCollection,
+  recipeTagsCollection,
+  ingredientTagsCollection,
 } from "@/lib/collections"
 import RecipeCard from "@/components/recipe-card"
 import IngredientCard from "@/components/ingredient-card"
+import { recipeCardsCollection } from "@/lib/derived-collections"
 
 export const Route = createFileRoute(`/_authenticated/`)({
   component: Dashboard,
+  // Search lives in the URL so tag badges can link straight to their results,
+  // and so a search can be shared/bookmarked and survives back/forward.
+  validateSearch: (search: Record<string, unknown>): { q?: string } => {
+    const q = typeof search.q === `string` ? search.q : undefined
+    return q ? { q } : {}
+  },
   loader: async () => {
     await Promise.all([
       recipesCollection.preload(),
       ingredientsCollection.preload(),
       recipeCommentsCollection.preload(),
+      tagsCollection.preload(),
+      recipeTagsCollection.preload(),
+      ingredientTagsCollection.preload(),
     ])
   },
 })
 
 function Dashboard() {
-  const [searchQuery, setSearchQuery] = useState(``)
+  const { q } = Route.useSearch()
+  const navigate = useNavigate({ from: Route.fullPath })
+
+  const searchQuery = q ?? ``
   const isSearching = searchQuery.length > 0
+
+  // `replace` so typing doesn't fill up the history stack
+  const setSearchQuery = (next: string) => {
+    navigate({ search: next ? { q: next } : {}, replace: true })
+  }
 
   const { data: ingredients } = useLiveQuery((q) =>
     q
@@ -44,74 +65,70 @@ function Dashboard() {
     q.from({ ingredientsCollection })
   )
 
-  const { data: searchIngredients } = useLiveQuery(
+  const query = searchQuery.trim().toLowerCase()
+
+  const { data: recipeTagMatches } = useLiveQuery(
     (q) =>
       isSearching
         ? q
-            .from({ ingredientsCollection })
-            .where(({ ingredientsCollection }) =>
-              ilike(ingredientsCollection.name, `%${searchQuery}%`)
+            .from({ link: recipeTagsCollection })
+            .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
+              eq(link.tag_id, tag.id)
             )
-        : q.from({ ingredientsCollection }),
-    [searchQuery]
+            .fn.where(({ tag }) => tag.name.toLowerCase().includes(query))
+            .select(({ link }) => ({ entity_id: link.recipe_id }))
+        : undefined,
+    [isSearching, query]
+  )
+  const { data: ingredientTagMatches } = useLiveQuery(
+    (q) =>
+      isSearching
+        ? q
+            .from({ link: ingredientTagsCollection })
+            .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
+              eq(link.tag_id, tag.id)
+            )
+            .fn.where(({ tag }) => tag.name.toLowerCase().includes(query))
+            .select(({ link }) => ({ entity_id: link.ingredient_id }))
+        : undefined,
+    [isSearching, query]
+  )
+  const taggedRecipeIds = useMemo(
+    () => new Set((recipeTagMatches ?? []).map((match) => match.entity_id)),
+    [recipeTagMatches]
+  )
+  const taggedIngredientIds = useMemo(
+    () => new Set((ingredientTagMatches ?? []).map((match) => match.entity_id)),
+    [ingredientTagMatches]
   )
 
-  // Join recipes with made_it comments to compute times_made and last_made_at
-  // Orders by most recently made, then by times made count
-  const { data: recipes } = useLiveQuery(
-    (q) => {
-      const madeItComments = q
-        .from({ c: recipeCommentsCollection })
-        .where(({ c }) => eq(c.made_it, true))
+  const { data: recipes } = useLiveQuery(recipeCardsCollection)
 
-      let query = q
-        .from({ r: recipesCollection })
-        .leftJoin({ mc: madeItComments }, ({ r, mc }) => eq(r.id, mc.recipe_id))
+  // Search matches a recipe's name, description, or any of its tag names
+  const displayRecipes = useMemo(() => {
+    const list = recipes ?? []
+    if (!isSearching) return list.slice(0, 10)
 
-      if (isSearching) {
-        query = query.where(({ r }) =>
-          or(
-            ilike(r.name, `%${searchQuery}%`),
-            ilike(r.description, `%${searchQuery}%`)
-          )
-        )
-      }
+    return list
+      .filter(
+        (recipe) =>
+          recipe.name.toLowerCase().includes(query) ||
+          (recipe.description ?? ``).toLowerCase().includes(query) ||
+          taggedRecipeIds.has(recipe.id)
+      )
+      .slice(0, 50)
+  }, [recipes, isSearching, query, taggedRecipeIds])
 
-      return query
-        .groupBy(({ r }) => [
-          r.id,
-          r.name,
-          r.description,
-          r.url,
-          r.user_id,
-          r.created_at,
-          r.updated_at,
-        ])
-        .select(({ r, mc }) => ({
-          id: r.id,
-          name: r.name,
-          description: r.description,
-          url: r.url,
-          user_id: r.user_id,
-          created_at: r.created_at,
-          updated_at: r.updated_at,
-          times_made: count(mc?.id),
-          last_made_at: max(mc?.created_at),
-        }))
-        .orderBy(({ $selected }) => $selected.last_made_at, {
-          direction: `desc`,
-          nulls: `last`,
-        })
-        .orderBy(({ $selected }) => $selected.times_made, `desc`)
-        .limit(isSearching ? 50 : 10)
-    },
-    [searchQuery]
-  )
+  // Search matches an ingredient's name or any of its tag names
+  const displayIngredients = useMemo(() => {
+    if (!isSearching) return ingredients ?? []
 
-  const displayRecipes = recipes || []
-  const displayIngredients = isSearching
-    ? searchIngredients || []
-    : ingredients || []
+    return (allIngredients ?? []).filter(
+      (ingredient) =>
+        ingredient.name.toLowerCase().includes(query) ||
+        taggedIngredientIds.has(ingredient.id)
+    )
+  }, [ingredients, allIngredients, isSearching, query, taggedIngredientIds])
 
   return (
     <div className="p-6">

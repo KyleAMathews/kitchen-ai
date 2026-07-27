@@ -1,7 +1,6 @@
-import { spawn, type ChildProcess } from "child_process"
-import { writeFileSync } from "fs"
-import { readFileSync } from "fs"
-import { networkInterfaces } from "os"
+import { spawn, type ChildProcess } from "node:child_process"
+import { readFileSync, writeFileSync } from "node:fs"
+import { networkInterfaces } from "node:os"
 import type { Plugin } from "vite"
 
 interface CaddyPluginOptions {
@@ -9,6 +8,36 @@ interface CaddyPluginOptions {
   encoding?: boolean
   autoStart?: boolean
   configPath?: string
+}
+
+function getNetworkIp() {
+  for (const interfaces of Object.values(networkInterfaces())) {
+    for (const address of interfaces ?? []) {
+      if (address.family === `IPv4` && !address.internal) {
+        return address.address
+      }
+    }
+  }
+}
+
+function getProjectName() {
+  try {
+    const packageJson: unknown = JSON.parse(
+      readFileSync(`${process.cwd()}/package.json`, `utf8`)
+    )
+    if (
+      typeof packageJson === `object` &&
+      packageJson !== null &&
+      `name` in packageJson &&
+      typeof packageJson.name === `string`
+    ) {
+      return packageJson.name
+    }
+    return `app`
+  } catch {
+    console.warn(`Could not read package.json; using "app" for the local host`)
+    return `app`
+  }
 }
 
 export function caddyPlugin(options: CaddyPluginOptions = {}): Plugin {
@@ -20,199 +49,92 @@ export function caddyPlugin(options: CaddyPluginOptions = {}): Plugin {
   } = options
 
   let caddyProcess: ChildProcess | null = null
-  let vitePort: number | undefined
-  let caddyStarted = false
 
-  const generateCaddyfile = (projectName: string, vitePort: number) => {
-    // Get network IP for network access
-    const nets = networkInterfaces()
-    let networkIP = `192.168.1.1` // fallback
-
-    for (const name of Object.keys(nets)) {
-      const netInterfaces = nets[name]
-      if (netInterfaces) {
-        for (const net of netInterfaces) {
-          if (net.family === `IPv4` && !net.internal) {
-            networkIP = net.address
-            break
-          }
-        }
-      }
-    }
-
-    const config = `${projectName}.localhost {
-  reverse_proxy ${host}:${vitePort}${
-    encoding
+  const generateCaddyfile = (
+    projectName: string,
+    vitePort: number,
+    networkIp?: string
+  ) => {
+    const encodingConfig = encoding ? `\n\tencode gzip` : ``
+    const localConfig = `${projectName}.localhost {
+\treverse_proxy ${host}:${vitePort}${encodingConfig}
+}`
+    const networkConfig = networkIp
       ? `
-  encode {
-    gzip
-  }`
-      : ``
-  }
-}
 
 # Network access
-${networkIP} {
-  reverse_proxy ${host}:${vitePort}${
-    encoding
-      ? `
-  encode {
-    gzip
-  }`
+${networkIp} {
+\treverse_proxy ${host}:${vitePort}${encodingConfig}
+}`
       : ``
-  }
-}
-`
-    return config
-  }
 
-  const startCaddy = (configPath: string) => {
-    if (caddyProcess) {
-      return
-    }
-
-    caddyProcess = spawn(`caddy`, [`run`, `--config`, configPath], {
-      // stdio: "inherit",
-      // shell: true,
-    })
-
-    caddyProcess.on(`error`, (error) => {
-      console.error(`Failed to start Caddy:`, error.message)
-    })
-
-    caddyProcess.on(`exit`, (code) => {
-      if (code !== 0 && code !== null) {
-        console.error(`Caddy exited with code ${code}`)
-      }
-      caddyProcess = null
-    })
-
-    // Handle process cleanup
-    const cleanup = () => {
-      if (caddyProcess && !caddyProcess.killed) {
-        caddyProcess.kill(`SIGTERM`)
-        // Force kill if it doesn't terminate gracefully
-        setTimeout(() => {
-          if (caddyProcess && !caddyProcess.killed) {
-            caddyProcess.kill(`SIGKILL`)
-            process.exit()
-          } else {
-            process.exit()
-          }
-        }, 1000)
-      }
-    }
-
-    process.on(`SIGINT`, cleanup)
-    process.on(`SIGTERM`, cleanup)
-    process.on(`exit`, cleanup)
+    return `${localConfig}${networkConfig}\n`
   }
 
   const stopCaddy = () => {
     if (caddyProcess && !caddyProcess.killed) {
       caddyProcess.kill(`SIGTERM`)
-      // Force kill if it doesn't terminate gracefully
-      setTimeout(() => {
-        if (caddyProcess && !caddyProcess.killed) {
-          caddyProcess.kill(`SIGKILL`)
-        }
-      }, 3000)
-      caddyProcess = null
     }
+    caddyProcess = null
   }
 
-  const startCaddyIfReady = (projectName: string) => {
-    if (autoStart && vitePort && !caddyStarted) {
-      caddyStarted = true
-      // Generate Caddyfile
-      const caddyConfig = generateCaddyfile(projectName, vitePort)
-      writeFileSync(configPath, caddyConfig)
-      // Start Caddy
-      startCaddy(configPath)
-    }
+  const startCaddy = (projectName: string, vitePort: number) => {
+    if (!autoStart || caddyProcess) return
+
+    const networkIp = getNetworkIp()
+    writeFileSync(
+      configPath,
+      generateCaddyfile(projectName, vitePort, networkIp)
+    )
+
+    caddyProcess = spawn(`caddy`, [`run`, `--config`, configPath], {
+      stdio: `inherit`,
+    })
+    caddyProcess.once(`error`, (error) => {
+      console.error(`Failed to start Caddy: ${error.message}`)
+    })
+    caddyProcess.once(`exit`, (code, signal) => {
+      if (code && code !== 0) {
+        console.error(`Caddy exited with code ${code}`)
+      } else if (signal && signal !== `SIGTERM`) {
+        console.error(`Caddy exited after ${signal}`)
+      }
+      caddyProcess = null
+    })
   }
 
   return {
     name: `vite-plugin-caddy`,
+    apply: `serve`,
     configureServer(server) {
-      let projectName = `app`
+      const projectName = getProjectName()
+      const networkIp = getNetworkIp()
 
-      // Get project name from package.json
-      try {
-        const packageJsonContent = readFileSync(
-          process.cwd() + `/package.json`,
-          `utf8`
-        )
-        const packageJson = JSON.parse(packageJsonContent)
-        projectName = packageJson.name || `app`
-      } catch (_error) {
-        console.warn(
-          `Could not read package.json for project name, using "app"`
-        )
-      }
-
-      // Override Vite's printUrls function
-      server.printUrls = function () {
-        // Get network IP
-        const nets = networkInterfaces()
-        let networkIP = `192.168.1.1` // fallback
-
-        for (const name of Object.keys(nets)) {
-          const netInterfaces = nets[name]
-          if (netInterfaces) {
-            for (const net of netInterfaces) {
-              if (net.family === `IPv4` && !net.internal) {
-                networkIP = net.address
-                break
-              }
-            }
-          }
-        }
-
+      server.printUrls = () => {
         console.log()
         console.log(`  ➜  Local:   https://${projectName}.localhost/`)
-        console.log(`  ➜  Network: https://${networkIP}/`)
+        if (networkIp) {
+          console.log(`  ➜  Network: https://${networkIp}/`)
+        }
         console.log(`  ➜  press h + enter to show help`)
         console.log()
       }
 
-      server.middlewares.use((_req, _res, next) => {
-        if (!vitePort && server.config.server.port) {
-          vitePort = server.config.server.port
-          startCaddyIfReady(projectName)
+      // Vite may choose a fallback when the requested port is busy. Read the
+      // bound socket after it starts listening so Caddy gets the real port.
+      server.httpServer?.once(`listening`, () => {
+        const address = server.httpServer?.address()
+        if (!address || typeof address === `string`) {
+          console.error(`Could not determine Vite's bound port`)
+          return
         }
-        next()
+        startCaddy(projectName, address.port)
       })
 
-      const originalListen = server.listen
-      server.listen = function (
-        port?: number,
-        ...args: (string | number | (() => void) | undefined)[]
-      ) {
-        if (port) {
-          vitePort = port
-        }
-
-        const result = originalListen.call(this, port, ...args)
-
-        // Try to start Caddy after server is listening
-        if (result && typeof result.then === `function`) {
-          result.then(() => {
-            // Check if we now have a port from the server
-            if (!vitePort && server.config.server.port) {
-              vitePort = server.config.server.port
-            }
-            startCaddyIfReady(projectName)
-          })
-        } else {
-          startCaddyIfReady(projectName)
-        }
-
-        return result
-      }
-    },
-    buildEnd() {
-      stopCaddy()
+      server.httpServer?.once(`close`, stopCaddy)
+      process.once(`SIGINT`, stopCaddy)
+      process.once(`SIGTERM`, stopCaddy)
+      process.once(`exit`, stopCaddy)
     },
   }
 }

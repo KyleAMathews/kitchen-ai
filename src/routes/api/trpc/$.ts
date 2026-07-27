@@ -4,6 +4,7 @@ import { router } from "@/lib/trpc"
 import { ingredientsRouter } from "@/lib/trpc/ingredients"
 import { recipesRouter } from "@/lib/trpc/recipes"
 import { recipeCommentsRouter } from "@/lib/trpc/recipe-comments"
+import { tagsRouter } from "@/lib/trpc/tags"
 import { aiRouter } from "@/lib/trpc/ai"
 import { shoppingListRouter } from "@/lib/trpc/shopping-list"
 import { db } from "@/db/connection"
@@ -13,6 +14,7 @@ export const appRouter = router({
   ingredients: ingredientsRouter,
   recipes: recipesRouter,
   recipeComments: recipeCommentsRouter,
+  tags: tagsRouter,
   ai: aiRouter,
   shoppingList: shoppingListRouter,
 })

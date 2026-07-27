@@ -13,10 +13,13 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as ApiUsersRouteImport } from './routes/api/users'
+import { Route as ApiTagsRouteImport } from './routes/api/tags'
 import { Route as ApiRecipesRouteImport } from './routes/api/recipes'
+import { Route as ApiRecipeTagsRouteImport } from './routes/api/recipe-tags'
 import { Route as ApiRecipeIngredientsRouteImport } from './routes/api/recipe-ingredients'
 import { Route as ApiRecipeCommentsRouteImport } from './routes/api/recipe-comments'
 import { Route as ApiIngredientsRouteImport } from './routes/api/ingredients'
+import { Route as ApiIngredientTagsRouteImport } from './routes/api/ingredient-tags'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as AuthenticatedReviewRouteImport } from './routes/_authenticated/review'
 import { Route as AuthenticatedRecipesIndexRouteImport } from './routes/_authenticated/recipes/index'
@@ -46,9 +49,19 @@ const ApiUsersRoute = ApiUsersRouteImport.update({
   path: '/api/users',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiTagsRoute = ApiTagsRouteImport.update({
+  id: '/api/tags',
+  path: '/api/tags',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiRecipesRoute = ApiRecipesRouteImport.update({
   id: '/api/recipes',
   path: '/api/recipes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRecipeTagsRoute = ApiRecipeTagsRouteImport.update({
+  id: '/api/recipe-tags',
+  path: '/api/recipe-tags',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiRecipeIngredientsRoute = ApiRecipeIngredientsRouteImport.update({
@@ -64,6 +77,11 @@ const ApiRecipeCommentsRoute = ApiRecipeCommentsRouteImport.update({
 const ApiIngredientsRoute = ApiIngredientsRouteImport.update({
   id: '/api/ingredients',
   path: '/api/ingredients',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiIngredientTagsRoute = ApiIngredientTagsRouteImport.update({
+  id: '/api/ingredient-tags',
+  path: '/api/ingredient-tags',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiHealthRoute = ApiHealthRouteImport.update({
@@ -120,10 +138,13 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/review': typeof AuthenticatedReviewRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/ingredient-tags': typeof ApiIngredientTagsRoute
   '/api/ingredients': typeof ApiIngredientsRoute
   '/api/recipe-comments': typeof ApiRecipeCommentsRoute
   '/api/recipe-ingredients': typeof ApiRecipeIngredientsRoute
+  '/api/recipe-tags': typeof ApiRecipeTagsRoute
   '/api/recipes': typeof ApiRecipesRoute
+  '/api/tags': typeof ApiTagsRoute
   '/api/users': typeof ApiUsersRoute
   '/ingredients/$id': typeof AuthenticatedIngredientsIdRoute
   '/recipes/$id': typeof AuthenticatedRecipesIdRoute
@@ -137,10 +158,13 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/review': typeof AuthenticatedReviewRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/ingredient-tags': typeof ApiIngredientTagsRoute
   '/api/ingredients': typeof ApiIngredientsRoute
   '/api/recipe-comments': typeof ApiRecipeCommentsRoute
   '/api/recipe-ingredients': typeof ApiRecipeIngredientsRoute
+  '/api/recipe-tags': typeof ApiRecipeTagsRoute
   '/api/recipes': typeof ApiRecipesRoute
+  '/api/tags': typeof ApiTagsRoute
   '/api/users': typeof ApiUsersRoute
   '/': typeof AuthenticatedIndexRoute
   '/ingredients/$id': typeof AuthenticatedIngredientsIdRoute
@@ -157,10 +181,13 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_authenticated/review': typeof AuthenticatedReviewRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/ingredient-tags': typeof ApiIngredientTagsRoute
   '/api/ingredients': typeof ApiIngredientsRoute
   '/api/recipe-comments': typeof ApiRecipeCommentsRoute
   '/api/recipe-ingredients': typeof ApiRecipeIngredientsRoute
+  '/api/recipe-tags': typeof ApiRecipeTagsRoute
   '/api/recipes': typeof ApiRecipesRoute
+  '/api/tags': typeof ApiTagsRoute
   '/api/users': typeof ApiUsersRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/ingredients/$id': typeof AuthenticatedIngredientsIdRoute
@@ -178,10 +205,13 @@ export interface FileRouteTypes {
     | '/login'
     | '/review'
     | '/api/health'
+    | '/api/ingredient-tags'
     | '/api/ingredients'
     | '/api/recipe-comments'
     | '/api/recipe-ingredients'
+    | '/api/recipe-tags'
     | '/api/recipes'
+    | '/api/tags'
     | '/api/users'
     | '/ingredients/$id'
     | '/recipes/$id'
@@ -195,10 +225,13 @@ export interface FileRouteTypes {
     | '/login'
     | '/review'
     | '/api/health'
+    | '/api/ingredient-tags'
     | '/api/ingredients'
     | '/api/recipe-comments'
     | '/api/recipe-ingredients'
+    | '/api/recipe-tags'
     | '/api/recipes'
+    | '/api/tags'
     | '/api/users'
     | '/'
     | '/ingredients/$id'
@@ -214,10 +247,13 @@ export interface FileRouteTypes {
     | '/login'
     | '/_authenticated/review'
     | '/api/health'
+    | '/api/ingredient-tags'
     | '/api/ingredients'
     | '/api/recipe-comments'
     | '/api/recipe-ingredients'
+    | '/api/recipe-tags'
     | '/api/recipes'
+    | '/api/tags'
     | '/api/users'
     | '/_authenticated/'
     | '/_authenticated/ingredients/$id'
@@ -233,10 +269,13 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
   ApiHealthRoute: typeof ApiHealthRoute
+  ApiIngredientTagsRoute: typeof ApiIngredientTagsRoute
   ApiIngredientsRoute: typeof ApiIngredientsRoute
   ApiRecipeCommentsRoute: typeof ApiRecipeCommentsRoute
   ApiRecipeIngredientsRoute: typeof ApiRecipeIngredientsRoute
+  ApiRecipeTagsRoute: typeof ApiRecipeTagsRoute
   ApiRecipesRoute: typeof ApiRecipesRoute
+  ApiTagsRoute: typeof ApiTagsRoute
   ApiUsersRoute: typeof ApiUsersRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiTrpcSplatRoute: typeof ApiTrpcSplatRoute
@@ -272,11 +311,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiUsersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/tags': {
+      id: '/api/tags'
+      path: '/api/tags'
+      fullPath: '/api/tags'
+      preLoaderRoute: typeof ApiTagsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/recipes': {
       id: '/api/recipes'
       path: '/api/recipes'
       fullPath: '/api/recipes'
       preLoaderRoute: typeof ApiRecipesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/recipe-tags': {
+      id: '/api/recipe-tags'
+      path: '/api/recipe-tags'
+      fullPath: '/api/recipe-tags'
+      preLoaderRoute: typeof ApiRecipeTagsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/recipe-ingredients': {
@@ -298,6 +351,13 @@ declare module '@tanstack/react-router' {
       path: '/api/ingredients'
       fullPath: '/api/ingredients'
       preLoaderRoute: typeof ApiIngredientsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ingredient-tags': {
+      id: '/api/ingredient-tags'
+      path: '/api/ingredient-tags'
+      fullPath: '/api/ingredient-tags'
+      preLoaderRoute: typeof ApiIngredientTagsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/health': {
@@ -394,10 +454,13 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
   ApiHealthRoute: ApiHealthRoute,
+  ApiIngredientTagsRoute: ApiIngredientTagsRoute,
   ApiIngredientsRoute: ApiIngredientsRoute,
   ApiRecipeCommentsRoute: ApiRecipeCommentsRoute,
   ApiRecipeIngredientsRoute: ApiRecipeIngredientsRoute,
+  ApiRecipeTagsRoute: ApiRecipeTagsRoute,
   ApiRecipesRoute: ApiRecipesRoute,
+  ApiTagsRoute: ApiTagsRoute,
   ApiUsersRoute: ApiUsersRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiTrpcSplatRoute: ApiTrpcSplatRoute,

@@ -6,6 +6,9 @@ import {
   selectRecipeIngredientsSchema,
   selectRecipeCommentsSchema,
   selectUsersSchema,
+  selectTagsSchema,
+  selectRecipeTagsSchema,
+  selectIngredientTagsSchema,
 } from "@/db/zod-schemas"
 import { trpc } from "@/lib/trpc-client"
 
@@ -106,18 +109,24 @@ export const recipesCollection = createCollection(
     onInsert: async ({ transaction }) => {
       const { modified: newRecipe, metadata } = transaction.mutations[0]
 
-      // pastedText is required for recipe creation
-      const recipeMetadata = metadata as
-        | { pastedText: string; url?: string }
-        | undefined
-      if (!recipeMetadata?.pastedText) {
+      if (
+        typeof metadata !== `object` ||
+        metadata === null ||
+        !(`pastedText` in metadata) ||
+        typeof metadata.pastedText !== `string` ||
+        !metadata.pastedText
+      ) {
         throw new Error(`pastedText is required to create a recipe`)
       }
+      const url =
+        `url` in metadata && typeof metadata.url === `string`
+          ? metadata.url
+          : undefined
 
       const result = await trpc.recipes.create.mutate({
         id: newRecipe.id,
-        pastedText: recipeMetadata.pastedText,
-        url: recipeMetadata.url,
+        pastedText: metadata.pastedText,
+        url,
       })
 
       return { txid: Number(result.txid) }
@@ -210,6 +219,132 @@ export const recipeCommentsCollection = createCollection(
       const { original: deletedComment } = transaction.mutations[0]
       const result = await trpc.recipeComments.delete.mutate({
         id: deletedComment.id,
+      })
+
+      return { txid: Number(result.txid) }
+    },
+  })
+)
+
+export const tagsCollection = createCollection(
+  electricCollectionOptions({
+    id: `tags`,
+    shapeOptions: {
+      url: new URL(
+        `/api/tags`,
+        typeof window !== `undefined`
+          ? window.location.origin
+          : `http://localhost:5173`
+      ).toString(),
+      parser: {
+        timestamptz: (date: string) => new Date(date),
+      },
+    },
+    schema: selectTagsSchema,
+    getKey: (item) => item.id,
+
+    onInsert: async ({ transaction }) => {
+      const { modified: newTag } = transaction.mutations[0]
+      const result = await trpc.tags.create.mutate({
+        id: newTag.id,
+        name: newTag.name,
+      })
+
+      return { txid: Number(result.txid) }
+    },
+
+    onUpdate: async ({ transaction }) => {
+      const { original, modified } = transaction.mutations[0]
+      const result = await trpc.tags.update.mutate({
+        id: original.id,
+        data: { name: modified.name },
+      })
+
+      return { txid: Number(result.txid) }
+    },
+
+    onDelete: async ({ transaction }) => {
+      const { original: deletedTag } = transaction.mutations[0]
+      const result = await trpc.tags.delete.mutate({
+        id: deletedTag.id,
+      })
+
+      return { txid: Number(result.txid) }
+    },
+  })
+)
+
+export const recipeTagsCollection = createCollection(
+  electricCollectionOptions({
+    id: `recipe_tags`,
+    shapeOptions: {
+      url: new URL(
+        `/api/recipe-tags`,
+        typeof window !== `undefined`
+          ? window.location.origin
+          : `http://localhost:5173`
+      ).toString(),
+      parser: {
+        timestamptz: (date: string) => new Date(date),
+      },
+    },
+    schema: selectRecipeTagsSchema,
+    getKey: (item) => item.id,
+
+    onInsert: async ({ transaction }) => {
+      const { modified: newRecipeTag } = transaction.mutations[0]
+      const result = await trpc.tags.addToRecipe.mutate({
+        id: newRecipeTag.id,
+        recipe_id: newRecipeTag.recipe_id,
+        tag_id: newRecipeTag.tag_id,
+      })
+
+      return { txid: Number(result.txid) }
+    },
+
+    onDelete: async ({ transaction }) => {
+      const { original: deletedRecipeTag } = transaction.mutations[0]
+      const result = await trpc.tags.removeFromRecipe.mutate({
+        id: deletedRecipeTag.id,
+      })
+
+      return { txid: Number(result.txid) }
+    },
+  })
+)
+
+export const ingredientTagsCollection = createCollection(
+  electricCollectionOptions({
+    id: `ingredient_tags`,
+    shapeOptions: {
+      url: new URL(
+        `/api/ingredient-tags`,
+        typeof window !== `undefined`
+          ? window.location.origin
+          : `http://localhost:5173`
+      ).toString(),
+      parser: {
+        timestamptz: (date: string) => new Date(date),
+      },
+    },
+    schema: selectIngredientTagsSchema,
+    getKey: (item) => item.id,
+
+    onInsert: async ({ transaction }) => {
+      const { modified: newIngredientTag } = transaction.mutations[0]
+      const result = await trpc.tags.addToIngredient.mutate({
+        id: newIngredientTag.id,
+        ingredient_id: newIngredientTag.ingredient_id,
+        tag_id: newIngredientTag.tag_id,
+      })
+
+      return { txid: Number(result.txid) }
+    },
+
+    onDelete: async ({ transaction }) => {
+      const { original: deletedIngredientTag } = transaction.mutations[0]
+      const result = await trpc.tags.removeFromIngredient.mutate({
+        id: deletedIngredientTag.id,
       })
 
       return { txid: Number(result.txid) }
