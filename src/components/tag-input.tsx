@@ -1,10 +1,17 @@
-import { useMemo, useRef, useState } from "react"
+import {
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentProps,
+} from "react"
 import { Text, Theme } from "@radix-ui/themes"
 import { Cross2Icon } from "@radix-ui/react-icons"
 import { useLiveQuery } from "@tanstack/react-db"
 import {
   Button,
   ComboBox,
+  ComboBoxStateContext,
   Input,
   ListBox,
   ListBoxItem,
@@ -24,6 +31,14 @@ interface TagInputProps {
   label?: string
   placeholder?: string
   disabled?: boolean
+}
+
+function ReopenableInput(props: ComponentProps<typeof Input>) {
+  const comboBoxState = useContext(ComboBoxStateContext)
+
+  return (
+    <Input {...props} onClick={() => comboBoxState?.open(null, `manual`)} />
+  )
 }
 
 /**
@@ -200,7 +215,7 @@ export default function TagInput({
             minWidth: 120,
           }}
         >
-          <Input
+          <ReopenableInput
             placeholder={value.length === 0 ? placeholder : ``}
             maxLength={MAX_TAG_NAME_LENGTH}
             onKeyDown={(event) => {
