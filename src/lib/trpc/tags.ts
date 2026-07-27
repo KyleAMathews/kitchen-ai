@@ -36,16 +36,13 @@ export const tagsRouter = router({
       const userId = ctx.session.user.id
 
       return await ctx.db.transaction(async (tx) => {
+        // Recipes and ingredients are shared application data. user_id records
+        // provenance; it does not restrict who may change tag assignments.
         if (input.target.entity === `recipe`) {
           const [recipe] = await tx
             .select({ id: recipes.id })
             .from(recipes)
-            .where(
-              and(
-                eq(recipes.id, input.target.entity_id),
-                eq(recipes.user_id, userId)
-              )
-            )
+            .where(eq(recipes.id, input.target.entity_id))
 
           if (!recipe) {
             throw new TRPCError({
@@ -57,12 +54,7 @@ export const tagsRouter = router({
           const [ingredient] = await tx
             .select({ id: ingredients.id })
             .from(ingredients)
-            .where(
-              and(
-                eq(ingredients.id, input.target.entity_id),
-                eq(ingredients.user_id, userId)
-              )
-            )
+            .where(eq(ingredients.id, input.target.entity_id))
 
           if (!ingredient) {
             throw new TRPCError({
@@ -216,17 +208,12 @@ export const tagsRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.session.user.id
-
       return await ctx.db.transaction(async (tx) => {
-        // The recipe must belong to the user; the tag just has to exist,
-        // since tags are global rather than owned.
+        // Recipes, ingredients, and tags are shared across signed-in users.
         const [recipe] = await tx
           .select({ id: recipes.id })
           .from(recipes)
-          .where(
-            and(eq(recipes.id, input.recipe_id), eq(recipes.user_id, userId))
-          )
+          .where(eq(recipes.id, input.recipe_id))
         const [tag] = await tx
           .select({ id: tags.id })
           .from(tags)
@@ -235,7 +222,7 @@ export const tagsRouter = router({
         if (!recipe || !tag) {
           throw new TRPCError({
             code: `NOT_FOUND`,
-            message: `Recipe not found (or not yours), or tag does not exist`,
+            message: `Recipe or tag not found`,
           })
         }
 
@@ -273,20 +260,12 @@ export const tagsRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.session.user.id
-
       return await ctx.db.transaction(async (tx) => {
-        // The ingredient must belong to the user; the tag just has to exist,
-        // since tags are global rather than owned.
+        // Recipes, ingredients, and tags are shared across signed-in users.
         const [ingredient] = await tx
           .select({ id: ingredients.id })
           .from(ingredients)
-          .where(
-            and(
-              eq(ingredients.id, input.ingredient_id),
-              eq(ingredients.user_id, userId)
-            )
-          )
+          .where(eq(ingredients.id, input.ingredient_id))
         const [tag] = await tx
           .select({ id: tags.id })
           .from(tags)
@@ -295,7 +274,7 @@ export const tagsRouter = router({
         if (!ingredient || !tag) {
           throw new TRPCError({
             code: `NOT_FOUND`,
-            message: `Ingredient not found (or not yours), or tag does not exist`,
+            message: `Ingredient or tag not found`,
           })
         }
 
