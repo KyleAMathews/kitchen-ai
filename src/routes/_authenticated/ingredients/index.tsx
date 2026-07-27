@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { eq, useLiveQuery } from "@tanstack/react-db"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useRef } from "react"
+import { UNSAFE_PortalProvider } from "react-aria"
 import {
   Heading,
   Flex,
@@ -37,6 +38,7 @@ export const Route = createFileRoute(`/_authenticated/ingredients/`)({
 
 function IngredientsList() {
   const [searchQuery, setSearchQuery] = useState(``)
+  const addDialogContainerRef = useRef<HTMLDivElement>(null)
 
   const { data: allIngredients } = useLiveQuery(
     (q) =>
@@ -239,9 +241,13 @@ function IngredientsList() {
         )}
 
         <Dialog.Root open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <Dialog.Content maxWidth="450px">
+          <Dialog.Content ref={addDialogContainerRef} maxWidth="450px">
             <Dialog.Title>Add Ingredient</Dialog.Title>
-            <AddIngredientForm onClose={() => setIsAddDialogOpen(false)} />
+            <UNSAFE_PortalProvider
+              getContainer={() => addDialogContainerRef.current}
+            >
+              <AddIngredientForm onClose={() => setIsAddDialogOpen(false)} />
+            </UNSAFE_PortalProvider>
           </Dialog.Content>
         </Dialog.Root>
       </Flex>
