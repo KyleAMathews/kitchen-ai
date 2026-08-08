@@ -25,6 +25,11 @@ const allowedEmails =
   process.env.ALLOWED_EMAILS?.split(`,`).map((e) => e.trim()) || []
 
 export const auth = betterAuth({
+  baseURL:
+    process.env.BETTER_AUTH_URL ||
+    (process.env.NODE_ENV === `production`
+      ? `https://kitchen-ai.fly.dev`
+      : `https://kitchen-ai.localhost`),
   database: drizzleAdapter(db, {
     provider: `pg`,
     usePlural: true,

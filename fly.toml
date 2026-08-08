@@ -11,6 +11,7 @@ primary_region = "lax" # Los Angelas
   release_command = "pnpm run migrate"
 
 [env]
+  BETTER_AUTH_URL = "https://kitchen-ai.fly.dev"
   NODE_ENV = "production"
   PORT = "3000"
   # These will use the Electric Cloud and external Postgres you configure
