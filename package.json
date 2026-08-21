@@ -71,6 +71,9 @@
     "zod": "^4.4.3"
   },
   "pnpm": {
+    "overrides": {
+      "srvx": "0.11.22"
+    },
     "onlyBuiltDependencies": [
       "@parcel/watcher",
       "@prisma/engines",
