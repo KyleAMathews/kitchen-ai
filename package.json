@@ -9,6 +9,7 @@
     "dev": "docker compose up -d && vite dev",
     "start": "node .output/server/index.mjs",
     "build": "vite build",
+    "deploy": "fly deploy --app kitchen-ai",
     "deploy:netlify": "netlify deploy --prod",
     "deploy:netlify:preview": "netlify deploy",
     "migrate": "drizzle-kit migrate",
