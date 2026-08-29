@@ -1,4 +1,4 @@
-import { createCollection } from "@tanstack/react-db"
+import { BasicIndex, createCollection } from "@tanstack/react-db"
 import { electricCollectionOptions } from "@tanstack/electric-db-collection"
 import {
   selectIngredientsSchema,
@@ -351,3 +351,23 @@ export const ingredientTagsCollection = createCollection(
     },
   })
 )
+
+ingredientsCollection.createIndex((row) => row.updated_at, {
+  indexType: BasicIndex,
+  name: `ingredients_updated_at`,
+})
+
+recipeCommentsCollection.createIndex((row) => row.recipe_id, {
+  indexType: BasicIndex,
+  name: `recipe_comments_recipe_id`,
+})
+
+recipeTagsCollection.createIndex((row) => row.tag_id, {
+  indexType: BasicIndex,
+  name: `recipe_tags_tag_id`,
+})
+
+ingredientTagsCollection.createIndex((row) => row.tag_id, {
+  indexType: BasicIndex,
+  name: `ingredient_tags_tag_id`,
+})
