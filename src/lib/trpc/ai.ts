@@ -73,7 +73,7 @@ export async function processRecipeWithAI(
       try {
         const client = getOpenAIClient()
         const response = await client.chat.completions.create({
-          model: `gpt-4o`,
+          model: `gpt-5.6-luna`,
           max_tokens: 2048,
           messages,
           tools: [tool],

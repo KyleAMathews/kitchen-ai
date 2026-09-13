@@ -77,7 +77,7 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
           try {
             const client = getOpenAIClient()
             const response = await client.chat.completions.create({
-              model: `gpt-3.5-turbo-0125`,
+              model: `gpt-5.6-luna`,
               max_tokens: 1024,
               messages,
               tools: [tool],
