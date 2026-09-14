@@ -22,6 +22,8 @@ Kitchen logistics and recipe management. This worktree uses TanStack DB Endpoint
 
 Bind with `const { query, mutation } = endpoints(dbClient)`. Query declarations return bare collections. Mutation actions return a synchronous transaction; use `tx.isPersisted.promise` only when a caller needs confirmation. Apply optimistic changes in `onMutate`; show write errors and let rollback repair guesses. Avoid blocking unrelated controls on a pending write.
 
+Name database mutations with `insert`, `update`, or `delete` to match their operation. Avoid `save` for updates and redundant `Action` suffixes. Keep workflow names when a mutation spans external services, such as `addToShoppingList`.
+
 Authorization remains explicit application code in handlers. Never have the compiler insert or rewrite auth. Dependency analysis covers visible SQL and supported PostgreSQL effects; external JavaScript calls are outside that proof. Schema inspection belongs in compilation, never request handling. Unsupported analysis must preserve full refresh.
 
 Retained collections have full endpoint results. There is no automatic cross-client sync; use explicit refetch or a separate polling/event/sync channel for outside writes. Do not infer external freshness from selective mutation refresh.

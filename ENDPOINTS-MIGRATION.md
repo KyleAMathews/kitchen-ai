@@ -6,7 +6,9 @@ User rows now use Drizzle’s field names (`emailVerified`, `createdAt`, `update
 
 Mutation handlers consume the framework-parsed `req.body`. Validation rules live in each endpoint’s `input` declaration, including tag trimming, UUID checks, protected comment fields, and ingredient fill bounds. Inserts explicitly choose writable fields so optimistic owner/timestamp values do not override server values.
 
-Known framework gap found during this cleanup: a declared input-schema rejection is treated as an unknown mutation outcome. For example, submit `changeTagAssignmentsAction` with a valid recipe target and a new tag whose name is only spaces. The action rejects, but subsequent reconciliation can throw `Mutation outcome is unknown; authoritative reconciliation requires server closure evidence`. This needs a framework fix for validation failures before handler execution; it is not covered by the passing valid-mutation results below.
+Known framework gap found during this cleanup: a declared input-schema rejection is treated as an unknown mutation outcome. For example, submit `updateTagAssignments` with a valid recipe target and a new tag whose name is only spaces. The action rejects, but subsequent reconciliation can throw `Mutation outcome is unknown; authoritative reconciliation requires server closure evidence`. This needs a framework fix for validation failures before handler execution; it is not covered by the passing valid-mutation results below.
+
+Mutation names now reflect their operations: `updateIngredient`, `updateComment`, `insertIngredient`, `insertRecipe`, `insertComment`, and the existing deletes. `updateTagAssignments` updates a relationship set through inserts/deletes. `addToShoppingList` retains its workflow name because it calls Trello before updating ingredient counters. UI helpers and oracle references use the same names.
 
 Validation in this pass:
 

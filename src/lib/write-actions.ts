@@ -18,7 +18,7 @@ export function updateIngredient(
   const kitchen = getKitchen()
   const row = kitchen.ingredientsCollection.get(id)
   if (!row) throw new Error(`Ingredient not found`)
-  return kitchen.saveIngredient({ id, data: changed(row, update) })
+  return kitchen.updateIngredient({ id, data: changed(row, update) })
 }
 export function updateComment(
   id: string,
@@ -27,5 +27,5 @@ export function updateComment(
   const kitchen = getKitchen()
   const row = kitchen.recipeCommentsCollection.get(id)
   if (!row) throw new Error(`Comment not found`)
-  return kitchen.saveComment({ id, data: changed(row, update) })
+  return kitchen.updateComment({ id, data: changed(row, update) })
 }

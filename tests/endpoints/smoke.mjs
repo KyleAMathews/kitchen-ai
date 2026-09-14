@@ -78,7 +78,7 @@ try {
           .filter(([name]) => name.endsWith(`Collection`))
           .map(([, c]) => c.preload())
       )
-      const tx = k.saveIngredient({ id: ingredient, data: { count: 2 } })
+      const tx = k.updateIngredient({ id: ingredient, data: { count: 2 } })
       const optimistic = k.ingredientsCollection.get(ingredient).count
       await tx.isPersisted.promise
       return {
@@ -170,7 +170,7 @@ try {
           )
         ).getKitchen(),
         now = new Date()
-      const tx = k.changeTagAssignmentsAction({
+      const tx = k.updateTagAssignments({
         target: { entity: `ingredient`, entity_id: ingredient },
         new_tags: [{ id: tag, name: tag, user_id: user, created_at: now }],
         links: [{ id: link, tag_id: tag, created_at: now }],
@@ -222,7 +222,7 @@ try {
           `/src/lib/collections.ts`
       )
     ).getKitchen()
-    const tx = k.saveIngredient({ id, data: { count: 99 } })
+    const tx = k.updateIngredient({ id, data: { count: 99 } })
     if (k.ingredientsCollection.get(id).count !== 99)
       throw Error(`Optimistic rejected update missing`)
     try {
@@ -244,8 +244,8 @@ try {
           `/src/lib/collections.ts`
       )
     ).getKitchen()
-    const a = k.saveIngredient({ id, data: { count: 4 } }),
-      b = k.saveIngredient({ id, data: { count: 5 } })
+    const a = k.updateIngredient({ id, data: { count: 4 } }),
+      b = k.updateIngredient({ id, data: { count: 5 } })
     await Promise.all([a.isPersisted.promise, b.isPersisted.promise])
   }, ingredient)
   await assertAllCollections()
@@ -288,7 +288,7 @@ try {
                 `/src/lib/collections.ts`
             )
           ).getKitchen()
-          const tx = k.saveIngredient({ id, data: { count } })
+          const tx = k.updateIngredient({ id, data: { count } })
           if (k.ingredientsCollection.get(id).count !== count)
             throw Error(`Optimistic count mismatch`)
           await tx.isPersisted.promise

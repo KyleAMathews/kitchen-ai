@@ -13,7 +13,7 @@ import {
 import { UpdateIcon } from "@radix-ui/react-icons"
 
 import TagInput from "@/components/tag-input"
-import { createRecipe } from "@/lib/create-actions"
+import { insertRecipe } from "@/lib/insert-actions"
 import type { SelectTag } from "@/db/zod-schemas"
 
 export const Route = createFileRoute(`/_authenticated/recipes/new`)({
@@ -67,7 +67,7 @@ function NewRecipe() {
 
       setError(``)
       try {
-        const { id: recipeId, transaction } = createRecipe(value)
+        const { id: recipeId, transaction } = insertRecipe(value)
         await transaction.isPersisted.promise
 
         navigate({ to: `/recipes/$id`, params: { id: recipeId } })

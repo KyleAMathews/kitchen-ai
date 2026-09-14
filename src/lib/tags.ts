@@ -35,7 +35,7 @@ interface CurrentTagLink {
  * Replaces the tag assignments for one recipe or ingredient as one optimistic
  * transaction. Returns null when the selection did not change.
  */
-export function changeTagAssignments(
+export function updateTagAssignments(
   target: TagTarget,
   currentLinks: CurrentTagLink[],
   selectedTags: SelectTag[]
@@ -51,7 +51,7 @@ export function changeTagAssignments(
     return null
   }
 
-  return getKitchen().changeTagAssignmentsAction({
+  return getKitchen().updateTagAssignments({
     target,
     removed_link_ids,
     ...prepareTagWrites(addedTags),

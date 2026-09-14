@@ -6,7 +6,7 @@ import { UNSAFE_PortalProvider } from "react-aria"
 import { eq, useLiveQuery } from "@tanstack/react-db"
 import type { SelectTag } from "@/db/zod-schemas"
 
-import { changeTagAssignments, type TagTarget } from "@/lib/tags"
+import { updateTagAssignments, type TagTarget } from "@/lib/tags"
 import TagInput from "@/components/tag-input"
 
 interface TagEditorProps {
@@ -99,7 +99,7 @@ function TagEditorDialog({
     setError(null)
 
     try {
-      const transaction = changeTagAssignments(
+      const transaction = updateTagAssignments(
         target,
         currentRows.map((row) => ({
           id: row.link_id,

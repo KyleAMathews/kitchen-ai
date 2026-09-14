@@ -15,7 +15,7 @@ import {
   type SelectIngredient,
   type SelectTag,
 } from "@/db/zod-schemas"
-import { createIngredient } from "@/lib/create-actions"
+import { insertIngredient } from "@/lib/insert-actions"
 import ExpirationDateEdit from "@/components/expiration-date-edit"
 import TagInput from "@/components/tag-input"
 
@@ -59,7 +59,7 @@ export default function AddIngredientForm({
             ? new Date(Date.now() + 365 * 10 * 24 * 60 * 60 * 1000)
             : value.expiration_date
 
-        await createIngredient({
+        await insertIngredient({
           name: value.name,
           tracking_type: value.tracking_type,
           fill_level:

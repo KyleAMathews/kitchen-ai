@@ -2,7 +2,7 @@ import type { SelectIngredient, SelectTag } from "@/db/zod-schemas"
 import { getKitchen } from "./collections"
 import { prepareTagWrites } from "./tags"
 type TrackingType = NonNullable<SelectIngredient[`tracking_type`]>
-interface CreateIngredientInput {
+interface InsertIngredientInput {
   name: string
   tracking_type: TrackingType
   fill_level: number
@@ -11,7 +11,7 @@ interface CreateIngredientInput {
   tags: SelectTag[]
 }
 
-export function createIngredient(input: CreateIngredientInput) {
+export function insertIngredient(input: InsertIngredientInput) {
   const now = new Date()
   const id = crypto.randomUUID()
   const ingredient: SelectIngredient & { tracking_type: TrackingType } = {
@@ -31,21 +31,21 @@ export function createIngredient(input: CreateIngredientInput) {
     updated_at: now,
   }
 
-  return getKitchen().createIngredientAction({
+  return getKitchen().insertIngredient({
     ingredient,
     ...prepareTagWrites(input.tags),
   })
 }
 
-interface CreateRecipeInput {
+interface InsertRecipeInput {
   url: string
   pastedText: string
   tags: SelectTag[]
 }
 
-export function createRecipe(input: CreateRecipeInput) {
+export function insertRecipe(input: InsertRecipeInput) {
   const id = crypto.randomUUID()
-  const transaction = getKitchen().createRecipeAction({
+  const transaction = getKitchen().insertRecipe({
     id,
     url: input.url,
     pastedText: input.pastedText,

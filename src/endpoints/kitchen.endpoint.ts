@@ -105,7 +105,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
       return res.json(rows)
     },
   })
-  const saveIngredient = mutation({
+  const updateIngredient = mutation({
     input: z.object({ id: z.string(), data: updateIngredientsSchema }),
     onMutate({ input }) {
       ingredientsCollection.update(input.id, (draft) => {
@@ -138,7 +138,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
       return res.json(result)
     },
   })
-  const saveComment = mutation({
+  const updateComment = mutation({
     input: z.object({
       id: z.string().uuid(),
       data: updateRecipeCommentsSchema.omit({
@@ -305,7 +305,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
       )
     },
   })
-  const createIngredientAction = mutation({
+  const insertIngredient = mutation({
     input: tagWritesSchema.extend({
       ingredient: selectIngredientsSchema.extend({
         tracking_type: z.enum([`fill_level`, `count`, `pantry_staple`]),
@@ -382,7 +382,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
       return res.json(result)
     },
   })
-  const createRecipeAction = mutation({
+  const insertRecipe = mutation({
     input: tagWritesSchema.extend({
       id: z.string().uuid(),
       url: z.string(),
@@ -467,7 +467,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
       return res.json(result)
     },
   })
-  const changeTagAssignmentsAction = mutation({
+  const updateTagAssignments = mutation({
     input: tagWritesSchema.extend({
       target: tagTargetSchema,
       removed_link_ids: z.array(z.string().uuid()),
@@ -639,15 +639,15 @@ export function createKitchenEndpoints(dbClient: DbClient) {
     tagsCollection,
     recipeTagsCollection,
     ingredientTagsCollection,
-    saveIngredient,
-    saveComment,
+    updateIngredient,
+    updateComment,
     deleteIngredient,
     deleteRecipe,
     deleteComment,
     insertComment,
-    createIngredientAction,
-    createRecipeAction,
-    changeTagAssignmentsAction,
+    insertIngredient,
+    insertRecipe,
+    updateTagAssignments,
     addToShoppingList,
   }
 }
