@@ -23,6 +23,7 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
     "test:endpoints": "node tests/endpoints/smoke.mjs",
+    "test:endpoints:compiled": "node tests/endpoints/compiled.mjs",
     "schema:compile": "node /Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/compile-schema.mjs src/db/connection.ts",
     "predev": "pnpm schema:compile",
     "prebuild": "pnpm schema:compile"

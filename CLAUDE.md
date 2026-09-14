@@ -9,6 +9,7 @@ Kitchen logistics and recipe management. This worktree uses TanStack DB Endpoint
 - `pnpm typecheck`: check application types.
 - `pnpm lint`: format and lint; run targeted lint after edits.
 - `pnpm migrate`: apply Drizzle migrations to the configured database.
+- `pnpm test:endpoints:compiled`: run the application SQL smoke test with stubbed external services against disposable PostgreSQL.
 - `pnpm test:endpoints`: run the real-session browser checks against the disposable test database and a server on port 4196.
 
 ## Architecture
