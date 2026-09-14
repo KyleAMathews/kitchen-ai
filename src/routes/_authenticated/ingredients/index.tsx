@@ -1,4 +1,9 @@
-import { getKitchen } from "@/lib/collections"
+import {
+  addToShoppingList,
+  ingredientTagsCollection,
+  ingredientsCollection,
+  tagsCollection,
+} from "@/endpoints/kitchen.endpoint"
 import { createFileRoute } from "@tanstack/react-router"
 import { eq, useLiveQuery } from "@tanstack/react-db"
 import { useState, useMemo, useRef } from "react"
@@ -25,9 +30,9 @@ export const Route = createFileRoute(`/_authenticated/ingredients/`)({
   component: IngredientsList,
   loader: async () => {
     await Promise.all([
-      getKitchen().ingredientsCollection.preload(),
-      getKitchen().tagsCollection.preload(),
-      getKitchen().ingredientTagsCollection.preload(),
+      ingredientsCollection.preload(),
+      tagsCollection.preload(),
+      ingredientTagsCollection.preload(),
     ])
   },
 })
@@ -39,7 +44,7 @@ function IngredientsList() {
   const { data: allIngredients } = useLiveQuery(
     (q) =>
       q
-        .from({ ingredientsCollection: getKitchen().ingredientsCollection })
+        .from({ ingredientsCollection: ingredientsCollection })
         .orderBy(
           ({ ingredientsCollection }) => ingredientsCollection.trello_add_count,
           `desc`
@@ -52,8 +57,8 @@ function IngredientsList() {
     (q) =>
       query
         ? q
-            .from({ link: getKitchen().ingredientTagsCollection })
-            .innerJoin({ tag: getKitchen().tagsCollection }, ({ link, tag }) =>
+            .from({ link: ingredientTagsCollection })
+            .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
               eq(link.tag_id, tag.id)
             )
             .fn.where(({ tag }) => tag.name.toLowerCase().includes(query))
@@ -107,7 +112,7 @@ function IngredientsList() {
       // Extract ingredient IDs for tracking
       const ingredientIds = selectedIngredientsList.map((i) => i.id)
 
-      await getKitchen().addToShoppingList({
+      await addToShoppingList({
         recipeName: `Manual Ingredients`,
         checklists,
         ingredientIds,

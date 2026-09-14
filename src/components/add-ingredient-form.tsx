@@ -1,3 +1,4 @@
+import { prepareTagWrites } from "@/lib/tags"
 import { useState } from "react"
 import { useForm } from "@tanstack/react-form"
 import {
@@ -15,7 +16,7 @@ import {
   type SelectIngredient,
   type SelectTag,
 } from "@/db/zod-schemas"
-import { insertIngredient } from "@/lib/insert-actions"
+import { insertIngredient } from "@/endpoints/kitchen.endpoint"
 import ExpirationDateEdit from "@/components/expiration-date-edit"
 import TagInput from "@/components/tag-input"
 
@@ -60,17 +61,20 @@ export default function AddIngredientForm({
             : value.expiration_date
 
         await insertIngredient({
-          name: value.name,
-          tracking_type: value.tracking_type,
-          fill_level:
-            value.tracking_type === `fill_level`
-              ? value.fill_level
-              : value.tracking_type === `pantry_staple`
-                ? 100
-                : 0,
-          count: value.tracking_type === `count` ? value.count : 0,
-          expiration_date: expirationDate,
-          tags: value.tags,
+          ingredient: {
+            id: crypto.randomUUID(),
+            name: value.name,
+            tracking_type: value.tracking_type,
+            fill_level:
+              value.tracking_type === `fill_level`
+                ? value.fill_level
+                : value.tracking_type === `pantry_staple`
+                  ? 100
+                  : 0,
+            count: value.tracking_type === `count` ? value.count : 0,
+            expiration_date: expirationDate,
+          },
+          ...prepareTagWrites(value.tags),
         }).isPersisted.promise
 
         onSuccess?.()

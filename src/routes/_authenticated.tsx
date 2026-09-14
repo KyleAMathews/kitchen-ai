@@ -1,4 +1,3 @@
-import { initializeKitchen } from "@/lib/collections"
 import { createFileRoute, redirect, Link } from "@tanstack/react-router"
 import { Outlet } from "@tanstack/react-router"
 import { authClient, authStateCollection } from "@/lib/auth-client"
@@ -12,7 +11,6 @@ export const Route = createFileRoute(`/_authenticated`)({
       authStateCollection.get(`auth`) &&
       authStateCollection.get(`auth`)?.session.expiresAt > new Date()
     ) {
-      await initializeKitchen(authStateCollection.get(`auth`)!.user.id)
       return authStateCollection.get(`auth`)!
     } else {
       const result = await authClient.getSession()
@@ -26,7 +24,6 @@ export const Route = createFileRoute(`/_authenticated`)({
         session: result.data.session,
         user: result.data.user,
       })
-      await initializeKitchen(result.data.user.id)
       return result.data
     }
   },

@@ -1,6 +1,6 @@
+import { tagsCollection } from "@/endpoints/kitchen.endpoint"
 import type { TagWrites } from "@/endpoints/schemas"
 import type { SelectTag } from "@/db/zod-schemas"
-import { getKitchen } from "./collections"
 export type TagTarget =
   | { entity: `recipe`; entity_id: string }
   | { entity: `ingredient`; entity_id: string }
@@ -8,7 +8,7 @@ export type TagTarget =
 export function prepareTagWrites(tags: SelectTag[]): TagWrites {
   return {
     new_tags: tags
-      .filter((tag) => !getKitchen().tagsCollection.has(tag.id))
+      .filter((tag) => !tagsCollection.has(tag.id))
       .map(({ id, name }) => ({ id, name })),
     links: tags.map((tag) => ({
       id: crypto.randomUUID(),
@@ -23,10 +23,10 @@ interface CurrentTagLink {
 }
 
 /**
- * Replaces the tag assignments for one recipe or ingredient as one optimistic
- * transaction. Returns null when the selection did not change.
+ * Builds tag changes for one recipe or ingredient.
+ * Returns null when the selection did not change.
  */
-export function updateTagAssignments(
+export function prepareTagAssignments(
   target: TagTarget,
   currentLinks: CurrentTagLink[],
   selectedTags: SelectTag[]
@@ -42,9 +42,9 @@ export function updateTagAssignments(
     return null
   }
 
-  return getKitchen().updateTagAssignments({
+  return {
     target,
     removed_link_ids,
     ...prepareTagWrites(addedTags),
-  })
+  }
 }

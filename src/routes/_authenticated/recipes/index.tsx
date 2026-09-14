@@ -1,4 +1,10 @@
-import { getKitchen } from "@/lib/collections"
+import {
+  recipeCommentsCollection,
+  recipeTagsCollection,
+  recipesCollection,
+  tagsCollection,
+} from "@/endpoints/kitchen.endpoint"
+import { recipeCardsCollection } from "@/lib/derived-collections"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { useLiveQuery } from "@tanstack/react-db"
 import { Flex, Heading, Text } from "@radix-ui/themes"
@@ -9,16 +15,16 @@ export const Route = createFileRoute(`/_authenticated/recipes/`)({
   component: Recipes,
   loader: async () => {
     await Promise.all([
-      getKitchen().recipesCollection.preload(),
-      getKitchen().recipeCommentsCollection.preload(),
-      getKitchen().tagsCollection.preload(),
-      getKitchen().recipeTagsCollection.preload(),
+      recipesCollection.preload(),
+      recipeCommentsCollection.preload(),
+      tagsCollection.preload(),
+      recipeTagsCollection.preload(),
     ])
   },
 })
 
 function Recipes() {
-  const { data: recipes } = useLiveQuery(getKitchen().recipeCardsCollection)
+  const { data: recipes } = useLiveQuery(recipeCardsCollection)
 
   return (
     <div className="p-6">

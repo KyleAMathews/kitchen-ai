@@ -1,4 +1,9 @@
-import { getKitchen } from "@/lib/collections"
+import {
+  ingredientTagsCollection,
+  recipeTagsCollection,
+  tagsCollection,
+  updateTagAssignments,
+} from "@/endpoints/kitchen.endpoint"
 import { useMemo, useState } from "react"
 import { Pencil1Icon, PlusIcon } from "@radix-ui/react-icons"
 import { Button, Callout, Dialog, Flex } from "@radix-ui/themes"
@@ -6,7 +11,7 @@ import { UNSAFE_PortalProvider } from "react-aria"
 import { eq, useLiveQuery } from "@tanstack/react-db"
 import type { SelectTag } from "@/db/zod-schemas"
 
-import { updateTagAssignments, type TagTarget } from "@/lib/tags"
+import { prepareTagAssignments, type TagTarget } from "@/lib/tags"
 import TagInput from "@/components/tag-input"
 
 interface TagEditorProps {
@@ -19,8 +24,8 @@ export default function TagEditor({ entity, entityId }: TagEditorProps) {
     (q) =>
       entity === `recipe`
         ? q
-            .from({ link: getKitchen().recipeTagsCollection })
-            .innerJoin({ tag: getKitchen().tagsCollection }, ({ link, tag }) =>
+            .from({ link: recipeTagsCollection })
+            .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
               eq(link.tag_id, tag.id)
             )
             .where(({ link }) => eq(link.recipe_id, entityId))
@@ -38,8 +43,8 @@ export default function TagEditor({ entity, entityId }: TagEditorProps) {
     (q) =>
       entity === `ingredient`
         ? q
-            .from({ link: getKitchen().ingredientTagsCollection })
-            .innerJoin({ tag: getKitchen().tagsCollection }, ({ link, tag }) =>
+            .from({ link: ingredientTagsCollection })
+            .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
               eq(link.tag_id, tag.id)
             )
             .where(({ link }) => eq(link.ingredient_id, entityId))
@@ -99,7 +104,7 @@ function TagEditorDialog({
     setError(null)
 
     try {
-      const transaction = updateTagAssignments(
+      const input = prepareTagAssignments(
         target,
         currentRows.map((row) => ({
           id: row.link_id,
@@ -107,7 +112,7 @@ function TagEditorDialog({
         })),
         selectedTags
       )
-      await transaction?.isPersisted.promise
+      if (input) await updateTagAssignments(input).isPersisted.promise
       setOpen(false)
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : `Failed to save tags`)

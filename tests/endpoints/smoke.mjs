@@ -23,6 +23,24 @@ page.on(`request`, (request) => {
 page.on(`pageerror`, (error) => errors.push(error.message))
 try {
   await database.connect()
+  await page.goto(url + `/login`)
+  await page.getByRole(`heading`, { name: `Welcome to Kitchen AI` }).waitFor()
+  console.log(JSON.stringify({ stage: `anonymous-page`, errors }))
+  const imported = await page.evaluate(async () => {
+    const first = await import(`/src/endpoints/kitchen.endpoint.ts`)
+    const second = await import(`/src/endpoints/kitchen.endpoint.ts`)
+    return {
+      same: first.ingredientsCollection === second.ingredientsCollection,
+      status: first.ingredientsCollection.status,
+    }
+  })
+  console.log(JSON.stringify({ stage: `anonymous-import`, imported }))
+  assert.deepEqual(imported, { same: true, status: `idle` })
+  assert.equal(
+    requests.length,
+    0,
+    `importing endpoints before login must not dispatch reads`
+  )
   const signup = await context.request.post(url + `/api/auth/sign-up/email`, {
     data: {
       name: `Endpoint Test`,
@@ -48,9 +66,41 @@ try {
     [recipe, user.id]
   )
   await page.goto(url)
+  console.log(
+    JSON.stringify({ stage: `authenticated-page`, url: page.url(), errors })
+  )
   await page
     .getByRole(`button`, { name: `Sign out` })
     .waitFor({ timeout: 30000 })
+    .catch(async (error) => {
+      console.log(
+        JSON.stringify(
+          await page.evaluate(async () => {
+            const endpoints = await import(`/src/endpoints/kitchen.endpoint.ts`)
+            const { authStateCollection } = await import(
+              `/src/lib/auth-client.ts`
+            )
+            return {
+              text: document.body.innerText,
+              auth: [...authStateCollection.values()].map((row) => ({
+                id: row.id,
+                user: row.user?.id,
+                session: !!row.session,
+              })),
+              collections: Object.entries(endpoints)
+                .filter(([name]) => name.endsWith(`Collection`))
+                .map(([name, c]) => ({
+                  name,
+                  status: c.status,
+                  size: c.size,
+                  error: c.utils.lastError,
+                })),
+            }
+          })
+        )
+      )
+      throw error
+    })
   console.log(
     JSON.stringify({
       stage: `loaded`,
@@ -59,20 +109,20 @@ try {
         performance
           .getEntriesByType(`resource`)
           .map((e) => e.name)
-          .filter((name) => name.includes(`/src/lib/collections.ts`))
+          .filter((name) => name.includes(`/src/endpoints/kitchen.endpoint.ts`))
       ),
     })
   )
   const result = await page.evaluate(
     async ({ ingredient }) => {
-      const { getKitchen } = await import(
-          performance
-            .getEntriesByType(`resource`)
-            .map((e) => e.name)
-            .find((name) => name.includes(`/src/lib/collections.ts`)) ??
-            `/src/lib/collections.ts`
-        ),
-        k = getKitchen()
+      const k = await import(
+        performance
+          .getEntriesByType(`resource`)
+          .map((e) => e.name)
+          .find((name) =>
+            name.includes(`/src/endpoints/kitchen.endpoint.ts`)
+          ) ?? `/src/endpoints/kitchen.endpoint.ts`
+      )
       await Promise.all(
         Object.entries(k)
           .filter(([name]) => name.endsWith(`Collection`))
@@ -110,15 +160,14 @@ try {
   let comparisons = 0
   async function assertAllCollections() {
     const actual = await page.evaluate(async () => {
-      const k = (
-        await import(
-          performance
-            .getEntriesByType(`resource`)
-            .map((e) => e.name)
-            .find((name) => name.includes(`/src/lib/collections.ts`)) ??
-            `/src/lib/collections.ts`
-        )
-      ).getKitchen()
+      const k = await import(
+        performance
+          .getEntriesByType(`resource`)
+          .map((e) => e.name)
+          .find((name) =>
+            name.includes(`/src/endpoints/kitchen.endpoint.ts`)
+          ) ?? `/src/endpoints/kitchen.endpoint.ts`
+      )
       return Object.fromEntries(
         Object.entries(k)
           .filter(
@@ -158,15 +207,15 @@ try {
   const requestsBeforeInvalidInput = requests.length
   const validation = await page.evaluate(
     async ({ ingredient, user }) => {
-      const { getKitchen } = await import(
+      const k = await import(
         performance
           .getEntriesByType(`resource`)
           .map((entry) => entry.name)
-          .find((name) => name.includes(`/src/lib/collections.ts`)) ??
-          `/src/lib/collections.ts`
+          .find((name) =>
+            name.includes(`/src/endpoints/kitchen.endpoint.ts`)
+          ) ?? `/src/endpoints/kitchen.endpoint.ts`
       )
-      const k = getKitchen(),
-        tag = crypto.randomUUID()
+      const tag = crypto.randomUUID()
       const tx = k.updateTagAssignments({
         target: { entity: `ingredient`, entity_id: ingredient },
         new_tags: [
@@ -203,15 +252,14 @@ try {
     comment = randomUUID()
   await page.evaluate(
     async ({ ingredient, tag, link, user }) => {
-      const k = (
-        await import(
-          performance
-            .getEntriesByType(`resource`)
-            .map((e) => e.name)
-            .find((name) => name.includes(`/src/lib/collections.ts`)) ??
-            `/src/lib/collections.ts`
-        )
-      ).getKitchen()
+      const k = await import(
+        performance
+          .getEntriesByType(`resource`)
+          .map((e) => e.name)
+          .find((name) =>
+            name.includes(`/src/endpoints/kitchen.endpoint.ts`)
+          ) ?? `/src/endpoints/kitchen.endpoint.ts`
+      )
       const tx = k.updateTagAssignments({
         target: { entity: `ingredient`, entity_id: ingredient },
         new_tags: [{ id: tag, name: tag }],
@@ -235,15 +283,14 @@ try {
   await assertAllCollections()
   await page.evaluate(
     async ({ recipe, comment, user }) => {
-      const k = (
-        await import(
-          performance
-            .getEntriesByType(`resource`)
-            .map((e) => e.name)
-            .find((name) => name.includes(`/src/lib/collections.ts`)) ??
-            `/src/lib/collections.ts`
-        )
-      ).getKitchen()
+      const k = await import(
+        performance
+          .getEntriesByType(`resource`)
+          .map((e) => e.name)
+          .find((name) =>
+            name.includes(`/src/endpoints/kitchen.endpoint.ts`)
+          ) ?? `/src/endpoints/kitchen.endpoint.ts`
+      )
       const tx = k.insertComment({
         id: comment,
         recipe_id: recipe,
@@ -266,15 +313,13 @@ try {
   )
   await assertAllCollections()
   const rejection = await page.evaluate(async (id) => {
-    const k = (
-      await import(
-        performance
-          .getEntriesByType(`resource`)
-          .map((e) => e.name)
-          .find((name) => name.includes(`/src/lib/collections.ts`)) ??
-          `/src/lib/collections.ts`
-      )
-    ).getKitchen()
+    const k = await import(
+      performance
+        .getEntriesByType(`resource`)
+        .map((e) => e.name)
+        .find((name) => name.includes(`/src/endpoints/kitchen.endpoint.ts`)) ??
+        `/src/endpoints/kitchen.endpoint.ts`
+    )
     const tx = k.updateIngredient({ id, data: { count: 99 } })
     if (k.ingredientsCollection.get(id).count !== 99)
       throw Error(`Optimistic rejected update missing`)
@@ -288,30 +333,26 @@ try {
   assert.equal(rejection, true)
   await assertAllCollections()
   await page.evaluate(async (id) => {
-    const k = (
-      await import(
-        performance
-          .getEntriesByType(`resource`)
-          .map((e) => e.name)
-          .find((name) => name.includes(`/src/lib/collections.ts`)) ??
-          `/src/lib/collections.ts`
-      )
-    ).getKitchen()
+    const k = await import(
+      performance
+        .getEntriesByType(`resource`)
+        .map((e) => e.name)
+        .find((name) => name.includes(`/src/endpoints/kitchen.endpoint.ts`)) ??
+        `/src/endpoints/kitchen.endpoint.ts`
+    )
     const a = k.updateIngredient({ id, data: { count: 4 } }),
       b = k.updateIngredient({ id, data: { count: 5 } })
     await Promise.all([a.isPersisted.promise, b.isPersisted.promise])
   }, ingredient)
   await assertAllCollections()
   await page.evaluate(async (id) => {
-    const k = (
-      await import(
-        performance
-          .getEntriesByType(`resource`)
-          .map((e) => e.name)
-          .find((name) => name.includes(`/src/lib/collections.ts`)) ??
-          `/src/lib/collections.ts`
-      )
-    ).getKitchen()
+    const k = await import(
+      performance
+        .getEntriesByType(`resource`)
+        .map((e) => e.name)
+        .find((name) => name.includes(`/src/endpoints/kitchen.endpoint.ts`)) ??
+        `/src/endpoints/kitchen.endpoint.ts`
+    )
     await k.deleteRecipe(id).isPersisted.promise
   }, recipe)
   await assertAllCollections()
@@ -332,15 +373,14 @@ try {
     for (const count of history) {
       await page.evaluate(
         async ({ id, count }) => {
-          const k = (
-            await import(
-              performance
-                .getEntriesByType(`resource`)
-                .map((e) => e.name)
-                .find((name) => name.includes(`/src/lib/collections.ts`)) ??
-                `/src/lib/collections.ts`
-            )
-          ).getKitchen()
+          const k = await import(
+            performance
+              .getEntriesByType(`resource`)
+              .map((e) => e.name)
+              .find((name) =>
+                name.includes(`/src/endpoints/kitchen.endpoint.ts`)
+              ) ?? `/src/endpoints/kitchen.endpoint.ts`
+          )
           const tx = k.updateIngredient({ id, data: { count } })
           if (k.ingredientsCollection.get(id).count !== count)
             throw Error(`Optimistic count mismatch`)

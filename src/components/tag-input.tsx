@@ -1,4 +1,4 @@
-import { getKitchen } from "@/lib/collections"
+import { tagsCollection } from "@/endpoints/kitchen.endpoint"
 import {
   useContext,
   useMemo,
@@ -66,9 +66,7 @@ export default function TagInput({
   valueRef.current = value
 
   // Tags are global, so suggestions include tags created by every user.
-  const { data: allTags } = useLiveQuery((q) =>
-    q.from({ tag: getKitchen().tagsCollection })
-  )
+  const { data: allTags } = useLiveQuery((q) => q.from({ tag: tagsCollection }))
 
   const selectedIds = useMemo(
     () => new Set(value.map((tag) => tag.id)),

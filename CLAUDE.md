@@ -16,7 +16,7 @@ Kitchen logistics and recipe management. This worktree uses TanStack DB Endpoint
 
 - `src/endpoints/kitchen.endpoint.ts` owns query and mutation declarations and their SQL.
 - `src/endpoints/database.server.ts` provides the database and explicit session checks.
-- `src/lib/collections.ts` binds the endpoint collections/actions to the current user scope.
+- `src/lib/db-client.ts` owns the browser page’s client and resolves the session when an operation starts. Import collections and actions directly from their endpoint module.
 - `src/lib/services/` contains external AI/Trello operations. Keep those on the server.
 - `src/db/schema.ts` and `src/db/zod-schemas.ts` own database and validation schemas.
 - Routes preload collections and use TanStack DB live queries for client filtering and joins.

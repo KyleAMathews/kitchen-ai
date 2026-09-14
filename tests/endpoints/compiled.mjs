@@ -54,7 +54,7 @@ try {
     stdin: {
       contents:
         compiled.code +
-        `\nexport {DbClient} from "@tanstack/db"; export {pool,trace,setActor,responses,extractStarts} from "./database.server";`,
+        `\nexport {dbClient} from "@/lib/db-client"; export {pool,trace,setActor,setClientUser,responses,extractStarts} from "./database.server";`,
       resolveDir: join(kitchen, `src/endpoints`),
       loader: `ts`,
     },
@@ -70,6 +70,10 @@ try {
       {
         name: `kitchen-external-fixtures`,
         setup(build) {
+          build.onResolve({ filter: /(?:^|\/)db-client$/ }, () => ({
+            path: `client`,
+            namespace: `fixture`,
+          }))
           build.onResolve({ filter: /^@tanstack\/react-start$/ }, () => ({
             path: `transport`,
             namespace: `fixture`,
@@ -93,17 +97,20 @@ try {
             loader: `ts`,
             resolveDir: join(kitchen, `src/endpoints`),
             contents:
-              path === `registry`
-                ? compiled.registryCode + `\nexport const registry=definitions;`
-                : path === `transport`
-                  ? `import {responses} from './database.server';export function createServerFn(){return {inputValidator(schema){return {handler(fn){return async({data})=>{const result=await fn({data:schema.parse(data)});responses.push(result);return result}}}}}}`
-                  : path === `database`
-                    ? `import pg from 'pg';import {drizzle} from 'drizzle-orm/node-postgres';export * from '${kitchen}/src/db/schema';export const pool=new pg.Pool({connectionString:'postgresql://postgres@127.0.0.1:55480/kitchen_endpoints'});export const trace=[],responses=[],extractStarts=[];export const db=drizzle(pool,{casing:'snake_case',logger:{logQuery(sql){trace.push(sql)}}});let actor;export const setActor=(id)=>actor=id;export async function requireUser(req){if(!actor||req.scope!==actor)throw Error('Unauthorized');return {id:actor}}`
-                    : path === `ingredients.server`
-                      ? `export async function describeIngredient(){return {parsed:{description:'Fixture ingredient',grocery_section:'Pantry'},embedding:[0,1]}}`
-                      : path === `ai.server`
-                        ? `import {trace,extractStarts} from './database.server';export async function extractRecipe(pastedText){extractStarts.push(trace.length);if(pastedText==='reject-extraction')throw Error('Fixture extraction failed');return {name:'Fixture recipe',description:'Fixture extraction',ingredients:[{listing:'1 cup flour',extracted_name:'flour',embedding:'[0,1]',grocery_section:'Pantry'}]}}`
-                        : `export async function addShoppingCard(){return {id:'fixture-card',name:'Fixture shopping'}}`,
+              path === `client`
+                ? `import {DbClient} from '@tanstack/db';import {currentUserId} from './database.server';export {currentUserId};export const dbClient=new DbClient({endpointScope:currentUserId});`
+                : path === `registry`
+                  ? compiled.registryCode +
+                    `\nexport const registry=definitions;`
+                  : path === `transport`
+                    ? `import {responses} from './database.server';export function createServerFn(){return {inputValidator(schema){return {handler(fn){return async({data})=>{const result=await fn({data:schema.parse(data)});responses.push(result);return result}}}}}}`
+                    : path === `database`
+                      ? `import pg from 'pg';import {drizzle} from 'drizzle-orm/node-postgres';export * from '${kitchen}/src/db/schema';export const pool=new pg.Pool({connectionString:'postgresql://postgres@127.0.0.1:55480/kitchen_endpoints'});export const trace=[],responses=[],extractStarts=[];export const db=drizzle(pool,{casing:'snake_case',logger:{logQuery(sql){trace.push(sql)}}});let actor,clientUser;export const setClientUser=(id)=>clientUser=id;export const currentUserId=()=>clientUser;export const setActor=(id)=>actor=id;export async function requireUser(req){if(!actor||req.scope!==actor)throw Error('Unauthorized');return {id:actor}}`
+                      : path === `ingredients.server`
+                        ? `export async function describeIngredient(){return {parsed:{description:'Fixture ingredient',grocery_section:'Pantry'},embedding:[0,1]}}`
+                        : path === `ai.server`
+                          ? `import {trace,extractStarts} from './database.server';export async function extractRecipe(pastedText){extractStarts.push(trace.length);if(pastedText==='reject-extraction')throw Error('Fixture extraction failed');return {name:'Fixture recipe',description:'Fixture extraction',ingredients:[{listing:'1 cup flour',extracted_name:'flour',embedding:'[0,1]',grocery_section:'Pantry'}]}}`
+                          : `export async function addShoppingCard(){return {id:'fixture-card',name:'Fixture shopping'}}`,
           }))
         },
       },
@@ -118,8 +125,9 @@ try {
     [user, other]
   )
   loaded.setActor(user)
-  client = new loaded.DbClient({ endpointScope: user })
-  const app = loaded.createKitchenEndpoints(client)
+  loaded.setClientUser(user)
+  client = loaded.dbClient
+  const app = loaded
   const tables = {
     usersCollection: `users`,
     ingredientsCollection: `ingredients`,

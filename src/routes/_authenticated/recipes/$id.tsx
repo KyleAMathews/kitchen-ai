@@ -1,5 +1,17 @@
-import { updateComment } from "@/lib/write-actions"
-import { getKitchen } from "@/lib/collections"
+import {
+  addToShoppingList,
+  deleteComment,
+  deleteRecipe,
+  ingredientsCollection,
+  insertComment,
+  recipeCommentsCollection,
+  recipeIngredientsCollection,
+  recipeTagsCollection,
+  recipesCollection,
+  tagsCollection,
+  updateComment,
+  usersCollection,
+} from "@/endpoints/kitchen.endpoint"
 import {
   createFileRoute,
   useParams,
@@ -63,13 +75,13 @@ export const Route = createFileRoute(`/_authenticated/recipes/$id`)({
   component: RecipeDetail,
   loader: async () => {
     await Promise.all([
-      getKitchen().recipesCollection.preload(),
-      getKitchen().recipeIngredientsCollection.preload(),
-      getKitchen().ingredientsCollection.preload(),
-      getKitchen().recipeCommentsCollection.preload(),
-      getKitchen().usersCollection.preload(),
-      getKitchen().tagsCollection.preload(),
-      getKitchen().recipeTagsCollection.preload(),
+      recipesCollection.preload(),
+      recipeIngredientsCollection.preload(),
+      ingredientsCollection.preload(),
+      recipeCommentsCollection.preload(),
+      usersCollection.preload(),
+      tagsCollection.preload(),
+      recipeTagsCollection.preload(),
     ])
   },
 })
@@ -126,7 +138,7 @@ function AddIngredientsToShoppingListButton({
           )
 
           try {
-            await getKitchen().addToShoppingList({
+            await addToShoppingList({
               recipeName: recipe.name,
               url: recipe.url,
               checklists,
@@ -287,7 +299,7 @@ function RecipeActionsMenu({ recipe }: { recipe: SelectRecipe }) {
               <Button
                 color="red"
                 onClick={() => {
-                  getKitchen().deleteRecipe(recipe.id)
+                  deleteRecipe(recipe.id)
                   navigate({ to: `/recipes` })
                 }}
               >
@@ -309,7 +321,7 @@ function RecipeDetail() {
   const { data: recipes } = useLiveQuery(
     (q) =>
       q
-        .from({ recipesCollection: getKitchen().recipesCollection })
+        .from({ recipesCollection: recipesCollection })
         .where(({ recipesCollection }) => eq(recipesCollection.id, id)),
     [id]
   )
@@ -319,7 +331,7 @@ function RecipeDetail() {
     (q) =>
       q
         .from({
-          recipeIngredientsCollection: getKitchen().recipeIngredientsCollection,
+          recipeIngredientsCollection: recipeIngredientsCollection,
         })
         .where(({ recipeIngredientsCollection }) =>
           eq(recipeIngredientsCollection.recipe_id, id)
@@ -329,8 +341,7 @@ function RecipeDetail() {
 
   // Get all user ingredients for matching
   const { data: userIngredients } = useLiveQuery(
-    (q) =>
-      q.from({ ingredientsCollection: getKitchen().ingredientsCollection }),
+    (q) => q.from({ ingredientsCollection: ingredientsCollection }),
     []
   )
 
@@ -615,17 +626,19 @@ function CommentCard({
   const handleEdit = () => {
     if (!editComment.trim() && editRating === 0 && !editMadeIt) return
 
-    updateComment(comment.id, (draft) => {
-      draft.rating = editRating > 0 ? editRating : null
-      draft.comment = editComment.trim() || null
-      draft.made_it = editMadeIt
-      draft.updated_at = new Date()
+    updateComment({
+      id: comment.id,
+      data: {
+        rating: editRating > 0 ? editRating : null,
+        comment: editComment.trim() || null,
+        made_it: editMadeIt,
+      },
     })
     setEditing(false)
   }
 
   const handleDelete = () => {
-    getKitchen().deleteComment(comment.id)
+    deleteComment(comment.id)
   }
 
   if (editing) {
@@ -811,7 +824,7 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
   const { data: comments } = useLiveQuery(
     (q) =>
       q
-        .from({ comment: getKitchen().recipeCommentsCollection })
+        .from({ comment: recipeCommentsCollection })
         .where(({ comment }) => eq(comment.recipe_id, recipeId))
         .orderBy(({ comment }) => comment.created_at, `desc`),
     [recipeId]
@@ -819,7 +832,7 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
 
   // Get users for comment authors
   const { data: users } = useLiveQuery(
-    (q) => q.from({ user: getKitchen().usersCollection }),
+    (q) => q.from({ user: usersCollection }),
     []
   )
 
@@ -836,7 +849,7 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
   const handleMadeIt = () => {
     if (!session?.user.id) return
 
-    getKitchen().insertComment({
+    insertComment({
       id: crypto.randomUUID(),
       recipe_id: recipeId,
       made_it: true,
@@ -849,7 +862,7 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
     if (!comment.trim() && rating === 0 && !madeIt) return
     if (!session?.user.id) return
 
-    getKitchen().insertComment({
+    insertComment({
       id: crypto.randomUUID(),
       recipe_id: recipeId,
       made_it: madeIt,
