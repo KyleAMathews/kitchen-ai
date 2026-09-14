@@ -1,3 +1,4 @@
+import { getKitchen } from "@/lib/collections"
 import { createFileRoute } from "@tanstack/react-router"
 import { eq, useLiveQuery } from "@tanstack/react-db"
 import { useState, useMemo, useRef } from "react"
@@ -11,14 +12,9 @@ import {
   TextField,
   Checkbox,
 } from "@radix-ui/themes"
-import {
-  ingredientsCollection,
-  tagsCollection,
-  ingredientTagsCollection,
-} from "@/lib/collections"
+
 import IngredientCard from "@/components/ingredient-card"
 import AddIngredientForm from "@/components/add-ingredient-form"
-import { trpc } from "@/lib/trpc-client"
 import {
   PlusIcon,
   BackpackIcon,
@@ -29,9 +25,9 @@ export const Route = createFileRoute(`/_authenticated/ingredients/`)({
   component: IngredientsList,
   loader: async () => {
     await Promise.all([
-      ingredientsCollection.preload(),
-      tagsCollection.preload(),
-      ingredientTagsCollection.preload(),
+      getKitchen().ingredientsCollection.preload(),
+      getKitchen().tagsCollection.preload(),
+      getKitchen().ingredientTagsCollection.preload(),
     ])
   },
 })
@@ -43,7 +39,7 @@ function IngredientsList() {
   const { data: allIngredients } = useLiveQuery(
     (q) =>
       q
-        .from({ ingredientsCollection })
+        .from({ ingredientsCollection: getKitchen().ingredientsCollection })
         .orderBy(
           ({ ingredientsCollection }) => ingredientsCollection.trello_add_count,
           `desc`
@@ -56,8 +52,8 @@ function IngredientsList() {
     (q) =>
       query
         ? q
-            .from({ link: ingredientTagsCollection })
-            .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
+            .from({ link: getKitchen().ingredientTagsCollection })
+            .innerJoin({ tag: getKitchen().tagsCollection }, ({ link, tag }) =>
               eq(link.tag_id, tag.id)
             )
             .fn.where(({ tag }) => tag.name.toLowerCase().includes(query))
@@ -111,11 +107,11 @@ function IngredientsList() {
       // Extract ingredient IDs for tracking
       const ingredientIds = selectedIngredientsList.map((i) => i.id)
 
-      await trpc.shoppingList.addToShoppingList.mutate({
+      await getKitchen().addToShoppingList({
         recipeName: `Manual Ingredients`,
         checklists,
         ingredientIds,
-      })
+      }).isPersisted.promise
 
       // Clear selection
       setSelectedIngredients(new Set())

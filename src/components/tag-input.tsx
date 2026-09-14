@@ -1,3 +1,4 @@
+import { getKitchen } from "@/lib/collections"
 import {
   useContext,
   useMemo,
@@ -20,10 +21,10 @@ import {
   TagGroup,
   TagList,
 } from "react-aria-components"
-import { tagsCollection } from "@/lib/collections"
+
 import { authClient } from "@/lib/auth-client"
 import type { SelectTag } from "@/db/zod-schemas"
-import { MAX_TAG_NAME_LENGTH, tagNameSchema } from "@/lib/trpc/tag-schemas"
+import { MAX_TAG_NAME_LENGTH, tagNameSchema } from "@/lib/services/tag-schemas"
 
 interface TagInputProps {
   value: SelectTag[]
@@ -65,7 +66,9 @@ export default function TagInput({
   valueRef.current = value
 
   // Tags are global, so suggestions include tags created by every user.
-  const { data: allTags } = useLiveQuery((q) => q.from({ tag: tagsCollection }))
+  const { data: allTags } = useLiveQuery((q) =>
+    q.from({ tag: getKitchen().tagsCollection })
+  )
 
   const selectedIds = useMemo(
     () => new Set(value.map((tag) => tag.id)),

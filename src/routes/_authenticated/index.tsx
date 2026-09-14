@@ -1,3 +1,4 @@
+import { getKitchen } from "@/lib/collections"
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { useMemo } from "react"
 import { useLiveQuery, eq } from "@tanstack/react-db"
@@ -7,17 +8,9 @@ import {
   PlusCircledIcon,
   ArrowRightIcon,
 } from "@radix-ui/react-icons"
-import {
-  ingredientsCollection,
-  recipesCollection,
-  recipeCommentsCollection,
-  tagsCollection,
-  recipeTagsCollection,
-  ingredientTagsCollection,
-} from "@/lib/collections"
+
 import RecipeCard from "@/components/recipe-card"
 import IngredientCard from "@/components/ingredient-card"
-import { recipeCardsCollection } from "@/lib/derived-collections"
 
 export const Route = createFileRoute(`/_authenticated/`)({
   component: Dashboard,
@@ -29,12 +22,12 @@ export const Route = createFileRoute(`/_authenticated/`)({
   },
   loader: async () => {
     await Promise.all([
-      recipesCollection.preload(),
-      ingredientsCollection.preload(),
-      recipeCommentsCollection.preload(),
-      tagsCollection.preload(),
-      recipeTagsCollection.preload(),
-      ingredientTagsCollection.preload(),
+      getKitchen().recipesCollection.preload(),
+      getKitchen().ingredientsCollection.preload(),
+      getKitchen().recipeCommentsCollection.preload(),
+      getKitchen().tagsCollection.preload(),
+      getKitchen().recipeTagsCollection.preload(),
+      getKitchen().ingredientTagsCollection.preload(),
     ])
   },
 })
@@ -53,7 +46,7 @@ function Dashboard() {
 
   const { data: ingredients } = useLiveQuery((q) =>
     q
-      .from({ ingredientsCollection })
+      .from({ ingredientsCollection: getKitchen().ingredientsCollection })
       .orderBy(
         ({ ingredientsCollection }) => ingredientsCollection.updated_at,
         `desc`
@@ -62,7 +55,7 @@ function Dashboard() {
   )
 
   const { data: allIngredients } = useLiveQuery((q) =>
-    q.from({ ingredientsCollection })
+    q.from({ ingredientsCollection: getKitchen().ingredientsCollection })
   )
 
   const query = searchQuery.trim().toLowerCase()
@@ -71,8 +64,8 @@ function Dashboard() {
     (q) =>
       isSearching
         ? q
-            .from({ link: recipeTagsCollection })
-            .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
+            .from({ link: getKitchen().recipeTagsCollection })
+            .innerJoin({ tag: getKitchen().tagsCollection }, ({ link, tag }) =>
               eq(link.tag_id, tag.id)
             )
             .fn.where(({ tag }) => tag.name.toLowerCase().includes(query))
@@ -84,8 +77,8 @@ function Dashboard() {
     (q) =>
       isSearching
         ? q
-            .from({ link: ingredientTagsCollection })
-            .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
+            .from({ link: getKitchen().ingredientTagsCollection })
+            .innerJoin({ tag: getKitchen().tagsCollection }, ({ link, tag }) =>
               eq(link.tag_id, tag.id)
             )
             .fn.where(({ tag }) => tag.name.toLowerCase().includes(query))
@@ -102,7 +95,7 @@ function Dashboard() {
     [ingredientTagMatches]
   )
 
-  const { data: recipes } = useLiveQuery(recipeCardsCollection)
+  const { data: recipes } = useLiveQuery(getKitchen().recipeCardsCollection)
 
   // Search matches a recipe's name, description, or any of its tag names
   const displayRecipes = useMemo(() => {

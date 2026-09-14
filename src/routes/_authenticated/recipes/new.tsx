@@ -1,3 +1,4 @@
+import { getKitchen } from "@/lib/collections"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
 import { useForm } from "@tanstack/react-form"
@@ -10,12 +11,7 @@ import {
   TextField,
 } from "@radix-ui/themes"
 import { UpdateIcon } from "@radix-ui/react-icons"
-import {
-  recipesCollection,
-  recipeIngredientsCollection,
-  tagsCollection,
-  recipeTagsCollection,
-} from "@/lib/collections"
+
 import TagInput from "@/components/tag-input"
 import { createRecipe } from "@/lib/create-actions"
 import type { SelectTag } from "@/db/zod-schemas"
@@ -24,10 +20,10 @@ export const Route = createFileRoute(`/_authenticated/recipes/new`)({
   component: NewRecipe,
   loader: async () => {
     return Promise.all([
-      recipesCollection.preload(),
-      recipeIngredientsCollection.preload(),
-      tagsCollection.preload(),
-      recipeTagsCollection.preload(),
+      getKitchen().recipesCollection.preload(),
+      getKitchen().recipeIngredientsCollection.preload(),
+      getKitchen().tagsCollection.preload(),
+      getKitchen().recipeTagsCollection.preload(),
     ])
   },
 })

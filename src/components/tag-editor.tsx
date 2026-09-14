@@ -1,14 +1,11 @@
+import { getKitchen } from "@/lib/collections"
 import { useMemo, useState } from "react"
 import { Pencil1Icon, PlusIcon } from "@radix-ui/react-icons"
 import { Button, Callout, Dialog, Flex } from "@radix-ui/themes"
 import { UNSAFE_PortalProvider } from "react-aria"
 import { eq, useLiveQuery } from "@tanstack/react-db"
 import type { SelectTag } from "@/db/zod-schemas"
-import {
-  ingredientTagsCollection,
-  recipeTagsCollection,
-  tagsCollection,
-} from "@/lib/collections"
+
 import { changeTagAssignments, type TagTarget } from "@/lib/tags"
 import TagInput from "@/components/tag-input"
 
@@ -22,8 +19,8 @@ export default function TagEditor({ entity, entityId }: TagEditorProps) {
     (q) =>
       entity === `recipe`
         ? q
-            .from({ link: recipeTagsCollection })
-            .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
+            .from({ link: getKitchen().recipeTagsCollection })
+            .innerJoin({ tag: getKitchen().tagsCollection }, ({ link, tag }) =>
               eq(link.tag_id, tag.id)
             )
             .where(({ link }) => eq(link.recipe_id, entityId))
@@ -41,8 +38,8 @@ export default function TagEditor({ entity, entityId }: TagEditorProps) {
     (q) =>
       entity === `ingredient`
         ? q
-            .from({ link: ingredientTagsCollection })
-            .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
+            .from({ link: getKitchen().ingredientTagsCollection })
+            .innerJoin({ tag: getKitchen().tagsCollection }, ({ link, tag }) =>
               eq(link.tag_id, tag.id)
             )
             .where(({ link }) => eq(link.ingredient_id, entityId))

@@ -1,11 +1,7 @@
+import { getKitchen } from "@/lib/collections"
 import { Badge } from "@radix-ui/themes"
 import { Link } from "@tanstack/react-router"
 import { useLiveQuery, eq } from "@tanstack/react-db"
-import {
-  tagsCollection,
-  recipeTagsCollection,
-  ingredientTagsCollection,
-} from "@/lib/collections"
 
 interface TagListProps {
   entity: `recipe` | `ingredient`
@@ -36,8 +32,8 @@ function RecipeTagList({
   const { data: tags } = useLiveQuery(
     (q) =>
       q
-        .from({ link: recipeTagsCollection })
-        .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
+        .from({ link: getKitchen().recipeTagsCollection })
+        .innerJoin({ tag: getKitchen().tagsCollection }, ({ link, tag }) =>
           eq(link.tag_id, tag.id)
         )
         .where(({ link }) => eq(link.recipe_id, entityId))
@@ -56,8 +52,8 @@ function IngredientTagList({
   const { data: tags } = useLiveQuery(
     (q) =>
       q
-        .from({ link: ingredientTagsCollection })
-        .innerJoin({ tag: tagsCollection }, ({ link, tag }) =>
+        .from({ link: getKitchen().ingredientTagsCollection })
+        .innerJoin({ tag: getKitchen().tagsCollection }, ({ link, tag }) =>
           eq(link.tag_id, tag.id)
         )
         .where(({ link }) => eq(link.ingredient_id, entityId))

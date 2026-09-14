@@ -1,9 +1,4 @@
-import { router, authedProcedure } from "@/lib/trpc"
-import { z } from "zod"
-import { TRPCError } from "@trpc/server"
-import { db } from "@/db/connection"
-import { ingredients } from "@/db/schema"
-import { inArray, sql } from "drizzle-orm"
+import { ServiceError } from "./context.server"
 
 function getDateString(date?: Date) {
   const targetDate = date || new Date()
@@ -62,7 +57,7 @@ const makeTrelloRequest = async <T = unknown>({
   const trelloToken = process.env.TRELLO_TOKEN
 
   if (!trelloKey || !trelloToken) {
-    throw new TRPCError({
+    throw new ServiceError({
       code: `INTERNAL_SERVER_ERROR`,
       message: `Trello credentials not configured`,
     })
@@ -87,7 +82,7 @@ const makeTrelloRequest = async <T = unknown>({
   const response = await fetch(fullUrl, options)
 
   if (!response.ok) {
-    throw new TRPCError({
+    throw new ServiceError({
       code: `INTERNAL_SERVER_ERROR`,
       message: `Trello API error: ${response.status}`,
     })
@@ -207,48 +202,14 @@ const createOrUpdateCardWithChecklists = async (
   return card
 }
 
-export const shoppingListRouter = router({
-  addToShoppingList: authedProcedure
-    .input(
-      z.object({
-        recipeName: z.string(),
-        url: z.string().optional(),
-        checklists: z.record(z.string(), z.array(z.string())),
-        ingredientIds: z.array(z.string()).optional(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      const listId = process.env.TRELLO_LIST_ID || `5c01a492714a091d514fde21`
-
-      const cardDetails = {
-        cardName: getDateString(),
-        url: input.url,
-        checklists: input.checklists,
-      }
-
-      try {
-        const card = await createOrUpdateCardWithChecklists(listId, cardDetails)
-
-        if (input.ingredientIds && input.ingredientIds.length > 0) {
-          await db
-            .update(ingredients)
-            .set({
-              trello_add_count: sql`${ingredients.trello_add_count} + 1`,
-            })
-            .where(inArray(ingredients.id, input.ingredientIds))
-        }
-
-        return {
-          success: true,
-          cardId: card.id,
-          cardName: card.name,
-        }
-      } catch (error) {
-        console.error(`Error creating shopping list:`, error)
-        throw new TRPCError({
-          code: `INTERNAL_SERVER_ERROR`,
-          message: `Failed to create shopping list`,
-        })
-      }
-    }),
-})
+export async function addShoppingCard(input: {
+  url?: string
+  checklists: Record<string, string[]>
+}) {
+  const listId = process.env.TRELLO_LIST_ID || `5c01a492714a091d514fde21`
+  return createOrUpdateCardWithChecklists(listId, {
+    cardName: getDateString(),
+    url: input.url,
+    checklists: input.checklists,
+  })
+}

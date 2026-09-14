@@ -1,3 +1,6 @@
+// prettier-ignore
+// @ts-expect-error The local prototype Vite plugin is authored in JavaScript.
+import { endpointsProbe, serverBoundary } from "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/transform.mjs"
 import { defineConfig } from "vite"
 import { tanstackStart } from "@tanstack/react-start/plugin/vite"
 import { nitro } from "nitro/vite"
@@ -7,7 +10,6 @@ import path from "path"
 import { capsizeRadixPlugin } from "vite-plugin-capsize-radix"
 import montserrat from "@capsizecss/metrics/montserrat"
 import arial from "@capsizecss/metrics/arial"
-import { caddyPlugin } from "./src/vite-plugin-caddy"
 
 export default defineConfig(async () => {
   // Load GeneralSans font metrics (if still available)
@@ -24,13 +26,22 @@ export default defineConfig(async () => {
 
   return {
     server: {
-      host: true,
+      host: "127.0.0.1",
+      port: 4196,
+      fs: {
+        allow: [
+          new URL(".", import.meta.url).pathname,
+          "/Users/kylemathews/.codex/worktrees/e079/tanstack-db",
+          "/Users/kylemathews/programs/kitchen-ai",
+        ],
+      },
     },
     plugins: [
+      serverBoundary(),
+      endpointsProbe(),
       // Nitro for Node.js deployment
       nitro(),
-      // Local HTTPS with Caddy
-      caddyPlugin(),
+
       // Typography optimization
       capsizeRadixPlugin({
         outputPath: `./src/typography.css`,
@@ -43,16 +54,38 @@ export default defineConfig(async () => {
       react(),
     ],
     resolve: {
-      tsconfigPaths: true,
+      tsconfigPaths: false,
+      dedupe: [
+        "zod",
+        "react",
+        "react-dom",
+        "@tanstack/query-core",
+        "@tanstack/pacer-lite",
+        "fractional-indexing",
+        "sorted-btree",
+        "use-sync-external-store",
+      ],
       alias: {
-        debug: path.resolve(__dirname, `./src/polyfills/debug.js`),
+        "@": new URL("./src", import.meta.url).pathname,
+        "@tanstack/query-db-collection":
+          "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/query-db-collection/src/index.ts",
+        "@tanstack/react-db":
+          "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/react-db/src/index.ts",
+        "@tanstack/db-ivm":
+          "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/db-ivm/src/index.ts",
+        "@tanstack/db":
+          "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/db/src/index.ts",
+        debug: path.resolve(import.meta.dirname, `./src/polyfills/debug.js`),
       },
     },
     ssr: {
-      noExternal: [`debug`, `@tanstack/electric-db-collection`],
-    },
-    define: {
-      VITE_ELECTRIC_URL: JSON.stringify(process.env.VITE_ELECTRIC_URL),
+      noExternal: [
+        `debug`,
+        `@tanstack/db`,
+        `@tanstack/db-ivm`,
+        `@tanstack/react-db`,
+        `@tanstack/query-db-collection`,
+      ],
     },
     build: {
       rollupOptions: {
