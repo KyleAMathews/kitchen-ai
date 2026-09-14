@@ -1,6 +1,6 @@
 // prettier-ignore
 // @ts-expect-error The local prototype Vite plugin is authored in JavaScript.
-import { endpointsProbe, serverBoundary } from "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/transform.mjs"
+import { endpoints } from "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/transform.mjs"
 import { defineConfig } from "vite"
 import { tanstackStart } from "@tanstack/react-start/plugin/vite"
 import { nitro } from "nitro/vite"
@@ -37,8 +37,7 @@ export default defineConfig(async () => {
       },
     },
     plugins: [
-      serverBoundary(),
-      endpointsProbe(),
+      endpoints(),
       // Nitro for Node.js deployment
       nitro(),
 
