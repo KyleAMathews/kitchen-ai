@@ -1,0 +1,276 @@
+
+> kitchen-ai@0.0.0 prebuild /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints
+> pnpm schema:compile
+
+
+> kitchen-ai@0.0.0 schema:compile /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints
+> node /Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/compile-schema.mjs src/db/connection.ts
+
+Endpoints: inspected 34 relations for compilation
+
+> kitchen-ai@0.0.0 build /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints
+> vite build
+
+vite v8.3.0 building client environment for production...
+transforming...
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:4:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:19:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:24:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:29:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:34:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:39:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:44:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:49:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:54:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:84:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:132:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:152:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:170:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:202:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:228:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:304:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:378:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:client] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:486:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+✓ 2957 modules transformed.
+rendering chunks...
+computing gzip size...
+.output/public/assets/montserrat-vietnamese-300-normal-F69v1y7v.woff       7.24 kB
+.output/public/assets/montserrat-vietnamese-400-normal-BeEscFYY.woff       7.26 kB
+.output/public/assets/montserrat-vietnamese-700-normal-DnwGT2D9.woff       7.30 kB
+.output/public/assets/montserrat-vietnamese-300-normal-BIrGnxdC.woff2      7.80 kB
+.output/public/assets/montserrat-vietnamese-400-normal-D4oHqQTd.woff2      7.89 kB
+.output/public/assets/montserrat-vietnamese-700-normal-C0x1De3p.woff2      7.90 kB
+.output/public/assets/montserrat-cyrillic-300-normal-BVP0yxL_.woff        10.86 kB
+.output/public/assets/montserrat-cyrillic-400-normal-jEs4Tk-Z.woff        10.91 kB
+.output/public/assets/montserrat-cyrillic-700-normal-BvLYcGP1.woff        10.92 kB
+.output/public/assets/montserrat-cyrillic-400-normal-BPq32Q8K.woff2       10.98 kB
+.output/public/assets/montserrat-cyrillic-300-normal-DyQnI4ta.woff2       11.02 kB
+.output/public/assets/montserrat-cyrillic-700-normal-D-Pqjtdp.woff2       11.16 kB
+.output/public/assets/montserrat-cyrillic-ext-300-normal-AjyHH-nA.woff2   11.84 kB
+.output/public/assets/montserrat-cyrillic-ext-400-normal-Xqov12YL.woff2   11.94 kB
+.output/public/assets/montserrat-cyrillic-ext-300-normal-Ctr4ZZfs.woff    12.05 kB
+.output/public/assets/montserrat-cyrillic-ext-700-normal-MyDreaeu.woff2   12.06 kB
+.output/public/assets/montserrat-cyrillic-ext-700-normal-D-Mk2xRJ.woff    12.07 kB
+.output/public/assets/montserrat-cyrillic-ext-400-normal-DRPPeomZ.woff    12.08 kB
+.output/public/assets/montserrat-latin-300-normal-BgP24wlQ.woff2          18.70 kB
+.output/public/assets/montserrat-latin-400-normal-BLhwKU8k.woff2          18.78 kB
+.output/public/assets/montserrat-latin-700-normal-BdjcYUrC.woff2          18.82 kB
+.output/public/assets/montserrat-latin-400-normal-xItZbAXg.woff           20.64 kB
+.output/public/assets/montserrat-latin-700-normal-BWkrl476.woff           20.67 kB
+.output/public/assets/montserrat-latin-300-normal-sTRdVzlf.woff           20.70 kB
+.output/public/assets/montserrat-latin-ext-300-normal-DiDe5dVi.woff2      31.91 kB
+.output/public/assets/montserrat-latin-ext-400-normal-B8bwfy6Y.woff2      32.27 kB
+.output/public/assets/montserrat-latin-ext-700-normal-BOP2Nhf0.woff2      33.53 kB
+.output/public/assets/montserrat-latin-ext-300-normal-BCbSOsYO.woff       40.21 kB
+.output/public/assets/montserrat-latin-ext-400-normal-BffdBkAA.woff       40.36 kB
+.output/public/assets/montserrat-latin-ext-700-normal-DdDFr05Z.woff       41.34 kB
+.output/public/assets/styles-BirwnLg5.css                                 10.63 kB │ gzip:   2.98 kB
+.output/public/assets/index-CGdMmJuX.css                                 713.11 kB │ gzip:  87.66 kB
+.output/public/assets/useRouter-wbdHmZbS.js                                0.23 kB │ gzip:   0.19 kB
+.output/public/assets/get-subtree-CJM-Lp9h.js                              0.26 kB │ gzip:   0.19 kB
+.output/public/assets/card-Be_THVFZ.js                                     0.53 kB │ gzip:   0.35 kB
+.output/public/assets/_authenticated-DkqukIYu.js                           0.61 kB │ gzip:   0.41 kB
+.output/public/assets/create-actions-DTR2OvH5.js                           0.65 kB │ gzip:   0.38 kB
+.output/public/assets/text-area-BKTGyAV1.js                                0.73 kB │ gzip:   0.41 kB
+.output/public/assets/review-CkfpsqCI.js                                   0.82 kB │ gzip:   0.48 kB
+.output/public/assets/recipes-BqWdhnfQ.js                                  0.94 kB │ gzip:   0.48 kB
+.output/public/assets/recipe-card-Bamuk_vm.js                              1.26 kB │ gzip:   0.63 kB
+.output/public/assets/text-field-BG1drOHn.js                               1.40 kB │ gzip:   0.68 kB
+.output/public/assets/ingredient-card-lydQi6j1.js                          1.41 kB │ gzip:   0.70 kB
+.output/public/assets/with-selector-C4pcFtzB.js                            1.62 kB │ gzip:   0.71 kB
+.output/public/assets/_authenticated-BHWIEMfo.js                           1.93 kB │ gzip:   0.93 kB
+.output/public/assets/new-BUDaUWYC.js                                      2.91 kB │ gzip:   1.22 kB
+.output/public/assets/_authenticated-CI06528b.js                           3.53 kB │ gzip:   1.30 kB
+.output/public/assets/ingredients-ClS9z8qK.js                              3.59 kB │ gzip:   1.61 kB
+.output/public/assets/dist-CrYXioVZ.js                                     4.32 kB │ gzip:   1.66 kB
+.output/public/assets/login-CQV_J1Sr.js                                    4.50 kB │ gzip:   2.04 kB
+.output/public/assets/useLiveQuery-BPPeIylp.js                             5.04 kB │ gzip:   2.28 kB
+.output/public/assets/slider-DsaZzM3i.js                                  10.04 kB │ gzip:   3.87 kB
+.output/public/assets/add-ingredient-form-D4WlZkaq.js                     12.95 kB │ gzip:   4.22 kB
+.output/public/assets/react-icons.esm-BVU8aM11.js                         15.70 kB │ gzip:   4.51 kB
+.output/public/assets/link-Y18neBvq.js                                    19.52 kB │ gzip:   7.59 kB
+.output/public/assets/flex-CsuIRnug.js                                    21.58 kB │ gzip:   6.86 kB
+.output/public/assets/_id-DqoQfrHj.js                                     29.37 kB │ gzip:   9.34 kB
+.output/public/assets/tag-editor-B4eY8XTe.js                              43.31 kB │ gzip:  12.13 kB
+.output/public/assets/tag-list-YcF04qWO.js                                48.98 kB │ gzip:  10.88 kB
+.output/public/assets/useForm-BvQ-vaM9.js                                 59.32 kB │ gzip:  14.22 kB
+.output/public/assets/_id-DyzizXow.js                                     68.39 kB │ gzip:  22.03 kB
+.output/public/assets/expiration-date-edit-BeMstz0d.js                    91.43 kB │ gzip:  28.21 kB
+.output/public/assets/tag-input-DQEs0Dkb.js                              236.29 kB │ gzip:  70.57 kB
+.output/public/assets/index-BW1BBtd8.js                                  358.97 kB │ gzip: 117.11 kB
+.output/public/assets/collections-DiK9TURU.js                            414.23 kB │ gzip: 102.19 kB
+.output/public/assets/schemas-Gt8GS2_k.js                                423.27 kB │ gzip: 116.98 kB
+
+✓ built in 1.93s
+vite v8.3.0 building ssr environment for production...
+transforming...
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:4:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:19:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:24:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:29:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:34:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:39:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:44:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:49:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:54:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:84:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:132:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:152:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:170:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:202:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:228:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:304:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:378:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts?tss-serverfn-split:486:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:4:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:19:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:24:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:29:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:34:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:39:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:44:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:49:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:54:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:84:19 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:132:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:152:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:170:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:202:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:228:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:304:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:378:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+[plugin tanstack-start-core::server-fn:ssr] /Users/kylemathews/programs/kitchen-ai/.worktrees/codex-db-endpoints/src/endpoints/kitchen.endpoint.ts:486:20 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+✓ 996 modules transformed.
+rendering chunks...
+computing gzip size...
+node_modules/.nitro/vite/services/ssr/assets/montserrat-vietnamese-300-normal-F69v1y7v.woff       7.24 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-vietnamese-400-normal-BeEscFYY.woff       7.26 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-vietnamese-700-normal-DnwGT2D9.woff       7.30 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-vietnamese-300-normal-BIrGnxdC.woff2      7.80 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-vietnamese-400-normal-D4oHqQTd.woff2      7.89 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-vietnamese-700-normal-C0x1De3p.woff2      7.90 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-cyrillic-300-normal-BVP0yxL_.woff        10.86 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-cyrillic-400-normal-jEs4Tk-Z.woff        10.91 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-cyrillic-700-normal-BvLYcGP1.woff        10.92 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-cyrillic-400-normal-BPq32Q8K.woff2       10.98 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-cyrillic-300-normal-DyQnI4ta.woff2       11.02 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-cyrillic-700-normal-D-Pqjtdp.woff2       11.16 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-cyrillic-ext-300-normal-AjyHH-nA.woff2   11.84 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-cyrillic-ext-400-normal-Xqov12YL.woff2   11.94 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-cyrillic-ext-300-normal-Ctr4ZZfs.woff    12.05 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-cyrillic-ext-700-normal-MyDreaeu.woff2   12.06 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-cyrillic-ext-700-normal-D-Mk2xRJ.woff    12.07 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-cyrillic-ext-400-normal-DRPPeomZ.woff    12.08 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-latin-300-normal-BgP24wlQ.woff2          18.70 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-latin-400-normal-BLhwKU8k.woff2          18.78 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-latin-700-normal-BdjcYUrC.woff2          18.82 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-latin-400-normal-xItZbAXg.woff           20.64 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-latin-700-normal-BWkrl476.woff           20.67 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-latin-300-normal-sTRdVzlf.woff           20.70 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-latin-ext-300-normal-DiDe5dVi.woff2      31.91 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-latin-ext-400-normal-B8bwfy6Y.woff2      32.27 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-latin-ext-700-normal-BOP2Nhf0.woff2      33.53 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-latin-ext-300-normal-BCbSOsYO.woff       40.21 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-latin-ext-400-normal-BffdBkAA.woff       40.36 kB
+node_modules/.nitro/vite/services/ssr/assets/montserrat-latin-ext-700-normal-DdDFr05Z.woff       41.34 kB
+node_modules/.nitro/vite/services/ssr/assets/styles-BirwnLg5.css                                 10.63 kB │ gzip:   2.98 kB
+node_modules/.nitro/vite/services/ssr/assets/router-CGdMmJuX.css                                713.11 kB │ gzip:  87.66 kB
+node_modules/.nitro/vite/services/ssr/assets/kysely-adapter-FpAnp0rx.js                           0.13 kB │ gzip:   0.10 kB
+node_modules/.nitro/vite/services/ssr/assets/empty-plugin-adapters-BkOGOPux.js                    0.31 kB │ gzip:   0.21 kB
+node_modules/.nitro/vite/services/ssr/assets/tag-schemas-BTKU2kWz.js                              0.37 kB │ gzip:   0.22 kB
+node_modules/.nitro/vite/services/ssr/assets/kysely-migration-tables-DFfmKhq--DqrvCr-P.js         0.95 kB │ gzip:   0.52 kB
+node_modules/.nitro/vite/services/ssr/assets/start-CJHBhdtH.js                                    1.05 kB │ gzip:   0.47 kB
+node_modules/.nitro/vite/services/ssr/assets/create-actions-Vno7J2M2.js                           1.07 kB │ gzip:   0.53 kB
+node_modules/.nitro/vite/services/ssr/assets/_authenticated-CIACoA8u.js                           1.15 kB │ gzip:   0.58 kB
+node_modules/.nitro/vite/services/ssr/assets/review-BZdpbJcS.js                                   1.25 kB │ gzip:   0.59 kB
+node_modules/.nitro/vite/services/ssr/assets/recipes-Cv8vyNvj.js                                  1.65 kB │ gzip:   0.67 kB
+node_modules/.nitro/vite/services/ssr/assets/_authenticated-Cdmj9Fv9.js                           1.66 kB │ gzip:   0.73 kB
+node_modules/.nitro/vite/services/ssr/assets/expiration-date-edit-CB8_P6EQ.js                     1.81 kB │ gzip:   0.79 kB
+node_modules/.nitro/vite/services/ssr/assets/recipe-card-6Gu4wMaf.js                              2.35 kB │ gzip:   0.87 kB
+node_modules/.nitro/vite/services/ssr/assets/ingredient-card-BcARCgo4.js                          2.55 kB │ gzip:   0.96 kB
+node_modules/.nitro/vite/services/ssr/assets/login-CRhrFTdI.js                                    2.92 kB │ gzip:   1.13 kB
+node_modules/.nitro/vite/services/ssr/assets/tag-list-Bosym4FR.js                                 3.39 kB │ gzip:   1.32 kB
+node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-Cfr3dOLu.js               4.72 kB │ gzip:   1.02 kB
+node_modules/.nitro/vite/services/ssr/assets/bun-sqlite-dialect-C7ftEUSI-BDcXNdQk.js              4.76 kB │ gzip:   1.72 kB
+node_modules/.nitro/vite/services/ssr/assets/node-sqlite-dialect-CHtTX91Q.js                      4.76 kB │ gzip:   1.70 kB
+node_modules/.nitro/vite/services/ssr/assets/new-CaLBWE06.js                                      5.02 kB │ gzip:   1.56 kB
+node_modules/.nitro/vite/services/ssr/assets/tag-editor-D7Rb2Z9G.js                               5.24 kB │ gzip:   1.75 kB
+node_modules/.nitro/vite/services/ssr/assets/d1-sqlite-dialect-D4qp4-wW-AzT7Vkwh.js               5.28 kB │ gzip:   1.90 kB
+node_modules/.nitro/vite/services/ssr/assets/_virtual_endpoints-registry.server-BiPdvFrh.js       5.97 kB │ gzip:   1.19 kB
+node_modules/.nitro/vite/services/ssr/assets/_authenticated-DeW7e7eE.js                           6.41 kB │ gzip:   1.77 kB
+node_modules/.nitro/vite/services/ssr/assets/ingredients-DLXtZkRu.js                              6.96 kB │ gzip:   2.19 kB
+node_modules/.nitro/vite/services/ssr/assets/add-ingredient-form-BBiMHdCr.js                      7.70 kB │ gzip:   1.95 kB
+node_modules/.nitro/vite/services/ssr/assets/tag-input-CI6VOA-Q.js                                8.43 kB │ gzip:   2.90 kB
+node_modules/.nitro/vite/services/ssr/assets/useLiveQuery-DH9qvJlh.js                            11.30 kB │ gzip:   3.28 kB
+node_modules/.nitro/vite/services/ssr/assets/dist-f1w6pifd.js                                    14.71 kB │ gzip:   4.16 kB
+node_modules/.nitro/vite/services/ssr/assets/_id-D8aWfSXs.js                                     16.75 kB │ gzip:   3.71 kB
+node_modules/.nitro/vite/services/ssr/assets/_id-BzEyFEs0.js                                     29.10 kB │ gzip:   6.24 kB
+node_modules/.nitro/vite/services/ssr/assets/default-query-compiler-BUAQ7sVM.js                  43.40 kB │ gzip:   7.82 kB
+node_modules/.nitro/vite/services/ssr/assets/router-r71u58yX.js                                  47.94 kB │ gzip:  13.01 kB
+node_modules/.nitro/vite/services/ssr/assets/kitchen.endpoint-IhArwl_M.js                        50.74 kB │ gzip:  10.66 kB
+node_modules/.nitro/vite/services/ssr/assets/collections-B1Fz7qNj.js                            179.07 kB │ gzip:  38.30 kB
+node_modules/.nitro/vite/services/ssr/server.js                                                 237.26 kB │ gzip:  54.99 kB
+node_modules/.nitro/vite/services/ssr/assets/client-NLtEG7re.js                                 676.27 kB │ gzip: 152.35 kB
+node_modules/.nitro/vite/services/ssr/assets/auth-DR2YUqWC.js                                   751.69 kB │ gzip: 172.49 kB
+node_modules/.nitro/vite/services/ssr/assets/schemas-CDnguEYU.js                                766.91 kB │ gzip: 147.69 kB
+
+✓ built in 1.51s
+
+[nitro] ◐ Building [Nitro] (preset: node-server, compatibility: 2026-09-09)
+[nitro] ✔ Generated public .output/public
+vite v8.3.0 building nitro environment for production...
+transforming...
+✓ 89 modules transformed.
+rendering chunks...
+computing gzip size...
+.output/server/chunks/_/kysely-adapter-FpAnp0rx.mjs                          0.13 kB │ gzip:   0.10 kB
+.output/server/chunks/_/empty-plugin-adapters-BkOGOPux.mjs                   0.23 kB │ gzip:   0.16 kB
+.output/server/chunks/_/tag-schemas-BTKU2kWz.mjs                             0.45 kB │ gzip:   0.27 kB
+.output/server/chunks/_/kysely-migration-tables-DFfmKhq--DqrvCr-P.mjs        0.81 kB │ gzip:   0.46 kB
+.output/server/chunks/_/start-CJHBhdtH.mjs                                   0.95 kB │ gzip:   0.44 kB
+.output/server/chunks/_/create-actions-Vno7J2M2.mjs                          1.12 kB │ gzip:   0.56 kB
+.output/server/chunks/_/_authenticated-CIACoA8u.mjs                          1.16 kB │ gzip:   0.61 kB
+.output/server/chunks/_/review-BZdpbJcS.mjs                                  1.26 kB │ gzip:   0.61 kB
+.output/server/chunks/_/recipes-Cv8vyNvj.mjs                                 1.65 kB │ gzip:   0.69 kB
+.output/server/chunks/_/_authenticated-Cdmj9Fv9.mjs                          1.68 kB │ gzip:   0.75 kB
+.output/server/chunks/_/expiration-date-edit-CB8_P6EQ.mjs                    1.86 kB │ gzip:   0.83 kB
+.output/server/chunks/_/recipe-card-6Gu4wMaf.mjs                             2.37 kB │ gzip:   0.89 kB
+.output/server/chunks/_/ingredient-card-BcARCgo4.mjs                         2.59 kB │ gzip:   0.99 kB
+.output/server/chunks/_/login-CRhrFTdI.mjs                                   2.91 kB │ gzip:   1.15 kB
+.output/server/chunks/_/tag-list-Bosym4FR.mjs                                3.35 kB │ gzip:   1.32 kB
+.output/server/chunks/_/bun-sqlite-dialect-C7ftEUSI-BDcXNdQk.mjs             4.57 kB │ gzip:   1.64 kB
+.output/server/chunks/_/node-sqlite-dialect-CHtTX91Q.mjs                     4.57 kB │ gzip:   1.63 kB
+.output/server/chunks/_/_tanstack-start-manifest_v-Cfr3dOLu.mjs              4.77 kB │ gzip:   1.05 kB
+.output/server/chunks/_/new-CaLBWE06.mjs                                     5.03 kB │ gzip:   1.58 kB
+.output/server/chunks/_/d1-sqlite-dialect-D4qp4-wW-AzT7Vkwh.mjs              5.14 kB │ gzip:   1.84 kB
+.output/server/chunks/_/tag-editor-D7Rb2Z9G.mjs                              5.20 kB │ gzip:   1.76 kB
+.output/server/chunks/_/_virtual_endpoints-registry.server-BiPdvFrh.mjs      5.97 kB │ gzip:   1.22 kB
+.output/server/chunks/_/_authenticated-DeW7e7eE.mjs                          6.41 kB │ gzip:   1.79 kB
+.output/server/chunks/_/ingredients-DLXtZkRu.mjs                             6.95 kB │ gzip:   2.20 kB
+.output/server/chunks/_/add-ingredient-form-BBiMHdCr.mjs                     7.74 kB │ gzip:   1.98 kB
+.output/server/chunks/_/tag-input-CI6VOA-Q.mjs                               8.44 kB │ gzip:   2.93 kB
+.output/server/chunks/_/useLiveQuery-DH9qvJlh.mjs                           11.04 kB │ gzip:   3.24 kB
+.output/server/chunks/_/dist-f1w6pifd.mjs                                   14.56 kB │ gzip:   4.10 kB
+.output/server/chunks/_/_id-D8aWfSXs.mjs                                    16.69 kB │ gzip:   3.71 kB
+.output/server/chunks/_/react-icons.esm.mjs                                 19.68 kB │ gzip:   4.91 kB
+.output/server/chunks/_/_id-BzEyFEs0.mjs                                    29.10 kB │ gzip:   6.27 kB
+.output/server/chunks/_/router-r71u58yX.mjs                                 44.44 kB │ gzip:  12.52 kB
+.output/server/chunks/_/kitchen.endpoint-IhArwl_M.mjs                       49.07 kB │ gzip:  10.39 kB
+.output/server/chunks/_/server.mjs                                         229.23 kB │ gzip:  53.86 kB
+.output/server/index.mjs                                                   266.03 kB │ gzip:  54.90 kB
+.output/server/chunks/_/collections-B1Fz7qNj.mjs                           840.63 kB │ gzip: 188.01 kB
+.output/server/chunks/_/auth-DR2YUqWC.mjs                                1,489.38 kB │ gzip: 319.06 kB
+
+✓ built in 3.27s
+[33m[PLUGIN_TIMINGS] [0mPlugin hooks ran for 3.1s of this 3.3s build (96%).
+The slowest hooks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):
+  - nf3 buildEnd (89%, 2.9s, 1 call)
+Additional hook time came from the hooks below and from hooks under 1s.
+2 hooks are listed without a time. Their calls overlapped, so the time inside one call includes work from other calls. To find their cost, profile the build with `node --cpu-prof`:
+  - nf3 resolveId (312 calls)
+  - nitro:resolve-ids resolveId (432 calls)
+See https://rolldown.rs/reference/InputOptions.checks#plugintimings for more details.
+
+ℹ Generated .output/nitro.json
+
+[nitro] ✔ You can preview this build using node .output/server/index.mjs

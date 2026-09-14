@@ -1,0 +1,64 @@
+✔ endpoint modules compile independently of the original filename (20.1395ms)
+✔ query parameters reach the server and instantiate client membership (14.956583ms)
+✔ registered query instances validate before a mutation starts (38.528125ms)
+✔ server registry discovers query modules absent from the current import graph (10.238667ms)
+✔ only declared scalar parameters enter the optimistic predicate (6.161583ms)
+✔ nested query modules resolve shared runtime and relation bindings (2.731917ms)
+✔ overlapping actions use authority read after both handlers close (15.637208ms)
+✔ a held ordinary read cannot replace authority after its action retires (5.810083ms)
+✔ optimistic fanout publishes both collections before either subscriber runs (3.385791ms)
+✔ a collection created during a write joins authoritative coverage (2.326292ms)
+✔ reentrant actions preserve event order for every subscriber (2.870333ms)
+✔ local rollback publishes every recipient together and does not cancel remote coverage (3.366917ms)
+✔ a retired read cannot block initial coverage of the restarted collection (2.483208ms)
+✔ an unsent authored failure does not leave a remote obligation (1.874583ms)
+✔ a known read failure recovers without repeating its write (2.749208ms)
+✔ a later healthy response cannot discharge an unknown remote write (1.092791ms)
+✔ a new action invalidates an in-flight repair without waiting for its obsolete read (3.714042ms)
+✔ shared snapshots preserve extra columns and collection-local optimistic ownership (2.079833ms)
+✔ malformed shared indexes reject before installing any authority (2.865708ms)
+✔ authority cannot silently omit a selected scalar column (0.789167ms)
+✔ parameterized collections have stable distinct identities and send every retained instance (3.84075ms)
+✔ registry admission rejection closes the operation and permits a later healthy mutation (1.101375ms)
+✔ incompatible cross-module projections reject before creating an optimistic recipient (0.424125ms)
+✔ a parameter instance created during a mutation joins fresh authoritative coverage (1.055959ms)
+✔ unchanged authority preserves confirmed rows and retires a wrong optimistic guess (1.661833ms)
+✔ unmatched unchanged certificates cannot settle an action (0.681083ms)
+✔ overlapping unchanged responses still require a fresh authority read (3.554542ms)
+✔ authority is installed before a post-commit handler error retires the overlay (0.924083ms)
+✔ client ordering and optimistic inserts match PostgreSQL C order for Unicode IDs (1.001208ms)
+✔ malformed authority rejects before installing any collection snapshot (4.221ms)
+✔ generated invalid snapshots cannot partly replace the confirmed baseline (110.179083ms)
+✔ non-fixture scopes reconcile application rows without Todo fields (1.552875ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 186.335667
+✔ actual collection runtime regressions against PostgreSQL order (1059.53175ms)
+✔ scalar queries retain relation identity and nullable predicate structure (21.009791ms)
+✔ unsupported SQL and untrusted operators remain explicit rejections (18.564334ms)
+✔ incompatible row projections on the same relation cannot share optimism (2.122459ms)
+✔ component declarations carry server order in priority order (84.426208ms)
+✔ sort columns must be selected (6.413416ms)
+✔ unsupported direction cannot silently lose client ordering (9.161ms)
+✔ transformed responses cannot borrow intermediate query ordering (4.0005ms)
+✔ server handler cannot capture the bound client (4.225708ms)
+✔ server handler cannot capture component state (10.486834ms)
+✔ input validator cannot capture component state (3.979959ms)
+✔ optimistic callback stays within the component while RPCs move to module scope (7.512083ms)
+✔ a row predicate is carried as data without the server auth expression (7.481583ms)
+✔ unsupported query arguments fail before generating an incorrectly scoped request (3.630833ms)
+✔ same local names in separate lexical scopes have distinct stable identities (11.486875ms)
+✔ non-endpoint instrumentation does not change declaration identities (14.145875ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1147.414208
