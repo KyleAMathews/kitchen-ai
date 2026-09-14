@@ -20,7 +20,9 @@ Validation in this pass:
 - All 34 production client JavaScript files exclude the checked database, auth-secret, service, SQL-analyzer and server-registry markers.
 - Catalog inspection runs in the build CLI. The request trace contains no catalog inspection.
 
-Evidence for this pass is in `tests/endpoints/evidence/sql-effects/`. Tests used only the disposable PostgreSQL database on port 55480. Live AI/Trello effects and deployment remain untested. The prototype compiler/runtime still reference the local TanStack DB checkout; this is a working application port, not a published package migration.
+Tests used only the disposable PostgreSQL database on port 55480. Live AI/Trello effects and deployment remain untested. The prototype compiler/runtime still reference the local TanStack DB checkout; this is a working application port, not a published package migration.
+
+Ad hoc run artifacts have been removed. The format and workflow for checked-in evidence are not yet designed. For now, the compiled test writes its report to a temporary directory and prints the path, unless `ENDPOINT_ORACLE_OUTPUT` is set.
 
 The sections below preserve earlier migration stages and their then-current limits. Their all-refetch and unresolved-auth descriptions are historical; the status above supersedes them under the agreed SQL-only scope.
 
@@ -99,6 +101,6 @@ driver decoded PostgreSQL `name[]` as text. Compiler-only files now use the dev
 watcher; the catalog query casts its search path to `text[]`. Both have red/green
 receipts. The actual schema CLI passes against the disposable PostgreSQL fixture.
 
-Current evidence is in `tests/endpoints/evidence/services/`. The temporary test
+The temporary test
 server and PostgreSQL container were stopped and removed. Live AI/Trello calls,
 deployment and Git publication were not performed.

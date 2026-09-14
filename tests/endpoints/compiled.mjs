@@ -339,7 +339,7 @@ try {
   await loaded.pool.query(`DELETE FROM users WHERE id=ANY($1)`, [[user, other]])
   const output = resolve(
     process.env.ENDPOINT_ORACLE_OUTPUT ??
-      join(kitchen, `tests/endpoints/evidence/compiled`)
+      (await mkdtemp(join(tmpdir(), `kitchen-endpoints-report-`)))
   )
   await mkdir(output, { recursive: true })
   await writeFile(
@@ -357,7 +357,12 @@ try {
   )
   console.log(
     JSON.stringify(
-      { ok: true, comparisons: observations.length * 8, observations },
+      {
+        ok: true,
+        report: join(output, `report.json`),
+        comparisons: observations.length * 8,
+        observations,
+      },
       null,
       2
     )
