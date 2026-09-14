@@ -155,6 +155,49 @@ try {
     }
   }
   await assertAllCollections()
+  const requestsBeforeInvalidInput = requests.length
+  const validation = await page.evaluate(
+    async ({ ingredient, user }) => {
+      const { getKitchen } = await import(
+        performance
+          .getEntriesByType(`resource`)
+          .map((entry) => entry.name)
+          .find((name) => name.includes(`/src/lib/collections.ts`)) ??
+          `/src/lib/collections.ts`
+      )
+      const k = getKitchen(),
+        tag = crypto.randomUUID()
+      const tx = k.updateTagAssignments({
+        target: { entity: `ingredient`, entity_id: ingredient },
+        new_tags: [
+          { id: tag, name: `   `, user_id: user, created_at: new Date() },
+        ],
+        links: [],
+        removed_link_ids: [],
+      })
+      const optimistic = k.tagsCollection.has(tag)
+      let code, issues
+      try {
+        await tx.isPersisted.promise
+      } catch (error) {
+        code = error.code
+        issues = error.issues
+      }
+      return {
+        optimistic,
+        rolledBack: !k.tagsCollection.has(tag),
+        code,
+        issues,
+      }
+    },
+    { ingredient, user: user.id }
+  )
+  assert.equal(validation.optimistic, true)
+  assert.equal(validation.rolledBack, true)
+  assert.equal(validation.code, `INVALID_INPUT`)
+  assert.deepEqual(validation.issues[0].path, [`input`, `new_tags`, 0, `name`])
+  assert.equal(requests.length - requestsBeforeInvalidInput, 1)
+  await assertAllCollections()
   const tag = randomUUID(),
     link = randomUUID(),
     comment = randomUUID()
