@@ -26,7 +26,7 @@ Authorization remains explicit application code in handlers. Never have the comp
 
 Retained collections have full endpoint results. There is no automatic cross-client sync; use explicit refetch or a separate polling/event/sync channel for outside writes. Do not infer external freshness from selective mutation refresh.
 
-Keep snake_case database fields, centralized Zod schemas, route preloading, Radix components and existing libraries. Before changing DB reads or writes, read the installed TanStack DB live-query, collection-setup and optimistic-mutation SKILL files. The local prototype source is linked from the TanStack DB worktree; changes there need its own tests too.
+Use Drizzle’s property names directly without manual case conversion, centralized Zod schemas, route preloading, Radix components and existing libraries. Before changing DB reads or writes, read the installed TanStack DB live-query, collection-setup and optimistic-mutation SKILL files. The local prototype source is linked from the TanStack DB worktree; changes there need its own tests too.
 
 ## Test isolation
 

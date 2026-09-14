@@ -139,7 +139,12 @@ try {
     })
     for (const [name, table] of Object.entries(tables)) {
       const expected = (
-        await database.query(`SELECT * FROM ${table}`)
+        await database.query(
+          table === `users`
+            ? `SELECT id, name, email, email_verified AS "emailVerified", image,
+                created_at AS "createdAt", updated_at AS "updatedAt" FROM users`
+            : `SELECT * FROM ${table}`
+        )
       ).rows.sort((a, b) => a.id.localeCompare(b.id))
       assert.deepEqual(
         JSON.parse(JSON.stringify(actual[name])),

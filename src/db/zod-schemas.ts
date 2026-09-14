@@ -20,22 +20,9 @@ import {
   jobsStateEnum,
 } from "./schema"
 
-// Generate base schemas from Drizzle tables
-const baseSelectUsersSchema = createSelectSchema(users)
+// Generate schemas directly from Drizzle table definitions.
+export const selectUsersSchema = createSelectSchema(users)
 
-// Keep the snake_case user rows used by the client views.
-// Better Auth uses camelCase internally.
-export const selectUsersSchema = baseSelectUsersSchema.transform((data) => ({
-  id: data.id,
-  name: data.name,
-  email: data.email,
-  email_verified: data.emailVerified,
-  image: data.image,
-  created_at: data.createdAt,
-  updated_at: data.updatedAt,
-}))
-
-// Other schemas are already in snake_case in the Drizzle schema
 // Override enum fields to use explicit z.enum() to avoid Zod v4 compatibility issues
 export const selectIngredientsSchema = createSelectSchema(ingredients, {
   grocery_section: z.enum(grocerySectionEnum.enumValues),

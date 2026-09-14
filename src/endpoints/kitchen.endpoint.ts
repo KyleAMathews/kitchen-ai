@@ -23,6 +23,7 @@ import {
   tagLinkInputSchema,
 } from "@/lib/services/tag-schemas"
 import {
+  selectUsersSchema,
   selectIngredientsSchema,
   selectRecipesSchema,
   selectRecipeIngredientsSchema,
@@ -35,30 +36,16 @@ import {
   updateIngredientsSchema,
   updateRecipeCommentsSchema,
 } from "@/db/zod-schemas"
-import {
-  usersEndpointSchema,
-  tagWritesSchema,
-  tagTargetSchema,
-} from "./schemas"
+import { tagWritesSchema, tagTargetSchema } from "./schemas"
 export function createKitchenEndpoints(dbClient: DbClient) {
   const { query, mutation } = endpoints(dbClient)
   const usersCollection = query({
     input: z.object({}),
-    schema: usersEndpointSchema,
+    schema: selectUsersSchema,
     async handler(req, res) {
       await requireUser(req)
       const rows = await db.select().from(users)
-      return res.json(
-        rows.map((row) => ({
-          id: row.id,
-          name: row.name,
-          email: row.email,
-          email_verified: row.emailVerified,
-          image: row.image,
-          created_at: row.createdAt,
-          updated_at: row.updatedAt,
-        }))
-      )
+      return res.json(rows)
     },
   })
   const ingredientsCollection = query({

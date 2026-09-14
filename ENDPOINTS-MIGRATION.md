@@ -2,6 +2,8 @@
 
 The port now uses the shared SQL-effect analyzer at build time. All eight query collections and ten mutation endpoints have known SQL dependencies against the disposable application schema. The compiler follows supported PostgreSQL SQL-function bodies and accounts for defaults, expression indexes, and operation-specific foreign-key effects. Unsupported SQL effects keep full refresh. JavaScript auth and external service calls retain their existing behavior; the compiler does not insert auth or claim to analyze those libraries.
 
+User rows now use Drizzle’s field names (`emailVerified`, `createdAt`, `updatedAt`) directly. The endpoint returns the selected rows and uses `createSelectSchema(users)`; the former Electric case conversion and duplicate user schema are removed. The browser and compiled-handler comparisons also check these names.
+
 Validation in this pass:
 
 - Production build and typecheck pass.
