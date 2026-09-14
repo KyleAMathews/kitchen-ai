@@ -4,6 +4,10 @@ The port now uses the shared SQL-effect analyzer at build time. All eight query 
 
 User rows now use Drizzle’s field names (`emailVerified`, `createdAt`, `updatedAt`) directly. The endpoint returns the selected rows and uses `createSelectSchema(users)`; the former Electric case conversion and duplicate user schema are removed. The browser and compiled-handler comparisons also check these names.
 
+Mutation handlers consume the framework-parsed `req.body`. Validation rules live in each endpoint’s `input` declaration, including tag trimming, UUID checks, protected comment fields, and ingredient fill bounds. Inserts explicitly choose writable fields so optimistic owner/timestamp values do not override server values.
+
+Known framework gap found during this cleanup: a declared input-schema rejection is treated as an unknown mutation outcome. For example, submit `changeTagAssignmentsAction` with a valid recipe target and a new tag whose name is only spaces. The action rejects, but subsequent reconciliation can throw `Mutation outcome is unknown; authoritative reconciliation requires server closure evidence`. This needs a framework fix for validation failures before handler execution; it is not covered by the passing valid-mutation results below.
+
 Validation in this pass:
 
 - Production build and typecheck pass.

@@ -19,10 +19,6 @@ import { describeIngredient } from "@/lib/services/ingredients.server"
 import { extractRecipe } from "@/lib/services/ai.server"
 import { addShoppingCard } from "@/lib/services/shopping-list.server"
 import {
-  newTagInputSchema,
-  tagLinkInputSchema,
-} from "@/lib/services/tag-schemas"
-import {
   selectUsersSchema,
   selectIngredientsSchema,
   selectRecipesSchema,
@@ -31,8 +27,6 @@ import {
   selectTagsSchema,
   selectRecipeTagsSchema,
   selectIngredientTagsSchema,
-  ingredientsTrackingTypeSchema,
-  insertRecipeCommentsSchema,
   updateIngredientsSchema,
   updateRecipeCommentsSchema,
 } from "@/db/zod-schemas"
@@ -121,12 +115,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
     async handler(req, res) {
       const user = await requireUser(req)
 
-      const input = z
-        .object({
-          id: z.string(),
-          data: updateIngredientsSchema,
-        })
-        .parse(req.body)
+      const input = req.body
       const result = await db.transaction(async (tx) => {
         // Check ownership
         const [updatedIngredient] = await tx
@@ -150,7 +139,15 @@ export function createKitchenEndpoints(dbClient: DbClient) {
     },
   })
   const saveComment = mutation({
-    input: z.object({ id: z.string(), data: updateRecipeCommentsSchema }),
+    input: z.object({
+      id: z.string().uuid(),
+      data: updateRecipeCommentsSchema.omit({
+        id: true,
+        recipe_id: true,
+        user_id: true,
+        created_at: true,
+      }),
+    }),
     onMutate({ input }) {
       recipeCommentsCollection.update(input.id, (draft) => {
         Object.assign(draft, input.data)
@@ -159,17 +156,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
     async handler(req, res) {
       const user = await requireUser(req)
 
-      const input = z
-        .object({
-          id: z.string().uuid(),
-          data: updateRecipeCommentsSchema.omit({
-            id: true,
-            recipe_id: true,
-            user_id: true,
-            created_at: true,
-          }),
-        })
-        .parse(req.body)
+      const input = req.body
       const userId = user.id
 
       return res.json(
@@ -213,13 +200,11 @@ export function createKitchenEndpoints(dbClient: DbClient) {
     async handler(req, res) {
       const user = await requireUser(req)
 
-      const input = z.object({ id: z.string() }).parse({ id: req.body })
+      const id = req.body
       const result = await db.transaction(async (tx) => {
         const [deletedIngredient] = await tx
           .delete(ingredients)
-          .where(
-            and(eq(ingredients.id, input.id), eq(ingredients.user_id, user.id))
-          )
+          .where(and(eq(ingredients.id, id), eq(ingredients.user_id, user.id)))
           .returning()
 
         if (!deletedIngredient) {
@@ -239,11 +224,11 @@ export function createKitchenEndpoints(dbClient: DbClient) {
     async handler(req, res) {
       const user = await requireUser(req)
 
-      const input = z.object({ id: z.string() }).parse({ id: req.body })
+      const id = req.body
       const result = await db.transaction(async (tx) => {
         const [deletedRecipe] = await tx
           .delete(recipes)
-          .where(and(eq(recipes.id, input.id), eq(recipes.user_id, user.id)))
+          .where(and(eq(recipes.id, id), eq(recipes.user_id, user.id)))
           .returning()
 
         if (!deletedRecipe) {
@@ -256,14 +241,14 @@ export function createKitchenEndpoints(dbClient: DbClient) {
     },
   })
   const deleteComment = mutation({
-    input: z.string(),
+    input: z.string().uuid(),
     onMutate({ input }) {
       recipeCommentsCollection.delete(input)
     },
     async handler(req, res) {
       const user = await requireUser(req)
 
-      const input = z.object({ id: z.string().uuid() }).parse({ id: req.body })
+      const id = req.body
       const userId = user.id
 
       return res.json(
@@ -273,10 +258,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
             .select()
             .from(recipeComments)
             .where(
-              and(
-                eq(recipeComments.id, input.id),
-                eq(recipeComments.user_id, userId)
-              )
+              and(eq(recipeComments.id, id), eq(recipeComments.user_id, userId))
             )
 
           if (!existing) {
@@ -286,7 +268,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
             })
           }
 
-          await tx.delete(recipeComments).where(eq(recipeComments.id, input.id))
+          await tx.delete(recipeComments).where(eq(recipeComments.id, id))
 
           return { ok: true }
         })
@@ -301,13 +283,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
     async handler(req, res) {
       const user = await requireUser(req)
 
-      const input = insertRecipeCommentsSchema
-        .omit({
-          user_id: true,
-          created_at: true,
-          updated_at: true,
-        })
-        .parse(req.body)
+      const input = req.body
       const userId = user.id
 
       return res.json(
@@ -315,7 +291,11 @@ export function createKitchenEndpoints(dbClient: DbClient) {
           const [result] = await tx
             .insert(recipeComments)
             .values({
-              ...input,
+              id: input.id,
+              recipe_id: input.recipe_id,
+              made_it: input.made_it,
+              rating: input.rating,
+              comment: input.comment,
               user_id: userId,
             })
             .returning({ id: recipeComments.id })
@@ -329,6 +309,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
     input: tagWritesSchema.extend({
       ingredient: selectIngredientsSchema.extend({
         tracking_type: z.enum([`fill_level`, `count`, `pantry_staple`]),
+        fill_level: z.number().min(0).max(100),
       }),
     }),
     onMutate({ input }) {
@@ -343,22 +324,8 @@ export function createKitchenEndpoints(dbClient: DbClient) {
     async handler(req, res) {
       const user = await requireUser(req)
 
-      const input = z
-        .object({
-          id: z.string().uuid(),
-          name: z.string(),
-          tracking_type: ingredientsTrackingTypeSchema,
-          fill_level: z.number().min(0).max(100).optional().nullable(),
-          count: z.number().optional().nullable(),
-          expiration_date: z.coerce.date().optional().nullable(),
-          new_tags: z.array(newTagInputSchema),
-          links: z.array(tagLinkInputSchema),
-        })
-        .parse({
-          ...req.body.ingredient,
-          new_tags: req.body.new_tags,
-          links: req.body.links,
-        })
+      const input = req.body.ingredient
+      const { new_tags, links } = req.body
       const { parsed, embedding } = await describeIngredient(input.name)
       // Save to database
       const result = await db.transaction(async (tx) => {
@@ -389,19 +356,21 @@ export function createKitchenEndpoints(dbClient: DbClient) {
           })
           .returning()
 
-        if (input.new_tags.length > 0) {
+        if (new_tags.length > 0) {
           await tx.insert(tags).values(
-            input.new_tags.map((tag) => ({
-              ...tag,
+            new_tags.map((tag) => ({
+              id: tag.id,
+              name: tag.name,
               user_id: user.id,
             }))
           )
         }
 
-        if (input.links.length > 0) {
+        if (links.length > 0) {
           await tx.insert(ingredientTags).values(
-            input.links.map((link) => ({
-              ...link,
+            links.map((link) => ({
+              id: link.id,
+              tag_id: link.tag_id,
               ingredient_id: input.id,
             }))
           )
@@ -437,15 +406,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
     async handler(req, res) {
       const user = await requireUser(req)
 
-      const createRecipeSchema = z.object({
-        id: z.string().uuid(),
-        url: z.string().optional(),
-        pastedText: z.string(), // Required - we'll process this with AI
-        new_tags: z.array(newTagInputSchema).default([]),
-        links: z.array(tagLinkInputSchema).default([]),
-      })
-
-      const input = createRecipeSchema.parse(req.body)
+      const input = req.body
       const result = await db.transaction(async (tx) => {
         // Create a placeholder recipe first
         const [newRecipe] = await tx
@@ -483,7 +444,8 @@ export function createKitchenEndpoints(dbClient: DbClient) {
         if (input.new_tags.length > 0) {
           await tx.insert(tags).values(
             input.new_tags.map((tag) => ({
-              ...tag,
+              id: tag.id,
+              name: tag.name,
               user_id: user.id,
             }))
           )
@@ -492,7 +454,8 @@ export function createKitchenEndpoints(dbClient: DbClient) {
         if (input.links.length > 0) {
           await tx.insert(recipeTags).values(
             input.links.map((link) => ({
-              ...link,
+              id: link.id,
+              tag_id: link.tag_id,
               recipe_id: input.id,
             }))
           )
@@ -507,7 +470,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
   const changeTagAssignmentsAction = mutation({
     input: tagWritesSchema.extend({
       target: tagTargetSchema,
-      removed_link_ids: z.array(z.string()),
+      removed_link_ids: z.array(z.string().uuid()),
     }),
     onMutate({ input }) {
       for (const tag of input.new_tags) tagsCollection.insert(tag)
@@ -532,23 +495,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
     async handler(req, res) {
       const user = await requireUser(req)
 
-      const changeTagAssignmentsInput = z.object({
-        target: z.discriminatedUnion(`entity`, [
-          z.object({
-            entity: z.literal(`recipe`),
-            entity_id: z.string().uuid(),
-          }),
-          z.object({
-            entity: z.literal(`ingredient`),
-            entity_id: z.string().uuid(),
-          }),
-        ]),
-        new_tags: z.array(newTagInputSchema),
-        links: z.array(tagLinkInputSchema),
-        removed_link_ids: z.array(z.string().uuid()),
-      })
-
-      const input = changeTagAssignmentsInput.parse(req.body)
+      const input = req.body
       const userId = user.id
 
       return res.json(
@@ -584,7 +531,8 @@ export function createKitchenEndpoints(dbClient: DbClient) {
           if (input.new_tags.length > 0) {
             await tx.insert(tags).values(
               input.new_tags.map((tag) => ({
-                ...tag,
+                id: tag.id,
+                name: tag.name,
                 user_id: userId,
               }))
             )
@@ -594,7 +542,8 @@ export function createKitchenEndpoints(dbClient: DbClient) {
             if (input.links.length > 0) {
               await tx.insert(recipeTags).values(
                 input.links.map((link) => ({
-                  ...link,
+                  id: link.id,
+                  tag_id: link.tag_id,
                   recipe_id: input.target.entity_id,
                 }))
               )
@@ -613,7 +562,8 @@ export function createKitchenEndpoints(dbClient: DbClient) {
             if (input.links.length > 0) {
               await tx.insert(ingredientTags).values(
                 input.links.map((link) => ({
-                  ...link,
+                  id: link.id,
+                  tag_id: link.tag_id,
                   ingredient_id: input.target.entity_id,
                 }))
               )
@@ -653,14 +603,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
     async handler(req, res) {
       await requireUser(req)
 
-      const input = z
-        .object({
-          recipeName: z.string(),
-          url: z.string().optional(),
-          checklists: z.record(z.string(), z.array(z.string())),
-          ingredientIds: z.array(z.string()).optional(),
-        })
-        .parse(req.body)
+      const input = req.body
       try {
         const card = await addShoppingCard(input)
 
