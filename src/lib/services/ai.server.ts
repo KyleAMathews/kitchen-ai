@@ -1,9 +1,6 @@
 import { z } from "zod"
-import { router } from "@/lib/trpc"
-import { recipes, recipeIngredients } from "@/db/schema"
+
 import { grocerySectionSchema } from "@/db/zod-schemas"
-import { eq, and } from "drizzle-orm"
-import { db } from "@/db/connection"
 import OpenAI from "openai"
 import { zodFunction } from "openai/helpers/zod"
 import { getOpenAIClient } from "@/lib/openai"
@@ -47,13 +44,10 @@ const recipeExtractionSchema = z.object({
 
 type RecipeExtraction = z.infer<typeof recipeExtractionSchema>
 
-// Process recipe with AI and save to database
-export async function processRecipeWithAI(
-  recipeId: string,
+// Extract recipe data and embeddings without accessing the database.
+export async function extractRecipe(
   pastedText: string,
-  url: string | undefined,
-  userId: string,
-  tx: Parameters<Parameters<typeof db.transaction>[0]>[0]
+  url: string | undefined
 ) {
   const startTime = Date.now()
 
@@ -155,53 +149,7 @@ Do NOT use underscores, hyphens, or any other variations. Use the exact capitali
     })
   )
 
-  // Update the recipe and add ingredients using the provided transaction
-  try {
-    console.log(`Updating recipe with:`, {
-      name: parsed.name,
-      description: parsed.description,
-    })
-
-    // Update recipe with processed data
-    await tx
-      .update(recipes)
-      .set({
-        name: parsed.name,
-        description: parsed.description,
-        updated_at: new Date(),
-      })
-      .where(and(eq(recipes.id, recipeId), eq(recipes.user_id, userId)))
-
-    console.log(
-      `Inserting ingredients:`,
-      ingredientsWithEmbeddings.map((ing) => ({
-        listing: ing.listing,
-        extracted_name: ing.extracted_name,
-        grocery_section: ing.grocery_section,
-      }))
-    )
-
-    // Insert ingredients
-    await tx.insert(recipeIngredients).values(
-      ingredientsWithEmbeddings.map((ing) => ({
-        recipe_id: recipeId,
-        listing: ing.listing,
-        extracted_name: ing.extracted_name,
-        embedding: ing.embedding,
-        grocery_section: ing.grocery_section,
-      }))
-    )
-  } catch (dbError) {
-    console.error(`Database error during recipe processing:`, dbError)
-    console.error(`Parsed data:`, parsed)
-    console.error(`Ingredients with embeddings:`, ingredientsWithEmbeddings)
-    throw dbError
-  }
-
-  const endTime = Date.now()
-  const durationInSeconds = (endTime - startTime) / 1000
-  console.log(`Recipe processed in ${durationInSeconds} seconds`)
+  const durationInSeconds = (Date.now() - startTime) / 1000
+  console.log(`Recipe extracted in ${durationInSeconds} seconds`)
+  return { ...parsed, ingredients: ingredientsWithEmbeddings }
 }
-
-// Empty router for now - we're handling everything through recipes.create
-export const aiRouter = router({})

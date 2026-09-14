@@ -20,9 +20,6 @@ importers:
       '@capsizecss/unpack':
         specifier: ^3.0.1
         version: 3.0.1
-      '@electric-sql/client':
-        specifier: 1.5.26
-        version: 1.5.26
       '@fontsource-variable/inter':
         specifier: ^5.3.0
         version: 5.3.0
@@ -50,9 +47,12 @@ importers:
       '@radix-ui/themes':
         specifier: ^3.3.0
         version: 3.3.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tanstack/electric-db-collection':
-        specifier: ^0.4.8
-        version: 0.4.8(typescript@5.9.3)
+      '@tanstack/pacer-lite':
+        specifier: 0.2.1
+        version: 0.2.1
+      '@tanstack/query-core':
+        specifier: 5.90.20
+        version: 5.90.20
       '@tanstack/react-db':
         specifier: ^0.3.8
         version: 0.3.8(react@19.3.0)(typescript@5.9.3)
@@ -71,12 +71,6 @@ importers:
       '@tanstack/router-plugin':
         specifier: ^1.168.37
         version: 1.168.37(@tanstack/react-router@1.170.35(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(esbuild@0.28.1)(rolldown@1.2.8)(rollup@4.52.5)(vite@8.3.0(@types/node@24.13.4)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.44.0)(tsx@4.23.13)(yaml@2.9.0))
-      '@trpc/client':
-        specifier: ^11.18.0
-        version: 11.18.0(@trpc/server@11.18.0(typescript@5.9.3))(typescript@5.9.3)
-      '@trpc/server':
-        specifier: ^11.18.0
-        version: 11.18.0(typescript@5.9.3)
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -95,6 +89,9 @@ importers:
       drizzle-zod:
         specifier: ^0.8.3
         version: 0.8.3(drizzle-orm@0.44.7(@electric-sql/pglite@0.3.15)(@opentelemetry/api@1.8.0)(@prisma/client@7.4.2(prisma@7.4.2(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.23.1)(kysely@0.28.17)(mysql2@3.15.3)(pg@8.23.0)(postgres@3.4.7)(prisma@7.4.2(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)))(zod@4.6.1)
+      fractional-indexing:
+        specifier: 3.2.0
+        version: 3.2.0
       i:
         specifier: ^0.3.7
         version: 0.3.7
@@ -137,6 +134,12 @@ importers:
       react-icons:
         specifier: ^5.7.0
         version: 5.7.0(react@19.3.0)
+      sorted-btree:
+        specifier: 1.8.1
+        version: 1.8.1
+      use-sync-external-store:
+        specifier: 1.6.0
+        version: 1.6.0(react@19.3.0)
       vite:
         specifier: ^8.3.0
         version: 8.3.0(@types/node@24.13.4)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.44.0)(tsx@4.23.13)(yaml@2.9.0)
@@ -225,6 +228,9 @@ importers:
       eslint-plugin-react-refresh:
         specifier: ^0.4.26
         version: 0.4.26(eslint@9.39.5(jiti@2.7.0))
+      fast-check:
+        specifier: 3.23.2
+        version: 3.23.2
       globals:
         specifier: ^16.5.0
         version: 16.5.0
@@ -233,10 +239,13 @@ importers:
         version: 27.4.0
       netlify-cli:
         specifier: ^23.15.1
-        version: 23.15.1(@swc/core@1.16.0(@swc/helpers@0.5.17))(@swc/wasm@1.13.4)(@types/node@24.13.4)(db0@0.3.4(@electric-sql/pglite@0.3.15)(drizzle-orm@0.44.7(@electric-sql/pglite@0.3.15)(@opentelemetry/api@1.8.0)(@prisma/client@7.4.2(prisma@7.4.2(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.23.1)(kysely@0.28.17)(mysql2@3.15.3)(pg@8.23.0)(postgres@3.4.7)(prisma@7.4.2(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)))(mysql2@3.15.3))(ioredis@5.8.2)(picomatch@4.0.3)(rollup@4.52.5)
+        version: 23.15.1(@swc/core@1.16.0(@swc/helpers@0.5.17))(@swc/wasm@1.13.4)(@types/node@24.13.4)(db0@0.3.4(@electric-sql/pglite@0.3.15)(drizzle-orm@0.44.7(@electric-sql/pglite@0.3.15)(@opentelemetry/api@1.8.0)(@prisma/client@7.4.2(prisma@7.4.2(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.23.1)(kysely@0.28.17)(mysql2@3.15.3)(pg@8.23.0)(postgres@3.4.7)(prisma@7.4.2(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)))(mysql2@3.15.3))(ioredis@5.8.2)(picomatch@4.0.7)(rollup@4.52.5)
       nitro:
         specifier: 3.0.1-alpha.1
         version: 3.0.1-alpha.1(@electric-sql/pglite@0.3.15)(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.3)(@netlify/blobs@10.1.0)(chokidar@4.0.3)(drizzle-orm@0.44.7(@electric-sql/pglite@0.3.15)(@opentelemetry/api@1.8.0)(@prisma/client@7.4.2(prisma@7.4.2(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.23.1)(kysely@0.28.17)(mysql2@3.15.3)(pg@8.23.0)(postgres@3.4.7)(prisma@7.4.2(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)))(ioredis@5.8.2)(lru-cache@11.2.6)(mongodb@6.21.0)(mysql2@3.15.3)(rolldown@1.2.8)(rollup@4.52.5)(vite@8.3.0(@types/node@24.13.4)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.44.0)(tsx@4.23.13)(yaml@2.9.0))
+      playwright:
+        specifier: 1.60.0
+        version: 1.60.0
       prettier:
         specifier: ^3.9.6
         version: 3.9.6
@@ -672,10 +681,6 @@ packages:
 
   '@drizzle-team/brocli@0.10.2':
     resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
-
-  '@electric-sql/client@1.5.26':
-    resolution: {integrity: sha512-tiEksNKSTqtetftz0wulFzGc7jTluCMmq1VWLR5UWmN8VWGAcsfqBSgeOUwWk0MLC7/dEjXqfsT8Blg1Yiyh0w==}
-    hasBin: true
 
   '@electric-sql/pglite-socket@0.0.20':
     resolution: {integrity: sha512-J5nLGsicnD9wJHnno9r+DGxfcZWh+YJMCe0q/aCgtG6XOm9Z7fKeite8IZSNXgZeGltSigM9U/vAWZQWdgcSFg==}
@@ -2008,9 +2013,6 @@ packages:
     resolution: {integrity: sha512-uwPAhccfFJlsfCxMYTwOdVfOz3xqyj8xYL3zJj8f0pb30tLohnnFPhLuqp4/qoEz8sNxe4SESZedcBojRefIzg==}
     engines: {node: '>=18'}
     hasBin: true
-
-  '@microsoft/fetch-event-source@2.0.1':
-    resolution: {integrity: sha512-W6CLUJ2eBMw3Rec70qrsEW0jOm/3twwJv21mrmj2yORiaVmVYGS4sSS5yUwvQc1ZlDLYGPnClVWmUUMagKNsfA==}
 
   '@mongodb-js/saslprep@1.5.4':
     resolution: {integrity: sha512-05UC0jQsjKAOuXQ0H9Ud9vUTJpZIg+n/FinpR30tI5I8pY2inTfPOZ5OF/cg3Ce/N9MoD1xhRCeOsJtuTbFYlw==}
@@ -3836,11 +3838,6 @@ packages:
     cpu: [arm64]
     os: [darwin]
 
-  '@rollup/rollup-darwin-arm64@4.62.5':
-    resolution: {integrity: sha512-bW7B8xMEq8n99Q3ieEcPRGuphurdZAaFzQc9Efyyw3FL6DZO6pMy9xhdN+kBoD7Sy05xNXSr4OyPPnpkYriS/A==}
-    cpu: [arm64]
-    os: [darwin]
-
   '@rollup/rollup-darwin-x64@4.52.5':
     resolution: {integrity: sha512-W901Pla8Ya95WpxDn//VF9K9u2JbocwV/v75TE0YIHNTbhqUTv9w4VuQ9MaWlNOkkEfFwkdNhXgcLqPSmHy0fA==}
     cpu: [x64]
@@ -4173,9 +4170,6 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  '@tanstack/electric-db-collection@0.4.8':
-    resolution: {integrity: sha512-or8yxjM2ofveigtjubgiOgAaDewLZd/4WI44BYPNpCzoazAH/JnUwxyJlqPNwzVZImI/8wRHQzd/7Ty7oEYPiw==}
-
   '@tanstack/form-core@1.33.5':
     resolution: {integrity: sha512-3dfx9MBP0aq5sXKteikG629X9oviptrQj0IFRk9YGcb+lB7Kv5x8S17oOSk1wUWgjQZ4xVJEMbKwOAODymocgA==}
 
@@ -4191,9 +4185,12 @@ packages:
     resolution: {integrity: sha512-y/xtNPNt/YeyoVxE/JCx+T7yjEzpezmbb+toK8DDD1P4m7Kzs5YR956+7OKexG3f8aXgC3rLZl7b1V+yNUSy5w==}
     engines: {node: '>=18'}
 
-  '@tanstack/pacer-lite@0.2.2':
-    resolution: {integrity: sha512-eQ1MyLKCHyXiH7NbdmB80W77OhiMgGBUb+qDx/8WMGbwg5Lf/NlfD0TfNYAqY77i8V3AxoDoYdICrQE5ADw4Yw==}
+  '@tanstack/pacer-lite@0.2.1':
+    resolution: {integrity: sha512-3PouiFjR4B6x1c969/Pl4ZIJleof1M0n6fNX8NRiC9Sqv1g06CVDlEaXUR4212ycGFyfq4q+t8Gi37Xy+z34iQ==}
     engines: {node: '>=18'}
+
+  '@tanstack/query-core@5.90.20':
+    resolution: {integrity: sha512-OMD2HLpNouXEfZJWcKeVKUgQ5n+n3A2JFmBaScpNDUqSrQSjiveC7dKMe53uJUg1nDG16ttFPz2xfilz6i2uVg==}
 
   '@tanstack/react-db@0.3.8':
     resolution: {integrity: sha512-RzsjljPjICaBeBZ9OvnIqXK4JN1f7JC75Nokl9bc0mhTh3VURwDqIoUHI06PGTBnJ0Bx2NPrW2fPXbx9JwZOwQ==}
@@ -4367,9 +4364,6 @@ packages:
   '@tanstack/store@0.11.1':
     resolution: {integrity: sha512-mzTOBhypOuDJAy/D8n2MfUZ1HFkXnmSETviRyhqEC8LUE7/IZQExOTxMANj3KjTofYTkFNpBY67qaVrT41YccA==}
 
-  '@tanstack/store@0.9.3':
-    resolution: {integrity: sha512-8reSzl/qGWGGVKhBoxXPMWzATSbZLZFWhwBAFO9NAyp0TxzfBP0mIrGb8CP8KrQTmvzXlR/vFPPUrHTLBGyFyw==}
-
   '@tanstack/virtual-file-routes@1.162.0':
     resolution: {integrity: sha512-uhOeFyxLcU41HzvrxsGpiWdcMbScY1EDgbZ5K7DVRMYInbLYWAC0EA/kx9wXAoSM8q82bUG2hRl8+EAjE6XAbA==}
     engines: {node: '>=20.19'}
@@ -4395,19 +4389,6 @@ packages:
 
   '@tokenizer/token@0.3.0':
     resolution: {integrity: sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==}
-
-  '@trpc/client@11.18.0':
-    resolution: {integrity: sha512-wOqeg3Fvl25V1ZisQhUD3K8G60ZJDlSGJNSyeXrLH24xAo5w6GSR2Kzb1cSNY9Y+IQ2YZvYGZstBU+V/ulo/ow==}
-    hasBin: true
-    peerDependencies:
-      '@trpc/server': 11.18.0
-      typescript: '>=5.7.2'
-
-  '@trpc/server@11.18.0':
-    resolution: {integrity: sha512-JAvXOuNTxgXjIDfQaOvDq1j66LMNfDJUH1IU7Slfn8EvRv2EkH6ehu3A7zpYhjO0syHHiYg77v2lG2JFJgvw7Q==}
-    hasBin: true
-    peerDependencies:
-      typescript: '>=5.7.2'
 
   '@tsconfig/node10@1.0.12':
     resolution: {integrity: sha512-UCYBaeFvM11aU2y3YPZ//O5Rhj+xKyzy7mvcIoAjASbigy8mHMryP5cK7dgjlz2hWxh1g5pLw084E0a/wlUSFQ==}
@@ -6452,8 +6433,8 @@ packages:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
     engines: {node: '>= 0.6'}
 
-  fractional-indexing@3.4.0:
-    resolution: {integrity: sha512-8J3glhz2rrpKG6KmI7wmJo3zH1VjeOpN+vTJSw1fOyO+Viqq3zX6/5NGh6oaZB2qIAYdOYuu5Dz9xp4faOO0Pg==}
+  fractional-indexing@3.2.0:
+    resolution: {integrity: sha512-PcOxmqwYCW7O2ovKRU8OoQQj2yqTfEB/yeTYk4gPid6dN5ODRfU1hXd9tTVZzax/0NkO7AxpHykvZnT1aYp/BQ==}
     engines: {node: ^14.13.1 || >=16.0.0}
 
   fresh@2.0.0:
@@ -6462,6 +6443,11 @@ packages:
 
   from2@2.3.0:
     resolution: {integrity: sha512-OMcX/4IC/uqEPVgGeyfN22LJk6AZrMkRZHxcHBMBvHScDGgwTm2GT2Wkgtocyd3JfZffjj2kYUDXXII0Fk9W0g==}
+
+  fsevents@2.3.2:
+    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
+    os: [darwin]
 
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
@@ -8245,6 +8231,16 @@ packages:
   pkg-types@2.3.3:
     resolution: {integrity: sha512-j/lCFdcppV0JxWpCEITdbDltBxPP6cHT+yNJ6Go2OgoSA9518X847X9z0p6LtA4Nc16+eQzCZjRrWanTGvHJ5w==}
 
+  playwright-core@1.60.0:
+    resolution: {integrity: sha512-9bW6zvX/m0lEbgTKJ6YppOKx8H3VOPBMOCFh2irXFOT4BbHgrx5hPjwJYLT40Lu+4qtD36qKc/Hn56StUW57IA==}
+    engines: {node: '>=18'}
+    hasBin: true
+
+  playwright@1.60.0:
+    resolution: {integrity: sha512-hheHdokM8cdqCb0lcE3s+zT4t4W+vvjpGxsZlDnikarzx8tSzMebh3UiFtgqwFwnTnjYQcsyMF8ei2mCO/tpeA==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   possible-typed-array-names@1.1.0:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
     engines: {node: '>= 0.4'}
@@ -9634,11 +9630,6 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  use-sync-external-store@1.7.0:
-    resolution: {integrity: sha512-6L+EeigHMQhdaIPNIFUKwfWJSwWFQ8gJbJ2DLOs5sDIegTwR9fRxvnM3uciHKjIZhFz+KAv2emhWMRvDmMcY8A==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -10442,12 +10433,6 @@ snapshots:
       node-source-walk: 7.0.1
 
   '@drizzle-team/brocli@0.10.2': {}
-
-  '@electric-sql/client@1.5.26':
-    dependencies:
-      '@microsoft/fetch-event-source': 2.0.1
-    optionalDependencies:
-      '@rollup/rollup-darwin-arm64': 4.62.5
 
   '@electric-sql/pglite-socket@0.0.20(@electric-sql/pglite@0.3.15)':
     dependencies:
@@ -11327,8 +11312,6 @@ snapshots:
       - encoding
       - supports-color
 
-  '@microsoft/fetch-event-source@2.0.1': {}
-
   '@mongodb-js/saslprep@1.5.4':
     dependencies:
       sparse-bitfield: 3.0.3
@@ -11392,7 +11375,7 @@ snapshots:
       yaml: 2.9.0
       yargs: 17.7.2
 
-  '@netlify/build@35.5.14(@opentelemetry/api@1.8.0)(@swc/core@1.16.0(@swc/helpers@0.5.17))(@swc/wasm@1.13.4)(@types/node@24.13.4)(picomatch@4.0.3)(rollup@4.52.5)':
+  '@netlify/build@35.5.14(@opentelemetry/api@1.8.0)(@swc/core@1.16.0(@swc/helpers@0.5.17))(@swc/wasm@1.13.4)(@types/node@24.13.4)(picomatch@4.0.7)(rollup@4.52.5)':
     dependencies:
       '@bugsnag/js': 8.8.1
       '@netlify/blobs': 10.6.0(supports-color@10.2.2)
@@ -11411,7 +11394,7 @@ snapshots:
       ansis: 4.3.0
       clean-stack: 5.3.0
       execa: 8.0.1
-      fdir: 6.5.0(picomatch@4.0.3)
+      fdir: 6.5.0(picomatch@4.0.7)
       figures: 6.1.0
       filter-obj: 6.1.0
       hot-shots: 11.4.0
@@ -13233,9 +13216,6 @@ snapshots:
   '@rollup/rollup-darwin-arm64@4.52.5':
     optional: true
 
-  '@rollup/rollup-darwin-arm64@4.62.5':
-    optional: true
-
   '@rollup/rollup-darwin-x64@4.52.5':
     optional: true
 
@@ -13440,7 +13420,7 @@ snapshots:
 
   '@tanstack/db-ivm@0.1.20(typescript@5.9.3)':
     dependencies:
-      fractional-indexing: 3.4.0
+      fractional-indexing: 3.2.0
       sorted-btree: 1.8.1
       typescript: 5.9.3
 
@@ -13448,21 +13428,10 @@ snapshots:
     dependencies:
       '@standard-schema/spec': 1.1.0
       '@tanstack/db-ivm': 0.1.20(typescript@5.9.3)
-      '@tanstack/pacer-lite': 0.2.2
+      '@tanstack/pacer-lite': 0.2.1
       typescript: 5.9.3
 
   '@tanstack/devtools-event-client@0.4.4': {}
-
-  '@tanstack/electric-db-collection@0.4.8(typescript@5.9.3)':
-    dependencies:
-      '@electric-sql/client': 1.5.26
-      '@standard-schema/spec': 1.1.0
-      '@tanstack/db': 0.9.0(typescript@5.9.3)
-      '@tanstack/store': 0.9.3
-      debug: 4.4.3(supports-color@10.2.2)
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
 
   '@tanstack/form-core@1.33.5':
     dependencies:
@@ -13482,7 +13451,9 @@ snapshots:
 
   '@tanstack/pacer-lite@0.1.1': {}
 
-  '@tanstack/pacer-lite@0.2.2': {}
+  '@tanstack/pacer-lite@0.2.1': {}
+
+  '@tanstack/query-core@5.90.20': {}
 
   '@tanstack/react-db@0.3.8(react@19.3.0)(typescript@5.9.3)':
     dependencies:
@@ -13607,7 +13578,7 @@ snapshots:
       '@tanstack/store': 0.11.1
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
-      use-sync-external-store: 1.7.0(react@19.3.0)
+      use-sync-external-store: 1.6.0(react@19.3.0)
 
   '@tanstack/router-core@1.171.29':
     dependencies:
@@ -13742,8 +13713,6 @@ snapshots:
 
   '@tanstack/store@0.11.1': {}
 
-  '@tanstack/store@0.9.3': {}
-
   '@tanstack/virtual-file-routes@1.162.0': {}
 
   '@testing-library/dom@10.4.1':
@@ -13768,15 +13737,6 @@ snapshots:
       '@types/react-dom': 19.3.0(@types/react@19.3.0)
 
   '@tokenizer/token@0.3.0': {}
-
-  '@trpc/client@11.18.0(@trpc/server@11.18.0(typescript@5.9.3))(typescript@5.9.3)':
-    dependencies:
-      '@trpc/server': 11.18.0(typescript@5.9.3)
-      typescript: 5.9.3
-
-  '@trpc/server@11.18.0(typescript@5.9.3)':
-    dependencies:
-      typescript: 5.9.3
 
   '@tsconfig/node10@1.0.12': {}
 
@@ -15872,7 +15832,6 @@ snapshots:
   fast-check@3.23.2:
     dependencies:
       pure-rand: 6.1.0
-    optional: true
 
   fast-content-type-parse@3.0.0: {}
 
@@ -16079,7 +16038,7 @@ snapshots:
 
   forwarded@0.2.0: {}
 
-  fractional-indexing@3.4.0: {}
+  fractional-indexing@3.2.0: {}
 
   fresh@2.0.0: {}
 
@@ -16087,6 +16046,9 @@ snapshots:
     dependencies:
       inherits: 2.0.4
       readable-stream: 2.3.8
+
+  fsevents@2.3.2:
+    optional: true
 
   fsevents@2.3.3:
     optional: true
@@ -17319,13 +17281,13 @@ snapshots:
 
   negotiator@1.0.0: {}
 
-  netlify-cli@23.15.1(@swc/core@1.16.0(@swc/helpers@0.5.17))(@swc/wasm@1.13.4)(@types/node@24.13.4)(db0@0.3.4(@electric-sql/pglite@0.3.15)(drizzle-orm@0.44.7(@electric-sql/pglite@0.3.15)(@opentelemetry/api@1.8.0)(@prisma/client@7.4.2(prisma@7.4.2(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.23.1)(kysely@0.28.17)(mysql2@3.15.3)(pg@8.23.0)(postgres@3.4.7)(prisma@7.4.2(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)))(mysql2@3.15.3))(ioredis@5.8.2)(picomatch@4.0.3)(rollup@4.52.5):
+  netlify-cli@23.15.1(@swc/core@1.16.0(@swc/helpers@0.5.17))(@swc/wasm@1.13.4)(@types/node@24.13.4)(db0@0.3.4(@electric-sql/pglite@0.3.15)(drizzle-orm@0.44.7(@electric-sql/pglite@0.3.15)(@opentelemetry/api@1.8.0)(@prisma/client@7.4.2(prisma@7.4.2(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.23.1)(kysely@0.28.17)(mysql2@3.15.3)(pg@8.23.0)(postgres@3.4.7)(prisma@7.4.2(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)))(mysql2@3.15.3))(ioredis@5.8.2)(picomatch@4.0.7)(rollup@4.52.5):
     dependencies:
       '@fastify/static': 9.0.0
       '@netlify/ai': 0.3.4(@netlify/api@14.0.13)
       '@netlify/api': 14.0.13
       '@netlify/blobs': 10.1.0
-      '@netlify/build': 35.5.14(@opentelemetry/api@1.8.0)(@swc/core@1.16.0(@swc/helpers@0.5.17))(@swc/wasm@1.13.4)(@types/node@24.13.4)(picomatch@4.0.3)(rollup@4.52.5)
+      '@netlify/build': 35.5.14(@opentelemetry/api@1.8.0)(@swc/core@1.16.0(@swc/helpers@0.5.17))(@swc/wasm@1.13.4)(@types/node@24.13.4)(picomatch@4.0.7)(rollup@4.52.5)
       '@netlify/build-info': 10.3.0
       '@netlify/config': 24.3.0
       '@netlify/dev-utils': 4.3.2
@@ -17978,6 +17940,14 @@ snapshots:
       pathe: 2.0.3
     optional: true
 
+  playwright-core@1.60.0: {}
+
+  playwright@1.60.0:
+    dependencies:
+      playwright-core: 1.60.0
+    optionalDependencies:
+      fsevents: 2.3.2
+
   possible-typed-array-names@1.1.0: {}
 
   postcss-values-parser@6.0.2(postcss@8.5.28):
@@ -18116,8 +18086,7 @@ snapshots:
     dependencies:
       escape-goat: 4.0.0
 
-  pure-rand@6.1.0:
-    optional: true
+  pure-rand@6.1.0: {}
 
   qs@6.14.2:
     dependencies:
@@ -19481,10 +19450,6 @@ snapshots:
       '@types/react': 19.3.0
 
   use-sync-external-store@1.6.0(react@19.3.0):
-    dependencies:
-      react: 19.3.0
-
-  use-sync-external-store@1.7.0(react@19.3.0):
     dependencies:
       react: 19.3.0
 

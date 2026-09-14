@@ -1,15 +1,17 @@
+import {
+  ingredientTagsCollection,
+  recipeTagsCollection,
+  tagsCollection,
+  updateTagAssignments,
+} from "@/endpoints/kitchen.endpoint"
 import { useMemo, useState } from "react"
 import { Pencil1Icon, PlusIcon } from "@radix-ui/react-icons"
 import { Button, Callout, Dialog, Flex } from "@radix-ui/themes"
 import { UNSAFE_PortalProvider } from "react-aria"
 import { eq, useLiveQuery } from "@tanstack/react-db"
 import type { SelectTag } from "@/db/zod-schemas"
-import {
-  ingredientTagsCollection,
-  recipeTagsCollection,
-  tagsCollection,
-} from "@/lib/collections"
-import { changeTagAssignments, type TagTarget } from "@/lib/tags"
+
+import { prepareTagAssignments, type TagTarget } from "@/lib/tags"
 import TagInput from "@/components/tag-input"
 
 interface TagEditorProps {
@@ -102,7 +104,7 @@ function TagEditorDialog({
     setError(null)
 
     try {
-      const transaction = changeTagAssignments(
+      const input = prepareTagAssignments(
         target,
         currentRows.map((row) => ({
           id: row.link_id,
@@ -110,7 +112,7 @@ function TagEditorDialog({
         })),
         selectedTags
       )
-      await transaction?.isPersisted.promise
+      if (input) await updateTagAssignments(input).isPersisted.promise
       setOpen(false)
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : `Failed to save tags`)

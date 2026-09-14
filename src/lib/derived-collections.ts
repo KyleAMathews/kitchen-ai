@@ -7,7 +7,10 @@ import {
   max,
   not,
 } from "@tanstack/react-db"
-import { recipeCommentsCollection, recipesCollection } from "@/lib/collections"
+import {
+  recipeCommentsCollection,
+  recipesCollection,
+} from "@/endpoints/kitchen.endpoint"
 
 /**
  * Shared recipe-card data. Keeping the aggregates here means every recipe list

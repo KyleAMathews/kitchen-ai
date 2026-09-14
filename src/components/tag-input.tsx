@@ -1,3 +1,4 @@
+import { tagsCollection } from "@/endpoints/kitchen.endpoint"
 import {
   useContext,
   useMemo,
@@ -20,10 +21,10 @@ import {
   TagGroup,
   TagList,
 } from "react-aria-components"
-import { tagsCollection } from "@/lib/collections"
+
 import { authClient } from "@/lib/auth-client"
 import type { SelectTag } from "@/db/zod-schemas"
-import { MAX_TAG_NAME_LENGTH, tagNameSchema } from "@/lib/trpc/tag-schemas"
+import { MAX_TAG_NAME_LENGTH, tagNameSchema } from "@/lib/services/tag-schemas"
 
 interface TagInputProps {
   value: SelectTag[]

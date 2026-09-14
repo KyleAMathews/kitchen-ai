@@ -1,3 +1,9 @@
+import {
+  addToShoppingList,
+  ingredientTagsCollection,
+  ingredientsCollection,
+  tagsCollection,
+} from "@/endpoints/kitchen.endpoint"
 import { createFileRoute } from "@tanstack/react-router"
 import { eq, useLiveQuery } from "@tanstack/react-db"
 import { useState, useMemo, useRef } from "react"
@@ -11,14 +17,9 @@ import {
   TextField,
   Checkbox,
 } from "@radix-ui/themes"
-import {
-  ingredientsCollection,
-  tagsCollection,
-  ingredientTagsCollection,
-} from "@/lib/collections"
+
 import IngredientCard from "@/components/ingredient-card"
 import AddIngredientForm from "@/components/add-ingredient-form"
-import { trpc } from "@/lib/trpc-client"
 import {
   PlusIcon,
   BackpackIcon,
@@ -43,7 +44,7 @@ function IngredientsList() {
   const { data: allIngredients } = useLiveQuery(
     (q) =>
       q
-        .from({ ingredientsCollection })
+        .from({ ingredientsCollection: ingredientsCollection })
         .orderBy(
           ({ ingredientsCollection }) => ingredientsCollection.trello_add_count,
           `desc`
@@ -111,11 +112,11 @@ function IngredientsList() {
       // Extract ingredient IDs for tracking
       const ingredientIds = selectedIngredientsList.map((i) => i.id)
 
-      await trpc.shoppingList.addToShoppingList.mutate({
+      await addToShoppingList({
         recipeName: `Manual Ingredients`,
         checklists,
         ingredientIds,
-      })
+      }).isPersisted.promise
 
       // Clear selection
       setSelectedIngredients(new Set())

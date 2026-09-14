@@ -1,0 +1,377 @@
+// Application integration smoke test. Compile Kitchen's actual endpoints,
+// use disposable PostgreSQL, and stub only auth/OpenAI/Trello to exercise every
+// moved SQL path without sending paid or external writes.
+import assert from "node:assert/strict"
+import {
+  readFile,
+  realpath,
+  mkdtemp,
+  symlink,
+  rm,
+  writeFile,
+  mkdir,
+} from "node:fs/promises"
+import { createRequire } from "node:module"
+import { join, resolve } from "node:path"
+import { tmpdir } from "node:os"
+import { pathToFileURL } from "node:url"
+import { randomUUID } from "node:crypto"
+// Local prototype wiring, matching Kitchen's Vite/schema compiler configuration.
+const base = `/Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo`
+const { transformBoundEndpoints } = await import(
+  pathToFileURL(join(base, `bound-transform.mjs`)).href
+)
+const { loadSchema } = await import(
+  pathToFileURL(join(base, `compiled-dependencies.mjs`)).href
+)
+const kitchen = resolve(import.meta.dirname, `../..`)
+const require = createRequire(
+  await realpath(join(base, `node_modules/vite/package.json`))
+)
+const { build } = require(`esbuild`)
+const { parse } = require(`@babel/parser`)
+const source = join(kitchen, `src/endpoints/kitchen.endpoint.ts`)
+const code = await readFile(source, `utf8`)
+const compiled = transformBoundEndpoints(
+  code,
+  source,
+  parse(code, { sourceType: `module`, plugins: [`typescript`] }),
+  { root: kitchen, snapshot: loadSchema(kitchen) }
+)
+assert.equal(compiled.dependencyDiagnostics.length, 18)
+assert.ok(
+  compiled.dependencyDiagnostics.every((entry) =>
+    Array.isArray(entry.dependencies)
+  ),
+  `every moved SQL endpoint has build-time dependencies`
+)
+const dir = await mkdtemp(join(tmpdir(), `kitchen-port-`))
+await symlink(join(kitchen, `node_modules`), join(dir, `node_modules`))
+let loaded, client
+const observations = []
+try {
+  await build({
+    stdin: {
+      contents:
+        compiled.code +
+        `\nexport {dbClient} from "@/lib/db-client"; export {pool,trace,setActor,setClientUser,responses,extractStarts} from "./database.server";`,
+      resolveDir: join(kitchen, `src/endpoints`),
+      loader: `ts`,
+    },
+    bundle: true,
+    platform: `node`,
+    format: `esm`,
+    packages: `external`,
+    tsconfig: join(base, `tsconfig.json`),
+    outfile: join(dir, `bundle.mjs`),
+    logLevel: `silent`,
+    alias: {
+      "@": join(kitchen, `src`),
+      "@tanstack/db-endpoints": join(base, `src/runtime.ts`),
+    },
+    plugins: [
+      {
+        name: `kitchen-external-fixtures`,
+        setup(build) {
+          build.onResolve({ filter: /(?:^|\/)db-client$/ }, () => ({
+            path: `client`,
+            namespace: `fixture`,
+          }))
+          build.onResolve({ filter: /^@tanstack\/react-start$/ }, () => ({
+            path: `transport`,
+            namespace: `fixture`,
+          }))
+          build.onResolve(
+            { filter: /^virtual:endpoints-registry.server.ts$/ },
+            () => ({ path: `registry`, namespace: `fixture` })
+          )
+          build.onResolve(
+            { filter: /(?:^|\/)database\.server(?:\.ts)?$/ },
+            () => ({ path: `database`, namespace: `fixture` })
+          )
+          build.onResolve(
+            { filter: /\/services\/(ingredients|ai|shopping-list)\.server$/ },
+            ({ path }) => ({
+              path: path.split(`/`).at(-1),
+              namespace: `fixture`,
+            })
+          )
+          build.onLoad({ filter: /.*/, namespace: `fixture` }, ({ path }) => ({
+            loader: `ts`,
+            resolveDir: join(kitchen, `src/endpoints`),
+            contents:
+              path === `client`
+                ? `import {DbClient} from '@tanstack/db';import {currentUserId} from './database.server';export {currentUserId};export const dbClient=new DbClient({endpointScope:currentUserId});`
+                : path === `registry`
+                  ? compiled.registryCode +
+                    `\nexport const registry=definitions;`
+                  : path === `transport`
+                    ? `import {responses} from './database.server';export function createServerFn(){return {inputValidator(schema){return {handler(fn){return async({data})=>{const result=await fn({data:schema.parse(data)});responses.push(result);return result}}}}}}`
+                    : path === `database`
+                      ? `import pg from 'pg';import {drizzle} from 'drizzle-orm/node-postgres';export * from '${kitchen}/src/db/schema';export const pool=new pg.Pool({connectionString:'postgresql://postgres@127.0.0.1:55480/kitchen_endpoints'});export const trace=[],responses=[],extractStarts=[];export const db=drizzle(pool,{casing:'snake_case',logger:{logQuery(sql){trace.push(sql)}}});let actor,clientUser;export const setClientUser=(id)=>clientUser=id;export const currentUserId=()=>clientUser;export const setActor=(id)=>actor=id;export async function requireUser(req){if(!actor||req.scope!==actor)throw Error('Unauthorized');return {id:actor}}`
+                      : path === `ingredients.server`
+                        ? `export async function describeIngredient(){return {parsed:{description:'Fixture ingredient',grocery_section:'Pantry'},embedding:[0,1]}}`
+                        : path === `ai.server`
+                          ? `import {trace,extractStarts} from './database.server';export async function extractRecipe(pastedText){extractStarts.push(trace.length);if(pastedText==='reject-extraction')throw Error('Fixture extraction failed');return {name:'Fixture recipe',description:'Fixture extraction',ingredients:[{listing:'1 cup flour',extracted_name:'flour',embedding:'[0,1]',grocery_section:'Pantry'}]}}`
+                          : `export async function addShoppingCard(){return {id:'fixture-card',name:'Fixture shopping'}}`,
+          }))
+        },
+      },
+    ],
+  })
+  loaded = await import(pathToFileURL(join(dir, `bundle.mjs`)).href)
+  const user = randomUUID(),
+    other = randomUUID(),
+    now = new Date()
+  await loaded.pool.query(
+    `INSERT INTO users(id,name,email,email_verified,created_at,updated_at) VALUES ($1,$1,$1,false,now(),now()),($2,$2,$2,false,now(),now())`,
+    [user, other]
+  )
+  loaded.setActor(user)
+  loaded.setClientUser(user)
+  client = loaded.dbClient
+  const app = loaded
+  const tables = {
+    usersCollection: `users`,
+    ingredientsCollection: `ingredients`,
+    recipesCollection: `recipes`,
+    recipeIngredientsCollection: `recipe_ingredients`,
+    recipeCommentsCollection: `recipe_comments`,
+    tagsCollection: `tags`,
+    recipeTagsCollection: `recipe_tags`,
+    ingredientTagsCollection: `ingredient_tags`,
+  }
+  await Promise.all(Object.keys(tables).map((name) => app[name].preload()))
+  const plain = (rows) =>
+    JSON.parse(
+      JSON.stringify(
+        rows
+          .map((row) =>
+            Object.fromEntries(
+              Object.entries(row).filter(([key]) => !key.startsWith(`$`))
+            )
+          )
+          .sort((a, b) => a.id.localeCompare(b.id))
+      )
+    )
+  async function check() {
+    for (const [name, table] of Object.entries(tables))
+      assert.deepEqual(
+        plain([...app[name].values()]),
+        plain(
+          (
+            await loaded.pool.query(
+              table === `users`
+                ? `SELECT id, name, email, email_verified AS "emailVerified", image,
+                    created_at AS "createdAt", updated_at AS "updatedAt" FROM users`
+                : `SELECT * FROM ${table}`
+            )
+          ).rows
+        ),
+        name
+      )
+  }
+  async function action(name, input, expectedFailure = false) {
+    const start = loaded.trace.length,
+      responseStart = loaded.responses.length
+    const tx = app[name](input)
+    if (expectedFailure) await assert.rejects(tx.isPersisted.promise)
+    else await tx.isPersisted.promise
+    await check()
+    const response = loaded.responses
+      .slice(responseStart)
+      .findLast((r) => r.handler)
+    observations.push({
+      name,
+      rejected: expectedFailure,
+      sqlStatements: loaded.trace.length - start,
+    })
+    return response
+  }
+  const ingredient = randomUUID(),
+    recipe = randomUUID(),
+    tag = randomUUID(),
+    link = randomUUID(),
+    comment = randomUUID()
+  await action(`insertIngredient`, {
+    ingredient: {
+      id: ingredient,
+      name: `Oracle ingredient`,
+      tracking_type: `count`,
+      fill_level: 0,
+      count: 1,
+      expiration_date: now,
+    },
+    new_tags: [],
+    links: [],
+  })
+  await action(`updateIngredient`, { id: ingredient, data: { count: 4 } })
+  await action(`addToShoppingList`, {
+    recipeName: `Fixture`,
+    checklists: { Pantry: [`Flour`] },
+    ingredientIds: [ingredient],
+  })
+  assert.equal(app.ingredientsCollection.get(ingredient).trello_add_count, 1)
+  const recipeStart = loaded.trace.length
+  const insertedRecipe = await action(`insertRecipe`, {
+    id: recipe,
+    url: ``,
+    pastedText: `Fixture text`,
+    new_tags: [],
+    links: [],
+  })
+  assert.equal(insertedRecipe.handler.result.recipe.name, `Fixture recipe`)
+  assert.equal(
+    insertedRecipe.handler.result.recipe.description,
+    `Fixture extraction`
+  )
+  assert.equal(
+    loaded.extractStarts.at(-1),
+    recipeStart,
+    `extract before opening the write transaction`
+  )
+  const recipeWrites = loaded.trace.slice(recipeStart)
+  assert.equal(
+    recipeWrites.filter((sql) => /^insert into "recipes"/i.test(sql)).length,
+    1
+  )
+  assert.equal(
+    recipeWrites.filter((sql) => /^update "recipes"/i.test(sql)).length,
+    0
+  )
+  assert.equal(app.recipesCollection.get(recipe).name, `Fixture recipe`)
+  assert.ok(
+    [...app.recipeIngredientsCollection.values()].some(
+      (row) => row.recipe_id === recipe
+    )
+  )
+  for (const failure of [`extraction`, `related-row`]) {
+    const failedRecipe = randomUUID()
+    const start = loaded.trace.length
+    await action(
+      `insertRecipe`,
+      {
+        id: failedRecipe,
+        url: ``,
+        pastedText:
+          failure === `extraction` ? `reject-extraction` : `Fixture text`,
+        new_tags: [],
+        links:
+          failure === `related-row`
+            ? [{ id: randomUUID(), tag_id: randomUUID(), created_at: now }]
+            : [],
+      },
+      true
+    )
+    assert.equal(app.recipesCollection.has(failedRecipe), false)
+    assert.equal(
+      [...app.recipeIngredientsCollection.values()].some(
+        (row) => row.recipe_id === failedRecipe
+      ),
+      false
+    )
+    if (failure === `extraction`) {
+      assert.equal(loaded.extractStarts.at(-1), start)
+      assert.equal(
+        loaded.trace
+          .slice(start)
+          .some((sql) => /^(begin|insert|update|delete)\b/i.test(sql)),
+        false
+      )
+    }
+  }
+  await action(`insertComment`, {
+    id: comment,
+    recipe_id: recipe,
+    user_id: other,
+    made_it: true,
+    rating: 4,
+    comment: `first`,
+    created_at: new Date(0),
+    updated_at: new Date(0),
+  })
+  assert.equal(app.recipeCommentsCollection.get(comment).user_id, user)
+  assert.ok(app.recipeCommentsCollection.get(comment).created_at.getTime() > 0)
+  const commentCreatedAt = app.recipeCommentsCollection.get(comment).created_at
+  await action(`updateComment`, {
+    id: comment,
+    data: { comment: `edited`, user_id: other, created_at: new Date(0) },
+  })
+  assert.equal(app.recipeCommentsCollection.get(comment).user_id, user)
+  assert.deepEqual(
+    app.recipeCommentsCollection.get(comment).created_at,
+    commentCreatedAt
+  )
+  await action(`updateTagAssignments`, {
+    target: { entity: `recipe`, entity_id: recipe },
+    new_tags: [
+      { id: tag, name: `  ${tag}  `, user_id: other, created_at: new Date(0) },
+    ],
+    links: [{ id: link, tag_id: tag, created_at: new Date(0) }],
+    removed_link_ids: [],
+  })
+  assert.equal(app.tagsCollection.get(tag).name, tag)
+  assert.equal(app.tagsCollection.get(tag).user_id, user)
+  assert.ok(app.tagsCollection.get(tag).created_at.getTime() > 0)
+  assert.ok(app.recipeTagsCollection.get(link).created_at.getTime() > 0)
+  const invalidTag = app.updateTagAssignments({
+    target: { entity: `recipe`, entity_id: recipe },
+    new_tags: [
+      { id: randomUUID(), name: `   `, user_id: user, created_at: now },
+    ],
+    links: [],
+    removed_link_ids: [],
+  })
+  // Blank names are a Kitchen rule. Generic validation errors and no-handler/
+  // no-SQL guarantees are checked by the shared generated framework oracle.
+  await assert.rejects(invalidTag.isPersisted.promise)
+  await check()
+  loaded.setActor(other)
+  await action(
+    `updateIngredient`,
+    { id: ingredient, data: { count: 99 } },
+    true
+  )
+  loaded.setActor(user)
+  await action(`deleteComment`, comment)
+  await action(`deleteRecipe`, recipe)
+  await action(`deleteIngredient`, ingredient)
+  await client.cleanup()
+  client = null
+  // Auth stub checks scope, while the separate browser test checks real sessions.
+  await loaded.pool.query(`DELETE FROM users WHERE id=ANY($1)`, [[user, other]])
+  const output = resolve(
+    process.env.ENDPOINT_ORACLE_OUTPUT ??
+      (await mkdtemp(join(tmpdir(), `kitchen-endpoints-report-`)))
+  )
+  await mkdir(output, { recursive: true })
+  await writeFile(
+    join(output, `report.json`),
+    JSON.stringify(
+      {
+        ok: true,
+        comparisons: observations.length * 8,
+        observations,
+        dependencies: compiled.dependencyDiagnostics,
+      },
+      null,
+      2
+    )
+  )
+  console.log(
+    JSON.stringify(
+      {
+        ok: true,
+        report: join(output, `report.json`),
+        comparisons: observations.length * 8,
+        observations,
+      },
+      null,
+      2
+    )
+  )
+} finally {
+  await client?.cleanup()
+  await loaded?.pool.end()
+  await rm(dir, { recursive: true, force: true })
+}

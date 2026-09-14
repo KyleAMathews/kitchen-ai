@@ -1,9 +1,4 @@
-import {
-  createFileRoute,
-  redirect,
-  useNavigate,
-  Link,
-} from "@tanstack/react-router"
+import { createFileRoute, redirect, Link } from "@tanstack/react-router"
 import { Outlet } from "@tanstack/react-router"
 import { authClient, authStateCollection } from "@/lib/auth-client"
 import { Flex, Text, Button, Heading, Container } from "@radix-ui/themes"
@@ -55,7 +50,8 @@ export const Route = createFileRoute(`/_authenticated`)({
             Error
           </Heading>
           <Text color="gray">
-            {error?.message || `An unexpected error occurred`}
+            {(error instanceof Error ? error.message : String(error)) ||
+              `An unexpected error occurred`}
           </Text>
           <Button onClick={() => window.location.reload()} variant="soft">
             Retry
@@ -70,11 +66,11 @@ export const Route = createFileRoute(`/_authenticated`)({
 
 function AuthenticatedLayout() {
   const { data: session, isPending } = authClient.useSession()
-  const navigate = useNavigate()
 
   const handleLogout = async () => {
     await authClient.signOut()
-    navigate({ to: `/login` })
+    authStateCollection.delete(`auth`)
+    window.location.assign(`/login`)
   }
 
   if (isPending || !session) {
