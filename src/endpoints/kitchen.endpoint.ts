@@ -407,37 +407,23 @@ export function createKitchenEndpoints(dbClient: DbClient) {
       const user = await requireUser(req)
 
       const input = req.body
+      const { ingredients: extractedIngredients, ...recipeData } =
+        await extractRecipe(input.pastedText, input.url)
       const result = await db.transaction(async (tx) => {
-        // Create a placeholder recipe first
         const [newRecipe] = await tx
           .insert(recipes)
           .values({
+            ...recipeData,
             id: input.id,
-            name: `Processing...`,
-            description: `AI processing in progress`,
-            url: input.url || ``,
+            url: input.url,
             user_id: user.id,
           })
           .returning()
 
-        console.log({ input, newRecipe })
-
-        // Process with AI in the same transaction
-        const parsed = await extractRecipe(input.pastedText, input.url)
-        await tx
-          .update(recipes)
-          .set({
-            name: parsed.name,
-            description: parsed.description,
-            updated_at: new Date(),
-          })
-          .where(
-            and(eq(recipes.id, newRecipe.id), eq(recipes.user_id, user.id))
-          )
         await tx.insert(recipeIngredients).values(
-          parsed.ingredients.map((ingredient) => ({
-            recipe_id: newRecipe.id,
+          extractedIngredients.map((ingredient) => ({
             ...ingredient,
+            recipe_id: newRecipe.id,
           }))
         )
 

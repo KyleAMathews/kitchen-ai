@@ -10,6 +10,8 @@ Declared input-schema rejections now return `INVALID_INPUT` with structured issu
 
 Mutation names now reflect their operations: `updateIngredient`, `updateComment`, `insertIngredient`, `insertRecipe`, `insertComment`, and the existing deletes. `updateTagAssignments` updates a relationship set through inserts/deletes. `addToShoppingList` retains its workflow name because it calls Trello before updating ingredient counters. UI helpers and oracle references use the same names.
 
+Recipe insertion extracts AI data and embeddings before opening a write transaction. It inserts the finished recipe once, together with its ingredients and tags, and returns that row. Only the client keeps a “Processing…” optimistic placeholder. The compiled oracle now passes 104 collection comparisons and checks the returned row, one recipe INSERT with no follow-up UPDATE, no write transaction on extraction failure, and full rollback when a related-row insert fails. AI/Trello remain stubbed in this companion.
+
 Validation in this pass:
 
 - Production build and typecheck pass.
