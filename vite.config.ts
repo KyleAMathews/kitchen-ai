@@ -26,13 +26,13 @@ export default defineConfig(async () => {
 
   return {
     server: {
-      host: "127.0.0.1",
+      host: `127.0.0.1`,
       port: 4196,
       fs: {
         allow: [
-          new URL(".", import.meta.url).pathname,
-          "/Users/kylemathews/.codex/worktrees/e079/tanstack-db",
-          "/Users/kylemathews/programs/kitchen-ai",
+          new URL(`.`, import.meta.url).pathname,
+          `/Users/kylemathews/.codex/worktrees/e079/tanstack-db`,
+          `/Users/kylemathews/programs/kitchen-ai`,
         ],
       },
     },
@@ -56,25 +56,21 @@ export default defineConfig(async () => {
     resolve: {
       tsconfigPaths: false,
       dedupe: [
-        "zod",
-        "react",
-        "react-dom",
-        "@tanstack/query-core",
-        "@tanstack/pacer-lite",
-        "fractional-indexing",
-        "sorted-btree",
-        "use-sync-external-store",
+        `zod`,
+        `react`,
+        `react-dom`,
+        `@tanstack/query-core`,
+        `@tanstack/pacer-lite`,
+        `fractional-indexing`,
+        `sorted-btree`,
+        `use-sync-external-store`,
       ],
       alias: {
-        "@": new URL("./src", import.meta.url).pathname,
-        "@tanstack/query-db-collection":
-          "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/query-db-collection/src/index.ts",
-        "@tanstack/react-db":
-          "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/react-db/src/index.ts",
-        "@tanstack/db-ivm":
-          "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/db-ivm/src/index.ts",
-        "@tanstack/db":
-          "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/db/src/index.ts",
+        "@": new URL(`./src`, import.meta.url).pathname,
+        "@tanstack/query-db-collection": `/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/query-db-collection/src/index.ts`,
+        "@tanstack/react-db": `/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/react-db/src/index.ts`,
+        "@tanstack/db-ivm": `/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/db-ivm/src/index.ts`,
+        "@tanstack/db": `/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/db/src/index.ts`,
         debug: path.resolve(import.meta.dirname, `./src/polyfills/debug.js`),
       },
     },

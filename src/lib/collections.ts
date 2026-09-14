@@ -23,17 +23,17 @@ function createKitchen(userId: string) {
   return { ...endpoints, recipeCardsCollection: createRecipeCards(endpoints) }
 }
 export async function initializeKitchen(userId: string) {
-  if (typeof window === "undefined")
-    throw new Error("Kitchen collections require a browser session")
+  if (typeof window === `undefined`)
+    throw new Error(`Kitchen collections require a browser session`)
   if (current?.userId === userId) return current.endpoints
   if (current) {
     const previous = current
     current = undefined
     await Promise.all(
       Object.entries(previous.endpoints)
-        .filter(([name]) => name.endsWith("Collection"))
+        .filter(([name]) => name.endsWith(`Collection`))
         .map(([, value]) => {
-          if (typeof value === "object" && "cleanup" in value)
+          if (typeof value === `object` && `cleanup` in value)
             return value.cleanup()
         })
     )
@@ -45,7 +45,7 @@ export async function initializeKitchen(userId: string) {
 export function getKitchen() {
   if (!current)
     throw new Error(
-      "Kitchen collections have not been initialized for this session"
+      `Kitchen collections have not been initialized for this session`
     )
   return current.endpoints
 }

@@ -6,6 +6,6 @@ export * from "@/db/schema"
 export async function requireUser(req: { scope: string }) {
   const session = await auth.api.getSession({ headers: getRequestHeaders() })
   if (!session?.user || session.user.id !== req.scope)
-    throw new Error("Unauthorized")
+    throw new Error(`Unauthorized`)
   return session.user
 }

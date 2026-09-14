@@ -8,153 +8,153 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
-import { Route as AuthenticatedReviewRouteImport } from './routes/_authenticated/review'
-import { Route as ApiHealthRouteImport } from './routes/api/health'
-import { Route as AuthenticatedIngredientsIndexRouteImport } from './routes/_authenticated/ingredients/index'
-import { Route as AuthenticatedIngredientsIdRouteImport } from './routes/_authenticated/ingredients/$id'
-import { Route as AuthenticatedRecipesIndexRouteImport } from './routes/_authenticated/recipes/index'
-import { Route as AuthenticatedRecipesIdRouteImport } from './routes/_authenticated/recipes/$id'
-import { Route as AuthenticatedRecipesNewRouteImport } from './routes/_authenticated/recipes/new'
-import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as rootRouteImport } from "./routes/__root"
+import { Route as AuthenticatedRouteImport } from "./routes/_authenticated"
+import { Route as LoginRouteImport } from "./routes/login"
+import { Route as AuthenticatedIndexRouteImport } from "./routes/_authenticated/index"
+import { Route as AuthenticatedReviewRouteImport } from "./routes/_authenticated/review"
+import { Route as ApiHealthRouteImport } from "./routes/api/health"
+import { Route as AuthenticatedIngredientsIndexRouteImport } from "./routes/_authenticated/ingredients/index"
+import { Route as AuthenticatedIngredientsIdRouteImport } from "./routes/_authenticated/ingredients/$id"
+import { Route as AuthenticatedRecipesIndexRouteImport } from "./routes/_authenticated/recipes/index"
+import { Route as AuthenticatedRecipesIdRouteImport } from "./routes/_authenticated/recipes/$id"
+import { Route as AuthenticatedRecipesNewRouteImport } from "./routes/_authenticated/recipes/new"
+import { Route as ApiAuthSplatRouteImport } from "./routes/api/auth/$"
 
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
-  id: '/_authenticated',
+  id: "/_authenticated",
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+  id: "/login",
+  path: "/login",
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedReviewRoute = AuthenticatedReviewRouteImport.update({
-  id: '/review',
-  path: '/review',
+  id: "/review",
+  path: "/review",
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const ApiHealthRoute = ApiHealthRouteImport.update({
-  id: '/api/health',
-  path: '/api/health',
+  id: "/api/health",
+  path: "/api/health",
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedIngredientsIndexRoute =
   AuthenticatedIngredientsIndexRouteImport.update({
-    id: '/ingredients/',
-    path: '/ingredients/',
+    id: "/ingredients/",
+    path: "/ingredients/",
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedIngredientsIdRoute =
   AuthenticatedIngredientsIdRouteImport.update({
-    id: '/ingredients/$id',
-    path: '/ingredients/$id',
+    id: "/ingredients/$id",
+    path: "/ingredients/$id",
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedRecipesIndexRoute =
   AuthenticatedRecipesIndexRouteImport.update({
-    id: '/recipes/',
-    path: '/recipes/',
+    id: "/recipes/",
+    path: "/recipes/",
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedRecipesIdRoute = AuthenticatedRecipesIdRouteImport.update({
-  id: '/recipes/$id',
-  path: '/recipes/$id',
+  id: "/recipes/$id",
+  path: "/recipes/$id",
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedRecipesNewRoute = AuthenticatedRecipesNewRouteImport.update({
-  id: '/recipes/new',
-  path: '/recipes/new',
+  id: "/recipes/new",
+  path: "/recipes/new",
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
+  id: "/api/auth/$",
+  path: "/api/auth/$",
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AuthenticatedIndexRoute
-  '/login': typeof LoginRoute
-  '/review': typeof AuthenticatedReviewRoute
-  '/api/health': typeof ApiHealthRoute
-  '/ingredients/$id': typeof AuthenticatedIngredientsIdRoute
-  '/recipes/$id': typeof AuthenticatedRecipesIdRoute
-  '/recipes/new': typeof AuthenticatedRecipesNewRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
-  '/ingredients/': typeof AuthenticatedIngredientsIndexRoute
-  '/recipes/': typeof AuthenticatedRecipesIndexRoute
+  "/": typeof AuthenticatedIndexRoute
+  "/login": typeof LoginRoute
+  "/review": typeof AuthenticatedReviewRoute
+  "/api/health": typeof ApiHealthRoute
+  "/ingredients/$id": typeof AuthenticatedIngredientsIdRoute
+  "/recipes/$id": typeof AuthenticatedRecipesIdRoute
+  "/recipes/new": typeof AuthenticatedRecipesNewRoute
+  "/api/auth/$": typeof ApiAuthSplatRoute
+  "/ingredients/": typeof AuthenticatedIngredientsIndexRoute
+  "/recipes/": typeof AuthenticatedRecipesIndexRoute
 }
 export interface FileRoutesByTo {
-  '/login': typeof LoginRoute
-  '/review': typeof AuthenticatedReviewRoute
-  '/api/health': typeof ApiHealthRoute
-  '/': typeof AuthenticatedIndexRoute
-  '/ingredients/$id': typeof AuthenticatedIngredientsIdRoute
-  '/recipes/$id': typeof AuthenticatedRecipesIdRoute
-  '/recipes/new': typeof AuthenticatedRecipesNewRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
-  '/ingredients': typeof AuthenticatedIngredientsIndexRoute
-  '/recipes': typeof AuthenticatedRecipesIndexRoute
+  "/login": typeof LoginRoute
+  "/review": typeof AuthenticatedReviewRoute
+  "/api/health": typeof ApiHealthRoute
+  "/": typeof AuthenticatedIndexRoute
+  "/ingredients/$id": typeof AuthenticatedIngredientsIdRoute
+  "/recipes/$id": typeof AuthenticatedRecipesIdRoute
+  "/recipes/new": typeof AuthenticatedRecipesNewRoute
+  "/api/auth/$": typeof ApiAuthSplatRoute
+  "/ingredients": typeof AuthenticatedIngredientsIndexRoute
+  "/recipes": typeof AuthenticatedRecipesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/login': typeof LoginRoute
-  '/_authenticated/review': typeof AuthenticatedReviewRoute
-  '/api/health': typeof ApiHealthRoute
-  '/_authenticated/': typeof AuthenticatedIndexRoute
-  '/_authenticated/ingredients/$id': typeof AuthenticatedIngredientsIdRoute
-  '/_authenticated/recipes/$id': typeof AuthenticatedRecipesIdRoute
-  '/_authenticated/recipes/new': typeof AuthenticatedRecipesNewRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
-  '/_authenticated/ingredients/': typeof AuthenticatedIngredientsIndexRoute
-  '/_authenticated/recipes/': typeof AuthenticatedRecipesIndexRoute
+  "/_authenticated": typeof AuthenticatedRouteWithChildren
+  "/login": typeof LoginRoute
+  "/_authenticated/review": typeof AuthenticatedReviewRoute
+  "/api/health": typeof ApiHealthRoute
+  "/_authenticated/": typeof AuthenticatedIndexRoute
+  "/_authenticated/ingredients/$id": typeof AuthenticatedIngredientsIdRoute
+  "/_authenticated/recipes/$id": typeof AuthenticatedRecipesIdRoute
+  "/_authenticated/recipes/new": typeof AuthenticatedRecipesNewRoute
+  "/api/auth/$": typeof ApiAuthSplatRoute
+  "/_authenticated/ingredients/": typeof AuthenticatedIngredientsIndexRoute
+  "/_authenticated/recipes/": typeof AuthenticatedRecipesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
-    | '/login'
-    | '/review'
-    | '/api/health'
-    | '/ingredients/$id'
-    | '/recipes/$id'
-    | '/recipes/new'
-    | '/api/auth/$'
-    | '/ingredients/'
-    | '/recipes/'
+    | "/"
+    | "/login"
+    | "/review"
+    | "/api/health"
+    | "/ingredients/$id"
+    | "/recipes/$id"
+    | "/recipes/new"
+    | "/api/auth/$"
+    | "/ingredients/"
+    | "/recipes/"
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/login'
-    | '/review'
-    | '/api/health'
-    | '/'
-    | '/ingredients/$id'
-    | '/recipes/$id'
-    | '/recipes/new'
-    | '/api/auth/$'
-    | '/ingredients'
-    | '/recipes'
+    | "/login"
+    | "/review"
+    | "/api/health"
+    | "/"
+    | "/ingredients/$id"
+    | "/recipes/$id"
+    | "/recipes/new"
+    | "/api/auth/$"
+    | "/ingredients"
+    | "/recipes"
   id:
-    | '__root__'
-    | '/_authenticated'
-    | '/login'
-    | '/_authenticated/review'
-    | '/api/health'
-    | '/_authenticated/'
-    | '/_authenticated/ingredients/$id'
-    | '/_authenticated/recipes/$id'
-    | '/_authenticated/recipes/new'
-    | '/api/auth/$'
-    | '/_authenticated/ingredients/'
-    | '/_authenticated/recipes/'
+    | "__root__"
+    | "/_authenticated"
+    | "/login"
+    | "/_authenticated/review"
+    | "/api/health"
+    | "/_authenticated/"
+    | "/_authenticated/ingredients/$id"
+    | "/_authenticated/recipes/$id"
+    | "/_authenticated/recipes/new"
+    | "/api/auth/$"
+    | "/_authenticated/ingredients/"
+    | "/_authenticated/recipes/"
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -164,82 +164,82 @@ export interface RootRouteChildren {
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
+    "/_authenticated": {
+      id: "/_authenticated"
+      path: ""
+      fullPath: "/"
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
+    "/login": {
+      id: "/login"
+      path: "/login"
+      fullPath: "/login"
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/': {
-      id: '/_authenticated/'
-      path: '/'
-      fullPath: '/'
+    "/_authenticated/": {
+      id: "/_authenticated/"
+      path: "/"
+      fullPath: "/"
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/review': {
-      id: '/_authenticated/review'
-      path: '/review'
-      fullPath: '/review'
+    "/_authenticated/review": {
+      id: "/_authenticated/review"
+      path: "/review"
+      fullPath: "/review"
       preLoaderRoute: typeof AuthenticatedReviewRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/api/health': {
-      id: '/api/health'
-      path: '/api/health'
-      fullPath: '/api/health'
+    "/api/health": {
+      id: "/api/health"
+      path: "/api/health"
+      fullPath: "/api/health"
       preLoaderRoute: typeof ApiHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/ingredients/': {
-      id: '/_authenticated/ingredients/'
-      path: '/ingredients'
-      fullPath: '/ingredients/'
+    "/_authenticated/ingredients/": {
+      id: "/_authenticated/ingredients/"
+      path: "/ingredients"
+      fullPath: "/ingredients/"
       preLoaderRoute: typeof AuthenticatedIngredientsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/ingredients/$id': {
-      id: '/_authenticated/ingredients/$id'
-      path: '/ingredients/$id'
-      fullPath: '/ingredients/$id'
+    "/_authenticated/ingredients/$id": {
+      id: "/_authenticated/ingredients/$id"
+      path: "/ingredients/$id"
+      fullPath: "/ingredients/$id"
       preLoaderRoute: typeof AuthenticatedIngredientsIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/recipes/': {
-      id: '/_authenticated/recipes/'
-      path: '/recipes'
-      fullPath: '/recipes/'
+    "/_authenticated/recipes/": {
+      id: "/_authenticated/recipes/"
+      path: "/recipes"
+      fullPath: "/recipes/"
       preLoaderRoute: typeof AuthenticatedRecipesIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/recipes/$id': {
-      id: '/_authenticated/recipes/$id'
-      path: '/recipes/$id'
-      fullPath: '/recipes/$id'
+    "/_authenticated/recipes/$id": {
+      id: "/_authenticated/recipes/$id"
+      path: "/recipes/$id"
+      fullPath: "/recipes/$id"
       preLoaderRoute: typeof AuthenticatedRecipesIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/recipes/new': {
-      id: '/_authenticated/recipes/new'
-      path: '/recipes/new'
-      fullPath: '/recipes/new'
+    "/_authenticated/recipes/new": {
+      id: "/_authenticated/recipes/new"
+      path: "/recipes/new"
+      fullPath: "/recipes/new"
       preLoaderRoute: typeof AuthenticatedRecipesNewRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
+    "/api/auth/$": {
+      id: "/api/auth/$"
+      path: "/api/auth/$"
+      fullPath: "/api/auth/$"
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -267,7 +267,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
-  AuthenticatedRouteChildren,
+  AuthenticatedRouteChildren
 )
 
 const rootRouteChildren: RootRouteChildren = {
@@ -280,9 +280,9 @@ export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.tsx'
-declare module '@tanstack/react-start' {
+import type { getRouter } from "./router.tsx"
+import type { startInstance } from "./start.tsx"
+declare module "@tanstack/react-start" {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>

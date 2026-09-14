@@ -18,7 +18,7 @@ export const tagWritesSchema = z.object({
   new_tags: z.array(selectTagsSchema),
   links: z.array(linkSchema),
 })
-export const tagTargetSchema = z.discriminatedUnion("entity", [
-  z.object({ entity: z.literal("recipe"), entity_id: z.string() }),
-  z.object({ entity: z.literal("ingredient"), entity_id: z.string() }),
+export const tagTargetSchema = z.discriminatedUnion(`entity`, [
+  z.object({ entity: z.literal(`recipe`), entity_id: z.string() }),
+  z.object({ entity: z.literal(`ingredient`), entity_id: z.string() }),
 ])

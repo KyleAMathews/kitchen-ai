@@ -72,8 +72,8 @@ function AuthenticatedLayout() {
 
   const handleLogout = async () => {
     await authClient.signOut()
-    authStateCollection.delete("auth")
-    window.location.assign("/login")
+    authStateCollection.delete(`auth`)
+    window.location.assign(`/login`)
   }
 
   if (isPending || !session) {
