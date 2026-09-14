@@ -55,7 +55,10 @@
         "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/node_modules/@tanstack/pacer-lite/dist/*"
       ],
       "zod": ["./node_modules/zod"],
-      "zod/*": ["./node_modules/zod/*"]
+      "zod/*": ["./node_modules/zod/*"],
+      "@tanstack/db-endpoints": [
+        "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/src/runtime.ts"
+      ]
     }
   }
 }

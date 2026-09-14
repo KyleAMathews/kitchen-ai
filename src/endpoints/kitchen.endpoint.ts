@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { BasicIndex } from "@tanstack/db"
 import { dbClient, currentUserId } from "@/lib/db-client"
-import { endpoints } from "./runtime"
+import { endpoints } from "@tanstack/db-endpoints"
 import {
   db,
   requireUser,

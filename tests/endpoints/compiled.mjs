@@ -65,7 +65,10 @@ try {
     tsconfig: join(base, `tsconfig.json`),
     outfile: join(dir, `bundle.mjs`),
     logLevel: `silent`,
-    alias: { "@": join(kitchen, `src`) },
+    alias: {
+      "@": join(kitchen, `src`),
+      "@tanstack/db-endpoints": join(base, `src/runtime.ts`),
+    },
     plugins: [
       {
         name: `kitchen-external-fixtures`,

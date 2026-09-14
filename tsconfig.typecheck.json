@@ -39,7 +39,10 @@
       "zod": ["./node_modules/zod"],
       "zod/*": ["./node_modules/zod/*"],
       "react": ["./node_modules/@types/react"],
-      "react/*": ["./node_modules/@types/react/*"]
+      "react/*": ["./node_modules/@types/react/*"],
+      "@tanstack/db-endpoints": [
+        "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/src/runtime.ts"
+      ]
     },
     "noUnusedParameters": false
   }
