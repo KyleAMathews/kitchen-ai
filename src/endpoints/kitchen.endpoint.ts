@@ -30,9 +30,14 @@ import {
   updateIngredientsSchema,
   updateRecipeCommentsSchema,
 } from "@/db/zod-schemas"
-import { tagWritesSchema, tagTargetSchema } from "./schemas"
+import {
+  ingredientInputSchema,
+  tagWritesSchema,
+  tagTargetSchema,
+} from "./schemas"
 export function createKitchenEndpoints(dbClient: DbClient) {
   const { query, mutation } = endpoints(dbClient)
+  const userId = dbClient.requireDependency<string>(`endpointScope`)
   const usersCollection = query({
     input: z.object({}),
     schema: selectUsersSchema,
@@ -106,7 +111,15 @@ export function createKitchenEndpoints(dbClient: DbClient) {
     },
   })
   const updateIngredient = mutation({
-    input: z.object({ id: z.string(), data: updateIngredientsSchema }),
+    input: z.object({
+      id: z.string(),
+      data: updateIngredientsSchema.omit({
+        id: true,
+        user_id: true,
+        created_at: true,
+        updated_at: true,
+      }),
+    }),
     onMutate({ input }) {
       ingredientsCollection.update(input.id, (draft) => {
         Object.assign(draft, input.data)
@@ -146,6 +159,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
         recipe_id: true,
         user_id: true,
         created_at: true,
+        updated_at: true,
       }),
     }),
     onMutate({ input }) {
@@ -157,7 +171,6 @@ export function createKitchenEndpoints(dbClient: DbClient) {
       const user = await requireUser(req)
 
       const input = req.body
-      const userId = user.id
 
       return res.json(
         await db.transaction(async (tx) => {
@@ -168,7 +181,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
             .where(
               and(
                 eq(recipeComments.id, input.id),
-                eq(recipeComments.user_id, userId)
+                eq(recipeComments.user_id, user.id)
               )
             )
 
@@ -249,7 +262,6 @@ export function createKitchenEndpoints(dbClient: DbClient) {
       const user = await requireUser(req)
 
       const id = req.body
-      const userId = user.id
 
       return res.json(
         await db.transaction(async (tx) => {
@@ -258,7 +270,10 @@ export function createKitchenEndpoints(dbClient: DbClient) {
             .select()
             .from(recipeComments)
             .where(
-              and(eq(recipeComments.id, id), eq(recipeComments.user_id, userId))
+              and(
+                eq(recipeComments.id, id),
+                eq(recipeComments.user_id, user.id)
+              )
             )
 
           if (!existing) {
@@ -276,27 +291,30 @@ export function createKitchenEndpoints(dbClient: DbClient) {
     },
   })
   const insertComment = mutation({
-    input: selectRecipeCommentsSchema,
+    input: selectRecipeCommentsSchema.omit({
+      user_id: true,
+      created_at: true,
+      updated_at: true,
+    }),
     onMutate({ input }) {
-      recipeCommentsCollection.insert(input)
+      const now = new Date()
+      recipeCommentsCollection.insert({
+        ...input,
+        user_id: userId,
+        created_at: now,
+        updated_at: now,
+      })
     },
     async handler(req, res) {
       const user = await requireUser(req)
-
-      const input = req.body
-      const userId = user.id
 
       return res.json(
         await db.transaction(async (tx) => {
           const [result] = await tx
             .insert(recipeComments)
             .values({
-              id: input.id,
-              recipe_id: input.recipe_id,
-              made_it: input.made_it,
-              rating: input.rating,
-              comment: input.comment,
-              user_id: userId,
+              ...req.body,
+              user_id: user.id,
             })
             .returning({ id: recipeComments.id })
 
@@ -307,60 +325,62 @@ export function createKitchenEndpoints(dbClient: DbClient) {
   })
   const insertIngredient = mutation({
     input: tagWritesSchema.extend({
-      ingredient: selectIngredientsSchema.extend({
-        tracking_type: z.enum([`fill_level`, `count`, `pantry_staple`]),
-        fill_level: z.number().min(0).max(100),
-      }),
+      ingredient: ingredientInputSchema,
     }),
     onMutate({ input }) {
-      ingredientsCollection.insert(input.ingredient)
-      for (const tag of input.new_tags) tagsCollection.insert(tag)
+      const now = new Date()
+      ingredientsCollection.insert({
+        ...input.ingredient,
+        description: `AI processing in progress`,
+        grocery_section: `Other`,
+        embedding: `[]`,
+        is_reviewed: true,
+        trello_add_count: 0,
+        user_id: userId,
+        created_at: now,
+        updated_at: now,
+      })
+      for (const tag of input.new_tags)
+        tagsCollection.insert({ ...tag, user_id: userId, created_at: now })
       for (const link of input.links)
         ingredientTagsCollection.insert({
           ...link,
           ingredient_id: input.ingredient.id,
+          created_at: now,
         })
     },
     async handler(req, res) {
       const user = await requireUser(req)
 
-      const input = req.body.ingredient
-      const { new_tags, links } = req.body
+      const { ingredient: input, new_tags, links } = req.body
       const { parsed, embedding } = await describeIngredient(input.name)
-      // Save to database
       const result = await db.transaction(async (tx) => {
         const [newIngredient] = await tx
           .insert(ingredients)
           .values({
-            id: input.id,
-            name: input.name,
-            description: parsed.description,
-            grocery_section: parsed.grocery_section,
+            ...input,
+            ...parsed,
             embedding: JSON.stringify(embedding),
             user_id: user.id,
-            tracking_type: input.tracking_type,
             fill_level:
               input.tracking_type === `fill_level`
-                ? (input.fill_level ?? 50)
+                ? input.fill_level
                 : input.tracking_type === `pantry_staple`
                   ? 100
                   : 0,
-            count: input.tracking_type === `count` ? (input.count ?? 1) : 0,
+            count: input.tracking_type === `count` ? input.count : 0,
             is_reviewed: true,
-            // Use provided expiration date or default based on type
             expiration_date:
               input.tracking_type === `pantry_staple`
                 ? new Date(Date.now() + 365 * 10 * 24 * 60 * 60 * 1000) // 10 years from now
-                : (input.expiration_date ??
-                  new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)), // 30 days from now or provided date
+                : input.expiration_date,
           })
           .returning()
 
         if (new_tags.length > 0) {
           await tx.insert(tags).values(
             new_tags.map((tag) => ({
-              id: tag.id,
-              name: tag.name,
+              ...tag,
               user_id: user.id,
             }))
           )
@@ -369,8 +389,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
         if (links.length > 0) {
           await tx.insert(ingredientTags).values(
             links.map((link) => ({
-              id: link.id,
-              tag_id: link.tag_id,
+              ...link,
               ingredient_id: input.id,
             }))
           )
@@ -387,35 +406,39 @@ export function createKitchenEndpoints(dbClient: DbClient) {
       id: z.string().uuid(),
       url: z.string(),
       pastedText: z.string(),
-      created_at: z.date(),
     }),
     onMutate({ input }) {
+      const now = new Date()
       recipesCollection.insert({
         id: input.id,
         name: `Processing...`,
         description: `AI processing in progress`,
         url: input.url,
-        user_id: ``,
-        created_at: input.created_at,
-        updated_at: input.created_at,
+        user_id: userId,
+        created_at: now,
+        updated_at: now,
       })
-      for (const tag of input.new_tags) tagsCollection.insert(tag)
+      for (const tag of input.new_tags)
+        tagsCollection.insert({ ...tag, user_id: userId, created_at: now })
       for (const link of input.links)
-        recipeTagsCollection.insert({ ...link, recipe_id: input.id })
+        recipeTagsCollection.insert({
+          ...link,
+          recipe_id: input.id,
+          created_at: now,
+        })
     },
     async handler(req, res) {
       const user = await requireUser(req)
 
-      const input = req.body
+      const { pastedText, new_tags, links, ...input } = req.body
       const { ingredients: extractedIngredients, ...recipeData } =
-        await extractRecipe(input.pastedText, input.url)
+        await extractRecipe(pastedText, input.url)
       const result = await db.transaction(async (tx) => {
         const [newRecipe] = await tx
           .insert(recipes)
           .values({
+            ...input,
             ...recipeData,
-            id: input.id,
-            url: input.url,
             user_id: user.id,
           })
           .returning()
@@ -427,21 +450,19 @@ export function createKitchenEndpoints(dbClient: DbClient) {
           }))
         )
 
-        if (input.new_tags.length > 0) {
+        if (new_tags.length > 0) {
           await tx.insert(tags).values(
-            input.new_tags.map((tag) => ({
-              id: tag.id,
-              name: tag.name,
+            new_tags.map((tag) => ({
+              ...tag,
               user_id: user.id,
             }))
           )
         }
 
-        if (input.links.length > 0) {
+        if (links.length > 0) {
           await tx.insert(recipeTags).values(
-            input.links.map((link) => ({
-              id: link.id,
-              tag_id: link.tag_id,
+            links.map((link) => ({
+              ...link,
               recipe_id: input.id,
             }))
           )
@@ -459,12 +480,15 @@ export function createKitchenEndpoints(dbClient: DbClient) {
       removed_link_ids: z.array(z.string().uuid()),
     }),
     onMutate({ input }) {
-      for (const tag of input.new_tags) tagsCollection.insert(tag)
+      const now = new Date()
+      for (const tag of input.new_tags)
+        tagsCollection.insert({ ...tag, user_id: userId, created_at: now })
       if (input.target.entity === `recipe`) {
         for (const link of input.links)
           recipeTagsCollection.insert({
             ...link,
             recipe_id: input.target.entity_id,
+            created_at: now,
           })
         if (input.removed_link_ids.length)
           recipeTagsCollection.delete(input.removed_link_ids)
@@ -473,6 +497,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
           ingredientTagsCollection.insert({
             ...link,
             ingredient_id: input.target.entity_id,
+            created_at: now,
           })
         if (input.removed_link_ids.length)
           ingredientTagsCollection.delete(input.removed_link_ids)
@@ -482,7 +507,6 @@ export function createKitchenEndpoints(dbClient: DbClient) {
       const user = await requireUser(req)
 
       const input = req.body
-      const userId = user.id
 
       return res.json(
         await db.transaction(async (tx) => {
@@ -517,9 +541,8 @@ export function createKitchenEndpoints(dbClient: DbClient) {
           if (input.new_tags.length > 0) {
             await tx.insert(tags).values(
               input.new_tags.map((tag) => ({
-                id: tag.id,
-                name: tag.name,
-                user_id: userId,
+                ...tag,
+                user_id: user.id,
               }))
             )
           }
@@ -528,8 +551,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
             if (input.links.length > 0) {
               await tx.insert(recipeTags).values(
                 input.links.map((link) => ({
-                  id: link.id,
-                  tag_id: link.tag_id,
+                  ...link,
                   recipe_id: input.target.entity_id,
                 }))
               )
@@ -548,8 +570,7 @@ export function createKitchenEndpoints(dbClient: DbClient) {
             if (input.links.length > 0) {
               await tx.insert(ingredientTags).values(
                 input.links.map((link) => ({
-                  id: link.id,
-                  tag_id: link.tag_id,
+                  ...link,
                   ingredient_id: input.target.entity_id,
                 }))
               )

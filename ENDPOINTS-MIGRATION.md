@@ -4,7 +4,7 @@ The port now uses the shared SQL-effect analyzer at build time. All eight query 
 
 User rows now use Drizzle’s field names (`emailVerified`, `createdAt`, `updatedAt`) directly. The endpoint returns the selected rows and uses `createSelectSchema(users)`; the former Electric case conversion and duplicate user schema are removed. The browser and compiled-handler comparisons also check these names.
 
-Mutation handlers consume the framework-parsed `req.body`. Validation rules live in each endpoint’s `input` declaration, including tag trimming, UUID checks, protected comment fields, and ingredient fill bounds. Inserts explicitly choose writable fields so optimistic owner/timestamp values do not override server values.
+Mutation handlers consume the framework-parsed `req.body`. Validation rules live in each endpoint’s `input` declaration, including tag trimming, UUID checks, protected comment fields, and ingredient fill bounds. Input schemas strip server-owned fields, including nested tag/link metadata. Callers send IDs and editable values; `onMutate` constructs complete optimistic rows with the current user and timestamps. Handlers spread validated write data and add authenticated ownership last; database defaults supply insert timestamps. The compiled oracle checks stripped handler input and immediate optimistic metadata, including forged client values.
 
 Declared input-schema rejections now return `INVALID_INPUT` with structured issue paths. The client drops only the rejected mutation’s optimistic overlay, without a write retry or refetch. The original blank-tag reproduction now passes through the real browser: one request, rollback, all retained collections still match PostgreSQL, and subsequent valid writes succeed. The updated browser run passes 240 collection comparisons; the compiled-handler companion also checks zero SQL for rejected input.
 
@@ -15,8 +15,8 @@ Recipe insertion extracts AI data and embeddings before opening a write transact
 Validation in this pass:
 
 - Production build and typecheck pass.
-- The real-session browser test passes 232 PostgreSQL/collection comparisons, including same-turn optimism, rollback, overlap, cascades and anonymous rejection.
-- The compiled application-handler test passes 88 comparisons. Ordinary edits refresh one of eight collections; ingredient/tag creation refreshes three; recipe creation/deletion refreshes four; ingredient deletion refreshes two.
+- The real-session browser test passes 240 PostgreSQL/collection comparisons, including same-turn optimism, rollback, overlap, cascades and anonymous rejection.
+- The compiled application-handler test passes 104 comparisons. Ordinary edits refresh one of eight collections; ingredient/tag creation refreshes three; recipe creation/deletion refreshes four; ingredient deletion refreshes two.
 - All 34 production client JavaScript files exclude the checked database, auth-secret, service, SQL-analyzer and server-registry markers.
 - Catalog inspection runs in the build CLI. The request trace contains no catalog inspection.
 

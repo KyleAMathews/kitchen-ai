@@ -204,23 +204,30 @@ try {
   await page.evaluate(
     async ({ ingredient, tag, link, user }) => {
       const k = (
-          await import(
-            performance
-              .getEntriesByType(`resource`)
-              .map((e) => e.name)
-              .find((name) => name.includes(`/src/lib/collections.ts`)) ??
-              `/src/lib/collections.ts`
-          )
-        ).getKitchen(),
-        now = new Date()
+        await import(
+          performance
+            .getEntriesByType(`resource`)
+            .map((e) => e.name)
+            .find((name) => name.includes(`/src/lib/collections.ts`)) ??
+            `/src/lib/collections.ts`
+        )
+      ).getKitchen()
       const tx = k.updateTagAssignments({
         target: { entity: `ingredient`, entity_id: ingredient },
-        new_tags: [{ id: tag, name: tag, user_id: user, created_at: now }],
-        links: [{ id: link, tag_id: tag, created_at: now }],
+        new_tags: [{ id: tag, name: tag }],
+        links: [{ id: link, tag_id: tag }],
         removed_link_ids: [],
       })
       if (!k.tagsCollection.has(tag) || !k.ingredientTagsCollection.has(link))
         throw Error(`Multi-collection optimism missing`)
+      const optimisticTag = k.tagsCollection.get(tag)
+      const optimisticLink = k.ingredientTagsCollection.get(link)
+      if (
+        optimisticTag.user_id !== user ||
+        !(optimisticTag.created_at instanceof Date) ||
+        !(optimisticLink.created_at instanceof Date)
+      )
+        throw Error(`Optimistic tag metadata missing`)
       await tx.isPersisted.promise
     },
     { ingredient, tag, link, user: user.id }
@@ -229,27 +236,30 @@ try {
   await page.evaluate(
     async ({ recipe, comment, user }) => {
       const k = (
-          await import(
-            performance
-              .getEntriesByType(`resource`)
-              .map((e) => e.name)
-              .find((name) => name.includes(`/src/lib/collections.ts`)) ??
-              `/src/lib/collections.ts`
-          )
-        ).getKitchen(),
-        now = new Date()
+        await import(
+          performance
+            .getEntriesByType(`resource`)
+            .map((e) => e.name)
+            .find((name) => name.includes(`/src/lib/collections.ts`)) ??
+            `/src/lib/collections.ts`
+        )
+      ).getKitchen()
       const tx = k.insertComment({
         id: comment,
         recipe_id: recipe,
-        user_id: user,
         made_it: true,
         rating: 4,
         comment: `Test comment`,
-        created_at: now,
-        updated_at: now,
       })
       if (!k.recipeCommentsCollection.has(comment))
         throw Error(`Optimistic comment missing`)
+      const optimistic = k.recipeCommentsCollection.get(comment)
+      if (
+        optimistic.user_id !== user ||
+        !(optimistic.created_at instanceof Date) ||
+        !(optimistic.updated_at instanceof Date)
+      )
+        throw Error(`Optimistic comment metadata missing`)
       await tx.isPersisted.promise
     },
     { recipe, comment, user: user.id }

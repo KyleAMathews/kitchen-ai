@@ -1,27 +1,18 @@
+import type { TagWrites } from "@/endpoints/schemas"
 import type { SelectTag } from "@/db/zod-schemas"
 import { getKitchen } from "./collections"
 export type TagTarget =
   | { entity: `recipe`; entity_id: string }
   | { entity: `ingredient`; entity_id: string }
 
-export interface TagWrites {
-  new_tags: SelectTag[]
-  links: Array<{
-    id: string
-    tag_id: string
-    created_at: Date
-  }>
-}
-
 export function prepareTagWrites(tags: SelectTag[]): TagWrites {
-  const now = new Date()
-
   return {
-    new_tags: tags.filter((tag) => !getKitchen().tagsCollection.has(tag.id)),
+    new_tags: tags
+      .filter((tag) => !getKitchen().tagsCollection.has(tag.id))
+      .map(({ id, name }) => ({ id, name })),
     links: tags.map((tag) => ({
       id: crypto.randomUUID(),
       tag_id: tag.id,
-      created_at: now,
     })),
   }
 }

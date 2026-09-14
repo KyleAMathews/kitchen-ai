@@ -839,12 +839,9 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
     getKitchen().insertComment({
       id: crypto.randomUUID(),
       recipe_id: recipeId,
-      user_id: session.user.id,
       made_it: true,
       rating: null,
       comment: null,
-      created_at: new Date(),
-      updated_at: new Date(),
     })
   }
 
@@ -855,12 +852,9 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
     getKitchen().insertComment({
       id: crypto.randomUUID(),
       recipe_id: recipeId,
-      user_id: session.user.id,
       made_it: madeIt,
       rating: rating > 0 ? rating : null,
       comment: comment.trim() || null,
-      created_at: new Date(),
-      updated_at: new Date(),
     })
     setComment(``)
     setRating(0)
