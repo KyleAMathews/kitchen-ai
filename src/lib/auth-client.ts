@@ -24,6 +24,6 @@ export const authClient = createAuthClient({
     typeof window !== `undefined`
       ? window.location.origin // Always use current domain in browser
       : process.env.NODE_ENV === `production`
-        ? `https://kitchen-ai.fly.dev` // Fallback for server-side
+        ? `https://endpoints-kitchen-ai.fly.dev` // Fallback for server-side
         : `https://kitchen-ai.localhost`,
 })

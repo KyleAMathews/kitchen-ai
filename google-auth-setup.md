@@ -29,11 +29,11 @@ Add these environment variables to your Fly.io deployment:
 
 ```bash
 # Google OAuth credentials
-fly secrets set GOOGLE_CLIENT_ID="your-client-id.apps.googleusercontent.com" --app kitchen-ai
-fly secrets set GOOGLE_CLIENT_SECRET="your-client-secret" --app kitchen-ai
+fly secrets set GOOGLE_CLIENT_ID="your-client-id.apps.googleusercontent.com" --app endpoints-kitchen-ai
+fly secrets set GOOGLE_CLIENT_SECRET="your-client-secret" --app endpoints-kitchen-ai
 
 # Allowed emails (comma-separated list)
-fly secrets set ALLOWED_EMAILS="user1@gmail.com,user2@company.com,user3@example.com" --app kitchen-ai
+fly secrets set ALLOWED_EMAILS="user1@gmail.com,user2@company.com,user3@example.com" --app endpoints-kitchen-ai
 ```
 
 ## Step 3: How It Works
@@ -86,13 +86,13 @@ To update the list of allowed emails:
 
 ```bash
 # View current allowed emails
-fly secrets list --app kitchen-ai
+fly secrets list --app endpoints-kitchen-ai
 
 # Update the list
-fly secrets set ALLOWED_EMAILS="email1@gmail.com,email2@company.com,email3@example.com" --app kitchen-ai
+fly secrets set ALLOWED_EMAILS="email1@gmail.com,email2@company.com,email3@example.com" --app endpoints-kitchen-ai
 
 # Remove all email restrictions (allow any Google account)
-fly secrets unset ALLOWED_EMAILS --app kitchen-ai
+fly secrets unset ALLOWED_EMAILS --app endpoints-kitchen-ai
 ```
 
 ## Step 5: Testing
@@ -105,7 +105,7 @@ fly secrets unset ALLOWED_EMAILS --app kitchen-ai
 
 ### Production
 
-1. Deploy your application: `fly deploy --app kitchen-ai`
+1. Deploy your application: `fly deploy --app endpoints-kitchen-ai`
 2. Navigate to your app URL
 3. Click "Sign in with Google"
 4. Select or enter your Google account
@@ -124,7 +124,7 @@ fly secrets unset ALLOWED_EMAILS --app kitchen-ai
 ### "Access restricted" error
 
 - Check that your email is in the `ALLOWED_EMAILS` list
-- Verify the environment variable is set correctly: `fly secrets list --app kitchen-ai`
+- Verify the environment variable is set correctly: `fly secrets list --app endpoints-kitchen-ai`
 
 ### Google sign-in button not appearing
 
@@ -175,7 +175,7 @@ You can add additional providers (GitHub, Microsoft, etc.) following the same pa
 - [ ] Set `GOOGLE_CLIENT_ID` secret in Fly.io
 - [ ] Set `GOOGLE_CLIENT_SECRET` secret in Fly.io
 - [ ] Set `ALLOWED_EMAILS` with comma-separated email list
-- [ ] Deploy application with `fly deploy --app kitchen-ai`
+- [ ] Deploy application with `fly deploy --app endpoints-kitchen-ai`
 - [ ] Test sign-in with an allowed email
 - [ ] Test sign-in with a non-allowed email (should be rejected)
 - [ ] Verify automatic account creation works on first sign-in

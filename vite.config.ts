@@ -1,6 +1,6 @@
 // prettier-ignore
 // @ts-expect-error The local prototype Vite plugin is authored in JavaScript.
-import { endpoints } from "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/transform.mjs"
+import { endpoints } from "./vendor/endpoints/transform.mjs"
 import { defineConfig } from "vite"
 import { tanstackStart } from "@tanstack/react-start/plugin/vite"
 import { nitro } from "nitro/vite"
@@ -28,13 +28,7 @@ export default defineConfig(async () => {
     server: {
       host: `127.0.0.1`,
       port: 4196,
-      fs: {
-        allow: [
-          new URL(`.`, import.meta.url).pathname,
-          `/Users/kylemathews/.codex/worktrees/e079/tanstack-db`,
-          `/Users/kylemathews/programs/kitchen-ai`,
-        ],
-      },
+      fs: { allow: [new URL(`.`, import.meta.url).pathname] },
     },
     plugins: [
       endpoints(),
@@ -66,10 +60,22 @@ export default defineConfig(async () => {
       ],
       alias: {
         "@": new URL(`./src`, import.meta.url).pathname,
-        "@tanstack/query-db-collection": `/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/query-db-collection/src/index.ts`,
-        "@tanstack/react-db": `/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/react-db/src/index.ts`,
-        "@tanstack/db-ivm": `/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/db-ivm/src/index.ts`,
-        "@tanstack/db": `/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/db/src/index.ts`,
+        "@tanstack/query-db-collection": new URL(
+          `./vendor/tanstack-db/packages/query-db-collection/src/index.ts`,
+          import.meta.url
+        ).pathname,
+        "@tanstack/react-db": new URL(
+          `./vendor/tanstack-db/packages/react-db/src/index.ts`,
+          import.meta.url
+        ).pathname,
+        "@tanstack/db-ivm": new URL(
+          `./vendor/tanstack-db/packages/db-ivm/src/index.ts`,
+          import.meta.url
+        ).pathname,
+        "@tanstack/db": new URL(
+          `./vendor/tanstack-db/packages/db/src/index.ts`,
+          import.meta.url
+        ).pathname,
         debug: path.resolve(import.meta.dirname, `./src/polyfills/debug.js`),
       },
     },

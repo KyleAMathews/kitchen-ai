@@ -16,17 +16,17 @@ import { join, resolve } from "node:path"
 import { tmpdir } from "node:os"
 import { pathToFileURL } from "node:url"
 import { randomUUID } from "node:crypto"
-// Local prototype wiring, matching Kitchen's Vite/schema compiler configuration.
-const base = `/Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo`
+// Vendored prototype wiring, matching Kitchen's Vite/schema compiler configuration.
+const kitchen = resolve(import.meta.dirname, `../..`)
+const base = join(kitchen, `vendor/endpoints`)
 const { transformBoundEndpoints } = await import(
   pathToFileURL(join(base, `bound-transform.mjs`)).href
 )
 const { loadSchema } = await import(
   pathToFileURL(join(base, `compiled-dependencies.mjs`)).href
 )
-const kitchen = resolve(import.meta.dirname, `../..`)
 const require = createRequire(
-  await realpath(join(base, `node_modules/vite/package.json`))
+  await realpath(join(kitchen, `node_modules/vite/package.json`))
 )
 const { build } = require(`esbuild`)
 const { parse } = require(`@babel/parser`)
@@ -62,11 +62,23 @@ try {
     platform: `node`,
     format: `esm`,
     packages: `external`,
-    tsconfig: join(base, `tsconfig.json`),
+    tsconfig: join(kitchen, `tsconfig.json`),
     outfile: join(dir, `bundle.mjs`),
     logLevel: `silent`,
     alias: {
       "@": join(kitchen, `src`),
+      "@tanstack/db": join(
+        kitchen,
+        `vendor/tanstack-db/packages/db/src/index.ts`
+      ),
+      "@tanstack/db-ivm": join(
+        kitchen,
+        `vendor/tanstack-db/packages/db-ivm/src/index.ts`
+      ),
+      "@tanstack/query-db-collection": join(
+        kitchen,
+        `vendor/tanstack-db/packages/query-db-collection/src/index.ts`
+      ),
       "@tanstack/db-endpoints": join(base, `src/runtime.ts`),
     },
     plugins: [

@@ -28,7 +28,7 @@ export const auth = betterAuth({
   baseURL:
     process.env.BETTER_AUTH_URL ||
     (process.env.NODE_ENV === `production`
-      ? `https://kitchen-ai.fly.dev`
+      ? `https://endpoints-kitchen-ai.fly.dev`
       : `https://kitchen-ai.localhost`),
   database: drizzleAdapter(db, {
     provider: `pg`,
@@ -77,7 +77,7 @@ export const auth = betterAuth({
     `http://localhost:5173`, // fallback for direct Vite access
     `https://kitchen-ai.bricolage.io`, // production domain
     `https://kitchen-ai.netlify.app`, // netlfy domain
-    `https://kitchen-ai.fly.dev`, // fly.io domain
+    `https://endpoints-kitchen-ai.fly.dev`, // fly.io domain
   ],
   secret:
     process.env.BETTER_AUTH_SECRET || `dev-secret-key-change-in-production`,

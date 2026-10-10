@@ -3,46 +3,21 @@
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"],
-      "@tanstack/db": [
-        "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/db/src/index.ts"
-      ],
+      "@tanstack/db": ["./vendor/tanstack-db/packages/db/src/index.ts"],
       "@tanstack/db-ivm": [
-        "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/db-ivm/src/index.ts"
+        "./vendor/tanstack-db/packages/db-ivm/src/index.ts"
       ],
       "@tanstack/react-db": [
-        "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/react-db/src/index.ts"
+        "./vendor/tanstack-db/packages/react-db/src/index.ts"
       ],
       "@tanstack/query-db-collection": [
-        "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/packages/query-db-collection/src/index.ts"
-      ],
-      "@tanstack/query-core": [
-        "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/node_modules/@tanstack/query-core"
-      ],
-      "@tanstack/pacer-lite": [
-        "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/node_modules/@tanstack/pacer-lite"
-      ],
-      "fractional-indexing": [
-        "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/node_modules/fractional-indexing"
-      ],
-      "sorted-btree": [
-        "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/node_modules/sorted-btree"
-      ],
-      "use-sync-external-store": [
-        "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/node_modules/use-sync-external-store"
-      ],
-      "@standard-schema/spec": [
-        "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/node_modules/@standard-schema/spec"
-      ],
-      "@tanstack/pacer-lite/*": [
-        "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/node_modules/@tanstack/pacer-lite/dist/*"
+        "./vendor/tanstack-db/packages/query-db-collection/src/index.ts"
       ],
       "zod": ["./node_modules/zod"],
       "zod/*": ["./node_modules/zod/*"],
       "react": ["./node_modules/@types/react"],
       "react/*": ["./node_modules/@types/react/*"],
-      "@tanstack/db-endpoints": [
-        "/Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/src/runtime.ts"
-      ]
+      "@tanstack/db-endpoints": ["./vendor/endpoints/src/runtime.ts"]
     },
     "noUnusedParameters": false
   }

@@ -9,7 +9,7 @@
     "dev": "docker compose up -d && vite dev",
     "start": "node .output/server/index.mjs",
     "build": "vite build",
-    "deploy": "fly deploy --app kitchen-ai",
+    "deploy": "fly deploy --app endpoints-kitchen-ai",
     "deploy:netlify": "netlify deploy --prod",
     "deploy:netlify:preview": "netlify deploy",
     "migrate": "drizzle-kit migrate",
@@ -24,7 +24,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
     "test:endpoints": "node tests/endpoints/smoke.mjs",
     "test:endpoints:compiled": "node tests/endpoints/compiled.mjs",
-    "schema:compile": "node /Users/kylemathews/.codex/worktrees/e079/tanstack-db/probes/endpoints/integrated-todo/compile-schema.mjs src/db/connection.ts",
+    "schema:compile": "node vendor/endpoints/compile-schema.mjs src/db/connection.ts",
     "predev": "pnpm schema:compile",
     "prebuild": "pnpm schema:compile"
   },
@@ -41,7 +41,11 @@
     "@radix-ui/react-slider": "^1.4.7",
     "@radix-ui/react-toast": "^1.2.23",
     "@radix-ui/themes": "^3.3.0",
-    "@tanstack/react-db": "^0.3.8",
+    "@standard-schema/spec": "1.1.0",
+    "@tanstack/react-db": "0.4.1",
+    "@tanstack/db": "0.9.2",
+    "@tanstack/db-ivm": "0.1.22",
+    "@tanstack/query-db-collection": "1.2.15",
     "@tanstack/react-form": "^1.33.5",
     "@tanstack/react-router": "^1.170.35",
     "@tanstack/react-router-devtools": "^1.167.1",
@@ -60,6 +64,7 @@
     "npm": "^11.19.1",
     "openai": "^6.49.0",
     "pg": "^8.23.0",
+    "pgsql-ast-parser": "12.0.1",
     "react": "^19.3.0",
     "react-aria": "^3.52.1",
     "react-aria-components": "^1.21.1",
@@ -77,9 +82,6 @@
     "use-sync-external-store": "1.6.0"
   },
   "pnpm": {
-    "overrides": {
-      "srvx": "0.11.22"
-    },
     "onlyBuiltDependencies": [
       "@parcel/watcher",
       "@prisma/engines",
@@ -97,6 +99,8 @@
     "@eslint/compat": "^1.4.1",
     "@eslint/eslintrc": "^3.3.7",
     "@eslint/js": "^9.39.5",
+    "@babel/parser": "7.29.0",
+    "@babel/traverse": "7.29.0",
     "@rollup/plugin-replace": "^6.0.3",
     "@tanstack/intent": "^0.3.8",
     "@testing-library/dom": "^10.4.1",
@@ -120,8 +124,10 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.26",
+    "esbuild": "^0.28.1",
     "globals": "^16.5.0",
     "jsdom": "^27.4.0",
+    "magic-string": "0.30.21",
     "netlify-cli": "^23.15.1",
     "nitro": "3.0.1-alpha.1",
     "prettier": "^3.9.6",

@@ -11,17 +11,17 @@ fly auth login
 fly apps create kitchen-ai  # Choose your app name
 
 # 3. Set secrets (one-time)
-fly secrets set DATABASE_URL="postgresql://user:pass@host:5432/db" --app kitchen-ai
-fly secrets set ELECTRIC_SOURCE_ID="your-electric-source-id" --app kitchen-ai
-fly secrets set ELECTRIC_SOURCE_SECRET="your-electric-source-secret" --app kitchen-ai
-fly secrets set BETTER_AUTH_SECRET="$(openssl rand -hex 32)" --app kitchen-ai
-fly secrets set OPENAI_API_KEY="sk-..." --app kitchen-ai
+fly secrets set DATABASE_URL="postgresql://user:pass@host:5432/db" --app endpoints-kitchen-ai
+fly secrets set ELECTRIC_SOURCE_ID="your-electric-source-id" --app endpoints-kitchen-ai
+fly secrets set ELECTRIC_SOURCE_SECRET="your-electric-source-secret" --app endpoints-kitchen-ai
+fly secrets set BETTER_AUTH_SECRET="$(openssl rand -hex 32)" --app endpoints-kitchen-ai
+fly secrets set OPENAI_API_KEY="sk-..." --app endpoints-kitchen-ai
 
 # 4. Deploy!
-fly deploy --app kitchen-ai
+fly deploy --app endpoints-kitchen-ai
 
 # 5. Open your app
-fly open --app kitchen-ai
+fly open --app endpoints-kitchen-ai
 ```
 
 ## Prerequisites
@@ -41,7 +41,7 @@ fly apps create kitchen-ai  # Replace with your desired app name
 
 ```bash
 fly postgres create --name kitchen-ai-db
-fly postgres attach kitchen-ai-db --app kitchen-ai
+fly postgres attach kitchen-ai-db --app endpoints-kitchen-ai
 ```
 
 This will automatically set the `DATABASE_URL` secret in your app.
@@ -50,23 +50,23 @@ This will automatically set the `DATABASE_URL` secret in your app.
 
 ```bash
 # Database URL (required - your external Postgres)
-fly secrets set DATABASE_URL="postgresql://user:password@host:5432/dbname" --app kitchen-ai
+fly secrets set DATABASE_URL="postgresql://user:password@host:5432/dbname" --app endpoints-kitchen-ai
 
 # Electric Cloud authentication (required - from Electric Cloud dashboard)
-fly secrets set ELECTRIC_SOURCE_ID="your-electric-source-id" --app kitchen-ai
-fly secrets set ELECTRIC_SOURCE_SECRET="your-electric-source-secret" --app kitchen-ai
+fly secrets set ELECTRIC_SOURCE_ID="your-electric-source-id" --app endpoints-kitchen-ai
+fly secrets set ELECTRIC_SOURCE_SECRET="your-electric-source-secret" --app endpoints-kitchen-ai
 
 # Auth secret (required - generate secure random string)
-fly secrets set BETTER_AUTH_SECRET="$(openssl rand -hex 32)" --app kitchen-ai
+fly secrets set BETTER_AUTH_SECRET="$(openssl rand -hex 32)" --app endpoints-kitchen-ai
 
 # OpenAI API key (required for AI recipe features)
-fly secrets set OPENAI_API_KEY="sk-..." --app kitchen-ai
+fly secrets set OPENAI_API_KEY="sk-..." --app endpoints-kitchen-ai
 # Or use OPENAI_KEY if you prefer
-fly secrets set OPENAI_KEY="sk-..." --app kitchen-ai
+fly secrets set OPENAI_KEY="sk-..." --app endpoints-kitchen-ai
 
 # Optional: Production URL for auth callbacks
-fly secrets set PRODUCTION_URL="https://kitchen-ai.fly.dev" --app kitchen-ai
-fly secrets set AUTH_URL="https://kitchen-ai.fly.dev" --app kitchen-ai
+fly secrets set PRODUCTION_URL="https://endpoints-kitchen-ai.fly.dev" --app endpoints-kitchen-ai
+fly secrets set AUTH_URL="https://endpoints-kitchen-ai.fly.dev" --app endpoints-kitchen-ai
 ```
 
 ## Deployment
@@ -74,7 +74,7 @@ fly secrets set AUTH_URL="https://kitchen-ai.fly.dev" --app kitchen-ai
 Deploy your application:
 
 ```bash
-fly deploy --app kitchen-ai
+fly deploy --app endpoints-kitchen-ai
 ```
 
 ## Post-Deployment
@@ -82,19 +82,19 @@ fly deploy --app kitchen-ai
 1. Check deployment status:
 
 ```bash
-fly status --app kitchen-ai
+fly status --app endpoints-kitchen-ai
 ```
 
 2. View logs:
 
 ```bash
-fly logs --app kitchen-ai
+fly logs --app endpoints-kitchen-ai
 ```
 
 3. SSH into the container (for debugging):
 
 ```bash
-fly ssh console --app kitchen-ai
+fly ssh console --app endpoints-kitchen-ai
 ```
 
 4. Scale to zero configuration is already set in fly.toml:
@@ -110,7 +110,7 @@ The app will automatically scale down to zero when not in use and start up when 
 1. Add a custom domain:
 
 ```bash
-fly certs add yourdomain.com --app kitchen-ai
+fly certs add yourdomain.com --app endpoints-kitchen-ai
 ```
 
 2. Update DNS records as instructed by Fly
@@ -122,7 +122,7 @@ Migrations run automatically on deploy via the `release_command` in fly.toml.
 To run migrations manually:
 
 ```bash
-fly ssh console --app kitchen-ai -C "pnpm run migrate"
+fly ssh console --app endpoints-kitchen-ai -C "pnpm run migrate"
 ```
 
 ## Monitoring
@@ -130,14 +130,14 @@ fly ssh console --app kitchen-ai -C "pnpm run migrate"
 View metrics and monitoring:
 
 ```bash
-fly dashboard --app kitchen-ai
+fly dashboard --app endpoints-kitchen-ai
 ```
 
 ## Troubleshooting
 
 If deployment fails:
 
-1. Check logs: `fly logs --app kitchen-ai`
-2. Verify secrets are set: `fly secrets list --app kitchen-ai`
+1. Check logs: `fly logs --app endpoints-kitchen-ai`
+2. Verify secrets are set: `fly secrets list --app endpoints-kitchen-ai`
 3. Test build locally: `docker build -t kitchen-ai .`
 4. Run locally: `docker run -p 3000:3000 kitchen-ai`
