@@ -1,3 +1,11 @@
+import {
+  insertRecipe,
+  recipeIngredientsCollection,
+  recipeTagsCollection,
+  recipesCollection,
+  tagsCollection,
+} from "@/endpoints/kitchen.endpoint"
+import { prepareTagWrites } from "@/lib/tags"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
 import { useForm } from "@tanstack/react-form"
@@ -10,14 +18,8 @@ import {
   TextField,
 } from "@radix-ui/themes"
 import { UpdateIcon } from "@radix-ui/react-icons"
-import {
-  recipesCollection,
-  recipeIngredientsCollection,
-  tagsCollection,
-  recipeTagsCollection,
-} from "@/lib/collections"
+
 import TagInput from "@/components/tag-input"
-import { createRecipe } from "@/lib/create-actions"
 import type { SelectTag } from "@/db/zod-schemas"
 
 export const Route = createFileRoute(`/_authenticated/recipes/new`)({
@@ -71,7 +73,13 @@ function NewRecipe() {
 
       setError(``)
       try {
-        const { id: recipeId, transaction } = createRecipe(value)
+        const recipeId = crypto.randomUUID()
+        const { tags, ...recipe } = value
+        const transaction = insertRecipe({
+          ...recipe,
+          id: recipeId,
+          ...prepareTagWrites(tags),
+        })
         await transaction.isPersisted.promise
 
         navigate({ to: `/recipes/$id`, params: { id: recipeId } })

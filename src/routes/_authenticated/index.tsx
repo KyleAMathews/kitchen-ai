@@ -1,3 +1,12 @@
+import {
+  ingredientTagsCollection,
+  ingredientsCollection,
+  recipeCommentsCollection,
+  recipeTagsCollection,
+  recipesCollection,
+  tagsCollection,
+} from "@/endpoints/kitchen.endpoint"
+import { recipeCardsCollection } from "@/lib/derived-collections"
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { useMemo } from "react"
 import { useLiveQuery, eq } from "@tanstack/react-db"
@@ -7,17 +16,9 @@ import {
   PlusCircledIcon,
   ArrowRightIcon,
 } from "@radix-ui/react-icons"
-import {
-  ingredientsCollection,
-  recipesCollection,
-  recipeCommentsCollection,
-  tagsCollection,
-  recipeTagsCollection,
-  ingredientTagsCollection,
-} from "@/lib/collections"
+
 import RecipeCard from "@/components/recipe-card"
 import IngredientCard from "@/components/ingredient-card"
-import { recipeCardsCollection } from "@/lib/derived-collections"
 
 export const Route = createFileRoute(`/_authenticated/`)({
   component: Dashboard,
@@ -53,7 +54,7 @@ function Dashboard() {
 
   const { data: ingredients } = useLiveQuery((q) =>
     q
-      .from({ ingredientsCollection })
+      .from({ ingredientsCollection: ingredientsCollection })
       .orderBy(
         ({ ingredientsCollection }) => ingredientsCollection.updated_at,
         `desc`
@@ -62,7 +63,7 @@ function Dashboard() {
   )
 
   const { data: allIngredients } = useLiveQuery((q) =>
-    q.from({ ingredientsCollection })
+    q.from({ ingredientsCollection: ingredientsCollection })
   )
 
   const query = searchQuery.trim().toLowerCase()

@@ -8,6 +8,7 @@ export default defineConfig({
   casing: `snake_case`,
   dbCredentials: {
     url:
+      process.env.DATABASE_URL_UNPOOLED ||
       process.env.DATABASE_URL ||
       `postgresql://postgres:password@localhost:54321/kitchen_ai`,
   },

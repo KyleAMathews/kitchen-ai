@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.10
+
 # Build stage
 FROM node:22-alpine AS builder
 
@@ -8,7 +10,7 @@ RUN corepack enable && corepack prepare pnpm@10.33.0 --activate
 WORKDIR /app
 
 # Copy package files
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
@@ -16,9 +18,11 @@ RUN pnpm install --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Build the application (skip prerendering as it requires env vars)
+# Build the application. The optional secret lets the Endpoints compiler inspect
+# the deployment schema without persisting the connection string in an image
+# layer. Local builds without it retain the safe full-refresh fallback.
 ENV SKIP_PRERENDER=true
-RUN pnpm run build
+RUN --mount=type=secret,id=DATABASE_URL,env=DATABASE_URL pnpm run build
 
 # Production stage
 FROM node:22-alpine
@@ -29,7 +33,7 @@ RUN corepack enable && corepack prepare pnpm@10.33.0 --activate
 WORKDIR /app
 
 # Copy package files
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Install all dependencies (needed for migration tools in release command)
 RUN pnpm install --frozen-lockfile

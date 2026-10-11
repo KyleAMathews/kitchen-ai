@@ -20,22 +20,9 @@ import {
   jobsStateEnum,
 } from "./schema"
 
-// Generate base schemas from Drizzle tables
-const baseSelectUsersSchema = createSelectSchema(users)
+// Generate schemas directly from Drizzle table definitions.
+export const selectUsersSchema = createSelectSchema(users)
 
-// Transform user schema to snake_case for Electric sync compatibility
-// Better-auth uses camelCase internally, but Electric syncs with snake_case
-export const selectUsersSchema = baseSelectUsersSchema.transform((data) => ({
-  id: data.id,
-  name: data.name,
-  email: data.email,
-  email_verified: data.emailVerified,
-  image: data.image,
-  created_at: data.createdAt,
-  updated_at: data.updatedAt,
-}))
-
-// Other schemas are already in snake_case in the Drizzle schema
 // Override enum fields to use explicit z.enum() to avoid Zod v4 compatibility issues
 export const selectIngredientsSchema = createSelectSchema(ingredients, {
   grocery_section: z.enum(grocerySectionEnum.enumValues),
@@ -56,7 +43,7 @@ export const selectRecipeTagsSchema = createSelectSchema(recipeTags)
 export const selectIngredientTagsSchema = createSelectSchema(ingredientTags)
 
 // Date coercion helper - transforms string dates to Date objects
-// Needed because tRPC stringifies dates during HTTP transport
+// Accept serialized dates as well as Date values from callers
 const dateCoercion = z.preprocess((val) => {
   if (typeof val === `string` || typeof val === `number`) {
     return new Date(val)

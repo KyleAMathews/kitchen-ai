@@ -6,27 +6,34 @@
     "module": "ESNext",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["vite/client"],
-
-    /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-
-    /* Linting */
     "skipLibCheck": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-
-    /* Path mapping */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@tanstack/db": ["./vendor/tanstack-db/packages/db/src/index.ts"],
+      "@tanstack/db-ivm": [
+        "./vendor/tanstack-db/packages/db-ivm/src/index.ts"
+      ],
+      "@tanstack/react-db": [
+        "./vendor/tanstack-db/packages/react-db/src/index.ts"
+      ],
+      "@tanstack/query-db-collection": [
+        "./vendor/tanstack-db/packages/query-db-collection/src/index.ts"
+      ],
+      "zod": ["./node_modules/zod"],
+      "zod/*": ["./node_modules/zod/*"],
+      "@tanstack/db-endpoints": ["./vendor/endpoints/src/runtime.ts"]
     }
   }
 }

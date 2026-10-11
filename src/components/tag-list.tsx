@@ -1,11 +1,11 @@
+import {
+  ingredientTagsCollection,
+  recipeTagsCollection,
+  tagsCollection,
+} from "@/endpoints/kitchen.endpoint"
 import { Badge } from "@radix-ui/themes"
 import { Link } from "@tanstack/react-router"
 import { useLiveQuery, eq } from "@tanstack/react-db"
-import {
-  tagsCollection,
-  recipeTagsCollection,
-  ingredientTagsCollection,
-} from "@/lib/collections"
 
 interface TagListProps {
   entity: `recipe` | `ingredient`

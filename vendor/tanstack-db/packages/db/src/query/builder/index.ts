@@ -1,0 +1,1682 @@
+import { CollectionImpl } from '../../collection/index.js'
+import { hasCollectionOptionsBrand } from '../../collection-options.js'
+import {
+  Aggregate as AggregateExpr,
+  CollectionRef,
+  ConditionalSelect,
+  Func as FuncExpr,
+  INCLUDES_SCALAR_FIELD,
+  IncludesSubquery,
+  PropRef,
+  QueryRef,
+  UnionAll,
+  UnionFrom,
+  Value as ValueExpr,
+  isExpressionLike,
+} from '../ir.js'
+import {
+  InvalidSourceError,
+  InvalidSourceTypeError,
+  InvalidWhereExpressionError,
+  JoinConditionMustBeEqualityError,
+  OnlyOneSourceAllowedError,
+  QueryMustHaveFromClauseError,
+  SubQueryMustHaveFromClauseError,
+} from '../../errors.js'
+import { getQueryIR } from './query-ir.js'
+import {
+  createRefProxy,
+  createRefProxyWithSelected,
+  isRefProxy,
+  toExpression,
+} from './ref-proxy.js'
+import {
+  CaseWhenWrapper,
+  ConcatToArrayWrapper,
+  MaterializeWrapper,
+  ToArrayWrapper,
+} from './functions.js'
+import type { SourceClauseContext } from '../../errors.js'
+import type { NamespacedRow, SingleResult } from '../../types.js'
+import type { CollectionOptionsIdentity } from '../../collection-options.js'
+import type {
+  Aggregate,
+  BasicExpression,
+  IncludesMaterialization,
+  JoinClause,
+  OrderBy,
+  OrderByDirection,
+  QueryIR,
+  Where,
+} from '../ir.js'
+import type {
+  CompareOptions,
+  Context,
+  ContextFromSource,
+  ContextFromUnionBranches,
+  ContextFromUnionSource,
+  FunctionalHavingRow,
+  GetResult,
+  GroupByCallback,
+  JoinOnCallback,
+  MergeContextForJoinCallback,
+  MergeContextWithJoinType,
+  NonScalarSelectObject,
+  OrderByCallback,
+  OrderByOptions,
+  RefsForContext,
+  ResultTypeFromSelect,
+  ResultTypeFromSelectValue,
+  ScalarSelectValue,
+  SchemaFromSource,
+  SelectObject,
+  SingleSource,
+  Source,
+  WhereCallback,
+  WithResult,
+} from './types.js'
+
+const UNION_ALL_SOURCE_CONTEXT = `unionAll clause` satisfies SourceClauseContext
+
+type CollectionResolver = (
+  options: CollectionOptionsIdentity<any, string | number, any, any, any>,
+) => CollectionImpl<any, string | number, any, any, any>
+
+type FnSelectQueryConstructionValue =
+  | QueryBuilder<any>
+  | InitialQueryBuilder
+  | BasicExpression
+  | Aggregate
+  | ToArrayWrapper<any>
+  | ConcatToArrayWrapper<any>
+  | MaterializeWrapper<any, boolean>
+  | CaseWhenWrapper<any>
+
+type IsAnyType<T> = 0 extends 1 & T ? true : false
+
+// Bound recursive inspection so deeply recursive result types do not exceed
+// TypeScript's instantiation limit. The runtime check has no depth limit.
+type ContainsFnSelectQueryConstructionValue<
+  T,
+  TDepth extends ReadonlyArray<unknown> = [],
+> =
+  IsAnyType<T> extends true
+    ? false
+    : T extends FnSelectQueryConstructionValue
+      ? true
+      : TDepth[`length`] extends 8
+        ? false
+        : T extends (...args: Array<any>) => any
+          ? false
+          : T extends ReadonlyArray<infer TItem>
+            ? ContainsFnSelectQueryConstructionValue<
+                TItem,
+                [...TDepth, unknown]
+              >
+            : T extends object
+              ? true extends {
+                  [K in keyof T]-?: ContainsFnSelectQueryConstructionValue<
+                    T[K],
+                    [...TDepth, unknown]
+                  >
+                }[keyof T]
+                ? true
+                : false
+              : false
+
+type InvalidFnSelectResult = {
+  readonly __tanstackDbFnSelectResultError__: `fn.select() cannot return child query builders, query expressions, or query helpers. Use them as direct fields in .select() instead.`
+}
+
+type FnSelectQueryResult<TContext extends Context, TResult> =
+  true extends ContainsFnSelectQueryConstructionValue<TResult>
+    ? InvalidFnSelectResult
+    : QueryBuilder<WithResult<TContext, TResult>>
+
+export class BaseQueryBuilder<TContext extends Context = Context> {
+  private readonly query: Partial<QueryIR> = {}
+
+  constructor(
+    query: Partial<QueryIR> = {},
+    private readonly resolveCollection?: CollectionResolver,
+  ) {
+    this.query = { ...query }
+  }
+
+  private _clone<TNextContext extends Context = Context>(
+    query: Partial<QueryIR>,
+  ): BaseQueryBuilder<TNextContext> {
+    return new BaseQueryBuilder<TNextContext>(query, this.resolveCollection)
+  }
+
+  /**
+   * Creates a CollectionRef or QueryRef from a source object
+   * @param source - An object with a single key-value pair
+   * @param context - Context string for error messages (e.g., "from clause", "join clause")
+   * @returns A tuple of [alias, ref] where alias is the source key and ref is the created reference
+   */
+  private _createRefForSource<TSource extends Source>(
+    source: TSource,
+    context: SourceClauseContext,
+  ): [string, CollectionRef | QueryRef] {
+    const refs = this._createRefsForSource(source, context)
+    if (refs.length !== 1) {
+      throw new OnlyOneSourceAllowedError(context)
+    }
+    return refs[0]!
+  }
+
+  private _createRefsForSource<TSource extends Source>(
+    source: TSource,
+    context: SourceClauseContext,
+  ): Array<[string, CollectionRef | QueryRef]> {
+    if (typeof source === `string`) {
+      throw new InvalidSourceTypeError(context, `string`)
+    }
+
+    // Validate source is a plain object (not null, array, string, etc.)
+    // We use try-catch to handle null/undefined gracefully
+    let keys: Array<string>
+    try {
+      keys = Object.keys(source)
+    } catch {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      const type = source === null ? `null` : `undefined`
+      throw new InvalidSourceTypeError(context, type)
+    }
+
+    // Check if it's an array (arrays pass Object.keys but aren't valid sources)
+    if (Array.isArray(source)) {
+      throw new InvalidSourceTypeError(context, `array`)
+    }
+
+    if (keys.length === 0) {
+      throw new InvalidSourceTypeError(context, `empty object`)
+    }
+
+    if (context !== UNION_ALL_SOURCE_CONTEXT && keys.length !== 1) {
+      throw new OnlyOneSourceAllowedError(context)
+    }
+
+    const refs: Array<[string, CollectionRef | QueryRef]> = []
+    for (const alias of keys) {
+      const sourceValue = source[alias]
+
+      // Validate the value is a Collection or QueryBuilder
+      let ref: CollectionRef | QueryRef
+
+      if (sourceValue instanceof CollectionImpl) {
+        ref = new CollectionRef(sourceValue, alias)
+      } else if (hasCollectionOptionsBrand(sourceValue)) {
+        if (!this.resolveCollection) {
+          throw new Error(
+            `Cannot use collection descriptor "${alias}" as a query source without a DbClient resolver. In React, wrap your tree in <DbProvider>.`,
+          )
+        }
+        ref = new CollectionRef(this.resolveCollection(sourceValue), alias)
+      } else if (sourceValue instanceof BaseQueryBuilder) {
+        const subQuery = sourceValue._getQuery()
+        if (!(subQuery as Partial<QueryIR>).from) {
+          throw new SubQueryMustHaveFromClauseError(context)
+        }
+        ref = new QueryRef(subQuery, alias)
+      } else {
+        throw new InvalidSourceError(alias)
+      }
+
+      refs.push([alias, ref])
+    }
+
+    return refs
+  }
+
+  /**
+   * Specify the source table or subquery for the query
+   *
+   * @param source - An object with a single key-value pair where the key is the table alias and the value is a Collection or subquery
+   * @returns A QueryBuilder with the specified source
+   *
+   * @example
+   * ```ts
+   * // Query from a collection
+   * query.from({ users: usersCollection })
+   *
+   * // Query from a subquery
+   * const activeUsers = query.from({ u: usersCollection }).where(({u}) => u.active)
+   * query.from({ activeUsers })
+   * ```
+   */
+  from<TSource extends Source>(
+    source: SingleSource<TSource>,
+  ): QueryBuilder<ContextFromSource<TSource>> {
+    const [, from] = this._createRefForSource(source, `from clause`)
+
+    return this._clone({
+      ...this.query,
+      from,
+    }) as any
+  }
+
+  /**
+   * Union multiple independent source streams in one query.
+   *
+   * @param source - An object with one or more aliases mapped to collections or subqueries
+   * @returns A QueryBuilder with the unioned sources available
+   *
+   * @example
+   * ```ts
+   * query
+   *   .unionAll({ message: messagesCollection, toolCall: toolCallsCollection })
+   *   .orderBy(({ message, toolCall }) =>
+   *     coalesce(message.timestamp, toolCall.timestamp)
+   *   )
+   * ```
+   */
+  unionAll<TSource extends Source>(
+    source: TSource,
+  ): QueryBuilder<ContextFromUnionSource<TSource>>
+  unionAll<
+    TBranches extends readonly [QueryBuilder<any>, ...Array<QueryBuilder<any>>],
+  >(...branches: TBranches): QueryBuilder<ContextFromUnionBranches<TBranches>>
+  unionAll(
+    sourceOrBranch: Source | QueryBuilder<any>,
+    ...branches: Array<QueryBuilder<any>>
+  ): QueryBuilder<any> {
+    if (sourceOrBranch instanceof BaseQueryBuilder) {
+      return this._clone({
+        ...this.query,
+        from: new UnionAll(
+          [sourceOrBranch, ...branches].map((branch) =>
+            (branch as unknown as BaseQueryBuilder)._getQuery(),
+          ),
+        ),
+      }) as any
+    }
+
+    const refs = this._createRefsForSource(
+      sourceOrBranch as Source,
+      UNION_ALL_SOURCE_CONTEXT,
+    )
+    const from =
+      refs.length === 1 ? refs[0]![1] : new UnionFrom(refs.map((r) => r[1]))
+
+    return this._clone({
+      ...this.query,
+      from,
+    }) as any
+  }
+
+  /**
+   * Join another table or subquery to the current query
+   *
+   * @param source - An object with a single key-value pair where the key is the table alias and the value is a Collection or subquery
+   * @param onCallback - A function that receives table references and returns the join condition
+   * @param type - The type of join: 'inner', 'left', 'right', or 'full' (defaults to 'left')
+   * @returns A QueryBuilder with the joined table available
+   *
+   * @example
+   * ```ts
+   * // Left join users with posts
+   * query
+   *   .from({ users: usersCollection })
+   *   .join({ posts: postsCollection }, ({users, posts}) => eq(users.id, posts.userId))
+   *
+   * // Inner join with explicit type
+   * query
+   *   .from({ u: usersCollection })
+   *   .join({ p: postsCollection }, ({u, p}) => eq(u.id, p.userId), 'inner')
+   * ```
+   *
+   * // Join with a subquery
+   * const activeUsers = query.from({ u: usersCollection }).where(({u}) => u.active)
+   * query
+   *   .from({ activeUsers })
+   *   .join({ p: postsCollection }, ({u, p}) => eq(u.id, p.userId))
+   */
+  join<
+    TSource extends Source,
+    TJoinType extends `inner` | `left` | `right` | `full` = `left`,
+  >(
+    source: TSource,
+    onCallback: JoinOnCallback<
+      MergeContextForJoinCallback<TContext, SchemaFromSource<TSource>>
+    >,
+    type: TJoinType = `left` as TJoinType,
+  ): QueryBuilder<
+    MergeContextWithJoinType<TContext, SchemaFromSource<TSource>, TJoinType>
+  > {
+    const [alias, from] = this._createRefForSource(source, `join clause`)
+
+    // Create a temporary context for the callback
+    const currentAliases = this._getCurrentAliases()
+    const newAliases = [...currentAliases, alias]
+    const refProxy = createRefProxy(newAliases) as RefsForContext<
+      MergeContextForJoinCallback<TContext, SchemaFromSource<TSource>>
+    >
+
+    // Get the join condition expression
+    const onExpression = onCallback(refProxy)
+
+    // Extract left and right from the expression
+    // For now, we'll assume it's an eq function with two arguments
+    let left: BasicExpression
+    let right: BasicExpression
+
+    if (
+      onExpression.type === `func` &&
+      onExpression.name === `eq` &&
+      onExpression.args.length === 2
+    ) {
+      left = onExpression.args[0]!
+      right = onExpression.args[1]!
+    } else {
+      throw new JoinConditionMustBeEqualityError()
+    }
+
+    const joinClause: JoinClause = {
+      from,
+      type,
+      left,
+      right,
+    }
+
+    const existingJoins = this.query.join || []
+
+    return this._clone({
+      ...this.query,
+      join: [...existingJoins, joinClause],
+    }) as any
+  }
+
+  /**
+   * Perform a LEFT JOIN with another table or subquery
+   *
+   * @param source - An object with a single key-value pair where the key is the table alias and the value is a Collection or subquery
+   * @param onCallback - A function that receives table references and returns the join condition
+   * @returns A QueryBuilder with the left joined table available
+   *
+   * @example
+   * ```ts
+   * // Left join users with posts
+   * query
+   *   .from({ users: usersCollection })
+   *   .leftJoin({ posts: postsCollection }, ({users, posts}) => eq(users.id, posts.userId))
+   * ```
+   */
+  leftJoin<TSource extends Source>(
+    source: TSource,
+    onCallback: JoinOnCallback<
+      MergeContextForJoinCallback<TContext, SchemaFromSource<TSource>>
+    >,
+  ): QueryBuilder<
+    MergeContextWithJoinType<TContext, SchemaFromSource<TSource>, `left`>
+  > {
+    return this.join(source, onCallback, `left`)
+  }
+
+  /**
+   * Perform a RIGHT JOIN with another table or subquery
+   *
+   * @param source - An object with a single key-value pair where the key is the table alias and the value is a Collection or subquery
+   * @param onCallback - A function that receives table references and returns the join condition
+   * @returns A QueryBuilder with the right joined table available
+   *
+   * @example
+   * ```ts
+   * // Right join users with posts
+   * query
+   *   .from({ users: usersCollection })
+   *   .rightJoin({ posts: postsCollection }, ({users, posts}) => eq(users.id, posts.userId))
+   * ```
+   */
+  rightJoin<TSource extends Source>(
+    source: TSource,
+    onCallback: JoinOnCallback<
+      MergeContextForJoinCallback<TContext, SchemaFromSource<TSource>>
+    >,
+  ): QueryBuilder<
+    MergeContextWithJoinType<TContext, SchemaFromSource<TSource>, `right`>
+  > {
+    return this.join(source, onCallback, `right`)
+  }
+
+  /**
+   * Perform an INNER JOIN with another table or subquery
+   *
+   * @param source - An object with a single key-value pair where the key is the table alias and the value is a Collection or subquery
+   * @param onCallback - A function that receives table references and returns the join condition
+   * @returns A QueryBuilder with the inner joined table available
+   *
+   * @example
+   * ```ts
+   * // Inner join users with posts
+   * query
+   *   .from({ users: usersCollection })
+   *   .innerJoin({ posts: postsCollection }, ({users, posts}) => eq(users.id, posts.userId))
+   * ```
+   */
+  innerJoin<TSource extends Source>(
+    source: TSource,
+    onCallback: JoinOnCallback<
+      MergeContextForJoinCallback<TContext, SchemaFromSource<TSource>>
+    >,
+  ): QueryBuilder<
+    MergeContextWithJoinType<TContext, SchemaFromSource<TSource>, `inner`>
+  > {
+    return this.join(source, onCallback, `inner`)
+  }
+
+  /**
+   * Perform a FULL JOIN with another table or subquery
+   *
+   * @param source - An object with a single key-value pair where the key is the table alias and the value is a Collection or subquery
+   * @param onCallback - A function that receives table references and returns the join condition
+   * @returns A QueryBuilder with the full joined table available
+   *
+   * @example
+   * ```ts
+   * // Full join users with posts
+   * query
+   *   .from({ users: usersCollection })
+   *   .fullJoin({ posts: postsCollection }, ({users, posts}) => eq(users.id, posts.userId))
+   * ```
+   */
+  fullJoin<TSource extends Source>(
+    source: TSource,
+    onCallback: JoinOnCallback<
+      MergeContextForJoinCallback<TContext, SchemaFromSource<TSource>>
+    >,
+  ): QueryBuilder<
+    MergeContextWithJoinType<TContext, SchemaFromSource<TSource>, `full`>
+  > {
+    return this.join(source, onCallback, `full`)
+  }
+
+  /**
+   * Filter rows based on a condition
+   *
+   * @param callback - A function that receives table references and returns an expression
+   * @returns A QueryBuilder with the where condition applied
+   *
+   * @example
+   * ```ts
+   * // Simple condition
+   * query
+   *   .from({ users: usersCollection })
+   *   .where(({users}) => gt(users.age, 18))
+   *
+   * // Multiple conditions
+   * query
+   *   .from({ users: usersCollection })
+   *   .where(({users}) => and(
+   *     gt(users.age, 18),
+   *     eq(users.active, true)
+   *   ))
+   *
+   * // Multiple where calls are ANDed together
+   * query
+   *   .from({ users: usersCollection })
+   *   .where(({users}) => gt(users.age, 18))
+   *   .where(({users}) => eq(users.active, true))
+   * ```
+   */
+  where(callback: WhereCallback<TContext>): QueryBuilder<TContext> {
+    const aliases = this._getCurrentAliases()
+    const refProxy = createRefProxy(aliases) as RefsForContext<TContext>
+    const rawExpression = callback(refProxy)
+
+    // Allow bare boolean column references like `.where(({ u }) => u.active)`
+    // by converting ref proxies to PropRef expressions, the same way helper
+    // functions like `not()` and `eq()` do via `toExpression()`.
+    const expression = isRefProxy(rawExpression)
+      ? toExpression(rawExpression)
+      : rawExpression
+
+    // Validate that the callback returned a valid expression
+    // This catches common mistakes like using JavaScript comparison operators (===, !==, etc.)
+    // which return boolean primitives instead of expression objects
+    if (!isExpressionLike(expression)) {
+      throw new InvalidWhereExpressionError(getValueTypeName(expression))
+    }
+
+    const existingWhere = this.query.where || []
+
+    return this._clone({
+      ...this.query,
+      where: [...existingWhere, expression],
+    }) as any
+  }
+
+  /**
+   * Filter grouped rows based on aggregate conditions
+   *
+   * @param callback - A function that receives table references and returns an expression
+   * @returns A QueryBuilder with the having condition applied
+   *
+   * @example
+   * ```ts
+   * // Filter groups by count
+   * query
+   *   .from({ posts: postsCollection })
+   *   .groupBy(({posts}) => posts.userId)
+   *   .having(({posts}) => gt(count(posts.id), 5))
+   *
+   * // Filter by average
+   * query
+   *   .from({ orders: ordersCollection })
+   *   .groupBy(({orders}) => orders.customerId)
+   *   .having(({orders}) => gt(avg(orders.total), 100))
+   *
+   * // Multiple having calls are ANDed together
+   * query
+   *   .from({ orders: ordersCollection })
+   *   .groupBy(({orders}) => orders.customerId)
+   *   .having(({orders}) => gt(count(orders.id), 5))
+   *   .having(({orders}) => gt(avg(orders.total), 100))
+   * ```
+   */
+  having(callback: WhereCallback<TContext>): QueryBuilder<TContext> {
+    const aliases = this._getCurrentAliases()
+    // Add $selected namespace if SELECT clause exists (either regular or functional)
+    const refProxy = (
+      this.query.select || this.query.fnSelect
+        ? createRefProxyWithSelected(aliases)
+        : createRefProxy(aliases)
+    ) as RefsForContext<TContext>
+    const rawExpression = callback(refProxy)
+
+    // Allow bare boolean column references like `.having(({ $selected }) => $selected.isActive)`
+    // by converting ref proxies to PropRef expressions, the same way helper
+    // functions like `not()` and `eq()` do via `toExpression()`.
+    const expression = isRefProxy(rawExpression)
+      ? toExpression(rawExpression)
+      : rawExpression
+
+    // Validate that the callback returned a valid expression
+    // This catches common mistakes like using JavaScript comparison operators (===, !==, etc.)
+    // which return boolean primitives instead of expression objects
+    if (!isExpressionLike(expression)) {
+      throw new InvalidWhereExpressionError(getValueTypeName(expression))
+    }
+
+    const existingHaving = this.query.having || []
+
+    return this._clone({
+      ...this.query,
+      having: [...existingHaving, expression],
+    }) as any
+  }
+
+  /**
+   * Select specific columns or computed values from the query
+   *
+   * @param callback - A function that receives table references and returns an object with selected fields or expressions
+   * @returns A QueryBuilder that returns only the selected fields
+   *
+   * @example
+   * ```ts
+   * // Select specific columns
+   * query
+   *   .from({ users: usersCollection })
+   *   .select(({users}) => ({
+   *     name: users.name,
+   *     email: users.email
+   *   }))
+   *
+   * // Select with computed values
+   * query
+   *   .from({ users: usersCollection })
+   *   .select(({users}) => ({
+   *     fullName: concat(users.firstName, ' ', users.lastName),
+   *     ageInMonths: mul(users.age, 12)
+   *   }))
+   *
+   * // Select with aggregates (requires GROUP BY)
+   * query
+   *   .from({ posts: postsCollection })
+   *   .groupBy(({posts}) => posts.userId)
+   *   .select(({posts, count}) => ({
+   *     userId: posts.userId,
+   *     postCount: count(posts.id)
+   *   }))
+   * ```
+   */
+  select<TSelectObject extends SelectObject>(
+    callback: (
+      refs: RefsForContext<TContext>,
+    ) => NonScalarSelectObject<TSelectObject>,
+  ): QueryBuilder<WithResult<TContext, ResultTypeFromSelect<TSelectObject>>>
+  select<TSelectValue extends ScalarSelectValue>(
+    callback: (refs: RefsForContext<TContext>) => TSelectValue,
+  ): QueryBuilder<WithResult<TContext, ResultTypeFromSelectValue<TSelectValue>>>
+  select(
+    callback: (
+      refs: RefsForContext<TContext>,
+    ) => SelectObject | ScalarSelectValue,
+  ) {
+    const aliases = this._getCurrentAliases()
+    const refProxy = createRefProxy(aliases) as RefsForContext<TContext>
+    let selectObject = callback(refProxy)
+
+    // Returning a top-level alias directly is equivalent to spreading it.
+    // Leaf refs like `row.name` must remain scalar selections.
+    if (isRefProxy(selectObject) && selectObject.__path.length === 1) {
+      const sentinelKey = `__SPREAD_SENTINEL__${selectObject.__path[0]}__0`
+      selectObject = { [sentinelKey]: true }
+    }
+
+    const select = buildNestedSelect(selectObject, aliases)
+
+    return this._clone({
+      ...this.query,
+      select: select,
+      fnSelect: undefined, // remove the fnSelect clause if it exists
+    }) as any
+  }
+
+  /**
+   * Sort the query results by one or more columns
+   *
+   * @param callback - A function that receives table references and returns the field to sort by
+   * @param direction - Sort direction: 'asc' for ascending, 'desc' for descending (defaults to 'asc')
+   * @returns A QueryBuilder with the ordering applied
+   *
+   * @example
+   * ```ts
+   * // Sort by a single column
+   * query
+   *   .from({ users: usersCollection })
+   *   .orderBy(({users}) => users.name)
+   *
+   * // Sort descending
+   * query
+   *   .from({ users: usersCollection })
+   *   .orderBy(({users}) => users.createdAt, 'desc')
+   *
+   * // Multiple sorts (chain orderBy calls)
+   * query
+   *   .from({ users: usersCollection })
+   *   .orderBy(({users}) => users.lastName)
+   *   .orderBy(({users}) => users.firstName)
+   * ```
+   */
+  orderBy(
+    callback: OrderByCallback<TContext>,
+    options: OrderByDirection | OrderByOptions = `asc`,
+  ): QueryBuilder<TContext> {
+    const aliases = this._getCurrentAliases()
+    // Add $selected namespace if SELECT clause exists (either regular or functional)
+    const refProxy = (
+      this.query.select || this.query.fnSelect
+        ? createRefProxyWithSelected(aliases)
+        : createRefProxy(aliases)
+    ) as RefsForContext<TContext>
+    const result = callback(refProxy)
+
+    const opts: CompareOptions =
+      typeof options === `string`
+        ? { direction: options, nulls: `first` }
+        : {
+            direction: options.direction ?? `asc`,
+            nulls: options.nulls ?? `first`,
+            stringSort: options.stringSort,
+            locale:
+              options.stringSort === `locale` ? options.locale : undefined,
+            localeOptions:
+              options.stringSort === `locale`
+                ? options.localeOptions
+                : undefined,
+          }
+
+    const makeOrderByClause = (res: any) => {
+      return {
+        expression: toExpression(res),
+        compareOptions: opts,
+      }
+    }
+
+    // Create the new OrderBy structure with expression and direction
+    const orderByClauses = Array.isArray(result)
+      ? result.map((r) => makeOrderByClause(r))
+      : [makeOrderByClause(result)]
+
+    const existingOrderBy: OrderBy = this.query.orderBy || []
+
+    return this._clone({
+      ...this.query,
+      orderBy: [...existingOrderBy, ...orderByClauses],
+    }) as any
+  }
+
+  /**
+   * Group rows by one or more columns for aggregation
+   *
+   * @param callback - A function that receives table references and returns the field(s) to group by
+   * @returns A QueryBuilder with grouping applied (enables aggregate functions in SELECT and HAVING)
+   *
+   * @example
+   * ```ts
+   * // Group by a single column
+   * query
+   *   .from({ posts: postsCollection })
+   *   .groupBy(({posts}) => posts.userId)
+   *   .select(({posts, count}) => ({
+   *     userId: posts.userId,
+   *     postCount: count()
+   *   }))
+   *
+   * // Group by multiple columns
+   * query
+   *   .from({ sales: salesCollection })
+   *   .groupBy(({sales}) => [sales.region, sales.category])
+   *   .select(({sales, sum}) => ({
+   *     region: sales.region,
+   *     category: sales.category,
+   *     totalSales: sum(sales.amount)
+   *   }))
+   * ```
+   */
+  groupBy(callback: GroupByCallback<TContext>): QueryBuilder<TContext> {
+    const aliases = this._getCurrentAliases()
+    const refProxy = createRefProxy(aliases) as RefsForContext<TContext>
+    const result = callback(refProxy)
+
+    const newExpressions = Array.isArray(result)
+      ? result.map((r) => toExpression(r))
+      : [toExpression(result)]
+
+    // Extend existing groupBy expressions (multiple groupBy calls should accumulate)
+    const existingGroupBy = this.query.groupBy || []
+    return this._clone({
+      ...this.query,
+      groupBy: [...existingGroupBy, ...newExpressions],
+    }) as any
+  }
+
+  /**
+   * Limit the number of rows returned by the query
+   * `orderBy` is required for `limit`
+   *
+   * @param count - Maximum number of rows to return
+   * @returns A QueryBuilder with the limit applied
+   *
+   * @example
+   * ```ts
+   * // Get top 5 posts by likes
+   * query
+   *   .from({ posts: postsCollection })
+   *   .orderBy(({posts}) => posts.likes, 'desc')
+   *   .limit(5)
+   * ```
+   */
+  limit(count: number): QueryBuilder<TContext> {
+    return this._clone({
+      ...this.query,
+      limit: count,
+    }) as any
+  }
+
+  /**
+   * Skip a number of rows before returning results
+   * `orderBy` is required for `offset`
+   *
+   * @param count - Number of rows to skip
+   * @returns A QueryBuilder with the offset applied
+   *
+   * @example
+   * ```ts
+   * // Get second page of results
+   * query
+   *   .from({ posts: postsCollection })
+   *   .orderBy(({posts}) => posts.createdAt, 'desc')
+   *   .offset(page * pageSize)
+   *   .limit(pageSize)
+   * ```
+   */
+  offset(count: number): QueryBuilder<TContext> {
+    return this._clone({
+      ...this.query,
+      offset: count,
+    }) as any
+  }
+
+  /**
+   * Specify that the query should return distinct rows.
+   * Deduplicates rows based on the selected columns.
+   * @returns A QueryBuilder with distinct enabled
+   *
+   * @example
+   * ```ts
+   * // Get countries our users are from
+   * query
+   *   .from({ users: usersCollection })
+   *   .select(({users}) => ({ country: users.country }))
+   *   .distinct()
+   * ```
+   */
+  distinct(): QueryBuilder<TContext> {
+    return this._clone({
+      ...this.query,
+      distinct: true,
+    }) as any
+  }
+
+  /**
+   * Specify that the query should return a single result
+   * @returns A QueryBuilder that returns the first result
+   *
+   * @example
+   * ```ts
+   * // Get the user matching the query
+   * query
+   *   .from({ users: usersCollection })
+   *   .where(({users}) => eq(users.id, 1))
+   *   .findOne()
+   *```
+   */
+  findOne(): QueryBuilder<TContext & SingleResult> {
+    return this._clone({
+      ...this.query,
+      // TODO: enforcing return only one result with also a default orderBy if none is specified
+      // limit: 1,
+      singleResult: true,
+    }) as any
+  }
+
+  // Helper methods
+  private _getCurrentAliases(): Array<string> {
+    const aliases: Array<string> = []
+
+    // Add the from alias
+    if (this.query.from) {
+      if (this.query.from.type === `unionFrom`) {
+        aliases.push(...this.query.from.sources.map((source) => source.alias))
+      } else if (this.query.from.type === `unionAll`) {
+        aliases.push(`*`)
+      } else {
+        aliases.push(this.query.from.alias)
+      }
+    }
+
+    // Add join aliases
+    if (this.query.join) {
+      for (const join of this.query.join) {
+        aliases.push(join.from.alias)
+      }
+    }
+
+    return aliases
+  }
+
+  /**
+   * Functional variants of the query builder
+   * These are imperative function that are called for ery row.
+   * Warning: that these cannot be optimized by the query compiler, and may prevent
+   * some type of optimizations being possible.
+   * @example
+   * ```ts
+   * q.fn.select((row) => ({
+   *   name: row.user.name.toUpperCase(),
+   *   age: row.user.age + 1,
+   * }))
+   * ```
+   */
+  get fn() {
+    const builder = this
+    return {
+      /**
+       * Select fields using a function that operates on each row
+       * Warning: This cannot be optimized by the query compiler
+       *
+       * @param callback - A function that receives a row and returns the selected value
+       * @returns A QueryBuilder with functional selection applied
+       *
+       * @example
+       * ```ts
+       * // Functional select (not optimized)
+       * query
+       *   .from({ users: usersCollection })
+       *   .fn.select(row => ({
+       *     name: row.users.name.toUpperCase(),
+       *     age: row.users.age + 1,
+       *   }))
+       * ```
+       *
+       * Child query builders, query expressions, and helpers such as eq(),
+       * toArray(), and materialize() cannot be returned from fn.select(). Use
+       * them as fields in select() so the compiler can add them to the query
+       * graph.
+       *
+       * Compiled Collection-valued includes cannot be inputs to fn.select(),
+       * including nested descendants. Use toArray() or materialize() in the
+       * upstream select(), or do parent-only functional work before adding
+       * live Collection includes with select().
+       */
+      select<TFuncSelectResult>(
+        callback: (row: TContext[`schema`]) => TFuncSelectResult,
+      ): FnSelectQueryResult<TContext, TFuncSelectResult> {
+        return builder._clone({
+          ...builder.query,
+          select: undefined, // remove the select clause if it exists
+          fnSelect: callback,
+        }) as any
+      },
+      /**
+       * Filter rows using a function that operates on each row
+       * Warning: This cannot be optimized by the query compiler
+       *
+       * @param callback - A function that receives a row and returns a boolean
+       * @returns A QueryBuilder with functional filtering applied
+       *
+       * @example
+       * ```ts
+       * // Functional where (not optimized)
+       * query
+       *   .from({ users: usersCollection })
+       *   .fn.where(row => row.users.name.startsWith('A'))
+       * ```
+       */
+      where(
+        callback: (row: TContext[`schema`]) => any,
+      ): QueryBuilder<TContext> {
+        return builder._clone({
+          ...builder.query,
+          fnWhere: [
+            ...(builder.query.fnWhere || []),
+            callback as (row: NamespacedRow) => any,
+          ],
+        })
+      },
+      /**
+       * Filter grouped rows using a function that operates on each aggregated row
+       * Warning: This cannot be optimized by the query compiler
+       *
+       * @param callback - A function that receives an aggregated row (with $selected when select() was called) and returns a boolean
+       * @returns A QueryBuilder with functional having filter applied
+       *
+       * @example
+       * ```ts
+       * // Functional having (not optimized)
+       * query
+       *   .from({ posts: postsCollection })
+       *   .groupBy(({posts}) => posts.userId)
+       *   .select(({posts}) => ({ userId: posts.userId, count: count(posts.id) }))
+       *   .fn.having(({ $selected }) => $selected.count > 5)
+       * ```
+       */
+      having(
+        callback: (row: FunctionalHavingRow<TContext>) => any,
+      ): QueryBuilder<TContext> {
+        return builder._clone({
+          ...builder.query,
+          fnHaving: [
+            ...(builder.query.fnHaving || []),
+            callback as (row: NamespacedRow) => any,
+          ],
+        })
+      },
+    }
+  }
+
+  _getQuery(): QueryIR {
+    if (!this.query.from) {
+      throw new QueryMustHaveFromClauseError()
+    }
+    return this.query as QueryIR
+  }
+}
+
+// Helper to get a descriptive type name for error messages
+function getValueTypeName(value: unknown): string {
+  if (value === null) return `null`
+  if (value === undefined) return `undefined`
+  if (typeof value === `object`) return `object`
+  return typeof value
+}
+
+// Helper to ensure we have a BasicExpression/Aggregate for a value
+function toExpr(value: any): BasicExpression | Aggregate {
+  if (value === undefined) return toExpression(null)
+  if (
+    value instanceof AggregateExpr ||
+    value instanceof FuncExpr ||
+    value instanceof PropRef ||
+    value instanceof ValueExpr
+  ) {
+    return value as BasicExpression | Aggregate
+  }
+  return toExpression(value)
+}
+
+function isPlainObject(value: any): value is Record<string, any> {
+  return (
+    value !== null &&
+    typeof value === `object` &&
+    !isExpressionLike(value) &&
+    !value.__refProxy
+  )
+}
+
+function buildNestedSelect(
+  obj: any,
+  parentAliases: Array<string> = [],
+  fieldName?: string,
+): any {
+  if (obj instanceof BaseQueryBuilder) {
+    if (!fieldName) {
+      throw new Error(`Conditional include branch is missing a field name`)
+    }
+    return buildIncludesSubquery(obj, fieldName, parentAliases, `collection`)
+  }
+  if (obj instanceof ToArrayWrapper) {
+    if (!(obj.query instanceof BaseQueryBuilder)) {
+      throw new Error(`toArray() must wrap a subquery builder`)
+    }
+    if (!fieldName) {
+      throw new Error(`Conditional toArray() branch is missing a field name`)
+    }
+    return buildIncludesSubquery(obj.query, fieldName, parentAliases, `array`)
+  }
+  if (obj instanceof ConcatToArrayWrapper) {
+    if (!(obj.query instanceof BaseQueryBuilder)) {
+      throw new Error(`concat(toArray(...)) must wrap a subquery builder`)
+    }
+    if (!fieldName) {
+      throw new Error(
+        `Conditional concat(toArray(...)) branch is missing a field name`,
+      )
+    }
+    return buildIncludesSubquery(obj.query, fieldName, parentAliases, `concat`)
+  }
+  if (obj instanceof CaseWhenWrapper) {
+    return buildConditionalSelect(obj, parentAliases, fieldName)
+  }
+  if (!isPlainObject(obj)) return toExpr(obj)
+  const out: Record<string, any> = {}
+  for (const [k, v] of Object.entries(obj)) {
+    if (typeof k === `string` && k.startsWith(`__SPREAD_SENTINEL__`)) {
+      // Preserve sentinel key and its value (value is unimportant at compile time)
+      out[k] = v
+      continue
+    }
+    if (v instanceof BaseQueryBuilder) {
+      out[k] = buildIncludesSubquery(v, k, parentAliases, `collection`)
+      continue
+    }
+    if (v instanceof ToArrayWrapper) {
+      if (!(v.query instanceof BaseQueryBuilder)) {
+        throw new Error(`toArray() must wrap a subquery builder`)
+      }
+      out[k] = buildIncludesSubquery(v.query, k, parentAliases, `array`)
+      continue
+    }
+    if (v instanceof ConcatToArrayWrapper) {
+      if (!(v.query instanceof BaseQueryBuilder)) {
+        throw new Error(`concat(toArray(...)) must wrap a subquery builder`)
+      }
+      out[k] = buildIncludesSubquery(v.query, k, parentAliases, `concat`)
+      continue
+    }
+    if (v instanceof MaterializeWrapper) {
+      if (!(v.query instanceof BaseQueryBuilder)) {
+        throw new Error(`materialize() must wrap a subquery builder`)
+      }
+      const childQuery = v.query._getQuery()
+      const materialization: IncludesMaterialization = childQuery.singleResult
+        ? `singleton`
+        : `array`
+      out[k] = buildIncludesSubquery(v.query, k, parentAliases, materialization)
+      continue
+    }
+    if (v instanceof CaseWhenWrapper) {
+      out[k] = buildConditionalSelect(v, parentAliases, k)
+      continue
+    }
+    out[k] = buildNestedSelect(v, parentAliases, k)
+  }
+  return out
+}
+
+function buildConditionalSelect(
+  wrapper: CaseWhenWrapper,
+  parentAliases: Array<string>,
+  fieldName?: string,
+): ConditionalSelect {
+  const args = wrapper.args
+  if (args.length < 2) {
+    throw new Error(`caseWhen() requires at least two arguments`)
+  }
+
+  const hasDefaultValue = args.length % 2 === 1
+  const pairCount = Math.floor(args.length / 2)
+  const branches = []
+
+  for (let i = 0; i < pairCount; i++) {
+    branches.push({
+      condition: toExpression(args[i * 2]),
+      value: buildNestedSelect(args[i * 2 + 1], parentAliases, fieldName),
+    })
+  }
+
+  const defaultValue = hasDefaultValue
+    ? buildNestedSelect(args[args.length - 1], parentAliases, fieldName)
+    : undefined
+
+  return new ConditionalSelect(branches, defaultValue)
+}
+
+/**
+ * Recursively collects all PropRef nodes from an expression tree.
+ */
+function collectRefsFromExpression(
+  expr: BasicExpression | Aggregate,
+): Array<PropRef> {
+  const refs: Array<PropRef> = []
+  switch (expr.type) {
+    case `ref`:
+      refs.push(expr)
+      break
+    case `func`:
+    case `agg`:
+      for (const arg of expr.args) {
+        refs.push(...collectRefsFromExpression(arg))
+      }
+      break
+    default:
+      break
+  }
+  return refs
+}
+
+function collectRefsFromSelectValue(value: unknown): Array<PropRef> {
+  if (
+    value instanceof PropRef ||
+    value instanceof FuncExpr ||
+    value instanceof AggregateExpr
+  ) {
+    return collectRefsFromExpression(value)
+  }
+  if (value instanceof ConditionalSelect) {
+    return [
+      ...value.branches.flatMap((branch) => [
+        ...collectRefsFromExpression(branch.condition),
+        ...collectRefsFromSelectValue(branch.value),
+      ]),
+      ...(value.defaultValue === undefined
+        ? []
+        : collectRefsFromSelectValue(value.defaultValue)),
+    ]
+  }
+  if (value instanceof IncludesSubquery) {
+    return [
+      value.correlationField,
+      ...(value.parentProjection ?? []),
+      ...collectExternalRefsFromQuery(value.query),
+    ]
+  }
+  if (!isPlainObject(value)) return []
+  return Object.values(value).flatMap(collectRefsFromSelectValue)
+}
+
+function collectExternalRefsFromQuery(query: QueryIR): Array<PropRef> {
+  const localAliases = new Set(collectQueryAliases(query))
+  const refs: Array<PropRef> = []
+  const addExpression = (expression: BasicExpression | Aggregate) => {
+    refs.push(...collectRefsFromExpression(expression))
+  }
+  const addWhere = (where: Where) => {
+    addExpression(
+      typeof where === `object` && `expression` in where
+        ? where.expression
+        : where,
+    )
+  }
+
+  for (const where of query.where ?? []) addWhere(where)
+  for (const join of query.join ?? []) {
+    addExpression(join.left)
+    addExpression(join.right)
+    if (join.from.type === `queryRef`) {
+      refs.push(...collectExternalRefsFromQuery(join.from.query))
+    }
+  }
+  for (const expression of query.groupBy ?? []) addExpression(expression)
+  for (const having of query.having ?? []) addWhere(having)
+  for (const { expression } of query.orderBy ?? []) addExpression(expression)
+  if (query.select) refs.push(...collectRefsFromSelectValue(query.select))
+
+  if (query.from.type === `queryRef`) {
+    refs.push(...collectExternalRefsFromQuery(query.from.query))
+  } else if (query.from.type === `unionFrom`) {
+    for (const source of query.from.sources) {
+      if (source.type === `queryRef`) {
+        refs.push(...collectExternalRefsFromQuery(source.query))
+      }
+    }
+  } else if (query.from.type === `unionAll`) {
+    for (const branch of query.from.queries) {
+      refs.push(...collectExternalRefsFromQuery(branch))
+    }
+  }
+
+  const seen = new Set<string>()
+  return refs.filter((ref) => {
+    const alias = ref.path.length > 1 ? ref.path[0] : undefined
+    const path = ref.path.join(`.`)
+    if (
+      alias == null ||
+      alias === `$selected` ||
+      localAliases.has(alias) ||
+      seen.has(path)
+    ) {
+      return false
+    }
+    seen.add(path)
+    return true
+  })
+}
+
+function collectParentRefsFromQuery(
+  query: QueryIR,
+  parentAliases: Array<string>,
+): Array<PropRef> {
+  const refs: Array<PropRef> = []
+  const addExpression = (expression: BasicExpression | Aggregate) => {
+    refs.push(...collectRefsFromExpression(expression))
+  }
+  const addWhere = (where: Where) => {
+    addExpression(
+      typeof where === `object` && `expression` in where
+        ? where.expression
+        : where,
+    )
+  }
+
+  for (const where of query.where ?? []) addWhere(where)
+  for (const join of query.join ?? []) {
+    addExpression(join.left)
+    addExpression(join.right)
+    if (join.from.type === `queryRef`) {
+      refs.push(...collectParentRefsFromQuery(join.from.query, parentAliases))
+    }
+  }
+  for (const expression of query.groupBy ?? []) addExpression(expression)
+  for (const having of query.having ?? []) addWhere(having)
+  for (const { expression } of query.orderBy ?? []) addExpression(expression)
+  if (query.select) {
+    refs.push(...collectRefsFromSelectValue(query.select))
+  }
+
+  if (query.from.type === `queryRef`) {
+    refs.push(...collectParentRefsFromQuery(query.from.query, parentAliases))
+  } else if (query.from.type === `unionFrom`) {
+    for (const source of query.from.sources) {
+      if (source.type === `queryRef`) {
+        refs.push(...collectParentRefsFromQuery(source.query, parentAliases))
+      }
+    }
+  } else if (query.from.type === `unionAll`) {
+    for (const branch of query.from.queries) {
+      refs.push(...collectParentRefsFromQuery(branch, parentAliases))
+    }
+  }
+
+  const seen = new Set<string>()
+  return refs.filter((ref) => {
+    const path = ref.path.join(`.`)
+    if (
+      ref.path[0] == null ||
+      !parentAliases.includes(ref.path[0]) ||
+      seen.has(path)
+    ) {
+      return false
+    }
+    seen.add(path)
+    return true
+  })
+}
+
+function collectExternalParentAliases(query: QueryIR): Array<string> {
+  return [
+    ...new Set(
+      collectExternalRefsFromQuery(query)
+        .map((ref) => ref.path[0])
+        .filter((alias): alias is string => alias !== undefined),
+    ),
+  ]
+}
+
+/**
+ * Checks whether a WHERE clause references any parent alias.
+ */
+function referencesParent(where: Where, parentAliases: Array<string>): boolean {
+  const expr =
+    typeof where === `object` && `expression` in where
+      ? where.expression
+      : where
+  return collectRefsFromExpression(expr).some(
+    (ref) => ref.path[0] != null && parentAliases.includes(ref.path[0]),
+  )
+}
+
+/**
+ * Builds an IncludesSubquery IR node from a child query builder.
+ * Extracts the correlation condition from the child's WHERE clauses by finding
+ * an eq() predicate that references both a parent alias and a child alias.
+ */
+function buildIncludesSubquery(
+  childBuilder: BaseQueryBuilder,
+  fieldName: string,
+  parentAliases: Array<string>,
+  materialization: IncludesMaterialization,
+): IncludesSubquery {
+  const childQuery = childBuilder._getQuery()
+
+  // Collect child's own aliases
+  const childAliases = collectQueryAliases(childQuery)
+  const visibleParentAliases = [
+    ...new Set([...parentAliases, ...collectExternalParentAliases(childQuery)]),
+  ]
+
+  // Walk child's WHERE clauses to find the correlation condition.
+  // The correlation eq() may be a standalone WHERE or nested inside a top-level and().
+  let parentRef: PropRef | undefined
+  let childRef: PropRef | undefined
+  let correlationWhereIndex = -1
+  let correlationAndArgIndex = -1 // >= 0 when found inside an and()
+
+  if (childQuery.where) {
+    for (let i = 0; i < childQuery.where.length; i++) {
+      const where = childQuery.where[i]!
+      const expr =
+        typeof where === `object` && `expression` in where
+          ? where.expression
+          : where
+
+      // Try standalone eq()
+      if (
+        expr.type === `func` &&
+        expr.name === `eq` &&
+        expr.args.length === 2
+      ) {
+        const result = extractCorrelation(
+          expr.args[0]!,
+          expr.args[1]!,
+          visibleParentAliases,
+          childAliases,
+        )
+        if (result) {
+          parentRef = result.parentRef
+          childRef = result.childRef
+          correlationWhereIndex = i
+          break
+        }
+      }
+
+      // Try inside top-level and()
+      if (
+        expr.type === `func` &&
+        expr.name === `and` &&
+        expr.args.length >= 2
+      ) {
+        for (let j = 0; j < expr.args.length; j++) {
+          const arg = expr.args[j]!
+          if (
+            arg.type === `func` &&
+            arg.name === `eq` &&
+            arg.args.length === 2
+          ) {
+            const result = extractCorrelation(
+              arg.args[0]!,
+              arg.args[1]!,
+              visibleParentAliases,
+              childAliases,
+            )
+            if (result) {
+              parentRef = result.parentRef
+              childRef = result.childRef
+              correlationWhereIndex = i
+              correlationAndArgIndex = j
+              break
+            }
+          }
+        }
+        if (parentRef) break
+      }
+    }
+  }
+
+  if (!parentRef || !childRef || correlationWhereIndex === -1) {
+    throw new Error(
+      `Includes subquery for "${fieldName}" must have a WHERE clause with an eq() condition ` +
+        `that correlates a parent field with a child field. ` +
+        `Example: .where(({child}) => eq(child.parentId, parent.id))`,
+    )
+  }
+
+  // Remove the correlation eq() from the child query's WHERE clauses.
+  // If it was inside an and(), remove just that arg (collapsing the and() if needed).
+  const modifiedWhere = [...childQuery.where!]
+  if (correlationAndArgIndex >= 0) {
+    const where = modifiedWhere[correlationWhereIndex]!
+    const expr =
+      typeof where === `object` && `expression` in where
+        ? where.expression
+        : where
+    const remainingArgs = (expr as any).args.filter(
+      (_: any, idx: number) => idx !== correlationAndArgIndex,
+    )
+    if (remainingArgs.length === 1) {
+      // Collapse and() with single remaining arg to just that expression
+      const isResidual =
+        typeof where === `object` && `expression` in where && where.residual
+      modifiedWhere[correlationWhereIndex] = isResidual
+        ? { expression: remainingArgs[0], residual: true }
+        : remainingArgs[0]
+    } else {
+      // Rebuild and() without the extracted arg
+      const newAnd = new FuncExpr(`and`, remainingArgs)
+      const isResidual =
+        typeof where === `object` && `expression` in where && where.residual
+      modifiedWhere[correlationWhereIndex] = isResidual
+        ? { expression: newAnd, residual: true }
+        : newAnd
+    }
+  } else {
+    modifiedWhere.splice(correlationWhereIndex, 1)
+  }
+
+  // Separate remaining WHEREs into pure-child vs parent-referencing
+  const pureChildWhere: Array<Where> = []
+  const parentFilters: Array<Where> = []
+  for (const w of modifiedWhere) {
+    if (referencesParent(w, visibleParentAliases)) {
+      parentFilters.push(w)
+    } else {
+      pureChildWhere.push(w)
+    }
+  }
+
+  // Every parent input that can affect the child plan belongs to the route
+  // identity, not only the main equality key or residual filters.
+  const projectedParentRefs = collectParentRefsFromQuery(
+    { ...childQuery, where: modifiedWhere },
+    visibleParentAliases,
+  )
+  const parentProjection =
+    projectedParentRefs.length > 0 ? projectedParentRefs : undefined
+
+  const modifiedQuery: QueryIR = {
+    ...childQuery,
+    where: pureChildWhere.length > 0 ? pureChildWhere : undefined,
+  }
+
+  const rawChildSelect = modifiedQuery.select as any
+  const hasObjectSelect =
+    rawChildSelect === undefined || isPlainObject(rawChildSelect)
+  let includesQuery = modifiedQuery
+  let scalarField: string | undefined
+
+  if (materialization === `concat`) {
+    if (rawChildSelect === undefined || hasObjectSelect) {
+      throw new Error(
+        `concat(toArray(...)) for "${fieldName}" requires the subquery to select a scalar value`,
+      )
+    }
+  }
+
+  if (!hasObjectSelect) {
+    if (materialization === `collection`) {
+      throw new Error(
+        `Includes subquery for "${fieldName}" must select an object when materializing as a Collection`,
+      )
+    }
+
+    scalarField = INCLUDES_SCALAR_FIELD
+    includesQuery = {
+      ...modifiedQuery,
+      select: {
+        [scalarField]: rawChildSelect,
+      },
+    }
+  }
+
+  return new IncludesSubquery(
+    includesQuery,
+    parentRef,
+    childRef,
+    fieldName,
+    parentFilters.length > 0 ? parentFilters : undefined,
+    parentProjection,
+    materialization,
+    scalarField,
+  )
+}
+
+function collectQueryAliases(query: QueryIR): Array<string> {
+  const aliases = new Set<string>(collectFromAliases(query.from))
+  if (query.join) {
+    for (const join of query.join) {
+      aliases.add(join.from.alias)
+    }
+  }
+  return [...aliases]
+}
+
+function collectFromAliases(from: QueryIR[`from`]): Array<string> {
+  if (from.type === `unionFrom`) {
+    return from.sources.map((source) => source.alias)
+  }
+
+  if (from.type === `unionAll`) {
+    return from.queries.flatMap((branch) => collectQueryAliases(branch))
+  }
+
+  return [from.alias]
+}
+
+/**
+ * Checks if two eq() arguments form a parent-child correlation.
+ * Returns the parent and child PropRefs if found, undefined otherwise.
+ */
+function extractCorrelation(
+  argA: BasicExpression,
+  argB: BasicExpression,
+  parentAliases: Array<string>,
+  childAliases: Array<string>,
+): { parentRef: PropRef; childRef: PropRef } | undefined {
+  if (argA.type === `ref` && argB.type === `ref`) {
+    const aAlias = argA.path[0]
+    const bAlias = argB.path[0]
+
+    if (
+      aAlias &&
+      bAlias &&
+      parentAliases.includes(aAlias) &&
+      childAliases.includes(bAlias)
+    ) {
+      return { parentRef: argA, childRef: argB }
+    }
+
+    if (
+      aAlias &&
+      bAlias &&
+      parentAliases.includes(bAlias) &&
+      childAliases.includes(aAlias)
+    ) {
+      return { parentRef: argB, childRef: argA }
+    }
+  }
+
+  return undefined
+}
+
+// Internal function to build a query from a callback
+// used by liveQueryCollectionOptions.query
+export function buildQuery<TContext extends Context>(
+  fn: (builder: InitialQueryBuilder) => QueryBuilder<TContext>,
+): QueryIR {
+  const result = fn(new BaseQueryBuilder())
+  return getQueryIR(result)
+}
+
+export { getQueryIR }
+
+// Type-only exports for the query builder
+export type InitialQueryBuilder = Pick<
+  BaseQueryBuilder<Context>,
+  `from` | `unionAll`
+>
+
+export type InitialQueryBuilderConstructor = new () => InitialQueryBuilder
+
+export type QueryBuilder<TContext extends Context> = Omit<
+  BaseQueryBuilder<TContext>,
+  `from` | `unionAll` | `_getQuery`
+>
+
+// Main query builder class alias with the constructor type modified to hide all
+// but the from method on the initial instance
+export const Query: InitialQueryBuilderConstructor = BaseQueryBuilder
+
+// Helper type to extract context from a QueryBuilder
+export type ExtractContext<T> =
+  T extends BaseQueryBuilder<infer TContext>
+    ? TContext
+    : T extends QueryBuilder<infer TContext>
+      ? TContext
+      : never
+
+// Helper type to extract the result type from a QueryBuilder (similar to Zod's z.infer)
+export type QueryResult<T> = GetResult<ExtractContext<T>>
+
+// Export the types from types.ts for convenience
+export type {
+  Context,
+  ContextSchema,
+  ContextFromSource,
+  ContextFromUnionBranches,
+  ContextFromUnionSource,
+  Source,
+  GetResult,
+  RefLeaf as Ref,
+  InferResultType,
+  // Types used in public method signatures that must be exported
+  // for declaration emit to work (see https://github.com/TanStack/db/issues/1012)
+  SchemaFromSource,
+  SingleSource,
+  InferCollectionType,
+  MergeContextWithJoinType,
+  MergeContextForJoinCallback,
+  ApplyJoinOptionalityToMergedSchema,
+  ResultTypeFromSelect,
+  WithResult,
+  JoinOnCallback,
+  RefsForContext,
+  WhereCallback,
+  OrderByCallback,
+  GroupByCallback,
+  SelectObject,
+  FunctionalHavingRow,
+  Prettify,
+} from './types.js'

@@ -1,4 +1,13 @@
 import {
+  deleteIngredient,
+  ingredientTagsCollection,
+  ingredientsCollection,
+  recipeIngredientsCollection,
+  recipesCollection,
+  tagsCollection,
+  updateIngredient,
+} from "@/endpoints/kitchen.endpoint"
+import {
   createFileRoute,
   useParams,
   Link,
@@ -25,13 +34,7 @@ import {
   TextArea,
 } from "@radix-ui/themes"
 import { DotsVerticalIcon, TrashIcon, Pencil1Icon } from "@radix-ui/react-icons"
-import {
-  ingredientsCollection,
-  recipeIngredientsCollection,
-  recipesCollection,
-  tagsCollection,
-  ingredientTagsCollection,
-} from "@/lib/collections"
+
 import TagList from "@/components/tag-list"
 import TagEditor from "@/components/tag-editor"
 import { isRunningLow, cosineSimilarity } from "@/lib/utils"
@@ -75,24 +78,18 @@ function TrackingTypeEditor({
   ]
 
   const handleSave = () => {
-    ingredientsCollection.update(ingredient.id, (draft) => {
-      draft.tracking_type = selectedType as z.infer<
-        typeof ingredientsTrackingTypeSchema
-      >
-      draft.updated_at = new Date()
-
-      // Reset tracking values when changing type
-      if (selectedType === `fill_level`) {
-        draft.fill_level = 100
-        draft.count = 0
-      } else if (selectedType === `count`) {
-        draft.count = 1
-        draft.fill_level = 0
-      } else if (selectedType === `pantry_staple`) {
-        draft.fill_level = 0
-        draft.count = 0
-        draft.expiration_date = new Date(`2099-12-31`) // Far future for pantry staples
-      }
+    updateIngredient({
+      id: ingredient.id,
+      data: {
+        tracking_type: selectedType as z.infer<
+          typeof ingredientsTrackingTypeSchema
+        >,
+        fill_level: selectedType === `fill_level` ? 100 : 0,
+        count: selectedType === `count` ? 1 : 0,
+        ...(selectedType === `pantry_staple`
+          ? { expiration_date: new Date(`2099-12-31`) }
+          : {}),
+      },
     })
     setOpen(false)
   }
@@ -160,10 +157,9 @@ function EditNameDescriptionDialog({
   const [description, setDescription] = useState(ingredient.description)
 
   const handleSave = () => {
-    ingredientsCollection.update(ingredient.id, (draft) => {
-      draft.name = name.trim()
-      draft.description = description.trim()
-      draft.updated_at = new Date()
+    updateIngredient({
+      id: ingredient.id,
+      data: { name: name.trim(), description: description.trim() },
     })
     onOpenChange(false)
   }
@@ -281,7 +277,7 @@ function IngredientActionsMenu({
               <Button
                 color="red"
                 onClick={() => {
-                  ingredientsCollection.delete(ingredient.id)
+                  deleteIngredient(ingredient.id)
                   navigate({ to: `/ingredients` })
                 }}
               >
@@ -307,7 +303,7 @@ function IngredientDetail() {
   const { data: ingredients } = useLiveQuery(
     (q) =>
       q
-        .from({ ingredientsCollection })
+        .from({ ingredientsCollection: ingredientsCollection })
         .where(({ ingredientsCollection }) => eq(ingredientsCollection.id, id)),
     [id]
   )
@@ -316,12 +312,15 @@ function IngredientDetail() {
 
   // Get all recipe ingredients and recipes for matching
   const { data: allRecipeIngredients } = useLiveQuery(
-    (q) => q.from({ recipeIngredientsCollection }),
+    (q) =>
+      q.from({
+        recipeIngredientsCollection: recipeIngredientsCollection,
+      }),
     []
   )
 
   const { data: allRecipes } = useLiveQuery(
-    (q) => q.from({ recipesCollection }),
+    (q) => q.from({ recipesCollection: recipesCollection }),
     []
   )
 
@@ -442,9 +441,9 @@ function IngredientDetail() {
               <ExpirationDateEdit
                 expirationDate={ingredient.expiration_date}
                 onValueChange={(newDate) => {
-                  ingredientsCollection.update(ingredient.id, (draft) => {
-                    draft.expiration_date = newDate
-                    draft.updated_at = new Date()
+                  updateIngredient({
+                    id: ingredient.id,
+                    data: { expiration_date: newDate },
                   })
                 }}
               />
@@ -464,9 +463,9 @@ function IngredientDetail() {
                   variant="soft"
                   value={[ingredient.fill_level]}
                   onValueChange={(values) => {
-                    ingredientsCollection.update(ingredient.id, (draft) => {
-                      draft.fill_level = values[0]
-                      draft.updated_at = new Date()
+                    updateIngredient({
+                      id: ingredient.id,
+                      data: { fill_level: values[0] },
                     })
                   }}
                 />
@@ -485,9 +484,9 @@ function IngredientDetail() {
                   size="1"
                   variant="soft"
                   onClick={() => {
-                    ingredientsCollection.update(ingredient.id, (draft) => {
-                      draft.count = Math.max(0, ingredient.count - 1)
-                      draft.updated_at = new Date()
+                    updateIngredient({
+                      id: ingredient.id,
+                      data: { count: Math.max(0, ingredient.count - 1) },
                     })
                   }}
                 >
@@ -498,9 +497,9 @@ function IngredientDetail() {
                   size="1"
                   variant="soft"
                   onClick={() => {
-                    ingredientsCollection.update(ingredient.id, (draft) => {
-                      draft.count = ingredient.count + 1
-                      draft.updated_at = new Date()
+                    updateIngredient({
+                      id: ingredient.id,
+                      data: { count: ingredient.count + 1 },
                     })
                   }}
                 >

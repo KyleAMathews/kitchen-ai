@@ -1,0 +1,24 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@tanstack/db": ["./vendor/tanstack-db/packages/db/src/index.ts"],
+      "@tanstack/db-ivm": [
+        "./vendor/tanstack-db/packages/db-ivm/src/index.ts"
+      ],
+      "@tanstack/react-db": [
+        "./vendor/tanstack-db/packages/react-db/src/index.ts"
+      ],
+      "@tanstack/query-db-collection": [
+        "./vendor/tanstack-db/packages/query-db-collection/src/index.ts"
+      ],
+      "zod": ["./node_modules/zod"],
+      "zod/*": ["./node_modules/zod/*"],
+      "react": ["./node_modules/@types/react"],
+      "react/*": ["./node_modules/@types/react/*"],
+      "@tanstack/db-endpoints": ["./vendor/endpoints/src/runtime.ts"]
+    },
+    "noUnusedParameters": false
+  }
+}

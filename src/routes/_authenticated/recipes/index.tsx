@@ -1,15 +1,15 @@
+import {
+  recipeCommentsCollection,
+  recipeTagsCollection,
+  recipesCollection,
+  tagsCollection,
+} from "@/endpoints/kitchen.endpoint"
+import { recipeCardsCollection } from "@/lib/derived-collections"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { useLiveQuery } from "@tanstack/react-db"
 import { Flex, Heading, Text } from "@radix-ui/themes"
 import { PlusCircledIcon } from "@radix-ui/react-icons"
 import RecipeCard from "@/components/recipe-card"
-import {
-  recipesCollection,
-  recipeCommentsCollection,
-  tagsCollection,
-  recipeTagsCollection,
-} from "@/lib/collections"
-import { recipeCardsCollection } from "@/lib/derived-collections"
 
 export const Route = createFileRoute(`/_authenticated/recipes/`)({
   component: Recipes,

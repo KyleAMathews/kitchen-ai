@@ -1,4 +1,18 @@
 import {
+  addToShoppingList,
+  deleteComment,
+  deleteRecipe,
+  ingredientsCollection,
+  insertComment,
+  recipeCommentsCollection,
+  recipeIngredientsCollection,
+  recipeTagsCollection,
+  recipesCollection,
+  tagsCollection,
+  updateComment,
+  usersCollection,
+} from "@/endpoints/kitchen.endpoint"
+import {
   createFileRoute,
   useParams,
   Link,
@@ -13,7 +27,6 @@ import {
   type SelectRecipeComment,
   type SelectUser,
 } from "@/db/zod-schemas"
-import { trpc } from "@/lib/trpc-client"
 import {
   Heading,
   Flex,
@@ -35,15 +48,7 @@ import {
 } from "@radix-ui/themes"
 import * as Toast from "@radix-ui/react-toast"
 import { groupBy, mapValues } from "lodash-es"
-import {
-  recipesCollection,
-  recipeIngredientsCollection,
-  ingredientsCollection,
-  recipeCommentsCollection,
-  usersCollection,
-  tagsCollection,
-  recipeTagsCollection,
-} from "@/lib/collections"
+
 import TagList from "@/components/tag-list"
 import TagEditor from "@/components/tag-editor"
 import {
@@ -133,11 +138,11 @@ function AddIngredientsToShoppingListButton({
           )
 
           try {
-            await trpc.shoppingList.addToShoppingList.mutate({
+            await addToShoppingList({
               recipeName: recipe.name,
               url: recipe.url,
               checklists,
-            })
+            }).isPersisted.promise
             setOpen(true)
           } catch (err) {
             console.error(`Failed to add items to shopping list:`, err)
@@ -294,7 +299,7 @@ function RecipeActionsMenu({ recipe }: { recipe: SelectRecipe }) {
               <Button
                 color="red"
                 onClick={() => {
-                  recipesCollection.delete(recipe.id)
+                  deleteRecipe(recipe.id)
                   navigate({ to: `/recipes` })
                 }}
               >
@@ -316,7 +321,7 @@ function RecipeDetail() {
   const { data: recipes } = useLiveQuery(
     (q) =>
       q
-        .from({ recipesCollection })
+        .from({ recipesCollection: recipesCollection })
         .where(({ recipesCollection }) => eq(recipesCollection.id, id)),
     [id]
   )
@@ -325,7 +330,9 @@ function RecipeDetail() {
   const { data: recipeIngredients } = useLiveQuery(
     (q) =>
       q
-        .from({ recipeIngredientsCollection })
+        .from({
+          recipeIngredientsCollection: recipeIngredientsCollection,
+        })
         .where(({ recipeIngredientsCollection }) =>
           eq(recipeIngredientsCollection.recipe_id, id)
         ),
@@ -334,7 +341,7 @@ function RecipeDetail() {
 
   // Get all user ingredients for matching
   const { data: userIngredients } = useLiveQuery(
-    (q) => q.from({ ingredientsCollection }),
+    (q) => q.from({ ingredientsCollection: ingredientsCollection }),
     []
   )
 
@@ -619,17 +626,19 @@ function CommentCard({
   const handleEdit = () => {
     if (!editComment.trim() && editRating === 0 && !editMadeIt) return
 
-    recipeCommentsCollection.update(comment.id, (draft) => {
-      draft.rating = editRating > 0 ? editRating : null
-      draft.comment = editComment.trim() || null
-      draft.made_it = editMadeIt
-      draft.updated_at = new Date()
+    updateComment({
+      id: comment.id,
+      data: {
+        rating: editRating > 0 ? editRating : null,
+        comment: editComment.trim() || null,
+        made_it: editMadeIt,
+      },
     })
     setEditing(false)
   }
 
   const handleDelete = () => {
-    recipeCommentsCollection.delete(comment.id)
+    deleteComment(comment.id)
   }
 
   if (editing) {
@@ -840,15 +849,12 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
   const handleMadeIt = () => {
     if (!session?.user.id) return
 
-    recipeCommentsCollection.insert({
+    insertComment({
       id: crypto.randomUUID(),
       recipe_id: recipeId,
-      user_id: session.user.id,
       made_it: true,
       rating: null,
       comment: null,
-      created_at: new Date(),
-      updated_at: new Date(),
     })
   }
 
@@ -856,15 +862,12 @@ function RecipeCommentsSection({ recipeId }: { recipeId: string }) {
     if (!comment.trim() && rating === 0 && !madeIt) return
     if (!session?.user.id) return
 
-    recipeCommentsCollection.insert({
+    insertComment({
       id: crypto.randomUUID(),
       recipe_id: recipeId,
-      user_id: session.user.id,
       made_it: madeIt,
       rating: rating > 0 ? rating : null,
       comment: comment.trim() || null,
-      created_at: new Date(),
-      updated_at: new Date(),
     })
     setComment(``)
     setRating(0)

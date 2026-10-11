@@ -1,157 +1,43 @@
 # Kitchen AI
-A tool for managing kitchen logistics - reviewing recipes to make & deciding if we need to buy ingredients or not based on the semi-automated ingredient management.
 
-
-**Core Pattern**: Electric SQL for reads, tRPC for writes, TanStack DB for optimistic updates.
+Kitchen logistics and recipe management. This worktree uses TanStack DB Endpoints for reads, writes and optimistic state. Electric and tRPC have been removed. The original checkout still has the old architecture.
 
 ## Commands
-```bash
-pnpm dev        # Start dev server with Docker services
-pnpm lint       # Format & lint (run after every edit)
-pnpm build      # Production build
-pnpm test       # Run tests
-pnpm migrate    # Apply DB migrations
-```
 
-## Stack & Conventions
+- `pnpm dev`: compile the schema, start the configured PostgreSQL service, and run Vite.
+- `pnpm build`: compile the schema and make a production build.
+- `pnpm typecheck`: check application types.
+- `pnpm lint`: format and lint; run targeted lint after edits.
+- `pnpm migrate`: apply Drizzle migrations to the configured database.
+- `pnpm test:endpoints:compiled`: run the application SQL smoke test with stubbed external services against disposable PostgreSQL.
+- `pnpm test:endpoints`: run the real-session browser checks against the disposable test database and a server on port 4196.
 
-### File Structure
-- `src/routes/` - TanStack Router file-based routes (kebab-case)
-- `src/db/schema.ts` - Drizzle schema (snake_case fields)
-- `src/db/zod-schemas.ts` - Centralized Zod schemas
-- `src/lib/trpc/` - tRPC routers (CRUD only)
-- `src/lib/collections.ts` - TanStack DB collections
+## Architecture
 
-### Naming Conventions
-- **Database**: snake_case (e.g., `user_id`, `created_at`)
-- **Files**: kebab-case (e.g., `recipe-card.tsx`)
-- **Routes**: Use `_` prefix for pathless layouts (e.g., `_authenticated.tsx`)
+- `src/endpoints/kitchen.endpoint.ts` owns query and mutation declarations and their SQL.
+- `src/endpoints/database.server.ts` provides the database and explicit session checks.
+- `src/lib/db-client.ts` owns the browser page’s client and resolves the session when an operation starts. Import collections and actions directly from their endpoint module.
+- `src/lib/services/` contains external AI/Trello operations. Keep those on the server.
+- `src/db/schema.ts` and `src/db/zod-schemas.ts` own database and validation schemas.
+- Routes preload collections and use TanStack DB live queries for client filtering and joins.
 
-## Data Flow Architecture
+Bind with `const { query, mutation } = endpoints(dbClient)`. Query declarations return bare collections. Mutation actions return a synchronous transaction; use `tx.isPersisted.promise` only when a caller needs confirmation. Apply optimistic changes in `onMutate`; show write errors and let rollback repair guesses. Avoid blocking unrelated controls on a pending write.
 
-### Reading Data (Electric SQL → TanStack DB)
-```tsx
-// 1. Preload in route loader
-export const Route = createFileRoute('/recipes/')({
-  loader: async () => {
-    await Promise.all([
-      recipesCollection.preload(),
-      recipeCommentsCollection.preload(), // Include if used by child components
-    ])
-  },
-})
+Name database mutations with `insert`, `update`, or `delete` to match their operation. Avoid `save` for updates and redundant `Action` suffixes. Keep workflow names when a mutation spans external services, such as `addToShoppingList`.
 
-// 2. Query with useLiveQuery (ALWAYS destructure data)
-const { data: recipes } = useLiveQuery(
-  (q) => q.from({ recipesCollection }).where(...),
-  [dependencies] // Include reactive dependencies
-)
-```
+Authorization remains explicit application code in handlers. Never have the compiler insert or rewrite auth. Dependency analysis covers visible SQL and supported PostgreSQL effects; external JavaScript calls are outside that proof. Schema inspection belongs in compilation, never request handling. Unsupported analysis must preserve full refresh.
 
-### Writing Data (TanStack DB → tRPC)
-```tsx
-// Use collection operations for optimistic updates
-recipesCollection.insert({ ... })  // NOT trpc.recipes.create.mutate()
-// Similar to Immer
-recipesCollection.update(id, (draft) => { ... })
-recipesCollection.delete(id)
-```
+Retained collections have full endpoint results. There is no automatic cross-client sync; use explicit refetch or a separate polling/event/sync channel for outside writes. Do not infer external freshness from selective mutation refresh.
 
-### Collection Definition Pattern
-```tsx
-// src/lib/collections.ts
-export const recipeCommentsCollection = createCollection(
-  electricCollectionOptions({
-    id: 'recipe_comments',
-    shapeOptions: { url: '/api/recipe-comments', ... },
-    schema: selectRecipeCommentsSchema,
-    getKey: (item) => item.id,
-    
-    // tRPC handlers (CRUD only, return { txid })
-    onInsert: async ({ transaction }) => {
-      const result = await trpc.recipeComments.create.mutate(...)
-      return { txid: result.txid }
-    },
-    onUpdate: async ({ transaction }) => { ... },
-    onDelete: async ({ transaction }) => { ... },
-  })
-)
-```
+Use Drizzle’s property names directly without manual case conversion, centralized Zod schemas, route preloading, Radix components and existing libraries. Before changing DB reads or writes, read the installed TanStack DB live-query, collection-setup and optimistic-mutation SKILL files. The local prototype source is linked from the TanStack DB worktree; changes there need its own tests too.
 
-## Critical Rules
+## Test isolation
 
-1. **NEVER use tRPC for data reads** - Only Electric SQL + useLiveQuery
-2. **NEVER call tRPC directly from components** - Use collection operations
-3. **NEVER use TanStack Query** - This uses TanStack DB (different library)
-4. **ALWAYS preload collections** in route loaders
-5. **ALWAYS use snake_case** for database fields throughout the app
-6. **ONLY basic CRUD in tRPC** - No special mutations unless using `createOptimisticAction`
-7. **ALWAYS default to the libraries we use** - Before writing custom JavaScript,
-   CSS, HTML, hooks, or components, check the installed stack and its docs or
-   skills for an existing primitive. Compose or extend library components first;
-   write the smallest custom code only when no suitable library API exists.
+Write tests target only `kitchen_endpoints` at `127.0.0.1:55480`. Do not switch them to the ordinary application database. The browser test uses real test sessions. The compiled-handler companion stubs auth, AI and Trello while executing the actual SQL against disposable PostgreSQL. Do not run live paid/external calls as a substitute.
 
-## Schema Management
+## Historical generated mappings
 
-```tsx
-// src/db/zod-schemas.ts (centralized, never redefine)
-export const selectRecipeSchema = createSelectSchema(recipes)
-export const insertRecipeSchema = createInsertSchema(recipes)
-export const updateRecipeSchema = createUpdateSchema(recipes)
-```
-
-## Component Patterns
-
-- **Styling**: Radix UI, prefer Flex over Box
-- **Forms**: Use optimistic updates, no loading states needed
-- **Links**: Use TanStack Router's `Link` component
-- **Auth**: Access via `authClient.useSession()`
-
-## Skills
-
-The libraries here ship versioned skills — they're the source of truth for
-Electric/TanStack DB patterns. Read the relevant one *before* changing the sync
-or write path; the rules below are easy to violate in ways that look fine and
-fail later.
-
-```bash
-npx @tanstack/intent@latest list    # every package + skill
-npx @tanstack/intent@latest load @tanstack/db#db-core/mutations-optimistic
-```
-
-The mappings below cover the common paths. Also useful:
-
-- `@tanstack/db#db-core/mutations-optimistic` — insert/update/delete, `isPersisted`,
-  `createOptimisticAction` (atomic writes across several collections),
-  `createTransaction({ autoCommit: false })` for draft-until-save flows
-- `@tanstack/db#db-core/live-queries` — query builder: joins, groupBy, aggregates, operators
-- `@tanstack/db#db-core/collection-setup` — creating collections, adapter options, schema validation
-- `@tanstack/db#meta-framework` — preloading collections in loaders (DB is client-only; no SSR)
-- `@electric-sql/client#electric-schema-shapes` — designing a table and its shape together
-- `@electric-sql/client#electric-debugging` — shapes not updating, txid timeouts, stale cache
-
-### Gotchas these document
-
-- **Never bypass the collection to write.** The path is
-  `collection.insert() → onInsert → tRPC → txid → awaitTxId`. Calling tRPC straight
-  from a component skips optimistic state and the sync handshake.
-- **`TimeoutWaitingForTxIdError` in dev is usually the environment, not your code.**
-  Each shape holds a long-poll connection and this app has 8, over the browser's
-  6-connection HTTP/1.1 cap, so writes stall waiting for a txid that can't arrive.
-  Use `pnpm dev` (Caddy serves https://kitchen-ai.localhost over HTTP/2, which
-  multiplexes); a bare `vite dev` on http://localhost:5173 starves shapes. Don't
-  "fix" this by bypassing the collection.
-- **The server must honour client-generated ids.** The collection confirms its
-  optimistic row by matching the txid to the synced row, so an upsert that resolves
-  to a *different* row (e.g. `ON CONFLICT (name)`) never lets it settle.
-- **Keep `parser: { timestamptz: ... }` in `shapeOptions`.** Sync writes into the
-  store directly, bypassing the Zod schema, so without it dates arrive as strings
-  and `.getTime()` fails at runtime. The schema only covers the mutation path.
-- **Ordering across tables is yours to enforce.** Await the parent row's
-  `isPersisted.promise` before inserting rows that reference it.
-
-The mapping block below is generated by `intent` — don't hand-edit between its
-HTML comment markers; add prose like this section above them instead.
+The generated block below belongs to the removed Electric/tRPC architecture. It is retained verbatim; do not apply its Electric routing rules to this Endpoints worktree. Regenerate these mappings through Intent when updating package skills.
 
 <!-- intent-skills:start -->
 # Skill mappings — when working in these areas, load the linked skill file into context.

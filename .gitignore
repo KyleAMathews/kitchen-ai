@@ -24,3 +24,6 @@ old-code
 .nitro
 .opentrace
 .opentrace-index.log
+
+# Build-time Endpoints schema evidence
+.endpoints/
