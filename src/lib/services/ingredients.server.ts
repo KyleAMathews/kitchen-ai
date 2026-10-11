@@ -1,9 +1,8 @@
 import { z } from "zod"
 import { grocerySectionSchema } from "@/db/zod-schemas"
-import type OpenAI from "openai"
-import { zodFunction } from "openai/helpers/zod"
+import { chat, type ModelMessage } from "@tanstack/ai"
 import { getEmbedding } from "./ai.server"
-import { getOpenAIClient } from "@/lib/openai"
+import { getKitchenAIAdapter, KITCHEN_AI_MODEL } from "@/lib/tanstack-ai.server"
 
 // Schema for AI-extracted ingredient info
 const aiIngredientSchema = z.object({
@@ -20,22 +19,7 @@ const aiIngredientSchema = z.object({
 type AIIngredientInfo = z.infer<typeof aiIngredientSchema>
 
 export async function describeIngredient(name: string) {
-  const tool = zodFunction({
-    name: `get_ingredient`,
-    description: `Get ingredient arguments from name of ingredient`,
-    parameters: aiIngredientSchema,
-  })
-
-  const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-    {
-      role: `system`,
-      content: `You are an ingredient information assistant. Extract ingredient details.
-
-IMPORTANT: For grocery_section, you MUST use exactly one of these values:
-${grocerySectionSchema.options.join(`, `)}
-
-Do NOT use underscores or any other variations. Use the exact capitalization and spacing shown above.`,
-    },
+  const messages: Array<ModelMessage> = [
     {
       role: `user`,
       content: `A user wants more information about this kitchen ingredient: ${name}`,
@@ -47,37 +31,26 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
   ): Promise<AIIngredientInfo> {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       console.log(
-        `OpenAI ingredient extraction attempt ${attempt}/${maxAttempts}`
+        `TanStack AI ingredient extraction attempt ${attempt}/${maxAttempts} with ${KITCHEN_AI_MODEL}`
       )
 
       try {
-        const client = getOpenAIClient()
-        const response = await client.chat.completions.create({
-          model: `gpt-3.5-turbo-0125`,
-          max_tokens: 1024,
+        return await chat({
+          adapter: getKitchenAIAdapter(),
+          systemPrompts: [
+            `You are an ingredient information assistant. Extract ingredient details.
+
+IMPORTANT: For grocery_section, you MUST use exactly one of these values:
+${grocerySectionSchema.options.join(`, `)}
+
+Do NOT use underscores or any other variations. Use the exact capitalization and spacing shown above.`,
+          ],
           messages,
-          tools: [tool],
-          tool_choice: {
-            type: `function`,
-            function: { name: `get_ingredient` },
+          outputSchema: aiIngredientSchema,
+          modelOptions: {
+            max_output_tokens: 1024,
           },
         })
-
-        const { message } = response.choices[0]
-
-        if (!message.tool_calls?.[0]) {
-          throw new Error(`No function call in response`)
-        }
-
-        const toolCall = message.tool_calls[0]
-        if (toolCall.type !== `function`) {
-          throw new Error(`Expected function tool call`)
-        }
-        const parsed = aiIngredientSchema.parse(
-          JSON.parse(toolCall.function.arguments)
-        )
-
-        return parsed
       } catch (error) {
         console.error(`Attempt ${attempt} failed:`, error)
 
@@ -87,17 +60,10 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
           )
         }
 
-        // Add error context for next attempt
-        messages.push(
-          {
-            role: `assistant`,
-            content: `I encountered an error processing the ingredient.`,
-          },
-          {
-            role: `user`,
-            content: `Please try again. Extract the ingredient description and grocery section. Use only the allowed grocery sections: ${grocerySectionSchema.options.join(`, `)}`,
-          }
-        )
+        messages.push({
+          role: `user`,
+          content: `Please try again. Extract the ingredient description and grocery section. Use only the allowed grocery sections: ${grocerySectionSchema.options.join(`, `)}`,
+        })
       }
     }
 

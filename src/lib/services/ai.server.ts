@@ -1,19 +1,27 @@
 import { z } from "zod"
 
 import { grocerySectionSchema } from "@/db/zod-schemas"
-import OpenAI from "openai"
-import { zodFunction } from "openai/helpers/zod"
-import { getOpenAIClient } from "@/lib/openai"
+import { chat, embed, type ModelMessage } from "@tanstack/ai"
+import {
+  getIngredientEmbeddingAdapter,
+  getKitchenAIAdapter,
+  KITCHEN_AI_MODEL,
+} from "@/lib/tanstack-ai.server"
 
 // Helper function to get embeddings
 export async function getEmbedding(text: string) {
-  const client = getOpenAIClient()
-  const result = await client.embeddings.create({
+  const result = await embed({
+    adapter: getIngredientEmbeddingAdapter(),
     input: text,
-    model: `text-embedding-3-small`,
     dimensions: 256,
   })
-  return result.data[0].embedding
+
+  const embedding = result.embeddings[0]?.vector
+  if (!embedding) {
+    throw new Error(`TanStack AI returned no embedding for the ingredient.`)
+  }
+
+  return embedding
 }
 
 // Use the centralized grocery section schema
@@ -51,47 +59,32 @@ export async function extractRecipe(
 ) {
   const startTime = Date.now()
 
-  const tool = zodFunction({
-    name: `extract_recipe`,
-    description: `Extract recipe name, description, and ingredients from pasted text`,
-    parameters: recipeExtractionSchema,
-  })
-
   async function extractRecipeWithRetry(
-    messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
+    messages: Array<ModelMessage>,
     maxAttempts = 3
   ): Promise<RecipeExtraction> {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-      console.log(`OpenAI extraction attempt ${attempt}/${maxAttempts}`)
+      console.log(
+        `TanStack AI recipe extraction attempt ${attempt}/${maxAttempts} with ${KITCHEN_AI_MODEL}`
+      )
 
       try {
-        const client = getOpenAIClient()
-        const response = await client.chat.completions.create({
-          model: `gpt-4o`,
-          max_tokens: 2048,
+        return await chat({
+          adapter: getKitchenAIAdapter(),
+          systemPrompts: [
+            `You are a recipe parsing assistant. Extract recipe information from user-provided text.
+
+IMPORTANT: For grocery_section, you MUST use exactly one of these values:
+${grocerySectionEnum.options.join(`, `)}
+
+Do NOT use underscores, hyphens, or any other variations. Use the exact capitalization and spacing shown above.`,
+          ],
           messages,
-          tools: [tool],
-          tool_choice: {
-            type: `function`,
-            function: { name: `extract_recipe` },
+          outputSchema: recipeExtractionSchema,
+          modelOptions: {
+            max_output_tokens: 2048,
           },
         })
-
-        const { message } = response.choices[0]
-
-        if (!message.tool_calls?.[0]) {
-          throw new Error(`No function call in response`)
-        }
-
-        const toolCall = message.tool_calls[0]
-        if (toolCall.type !== `function`) {
-          throw new Error(`Expected function tool call`)
-        }
-        const parsed = recipeExtractionSchema.parse(
-          JSON.parse(toolCall.function.arguments)
-        )
-
-        return parsed
       } catch (error) {
         console.error(`Attempt ${attempt} failed:`, error)
 
@@ -101,13 +94,9 @@ export async function extractRecipe(
           )
         }
 
-        // Add error context for next attempt
+        // Add error context for the next independent attempt.
         messages = [
           ...messages,
-          {
-            role: `assistant`,
-            content: `I encountered an error processing the recipe.`,
-          },
           {
             role: `user`,
             content: `Please try again. Extract the recipe name, description, and ingredients. Use only the allowed grocery sections: ${grocerySectionEnum.options.join(`, `)}`,
@@ -119,22 +108,12 @@ export async function extractRecipe(
     throw new Error(`Should not reach here`)
   }
 
-  const initialMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] =
-    [
-      {
-        role: `system`,
-        content: `You are a recipe parsing assistant. Extract recipe information from user-provided text.
-
-IMPORTANT: For grocery_section, you MUST use exactly one of these values:
-${grocerySectionEnum.options.join(`, `)}
-
-Do NOT use underscores, hyphens, or any other variations. Use the exact capitalization and spacing shown above.`,
-      },
-      {
-        role: `user`,
-        content: `Extract the recipe details from this text${url ? ` (source: ${url})` : ``}:\n\n${pastedText}`,
-      },
-    ]
+  const initialMessages: Array<ModelMessage> = [
+    {
+      role: `user`,
+      content: `Extract the recipe details from this text${url ? ` (source: ${url})` : ``}:\n\n${pastedText}`,
+    },
+  ]
 
   const parsed = await extractRecipeWithRetry(initialMessages)
 
