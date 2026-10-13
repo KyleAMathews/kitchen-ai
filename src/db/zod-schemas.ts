@@ -23,17 +23,13 @@ import {
 // Generate base schemas from Drizzle tables
 const baseSelectUsersSchema = createSelectSchema(users)
 
-// Transform user schema to snake_case for Electric sync compatibility
-// Better-auth uses camelCase internally, but Electric syncs with snake_case
-export const selectUsersSchema = baseSelectUsersSchema.transform((data) => ({
-  id: data.id,
-  name: data.name,
-  email: data.email,
-  email_verified: data.emailVerified,
-  image: data.image,
-  created_at: data.createdAt,
-  updated_at: data.updatedAt,
-}))
+// The public view of a user that other signed-in users can see (comment
+// authors). The live query selects only these columns.
+export const selectUserProfilesSchema = baseSelectUsersSchema.pick({
+  id: true,
+  name: true,
+  image: true,
+})
 
 // Other schemas are already in snake_case in the Drizzle schema
 // Override enum fields to use explicit z.enum() to avoid Zod v4 compatibility issues
@@ -116,7 +112,7 @@ export const ingredientsTrackingTypeSchema = z.enum(
 export const jobsStateSchema = z.enum(jobsStateEnum.enumValues)
 
 // Type inference from schemas - use these for type annotations
-export type SelectUser = z.infer<typeof selectUsersSchema>
+export type SelectUserProfile = z.infer<typeof selectUserProfilesSchema>
 export type SelectIngredient = z.infer<typeof selectIngredientsSchema>
 export type SelectRecipe = z.infer<typeof selectRecipesSchema>
 export type SelectRecipeIngredient = z.infer<

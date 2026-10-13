@@ -28,19 +28,18 @@ export const isAuthed = middleware(async ({ ctx, next }) => {
 
 export const authedProcedure = procedure.use(isAuthed)
 
-// Helper function to generate transaction ID for Electric sync
+// Returns the current transaction's id for the client to pass to
+// `awaitTxId()`. Neon Realtime matches the full 64-bit id, so keep it as a
+// decimal string: no `::xid` cast (that was Electric's 32-bit form) and no
+// conversion to a JS number.
 export async function generateTxId(
   tx: Parameters<
     // eslint-disable-next-line quotes
     Parameters<typeof import("@/db/connection").db.transaction>[0]
   >[0]
-): Promise<number> {
-  // The ::xid cast strips off the epoch, giving you the raw 32-bit value
-  // that matches what PostgreSQL sends in logical replication streams
-  // (and then exposed through Electric which we'll match against
-  // in the client).
-  const result = await tx.execute(
-    sql`SELECT pg_current_xact_id()::xid::text as txid`
+): Promise<string> {
+  const result = await tx.execute<{ txid: string }>(
+    sql`SELECT pg_current_xact_id()::text as txid`
   )
   const txid = result.rows[0]?.txid
 
@@ -48,5 +47,5 @@ export async function generateTxId(
     throw new Error(`Failed to get transaction ID`)
   }
 
-  return parseInt(txid as string, 10)
+  return txid
 }

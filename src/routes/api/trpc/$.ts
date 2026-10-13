@@ -7,6 +7,7 @@ import { recipeCommentsRouter } from "@/lib/trpc/recipe-comments"
 import { tagsRouter } from "@/lib/trpc/tags"
 import { aiRouter } from "@/lib/trpc/ai"
 import { shoppingListRouter } from "@/lib/trpc/shopping-list"
+import { realtimeRouter } from "@/lib/trpc/realtime"
 import { db } from "@/db/connection"
 import { auth } from "@/lib/auth"
 
@@ -17,6 +18,7 @@ export const appRouter = router({
   tags: tagsRouter,
   ai: aiRouter,
   shoppingList: shoppingListRouter,
+  realtime: realtimeRouter,
 })
 
 export type AppRouter = typeof appRouter

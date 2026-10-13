@@ -1,36 +1,17 @@
-import {
-  createFileRoute,
-  redirect,
-  useNavigate,
-  Link,
-} from "@tanstack/react-router"
+import { createFileRoute, redirect, Link } from "@tanstack/react-router"
 import { Outlet } from "@tanstack/react-router"
 import { authClient, authStateCollection } from "@/lib/auth-client"
+import { initCollections } from "@/lib/collections"
 import { Flex, Text, Button, Heading, Container } from "@radix-ui/themes"
 
 export const Route = createFileRoute(`/_authenticated`)({
   ssr: false, // Disable SSR - run beforeLoad only on client
   component: AuthenticatedLayout,
   beforeLoad: async () => {
-    if (
-      authStateCollection.get(`auth`) &&
-      authStateCollection.get(`auth`)?.session.expiresAt > new Date()
-    ) {
-      return authStateCollection.get(`auth`)!
-    } else {
-      const result = await authClient.getSession()
-      if (!result.data?.session || !result.data.user) {
-        throw redirect({
-          to: `/login`,
-        })
-      }
-      authStateCollection.insert({
-        id: `auth`,
-        session: result.data.session,
-        user: result.data.user,
-      })
-      return result.data
-    }
+    const auth = await getAuthState()
+    // Realtime collections need the session to seal their queries.
+    await initCollections()
+    return auth
   },
   errorComponent: ({ error }) => {
     const ErrorComponent = () => {
@@ -70,11 +51,11 @@ export const Route = createFileRoute(`/_authenticated`)({
 
 function AuthenticatedLayout() {
   const { data: session, isPending } = authClient.useSession()
-  const navigate = useNavigate()
 
   const handleLogout = async () => {
     await authClient.signOut()
-    navigate({ to: `/login` })
+    // A full page load drops the realtime connection and the synced rows.
+    window.location.assign(`/login`)
   }
 
   if (isPending || !session) {
@@ -108,4 +89,24 @@ function AuthenticatedLayout() {
       </Flex>
     </Container>
   )
+}
+
+async function getAuthState() {
+  const cached = authStateCollection.get(`auth`)
+  if (cached && cached.session.expiresAt > new Date()) {
+    return cached
+  }
+
+  const result = await authClient.getSession()
+  if (!result.data?.session || !result.data.user) {
+    throw redirect({
+      to: `/login`,
+    })
+  }
+  authStateCollection.insert({
+    id: `auth`,
+    session: result.data.session,
+    user: result.data.user,
+  })
+  return result.data
 }

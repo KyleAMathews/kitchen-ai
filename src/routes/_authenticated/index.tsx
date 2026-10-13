@@ -17,7 +17,7 @@ import {
 } from "@/lib/collections"
 import RecipeCard from "@/components/recipe-card"
 import IngredientCard from "@/components/ingredient-card"
-import { recipeCardsCollection } from "@/lib/derived-collections"
+import { getRecipeCardsCollection } from "@/lib/derived-collections"
 
 export const Route = createFileRoute(`/_authenticated/`)({
   component: Dashboard,
@@ -102,7 +102,7 @@ function Dashboard() {
     [ingredientTagMatches]
   )
 
-  const { data: recipes } = useLiveQuery(recipeCardsCollection)
+  const { data: recipes } = useLiveQuery(getRecipeCardsCollection())
 
   // Search matches a recipe's name, description, or any of its tag names
   const displayRecipes = useMemo(() => {

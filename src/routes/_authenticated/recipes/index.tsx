@@ -9,7 +9,7 @@ import {
   tagsCollection,
   recipeTagsCollection,
 } from "@/lib/collections"
-import { recipeCardsCollection } from "@/lib/derived-collections"
+import { getRecipeCardsCollection } from "@/lib/derived-collections"
 
 export const Route = createFileRoute(`/_authenticated/recipes/`)({
   component: Recipes,
@@ -24,7 +24,7 @@ export const Route = createFileRoute(`/_authenticated/recipes/`)({
 })
 
 function Recipes() {
-  const { data: recipes } = useLiveQuery(recipeCardsCollection)
+  const { data: recipes } = useLiveQuery(getRecipeCardsCollection())
 
   return (
     <div className="p-6">

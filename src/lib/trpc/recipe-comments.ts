@@ -9,11 +9,11 @@ import {
 import { eq, and } from "drizzle-orm"
 
 export const recipeCommentsRouter = router({
-  // Add a comment/rating/made-it entry
+  // Add a comment/rating/made-it entry, keeping the client-generated id so
+  // the synced row replaces the collection's optimistic row.
   create: authedProcedure
     .input(
-      insertRecipeCommentsSchema.omit({
-        id: true,
+      insertRecipeCommentsSchema.required({ id: true }).omit({
         user_id: true,
         created_at: true,
         updated_at: true,

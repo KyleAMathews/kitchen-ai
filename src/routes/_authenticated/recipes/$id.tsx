@@ -11,7 +11,7 @@ import {
   type SelectRecipe,
   type SelectIngredient,
   type SelectRecipeComment,
-  type SelectUser,
+  type SelectUserProfile,
 } from "@/db/zod-schemas"
 import { trpc } from "@/lib/trpc-client"
 import {
@@ -605,7 +605,7 @@ function CommentCard({
   users,
 }: {
   comment: SelectRecipeComment
-  users: SelectUser[]
+  users: SelectUserProfile[]
 }) {
   const [editing, setEditing] = useState(false)
   const [editRating, setEditRating] = useState(comment.rating || 0)
