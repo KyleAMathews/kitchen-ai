@@ -4,6 +4,10 @@ Things that were confusing, missing or wrong while porting Kitchen AI from
 Electric + tRPC + TanStack DB to Neon Realtime (`@neon/realtime*` 0.0.3, Neon
 CLI 8.4.3, staging). Written for whoever smooths the path for the next agent.
 
+The port started on `@tanstack/db` 0.9.0 / `@tanstack/react-db` 0.3.8 and then
+moved to the latest, 0.12.0 / 0.5.4. Entries say which version they apply to
+when it matters.
+
 Each entry: what happened, why it hurt, and a suggested fix.
 
 ## Setup and tooling
@@ -134,6 +138,8 @@ Each entry: what happened, why it hurt, and a suggested fix.
   a straight port hits this on every collection.
 - I dropped `schema` and typed rows from `z.output<typeof schema>` instead.
   The template doesn't pass a schema either.
+- Still fails after upgrading to `@tanstack/db` 0.12.0 / `@tanstack/react-db`
+  0.5.4.
 - Fix: make `Schema` inference line up with TanStack's `createCollection`
   overloads, or document that `schema` isn't supported yet.
 
@@ -164,20 +170,37 @@ Each entry: what happened, why it hurt, and a suggested fix.
   look like it synced in 9 ms. Poll with `page.evaluate` instead.
 - Not a Neon issue, but it'll bite anyone verifying sync timing.
 
-### Confirmed inserts keep `$synced: false` (needs confirming)
+### `$synced` stayed `false` after confirmed inserts on TanStack DB 0.9
 
-- After `collection.insert()` → `onInsert` → tRPC → `awaitTxId()` resolves and
-  `isPersisted` settles, `collection.get(id)` still reports `$synced: false` and
-  `$origin: "local"`, with no pending transactions, even 2 s later. A row that
-  only ever arrived over sync reports `$synced: true`, `$origin: "remote"`.
-  Seen with `@tanstack/db` 0.9.0 and `@neon/realtime-tanstack` 0.0.3.
-- Later remote updates to that row still apply, so the data is right; only
-  the flag is stuck. Kitchen AI never reads `$synced`, so it isn't affected.
-- The mutations guide's `Inbox` example disables Edit/Delete while
-  `!message.$synced`. If this reproduces there, those buttons would stay
-  disabled after you send a message.
-- Next step: reproduce in the `with-tanstack` template, and check whether
-  Electric collections behave the same (if so, it's TanStack DB, not Realtime).
+- On `@tanstack/db` 0.9.0, after `insert()` → `onInsert` → tRPC →
+  `awaitTxId()` resolved and `isPersisted` settled, `collection.get(id)` still
+  reported `$synced: false`, with no pending transactions, even 2 s later.
+  Rows that only arrived over sync reported `$synced: true`.
+- On `@tanstack/db` 0.12.0 the same insert reports `$synced: true` and
+  `$hasPendingWrites: false` once it's confirmed. So this was a TanStack DB
+  bug, and it's fixed upstream.
+- It still matters for Realtime, for two reasons:
+  - `@neon/realtime-tanstack` 0.0.3 declares `@tanstack/db ^0.9.0`, and the
+    template pins 0.9.0. Following the docs gets you the buggy version.
+  - In 0.12, `$synced` is deprecated in favor of `!$hasPendingWrites`. The
+    mutations guide's `Inbox` example disables Edit/Delete while
+    `!message.$synced`. On 0.9 those buttons would stay disabled after you send.
+- Fix: widen the adapter's peer range and bump the template to 0.12, and
+  switch the docs to `$hasPendingWrites`.
+
+### Adapter's `@tanstack/db` peer range excludes the current release
+
+- `@neon/realtime-tanstack` 0.0.3 peers on `@tanstack/db ^0.9.0`, which for a
+  0.x version means `<0.10`. The latest is 0.12.0 (with `@tanstack/react-db`
+  0.5.4), so pnpm reports an unmet peer.
+- It works anyway: the adapter only imports `withCollectionConfigFactory` from
+  `@tanstack/db`. With `@tanstack/db` 0.12.0 as a direct dependency, pnpm
+  links the adapter and react-db to a single copy. Every test in this port
+  passes on 0.12 (two-tab sync, seal renewal, late collection start, client ids).
+- Watch out: without a direct `@tanstack/db` dependency, the adapter and
+  react-db could resolve different copies, and collections created by one
+  wouldn't be recognized by the other.
+- Fix: widen the peer range (e.g. `>=0.9.0 <0.13`) and test against the latest.
 
 ## What worked well
 
