@@ -1,4 +1,8 @@
-import "dotenv/config"
+import { config } from "dotenv"
+
+// `neon env pull` writes `.env.local`; `.env` holds anything set by hand.
+config({ path: [`.env.local`, `.env`], quiet: true })
+
 import { defineConfig } from "drizzle-kit"
 
 export default defineConfig({

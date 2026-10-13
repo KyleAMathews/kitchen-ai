@@ -2,11 +2,11 @@
 A tool for managing kitchen logistics - reviewing recipes to make & deciding if we need to buy ingredients or not based on the semi-automated ingredient management.
 
 
-**Core Pattern**: Electric SQL for reads, tRPC for writes, TanStack DB for optimistic updates.
+**Core Pattern**: Neon Realtime live queries for reads, tRPC for writes, TanStack DB for optimistic updates. The data lives on a Neon branch (staging during the bug bash); see `papercuts.md` for setup notes.
 
 ## Commands
 ```bash
-pnpm dev        # Start dev server with Docker services
+pnpm dev        # Start the dev server against the Neon branch in .env.local
 pnpm lint       # Format & lint (run after every edit)
 pnpm build      # Production build
 pnpm test       # Run tests
@@ -29,7 +29,7 @@ pnpm migrate    # Apply DB migrations
 
 ## Data Flow Architecture
 
-### Reading Data (Electric SQL → TanStack DB)
+### Reading Data (Neon Realtime → TanStack DB)
 ```tsx
 // 1. Preload in route loader
 export const Route = createFileRoute('/recipes/')({
@@ -59,28 +59,39 @@ recipesCollection.delete(id)
 
 ### Collection Definition Pattern
 ```tsx
-// src/lib/collections.ts
-export const recipeCommentsCollection = createCollection(
-  electricCollectionOptions({
-    id: 'recipe_comments',
-    shapeOptions: { url: '/api/recipe-comments', ... },
-    schema: selectRecipeCommentsSchema,
+// src/lib/realtime.server.ts: one Drizzle select per collection. Selected
+// keys must match column names, and don't add orderBy (it forces resyncs).
+export const liveQueries = {
+  recipe_comments: () =>
+    db.select(getTableColumns(recipeComments)).from(recipeComments),
+}
+
+// src/lib/collections.ts, inside createCollections(sealed)
+const recipeComments = createCollection(
+  realtimeCollectionOptions({
+    id: `recipe_comments`,
+    ...live(`recipe_comments`, selectRecipeCommentsSchema), // client, sealed query, refresh, gcTime: 0
     getKey: (item) => item.id,
-    
-    // tRPC handlers (CRUD only, return { txid })
-    onInsert: async ({ transaction }) => {
+
+    // tRPC handlers return { txid } as a string (pg_current_xact_id()::text)
+    onInsert: async ({ transaction, collection }) => {
       const result = await trpc.recipeComments.create.mutate(...)
-      return { txid: result.txid }
+      await awaitTxId(collection, result.txid)
     },
-    onUpdate: async ({ transaction }) => { ... },
-    onDelete: async ({ transaction }) => { ... },
   })
 )
 ```
 
+Collections need a sealed query when they're created, so they're built by
+`initCollections()`, which `/_authenticated` awaits in `beforeLoad`, and
+exported as live bindings. Only read them from code under `/_authenticated`,
+and build derived collections lazily (see `getRecipeCardsCollection()`).
+Adding a table means adding it to `liveQueries` and `createCollections()`. Editing `collections.ts` in dev needs a full page reload,
+because HMR swaps in a module whose collections were never initialized.
+
 ## Critical Rules
 
-1. **NEVER use tRPC for data reads** - Only Electric SQL + useLiveQuery
+1. **NEVER use tRPC for data reads** - Only Realtime live queries + useLiveQuery. (`realtime.sealAll`/`realtime.seal` only hand out sealed queries.)
 2. **NEVER call tRPC directly from components** - Use collection operations
 3. **NEVER use TanStack Query** - This uses TanStack DB (different library)
 4. **ALWAYS preload collections** in route loaders
@@ -110,7 +121,8 @@ export const updateRecipeSchema = createUpdateSchema(recipes)
 ## Skills
 
 The libraries here ship versioned skills — they're the source of truth for
-Electric/TanStack DB patterns. Read the relevant one *before* changing the sync
+TanStack DB patterns. For Neon Realtime, read `.claude/skills/neon-realtime/SKILL.md`
+and https://neon.com/docs/realtime/overview.md. Read the relevant one *before* changing the sync
 or write path; the rules below are easy to violate in ways that look fine and
 fail later.
 
@@ -127,31 +139,27 @@ The mappings below cover the common paths. Also useful:
 - `@tanstack/db#db-core/live-queries` — query builder: joins, groupBy, aggregates, operators
 - `@tanstack/db#db-core/collection-setup` — creating collections, adapter options, schema validation
 - `@tanstack/db#meta-framework` — preloading collections in loaders (DB is client-only; no SSR)
-- `@electric-sql/client#electric-schema-shapes` — designing a table and its shape together
-- `@electric-sql/client#electric-debugging` — shapes not updating, txid timeouts, stale cache
 
 ### Gotchas these document
 
 - **Never bypass the collection to write.** The path is
   `collection.insert() → onInsert → tRPC → txid → awaitTxId`. Calling tRPC straight
   from a component skips optimistic state and the sync handshake.
-- **`TimeoutWaitingForTxIdError` in dev is usually the environment, not your code.**
-  Each shape holds a long-poll connection and this app has 8, over the browser's
-  6-connection HTTP/1.1 cap, so writes stall waiting for a txid that can't arrive.
-  Use `pnpm dev` (Caddy serves https://kitchen-ai.localhost over HTTP/2, which
-  multiplexes); a bare `vite dev` on http://localhost:5173 starves shapes. Don't
-  "fix" this by bypassing the collection.
+- **Writes wait for their txid with a timeout.** `awaitTxId()` (in
+  `collections.ts`) passes `TXID_TIMEOUT_MS`; Realtime's `awaitTxId` doesn't
+  reject on subscription errors, so never call it without one.
 - **The server must honour client-generated ids.** The collection confirms its
   optimistic row by matching the txid to the synced row, so an upsert that resolves
   to a *different* row (e.g. `ON CONFLICT (name)`) never lets it settle.
-- **Keep `parser: { timestamptz: ... }` in `shapeOptions`.** Sync writes into the
-  store directly, bypassing the Zod schema, so without it dates arrive as strings
-  and `.getTime()` fails at runtime. The schema only covers the mutation path.
+- **Never ship `NEON_REALTIME_SECRET` to the browser.** Only
+  `VITE_NEON_REALTIME_URL` is public. Sealed queries are bearer tokens: keep
+  them out of logs and URLs.
 - **Ordering across tables is yours to enforce.** Await the parent row's
   `isPersisted.promise` before inserting rows that reference it.
 
 The mapping block below is generated by `intent` — don't hand-edit between its
-HTML comment markers; add prose like this section above them instead.
+HTML comment markers; add prose like this section above them instead. Its
+Electric entries predate the move to Neon Realtime and no longer apply.
 
 <!-- intent-skills:start -->
 # Skill mappings — when working in these areas, load the linked skill file into context.

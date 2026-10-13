@@ -29,7 +29,7 @@ const changeTagAssignmentsInput = z.object({
 
 export const tagsRouter = router({
   // Persist the complete assignment diff for one entity in one transaction.
-  // The one txid is visible in every Electric shape changed by the transaction.
+  // The one txid is visible in every live query changed by the transaction.
   changeAssignments: authedProcedure
     .input(changeTagAssignmentsInput)
     .mutation(async ({ ctx, input }) => {

@@ -49,10 +49,7 @@ export default defineConfig(async () => {
       },
     },
     ssr: {
-      noExternal: [`debug`, `@tanstack/electric-db-collection`],
-    },
-    define: {
-      VITE_ELECTRIC_URL: JSON.stringify(process.env.VITE_ELECTRIC_URL),
+      noExternal: [`debug`],
     },
     build: {
       rollupOptions: {

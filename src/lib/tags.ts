@@ -1,5 +1,6 @@
 import { createOptimisticAction } from "@tanstack/react-db"
 import {
+  awaitTxId,
   tagsCollection,
   recipeTagsCollection,
   ingredientTagsCollection,
@@ -66,18 +67,18 @@ export function optimisticallyInsertTags(
 export async function awaitTagWrites(
   target: TagTarget,
   { new_tags, links }: TagWrites,
-  txid: number,
+  txid: string,
   hasRemovedLinks = false
 ) {
-  const syncs: Array<Promise<boolean>> = []
+  const syncs: Array<Promise<void>> = []
   if (new_tags.length > 0) {
-    syncs.push(tagsCollection.utils.awaitTxId(txid))
+    syncs.push(awaitTxId(tagsCollection, txid))
   }
   if (links.length > 0 || hasRemovedLinks) {
     syncs.push(
       target.entity === `recipe`
-        ? recipeTagsCollection.utils.awaitTxId(txid)
-        : ingredientTagsCollection.utils.awaitTxId(txid)
+        ? awaitTxId(recipeTagsCollection, txid)
+        : awaitTxId(ingredientTagsCollection, txid)
     )
   }
   await Promise.all(syncs)
@@ -104,12 +105,7 @@ const changeTagAssignmentsAction =
         removed_link_ids,
       })
 
-      await awaitTagWrites(
-        target,
-        tagWrites,
-        Number(txid),
-        removed_link_ids.length > 0
-      )
+      await awaitTagWrites(target, tagWrites, txid, removed_link_ids.length > 0)
     },
   })
 

@@ -1,6 +1,7 @@
 import { createOptimisticAction } from "@tanstack/react-db"
 import type { SelectIngredient, SelectTag } from "@/db/zod-schemas"
 import {
+  awaitTxId,
   ingredientsCollection,
   recipeIngredientsCollection,
   recipesCollection,
@@ -48,14 +49,13 @@ const createIngredientAction =
         new_tags: tagWrites.new_tags.map(({ id, name }) => ({ id, name })),
         links: tagWrites.links.map(({ id, tag_id }) => ({ id, tag_id })),
       })
-      const numericTxid = Number(txid)
 
       await Promise.all([
-        ingredientsCollection.utils.awaitTxId(numericTxid),
+        awaitTxId(ingredientsCollection, txid),
         awaitTagWrites(
           { entity: `ingredient`, entity_id: ingredient.id },
           tagWrites,
-          numericTxid
+          txid
         ),
       ])
     },
@@ -123,16 +123,11 @@ const createRecipeAction = createOptimisticAction<CreateRecipeVariables>({
       new_tags: tagWrites.new_tags.map(({ id, name }) => ({ id, name })),
       links: tagWrites.links.map(({ id, tag_id }) => ({ id, tag_id })),
     })
-    const numericTxid = Number(txid)
 
     await Promise.all([
-      recipesCollection.utils.awaitTxId(numericTxid),
-      recipeIngredientsCollection.utils.awaitTxId(numericTxid),
-      awaitTagWrites(
-        { entity: `recipe`, entity_id: id },
-        tagWrites,
-        numericTxid
-      ),
+      awaitTxId(recipesCollection, txid),
+      awaitTxId(recipeIngredientsCollection, txid),
+      awaitTagWrites({ entity: `recipe`, entity_id: id }, tagWrites, txid),
     ])
   },
 })

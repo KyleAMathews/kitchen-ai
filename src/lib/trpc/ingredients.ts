@@ -187,10 +187,11 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
       return result
     }),
 
+  // Keeps the client-generated id so the synced row replaces the
+  // collection's optimistic row.
   create: authedProcedure
     .input(
-      insertIngredientsSchema.omit({
-        id: true,
+      insertIngredientsSchema.required({ id: true }).omit({
         user_id: true,
         created_at: true,
         updated_at: true,
@@ -199,7 +200,7 @@ Do NOT use underscores or any other variations. Use the exact capitalization and
     .output(
       z.object({
         ingredient: selectIngredientsSchema,
-        txid: z.number(),
+        txid: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
